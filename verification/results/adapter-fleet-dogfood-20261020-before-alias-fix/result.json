@@ -1,0 +1,362 @@
+{
+  "model": "gpt-6-astra",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "codex-cli 0.163.0-alpha.10.2",
+  "adapter": "herdr",
+  "scratch": "/private/tmp/fhd-bs7qz6u9",
+  "status": "passed",
+  "task_ids": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ],
+  "target_configs": {
+    "revision_1": {
+      "id": "dogfood-target",
+      "revision": 1,
+      "hash": "0f85fd2083c511b6a001db7fca956104243307945a38e23ef492a5f104979c62",
+      "retired": false
+    },
+    "revision_2": {
+      "id": "dogfood-target",
+      "revision": 2,
+      "hash": "17e9021605bc41462d1a20a754b6b3fa7f0822e93aba304521be30e85e9fedb0",
+      "retired": false
+    },
+    "pinned_tasks": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "provider-beta"
+    ]
+  },
+  "fleet_provisioning": {
+    "performed": 1,
+    "lost_ack_recovered_after_restart": true,
+    "duplicate_mutations": 0,
+    "baseline_after_receipt": true,
+    "idempotent_prepare": true
+  },
+  "dynamic_provisioning": {
+    "adapter_revision": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "ad0243f5ab6e6347de18131ae4b83240f5b0e008be869296e9e7f5090104ecbb"
+    },
+    "later_revision": {
+      "id": "dogfood-adapter",
+      "revision": 2,
+      "hash": "3f34f4f51c084df158436d13b102a0efdd84d4613d265f5fa8fe4049055c3855"
+    },
+    "workspace": "/private/tmp/fhd-bs7qz6u9/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "ready": true,
+    "idempotent_prepare": true
+  },
+  "crash_recovery": {
+    "signal": "SIGKILL",
+    "started_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+    ],
+    "uncertain_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+    ],
+    "resolutions": [
+      {
+        "action": "redispatch",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+        "id": "cron-7d533ed758e7c6b84e828429-0",
+        "version": 5
+      }
+    ],
+    "automatic_replay": false
+  },
+  "adapter_retirement": {
+    "first_tombstone_preserved": true,
+    "new_bindings_refused": [
+      "write",
+      "target"
+    ],
+    "bound_task": "provider-beta",
+    "bound_task_completed_after_restart": true
+  },
+  "independent_drive": {
+    "before": {
+      "BinaryHash": "ca0eba54832ef26b3459406c2f438bd180a159d6dff896953b4baa61daff5196",
+      "ProcessBirth": "1792539545.435236",
+      "Workspace": "/private/tmp/fhd-bs7qz6u9/repo",
+      "Holds": null,
+      "PID": 14566,
+      "DoltPID": 14589,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 1,
+      "DriveCause": "",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T23:39:07.355403Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "2316a0c2c759253c28ed48713eb1025ec815693ec1a725a0ac20b8575a7d396c",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "stopped": {
+      "BinaryHash": "ca0eba54832ef26b3459406c2f438bd180a159d6dff896953b4baa61daff5196",
+      "ProcessBirth": "1792539545.435236",
+      "Workspace": "/private/tmp/fhd-bs7qz6u9/repo",
+      "Holds": null,
+      "PID": 14566,
+      "DoltPID": 14589,
+      "OldPID": 0,
+      "DriveAlive": false,
+      "DriveGeneration": 1,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T23:39:07.355403Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "2316a0c2c759253c28ed48713eb1025ec815693ec1a725a0ac20b8575a7d396c",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "resumed": {
+      "BinaryHash": "ca0eba54832ef26b3459406c2f438bd180a159d6dff896953b4baa61daff5196",
+      "ProcessBirth": "1792539545.435236",
+      "Workspace": "/private/tmp/fhd-bs7qz6u9/repo",
+      "Holds": null,
+      "PID": 14566,
+      "DoltPID": 14589,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 2,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T23:39:07.355403Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "2316a0c2c759253c28ed48713eb1025ec815693ec1a725a0ac20b8575a7d396c",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "retained_dispatches": {
+      "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+      "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+    },
+    "daemon_and_plane_unchanged": true,
+    "retained_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+    ],
+    "provider_start_evidence": [
+      {
+        "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+        "events": [
+          {
+            "type": "thread.started",
+            "thread_id": "01a15bae-d7f0-7340-ab98-7c5c6b369223"
+          },
+          {
+            "type": "turn.started"
+          }
+        ]
+      }
+    ],
+    "deferred_before_execution": []
+  },
+  "dynamic_limits": {
+    "during_active_turns": {
+      "effective_pane_limit": 16,
+      "heavy_capacity": 1,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 16,
+      "tasks_in_flight": 1
+    },
+    "after_restart": {
+      "dynamic": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "fixed": {
+        "instance_root": "/private/tmp/fhd-bs7qz6u9/i/dogfood",
+        "socket_path": "/private/tmp/fhd-bs7qz6u9/i/dogfood/run/rpc.sock"
+      }
+    },
+    "raised": {
+      "effective_pane_limit": 24,
+      "heavy_capacity": 2,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 24,
+      "tasks_in_flight": 2
+    }
+  },
+  "restart_checkpoint": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "state": "intake-gate",
+      "version": 7,
+      "artifacts": 1
+    },
+    "provider-beta": {
+      "state": "intake-gate",
+      "version": 4,
+      "artifacts": 1
+    }
+  },
+  "controller_lifecycle": {
+    "roll": {
+      "accepted": true,
+      "binary_sha256": "ca0eba54832ef26b3459406c2f438bd180a159d6dff896953b4baa61daff5196",
+      "drive_rounds": 1,
+      "new_pid": 19545,
+      "old_pid": 14566,
+      "pid": 19545
+    },
+    "old_pid": 14566,
+    "maintenance_marker_cleared": true
+  },
+  "provider_loop": {
+    "iterations": 5,
+    "state": "completed",
+    "session_id": "loop-dogfood-loop",
+    "provider_thread_id": "01a15bb1-cc92-7611-a092-f7b8a918e815"
+  },
+  "cron_schedules": {
+    "completed": 1,
+    "admitted": 1,
+    "duplicate_occurrences": 0
+  },
+  "normal_targets": {
+    "local_task": "cron-7d533ed758e7c6b84e828429-0",
+    "live_task": "provider-beta",
+    "live_effects": 1,
+    "normal_revision": {
+      "id": "dogfood-normal",
+      "revision": 1,
+      "hash": "47344f5905ca197917b453184cf3bbd2b4fac5bb87a128df96b278822f386f5a",
+      "retired": false
+    },
+    "adapter": "disposable localhost fixture"
+  },
+  "prophet_sessions": {
+    "answered": 2,
+    "scopes": [
+      "task",
+      "global"
+    ],
+    "actions_enacted": 0,
+    "durable_health_observations": 2
+  },
+  "retirement": {
+    "transferred": {
+      "dependent_effect": "transferred",
+      "dependents": [
+        "retire-dependent"
+      ],
+      "held_dependents": [],
+      "id": "retire-old",
+      "reason_class": "superseded-by",
+      "reference": "retire-successor",
+      "state": "Retired",
+      "version": 3
+    },
+    "held": {
+      "dependent_effect": "held",
+      "held_dependents": [
+        "retire-dependent"
+      ]
+    },
+    "hidden_by_default": true,
+    "dependent_withheld": true
+  },
+  "census_cleanup": {
+    "applied": [
+      "retire-successor"
+    ],
+    "removed": [
+      "retire-old",
+      "retire-successor"
+    ],
+    "verified_backup": true,
+    "archives_verified": 2
+  },
+  "lease_audit": {
+    "capacity": 2,
+    "granted": 71,
+    "released": 70,
+    "recovered": 1,
+    "final_holders": 0
+  },
+  "pane_audit": {
+    "before_shutdown_reservations": 9,
+    "final_reservations": 0
+  },
+  "stall_recoveries": {
+    "cron-7d533ed758e7c6b84e828429-0": 0,
+    "provider-beta": 0
+  },
+  "tasks": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "artifact_records": 22,
+      "version": 55
+    },
+    "provider-beta": {
+      "artifact_records": 36,
+      "version": 85
+    }
+  },
+  "integration_sha": "50369f6135810206474569a4690544a2f85df663",
+  "base_sha": "093fcbe930b4aaebfa31efe859f8948b08db175b",
+  "crashed_completed_uncollected": [],
+  "resident_sessions": {
+    "audited_turns": 19,
+    "reused_panes": 4
+  },
+  "real_completed_turns": 36,
+  "persistent_sessions": {
+    "audited_turns": 18,
+    "resumed_turns": 9,
+    "resumed_after_restart": 2,
+    "cross_task_threads": 0,
+    "mixed_mode_isolation": true,
+    "task_bound_resumed_turns": 6
+  },
+  "scratch_cleanup": {
+    "completed": true,
+    "root_absent": true,
+    "backup_retained": true,
+    "backup_files_verified": 2077,
+    "archives_verified": 4,
+    "idempotent_repeat": true
+  }
+}

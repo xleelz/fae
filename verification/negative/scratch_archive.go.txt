@@ -1,0 +1,11 @@
+package completion
+
+func ScratchArchiveDropsJournalProtection() {
+ survivor := make(chan int)
+ unreferenced := make(chan int)
+ deleted := make(chan int)
+ go func(){survivor <- 1}()
+ go func(){unreferenced <- 1}()
+ go func(){<-survivor; deleted <- 1}()
+ <-deleted
+}

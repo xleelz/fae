@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-887d36e4a0a0b41f7f0d6df7477d6ea1",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-20T06:39:48.362827Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-887d36e4a0a0b41f7f0d6df7477d6ea1",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-887d36e4a0a0b41f7f0d6df7477d6ea1-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done. Supplied records show integration landed at commit e4cacc0931e5c2f35808014c42a59541ffd009b3. This is the only visible task ID.",
+      "reply_to": "prophet-887d36e4a0a0b41f7f0d6df7477d6ea1",
+      "time": "2026-10-20T06:39:55.014223Z",
+      "detail": {
+        "answer": {
+          "reply": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done. Supplied records show integration landed at commit e4cacc0931e5c2f35808014c42a59541ffd009b3. This is the only visible task ID.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-e8140f9a5f3de3499af3857c72acb021",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-20T06:39:55.154973Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-e8140f9a5f3de3499af3857c72acb021",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-e8140f9a5f3de3499af3857c72acb021-reply",
+      "author": "prophet",
+      "text": "- cron-7d533ed758e7c6b84e828429-0: Done; revision 2; Local mode; not live.\n- provider-beta: Done; revision 3; Normal mode; live.\n- global: Current task header ID; prophet stage; no task state supplied.",
+      "reply_to": "prophet-e8140f9a5f3de3499af3857c72acb021",
+      "time": "2026-10-20T06:40:03.105578Z",
+      "detail": {
+        "answer": {
+          "reply": "- cron-7d533ed758e7c6b84e828429-0: Done; revision 2; Local mode; not live.\n- provider-beta: Done; revision 3; Normal mode; live.\n- global: Current task header ID; prophet stage; no task state supplied.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

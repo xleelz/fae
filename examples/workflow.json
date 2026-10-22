@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "id": "offline-evidence-example",
+  "start": "test",
+  "roles": {},
+  "artifacts": {
+    "Run": {
+      "version": 1,
+      "schema": {
+        "type": "object"
+      }
+    }
+  },
+  "stages": {
+    "check": {
+      "primitive": "Gate",
+      "expression": {
+        "op": "and",
+        "args": [
+          {
+            "op": "eq",
+            "args": [
+              {
+                "op": "field",
+                "stage": "test",
+                "path": [
+                  "exit_code"
+                ]
+              },
+              {
+                "op": "literal",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "op": "ge",
+            "args": [
+              {
+                "op": "field",
+                "stage": "test",
+                "path": [
+                  "executed_count"
+                ]
+              },
+              {
+                "op": "literal",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "failure": "stop",
+      "test_stage": "test"
+    },
+    "stop": {
+      "primitive": "Escalate"
+    },
+    "test": {
+      "primitive": "HostCommand",
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "weight": 1,
+      "timeout_seconds": 30,
+      "test_run": true
+    }
+  },
+  "edges": [
+    {
+      "from": "test",
+      "to": "check"
+    },
+    {
+      "from": "check",
+      "to": "Done"
+    },
+    {
+      "from": "check",
+      "to": "stop"
+    }
+  ],
+  "limits": {
+    "attempts": 20,
+    "test_runs": 8,
+    "scope_widens": 3
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-18",
+  "source": "Read-only local Codex logs_2.sqlite; selected retry diagnostics for this chat only",
+  "reviewer_model": "codex-auto-review",
+  "observed_error": "Selected model is at capacity. Please try a different model.",
+  "classification": "ServerOverloaded",
+  "retry_policy": {
+    "max_attempts": 3,
+    "observed_total_budget_seconds": 90
+  },
+  "finding": "Upstream reviewer model overload consumes the review budget before a decision. Native shell commands are rejected before execution; this is not a Fae timeout.",
+  "selected_retry_diagnostics": [
+    {
+      "time": "2026-10-18T21:32:23-07:00",
+      "attempt_count": "1",
+      "next_attempt": "2",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "218",
+      "remaining_budget_ms": "88085",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:32:24-07:00",
+      "attempt_count": "2",
+      "next_attempt": "3",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "367",
+      "remaining_budget_ms": "86581",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:37:44-07:00",
+      "attempt_count": "1",
+      "next_attempt": "2",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "195",
+      "remaining_budget_ms": "87698",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:37:47-07:00",
+      "attempt_count": "2",
+      "next_attempt": "3",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "396",
+      "remaining_budget_ms": "85081",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:47:02-07:00",
+      "attempt_count": "1",
+      "next_attempt": "2",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "194",
+      "remaining_budget_ms": "88276",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:48:04-07:00",
+      "attempt_count": "2",
+      "next_attempt": "3",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "396",
+      "remaining_budget_ms": "26160",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:49:08-07:00",
+      "attempt_count": "1",
+      "next_attempt": "2",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "210",
+      "remaining_budget_ms": "58368",
+      "deadline_limited": "false"
+    },
+    {
+      "time": "2026-10-18T21:49:40-07:00",
+      "attempt_count": "2",
+      "next_attempt": "3",
+      "max_attempts": "3",
+      "failure_reason": "Some(SessionError)",
+      "error_info": "Some(ServerOverloaded)",
+      "wait_ms": "404",
+      "remaining_budget_ms": "26519",
+      "deadline_limited": "false"
+    }
+  ],
+  "local_fix_available": false,
+  "settings_changed": false,
+  "next_step": "Resolved for this chat: native suite and real-provider dogfood passed under user-selected full access.",
+  "resolution": {
+    "user_changed_chat_to_full_access": true,
+    "native_commands_launch_successfully": true,
+    "review_service_changed_by_assistant": false,
+    "note": "Upstream reviewer capacity was not repaired locally. User-selected full access removed the automatic-review launch blocker."
+  }
+}

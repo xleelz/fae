@@ -1,0 +1,52 @@
+SIGKILL during actual provider turn; retired uncertain dispatches explicitly resolved
+watchdog rearmed stopped drive; daemon, Dolt and active dispatch identities preserved
+cron-7d533ed758e7c6b84e828429-0 stage: intake
+cron-1c405e1c25c7422088d7a718-0 stage: intake
+cron-7d533ed758e7c6b84e828429-0 stage: intake-gate
+drained mid-run restart completed; dynamic limit preserved and raised
+cron-7d533ed758e7c6b84e828429-0 stage: spec
+cron-1c405e1c25c7422088d7a718-0 stage: spec
+cron-7d533ed758e7c6b84e828429-0 stage: spec-review
+cron-7d533ed758e7c6b84e828429-0 stage: plan
+cron-1c405e1c25c7422088d7a718-0 stage: spec-review
+cron-7d533ed758e7c6b84e828429-0 stage: test-first
+cron-1c405e1c25c7422088d7a718-0 stage: plan
+cron-7d533ed758e7c6b84e828429-0 stage: run-red
+cron-1c405e1c25c7422088d7a718-0 stage: test-first
+cron-7d533ed758e7c6b84e828429-0 stage: freeze-red
+cron-7d533ed758e7c6b84e828429-0 stage: implement
+cron-1c405e1c25c7422088d7a718-0 stage: run-red
+cron-7d533ed758e7c6b84e828429-0 stage: run-tests
+cron-1c405e1c25c7422088d7a718-0 stage: freeze-red
+cron-1c405e1c25c7422088d7a718-0 stage: implement
+cron-7d533ed758e7c6b84e828429-0 stage: green-gate
+cron-7d533ed758e7c6b84e828429-0 stage: reviews
+cron-1c405e1c25c7422088d7a718-0 stage: run-tests
+cron-1c405e1c25c7422088d7a718-0 stage: compare-red
+cron-1c405e1c25c7422088d7a718-0 stage: format
+cron-1c405e1c25c7422088d7a718-0 stage: reviews
+cron-7d533ed758e7c6b84e828429-0 stage: oracle
+cron-7d533ed758e7c6b84e828429-0 stage: qa
+cron-1c405e1c25c7422088d7a718-0 stage: oracle
+cron-7d533ed758e7c6b84e828429-0 stage: merge
+cron-7d533ed758e7c6b84e828429-0 stage: post-merge-qa
+cron-1c405e1c25c7422088d7a718-0 stage: qa
+cron-7d533ed758e7c6b84e828429-0 stage: commit
+cron-1c405e1c25c7422088d7a718-0 stage: merge
+cron-7d533ed758e7c6b84e828429-0 stage: integrate
+cron-1c405e1c25c7422088d7a718-0 stage: post-merge-qa
+cron-7d533ed758e7c6b84e828429-0 stage: Done
+cron-1c405e1c25c7422088d7a718-0 stage: commit
+cron-1c405e1c25c7422088d7a718-0 stage: merge
+cron-1c405e1c25c7422088d7a718-0 stage: run-tests
+cron-1c405e1c25c7422088d7a718-0 stage: compare-red
+cron-1c405e1c25c7422088d7a718-0 stage: format
+cron-1c405e1c25c7422088d7a718-0 stage: reviews
+cron-1c405e1c25c7422088d7a718-0 stage: oracle
+cron-1c405e1c25c7422088d7a718-0 stage: qa
+cron-1c405e1c25c7422088d7a718-0 stage: merge
+cron-1c405e1c25c7422088d7a718-0 stage: post-merge-qa
+cron-1c405e1c25c7422088d7a718-0 stage: commit
+cron-1c405e1c25c7422088d7a718-0 stage: integrate
+cron-1c405e1c25c7422088d7a718-0 stage: Done
+{"model": "gpt-6-astra", "herdr_version": "herdr 0.9.5", "provider_version": "codex-cli 0.163.0-alpha.10.2", "adapter": "herdr", "scratch": "/private/tmp/fhd-idscp8xb", "status": "passed", "task_ids": ["cron-7d533ed758e7c6b84e828429-0", "cron-1c405e1c25c7422088d7a718-0"], "target_configs": {"revision_1": {"id": "dogfood-target", "revision": 1, "hash": "bd9b83015aea66dbd265ea70724847197c173e67e5daf3d6d7b535e5c2cc4dbd", "retired": false}, "revision_2": {"id": "dogfood-target", "revision": 2, "hash": "25fb1ce80d489a0dacc71ceaeb2b8a7b8ef0082f5d419f257b61c1e9b4ceae6f", "retired": false}, "pinned_tasks": ["cron-7d533ed758e7c6b84e828429-0", "cron-1c405e1c25c7422088d7a718-0"]}, "crash_recovery": {"signal": "SIGKILL", "started_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"], "uncertain_sessions": ["cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"], "resolutions": [{"action": "redispatch", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1", "id": "cron-7d533ed758e7c6b84e828429-0", "version": 5}], "automatic_replay": false}, "independent_drive": {"before": {"BinaryHash": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221", "ProcessBirth": "1792392919.671530", "Workspace": "/private/tmp/fhd-idscp8xb/repo", "Holds": null, "PID": 28606, "DoltPID": 28621, "OldPID": 0, "DriveAlive": true, "DriveGeneration": 1, "DriveCause": "", "DriveRounds": 4, "LastTransition": "2026-10-19T06:55:25.261577Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "dfff590c312159bf19bdb7a7e00a7f00e1425405c3761c019c72067059dfa7e0", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "stopped": {"BinaryHash": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221", "ProcessBirth": "1792392919.671530", "Workspace": "/private/tmp/fhd-idscp8xb/repo", "Holds": null, "PID": 28606, "DoltPID": 28621, "OldPID": 0, "DriveAlive": false, "DriveGeneration": 1, "DriveCause": "operator-stop", "DriveRounds": 5, "LastTransition": "2026-10-19T06:55:25.353819Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "dfff590c312159bf19bdb7a7e00a7f00e1425405c3761c019c72067059dfa7e0", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "resumed": {"BinaryHash": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221", "ProcessBirth": "1792392919.671530", "Workspace": "/private/tmp/fhd-idscp8xb/repo", "Holds": null, "PID": 28606, "DoltPID": 28621, "OldPID": 0, "DriveAlive": true, "DriveGeneration": 2, "DriveCause": "operator-stop", "DriveRounds": 5, "LastTransition": "2026-10-19T06:55:25.824574Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "dfff590c312159bf19bdb7a7e00a7f00e1425405c3761c019c72067059dfa7e0", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "retained_dispatches": {"cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2", "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"}, "daemon_and_plane_unchanged": true, "retained_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"], "provider_start_evidence": [{"session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2", "events": [{"type": "thread.started", "thread_id": "01a152f1-8078-7b42-a845-c6ede30d495c"}, {"type": "turn.started"}]}], "deferred_before_execution": [{"session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0", "events": [{"attempt": 1, "cause": "inputs-resolved", "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1", "kind": "dispatch", "stage": "intake"}, {"attempt": 1, "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active", "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1", "kind": "execution-diagnostic", "stage": "intake"}, {"attempt": 0, "cause": "infrastructure-deferred", "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1", "kind": "park", "stage": "intake"}]}]}, "dynamic_limits": {"during_active_turns": {"effective_pane_limit": 16, "heavy_capacity": 1, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 16, "tasks_in_flight": 1}, "after_restart": {"dynamic": {"effective_pane_limit": 16, "heavy_capacity": 1, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 16, "tasks_in_flight": 1}, "fixed": {"instance_root": "/private/tmp/fhd-idscp8xb/i/dogfood", "socket_path": "/private/tmp/fhd-idscp8xb/i/dogfood/run/rpc.sock"}}, "raised": {"effective_pane_limit": 24, "heavy_capacity": 2, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 24, "tasks_in_flight": 2}}, "restart_checkpoint": {"cron-7d533ed758e7c6b84e828429-0": {"state": "intake-gate", "version": 7, "artifacts": 1}, "cron-1c405e1c25c7422088d7a718-0": {"state": "intake-gate", "version": 6, "artifacts": 1}}, "controller_lifecycle": {"roll": {"accepted": true, "binary_sha256": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221", "drive_rounds": 1, "new_pid": 30787, "old_pid": 28606, "pid": 30787}, "old_pid": 28606, "maintenance_marker_cleared": true}, "provider_loop": {"iterations": 5, "state": "completed", "session_id": "loop-dogfood-loop", "provider_thread_id": "01a152f4-b470-7c61-8bbf-9468a790020b"}, "cron_schedules": {"completed": 2, "admitted": 2, "duplicate_occurrences": 0}, "prophet_sessions": {"answered": 2, "scopes": ["task", "global"], "actions_enacted": 0, "durable_health_observations": 2}, "retirement": {"transferred": {"dependent_effect": "transferred", "dependents": ["retire-dependent"], "held_dependents": [], "id": "retire-old", "reason_class": "superseded-by", "reference": "retire-successor", "state": "Retired", "version": 3}, "held": {"dependent_effect": "held", "dependents": ["retire-dependent"], "held_dependents": ["retire-dependent"], "id": "retire-successor", "reason_class": "obsolete", "reference": "dogfood-ruling-1", "state": "Retired", "version": 3}, "hidden_by_default": true, "dependent_withheld": true}, "lease_audit": {"capacity": 2, "granted": 69, "released": 68, "recovered": 1, "final_holders": 0}, "pane_audit": {"before_shutdown_reservations": 6, "final_reservations": 0}, "stall_recoveries": {"cron-7d533ed758e7c6b84e828429-0": 0, "cron-1c405e1c25c7422088d7a718-0": 0}, "tasks": {"cron-7d533ed758e7c6b84e828429-0": {"artifact_records": 22, "version": 55}, "cron-1c405e1c25c7422088d7a718-0": {"artifact_records": 35, "version": 89}}, "integration_sha": "e59f85ce879b01d1e968d8a102eaad48294afb65", "base_sha": "7854f249ac8ad0c48bc01b83ede99b95b420ed27", "crashed_completed_uncollected": [], "resident_sessions": {"audited_turns": 19, "reused_panes": 7}, "real_completed_turns": 36, "persistent_sessions": {"audited_turns": 18, "resumed_turns": 12, "resumed_after_restart": 2, "cross_task_threads": 3, "task_bound_resumed_turns": 6}}

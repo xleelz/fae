@@ -1,0 +1,113 @@
+{
+  "model": "gpt-6-astra",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "codex-cli 0.163.0-alpha.10.2",
+  "adapter": "herdr",
+  "scratch": "/private/tmp/fhd-4xdw3yem",
+  "status": "passed",
+  "task_ids": [
+    "provider-alpha",
+    "provider-beta"
+  ],
+  "dynamic_limits": {
+    "during_active_turns": {
+      "effective_pane_limit": 16,
+      "heavy_capacity": 1,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 16,
+      "tasks_in_flight": 1
+    },
+    "after_restart": {
+      "dynamic": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "fixed": {
+        "instance_root": "/private/tmp/fhd-4xdw3yem/i/dogfood",
+        "socket_path": "/private/tmp/fhd-4xdw3yem/i/dogfood/run/rpc.sock"
+      }
+    },
+    "raised": {
+      "effective_pane_limit": 24,
+      "heavy_capacity": 2,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 24,
+      "tasks_in_flight": 2
+    }
+  },
+  "restart_checkpoint": {
+    "provider-alpha": {
+      "state": "intake-gate",
+      "version": 4,
+      "artifacts": 1
+    },
+    "provider-beta": {
+      "state": "intake-gate",
+      "version": 4,
+      "artifacts": 1
+    }
+  },
+  "lease_audit": {
+    "capacity": 2,
+    "granted": 58,
+    "released": 58,
+    "final_holders": 0
+  },
+  "pane_audit": {
+    "final_reservations": 0
+  },
+  "stall_recoveries": {
+    "provider-alpha": 0,
+    "provider-beta": 0
+  },
+  "tasks": {
+    "provider-alpha": {
+      "artifact_records": 35,
+      "version": 83
+    },
+    "provider-beta": {
+      "artifact_records": 22,
+      "version": 52
+    }
+  },
+  "integration_sha": "3e42d974de8882edb829040ab2022674241b2270",
+  "base_sha": "ac40b5432336da6aaa1ec4dc907a95936bd892e6",
+  "real_completed_turns": 29,
+  "persistent_sessions": {
+    "audited_turns": 13,
+    "resumed_turns": 8,
+    "resumed_after_restart": 2,
+    "cross_task_threads": 3,
+    "task_bound_resumed_turns": 2
+  }
+}

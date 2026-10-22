@@ -1,0 +1,59 @@
+{
+  "result": {
+    "lost_ack_recovered_after_restart": true,
+    "uploads": 1,
+    "remote_content_verified": true,
+    "remote_restore_fsck": true,
+    "idempotent_repeat": true,
+    "replication_pin_invalidated_preview": true,
+    "removed": 2,
+    "retained": 1
+  },
+  "replication": {
+    "backup": "/private/tmp/fhd-3vtdgtmi/i/dogfood/backup/plane-2553767962",
+    "endpoint": "http://127.0.0.1:49951",
+    "sha256": "acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9",
+    "manifest_sha256": "ed15f30f75a90938fbe6076a8788d10d0dc2cbce8c8d7fadb25cf0bfd332db14",
+    "size": 12791296,
+    "max_bytes": 268435456,
+    "state": "replicated",
+    "receipt": {
+      "id": "acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9",
+      "sha256": "acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9",
+      "manifest_sha256": "ed15f30f75a90938fbe6076a8788d10d0dc2cbce8c8d7fadb25cf0bfd332db14",
+      "size": 12791296,
+      "state": "stored"
+    }
+  },
+  "retention": {
+    "plan_digest": "30c2bae7b261acdb254e14965757bacdd33970b96db7a414a8b0c98b966ae72d",
+    "keep": 1,
+    "retained": [
+      {
+        "path": "/private/tmp/fhd-3vtdgtmi/i/dogfood/backup/plane-2553767962",
+        "reasons": [
+          "newest",
+          "snapshot coverage: cron-7d533ed758e7c6b84e828429-0",
+          "snapshot coverage: provider-beta",
+          "snapshot coverage: retire-dependent",
+          "snapshot coverage: retire-old",
+          "snapshot coverage: retire-successor"
+        ]
+      }
+    ],
+    "remove": [
+      "/private/tmp/fhd-3vtdgtmi/i/dogfood/backup/plane-467790672",
+      "/private/tmp/fhd-3vtdgtmi/i/dogfood/backup/plane-3422316153"
+    ],
+    "removed": [
+      "/private/tmp/fhd-3vtdgtmi/i/dogfood/backup/plane-467790672",
+      "/private/tmp/fhd-3vtdgtmi/i/dogfood/backup/plane-3422316153"
+    ]
+  },
+  "reads": [
+    "/backups/acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9",
+    "/backups/acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9/content",
+    "/backups/acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9",
+    "/backups/acef814f349b4121c1cb306ddca89faf9daf756c884131643adfcc60c85942d9/content"
+  ]
+}

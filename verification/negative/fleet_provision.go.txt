@@ -1,0 +1,11 @@
+package completion
+
+func FleetReadyWithoutReceipt() {
+ intent:=make(chan int)
+ receipt:=make(chan int)
+ ready:=make(chan int)
+ go func(){intent<-1}()
+ go func(){<-intent;receipt<-1}()
+ go func(){ready<-1}()
+ <-ready
+}

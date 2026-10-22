@@ -1,0 +1,8 @@
+--- FAIL: TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch (38.97s)
+    postcommit_restart_test.go:103: restart/resume refused: task workspace tree differs from durable checkpoint
+FAIL
+FAIL	github.com/xleelz/fae/daemon	247.797s
+ok  	github.com/xleelz/fae/controlplane	1.253s
+ok  	github.com/xleelz/fae/execution	11.277s
+ok  	github.com/xleelz/fae/cmd/fae	1.395s
+FAIL

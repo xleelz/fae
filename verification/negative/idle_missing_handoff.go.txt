@@ -1,0 +1,12 @@
+package completion
+
+// Missing the durable handoff acknowledgement prevents safe retirement.
+func IdleMissingHandoff() {
+ saved:=make(chan int)
+ retire:=make(chan int)
+ retired:=make(chan int)
+ go idleMissingRetirer(saved,retire,retired)
+ retire<-1
+ <-retired
+}
+func idleMissingRetirer(saved,retire,retired chan int){<-saved;<-retire;retired<-1}

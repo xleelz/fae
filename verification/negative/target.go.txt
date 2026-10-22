@@ -1,0 +1,9 @@
+package completion
+
+func TargetCommandWithoutPolicy() {
+ validated := make(chan int)
+ executed := make(chan int)
+ go func() { validated <- 1 }()
+ go func() { executed <- 1 }()
+ <-executed
+}

@@ -1,0 +1,13 @@
+package completion
+
+func RetentionScheduleDropsDurableClaim() {
+ authorized := make(chan int)
+ claimed := make(chan int)
+ planned := make(chan int)
+ pruned := make(chan int)
+ go func(){authorized <- 1}()
+ go func(){<-authorized; claimed <- 1}()
+ go func(){planned <- 1}()
+ go func(){<-planned; pruned <- 1}()
+ <-pruned
+}

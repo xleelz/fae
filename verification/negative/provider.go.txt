@@ -1,0 +1,15 @@
+package completion
+
+// MissingProviderObservationAcknowledgment removes the durable receipt. The
+// selection and launch must stay blocked rather than use unacknowledged health.
+func MissingProviderObservationAcknowledgment() {
+	persisted := make(chan int)
+	selected := make(chan int)
+	done := make(chan int)
+	go providerSelectMissing(persisted, selected)
+	go providerLaunchMissing(selected, done)
+	<-done
+}
+
+func providerSelectMissing(persisted, selected chan int) { <-persisted; close(selected) }
+func providerLaunchMissing(selected, done chan int)     { <-selected; close(done) }

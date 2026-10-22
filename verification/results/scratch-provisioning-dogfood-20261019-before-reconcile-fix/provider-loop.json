@@ -1,0 +1,29 @@
+{
+  "dispatches": 5,
+  "spec": {
+    "id": "dogfood-loop",
+    "kind": "loop",
+    "role": "oracle",
+    "prompt": "Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.",
+    "binding": {
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "effort": "medium"
+    },
+    "max_iterations": 5,
+    "expires_at": "2026-10-20T06:54:23.64739Z"
+  },
+  "session_id": "loop-dogfood-loop",
+  "state": "completed",
+  "iterations": 5,
+  "in_flight": false,
+  "next": "2026-10-20T06:39:48.187569Z",
+  "context": {
+    "iterations": 5,
+    "scope_revision": "3009dadb4847e90a953e49b510a52fcc53c89bab17b619ce8d9eae6a45b1263a",
+    "session": "loop-dogfood-loop"
+  },
+  "last_output": {
+    "message": "Iteration 5: fae-loop-dogfood."
+  }
+}

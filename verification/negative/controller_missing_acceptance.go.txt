@@ -1,0 +1,3 @@
+package completion
+func ControllerMissingAcceptance(){marker:=make(chan int);drained:=make(chan int);stopped:=make(chan int);accepted:=make(chan int);done:=make(chan int);go controllerMissingWorker(marker,drained,stopped,done);marker<-1;<-drained;stopped<-1;<-accepted;done<-1}
+func controllerMissingWorker(marker,drained,stopped,done chan int){<-marker;drained<-1;<-stopped;<-done}

@@ -1,0 +1,2 @@
+package completion
+func DriveRearmBeforeRetirement(){retired:=make(chan int);rearmed:=make(chan int);go func(){retired<-1;<-rearmed}();rearmed<-1;<-retired}

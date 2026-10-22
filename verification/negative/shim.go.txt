@@ -1,0 +1,10 @@
+package completion
+
+func ShimMissingRetirement() {
+ lease := make(chan int, 1)
+ retired := make(chan int)
+ lease <- 1
+ go func() { <-lease; close(retired) }()
+ <-retired
+ <-lease
+}

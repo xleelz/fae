@@ -1,0 +1,17 @@
+package completion
+// Losing completion acknowledgement blocks checked pane/server retirement.
+func LostPaneCompletion(){
+ registered:=make(chan int)
+ permit:=make(chan int)
+ completed:=make(chan int)
+ paneGone:=make(chan int)
+ serverGone:=make(chan int)
+ go muxLostOwner(registered,permit,completed,paneGone)
+ go muxLostPane(permit)
+ go muxLostServer(paneGone,serverGone)
+ close(registered)
+ <-serverGone
+}
+func muxLostOwner(registered,permit,completed,paneGone chan int){<-registered;close(permit);<-completed;close(paneGone)}
+func muxLostPane(permit chan int){<-permit}
+func muxLostServer(paneGone,serverGone chan int){<-paneGone;close(serverGone)}

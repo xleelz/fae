@@ -1,0 +1,13 @@
+package completion
+
+// Dropping the reconciliation acknowledgement reports completion too early and
+// strands the actual index operation, which must fire the deadlock control.
+func CommitReceiptSkipsIndexReconciliation() {
+ branchCommitted := make(chan int)
+ indexReconciled := make(chan int)
+ receipt := make(chan int)
+ go func() { branchCommitted <- 1 }()
+ go func() { <-branchCommitted; indexReconciled <- 1 }()
+ go func() { receipt <- 1 }()
+ <-receipt
+}

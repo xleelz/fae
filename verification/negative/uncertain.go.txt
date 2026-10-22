@@ -1,0 +1,9 @@
+package completion
+func CrashMissingAuthority() {
+ retired:=make(chan int)
+ authority:=make(chan int)
+ committed:=make(chan int)
+ go func(){ retired<-1 }()
+ go func(){ <-retired; <-authority; committed<-1 }()
+ <-committed
+}

@@ -1,0 +1,157 @@
+{
+  "census": {
+    "format": 1,
+    "instance": "dogfood",
+    "rows": [
+      {
+        "id": "retire-successor",
+        "state": "Escalated",
+        "version": 2,
+        "snapshot_digest": "96c1c887a00b206136d05af60c7cb2264f6a528e84542b972bb1dece73021791",
+        "branch_tip": "444ca714afb15741459330878c89c901aa26bdf7",
+        "landing_evidence": "",
+        "classification": "obsolete",
+        "reason": "obsolete dogfood-ruling-1",
+        "evidence": "Operator-authored disposable fixture ruling; retain dependent hold."
+      }
+    ],
+    "digest": "641fabdc546005d06ec43466c730658cd7eef9f974e22f4b128556fe2b0fb4ce"
+  },
+  "apply": {
+    "completed": [
+      "retire-successor"
+    ],
+    "digest": "641fabdc546005d06ec43466c730658cd7eef9f974e22f4b128556fe2b0fb4ce"
+  },
+  "backup": {
+    "path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/backup/plane-1969616002",
+    "instance": "dogfood",
+    "workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+    "created": "2026-10-20T01:03:23.59101Z",
+    "files": {
+      "dolt-config/.dolt/config_global.json": "fe9d377da5c30af32569af737323a82c6223a27375bf2612ae6f35586e2a4e06",
+      "dolt-config/.dolt/eventsData/KdO3lfV_X11FKpl03jpAQQ.devts": "17fda9290a08ca5142e92734187acfe3be1ccacb62cb35999396743e773e6af6",
+      "dolt-config/.dolt/eventsData/ahE-8xQyQVi-SXeSfU0TNQ.devts": "cc21442543c2437a213f1e4ff8798982dd6b4a10484fa221a210093c1701921b",
+      "dolt-config/.dolt/eventsData/dolt.lock": "a316d5b4cc44adc6d0c9e7f16828afb51ed30c70e9a9f4d0d39e1f0a05388ac7",
+      "remote/LOCK": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "remote/gkbfcu83lqitj7pmlklf32f38e310sbo.darc": "364496b170605685f84c65d5da54b4fbe5731c078b150a76a915296a87b891d6",
+      "remote/manifest": "d0fdc0db3cd87bdcc7688b779a175fa5d70da8d4878c748fd8da0d2b8c5ef009",
+      "remote/oldgen/LOCK": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/config.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "restored/.dolt/noms/LOCK": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/noms/gkbfcu83lqitj7pmlklf32f38e310sbo.darc": "364496b170605685f84c65d5da54b4fbe5731c078b150a76a915296a87b891d6",
+      "restored/.dolt/noms/journal.idx": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/noms/manifest": "2d395ea186231e0eeaa03746b47ad8262d0bbfdb521759034274f593c0cce2ad",
+      "restored/.dolt/noms/oldgen/LOCK": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/noms/vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv": "2548f8a03c4142b801a8cd419afd2bfb74189d3be33d4ae1e6b2fe68600a3e8b",
+      "restored/.dolt/repo_state.json": "47f02c93140c2293a968397cdb68115a503d4dea725b3f9bdefc805f94145a2e",
+      "restored/.dolt/stats/.dolt/config.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "restored/.dolt/stats/.dolt/noms/LOCK": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/stats/.dolt/noms/journal.idx": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/stats/.dolt/noms/manifest": "535b5e8bfcdf666dc59a33cabba3900a7711ccb5cc29f990bc0e3bbf2ac6d2ec",
+      "restored/.dolt/stats/.dolt/noms/oldgen/LOCK": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored/.dolt/stats/.dolt/noms/vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv": "ab0bbc016664f46a4bbdd0f3bc8048a499d5e506382a6bd220e572efd297b6bf",
+      "restored/.dolt/stats/.dolt/repo_state.json": "47f02c93140c2293a968397cdb68115a503d4dea725b3f9bdefc805f94145a2e"
+    },
+    "jobs": [
+      {
+        "job_id": "cron-7d533ed758e7c6b84e828429-0",
+        "version": 55,
+        "state": "Done",
+        "payload_digest": "99aa5546c15a6d4a72a9451bd272c043211cebf8c7bdf3e46acd6a4188f3ba7e"
+      },
+      {
+        "job_id": "provider-beta",
+        "version": 85,
+        "state": "Done",
+        "payload_digest": "d19fa394e24597c7992679b16e8bc3d168dea162751d04aa5225b885db6d7c5b"
+      },
+      {
+        "job_id": "retire-dependent",
+        "version": 1,
+        "state": "Pending",
+        "payload_digest": "1b5c38eb71fe686730c4f650c0bde2828dc1b4483466aedb358d0e3302208419"
+      },
+      {
+        "job_id": "retire-old",
+        "version": 3,
+        "state": "Retired",
+        "payload_digest": "61067e88977fb8c33de9997acfaf623670234276c3ff68a1566c5f9c7386eb47"
+      },
+      {
+        "job_id": "retire-successor",
+        "version": 3,
+        "state": "Retired",
+        "payload_digest": "6d2752c86453ad6788a834c4267fee7f12869defd0a96cd7bad95151d58b91bd"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "task": "retire-old",
+      "plan": {
+        "run": "backlog-drain",
+        "task": "retire-old",
+        "binding": {
+          "Path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/worktrees/eb23982335da7d9d5068a5ff88ffb38c3234651c622b3a46d76fb0017cc47a6d",
+          "Branch": "fae/task/eb23982335da7d9d5068a5ff88ffb38c3234651c622b3a46d76fb0017cc47a6d"
+        },
+        "head": "444ca714afb15741459330878c89c901aa26bdf7",
+        "archive": "refs/fae/archive/eb23982335da7d9d5068a5ff88ffb38c3234651c622b3a46d76fb0017cc47a6d/444ca714afb15741459330878c89c901aa26bdf7",
+        "worktree_present": true,
+        "already_removed": false
+      },
+      "removed": false
+    },
+    {
+      "task": "retire-successor",
+      "plan": {
+        "run": "backlog-drain",
+        "task": "retire-successor",
+        "binding": {
+          "Path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/worktrees/715d5e93cfdcb72935704e9e04f7634d15bf794f471e0cfca3c54f59292e3cff",
+          "Branch": "fae/task/715d5e93cfdcb72935704e9e04f7634d15bf794f471e0cfca3c54f59292e3cff"
+        },
+        "head": "444ca714afb15741459330878c89c901aa26bdf7",
+        "archive": "refs/fae/archive/715d5e93cfdcb72935704e9e04f7634d15bf794f471e0cfca3c54f59292e3cff/444ca714afb15741459330878c89c901aa26bdf7",
+        "worktree_present": true,
+        "already_removed": false
+      },
+      "removed": false
+    }
+  ],
+  "removed": [
+    {
+      "task": "retire-old",
+      "plan": {
+        "run": "backlog-drain",
+        "task": "retire-old",
+        "binding": {
+          "Path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/worktrees/eb23982335da7d9d5068a5ff88ffb38c3234651c622b3a46d76fb0017cc47a6d",
+          "Branch": "fae/task/eb23982335da7d9d5068a5ff88ffb38c3234651c622b3a46d76fb0017cc47a6d"
+        },
+        "head": "444ca714afb15741459330878c89c901aa26bdf7",
+        "archive": "refs/fae/archive/eb23982335da7d9d5068a5ff88ffb38c3234651c622b3a46d76fb0017cc47a6d/444ca714afb15741459330878c89c901aa26bdf7",
+        "worktree_present": true,
+        "already_removed": false
+      },
+      "removed": true
+    },
+    {
+      "task": "retire-successor",
+      "plan": {
+        "run": "backlog-drain",
+        "task": "retire-successor",
+        "binding": {
+          "Path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/worktrees/715d5e93cfdcb72935704e9e04f7634d15bf794f471e0cfca3c54f59292e3cff",
+          "Branch": "fae/task/715d5e93cfdcb72935704e9e04f7634d15bf794f471e0cfca3c54f59292e3cff"
+        },
+        "head": "444ca714afb15741459330878c89c901aa26bdf7",
+        "archive": "refs/fae/archive/715d5e93cfdcb72935704e9e04f7634d15bf794f471e0cfca3c54f59292e3cff/444ca714afb15741459330878c89c901aa26bdf7",
+        "worktree_present": true,
+        "already_removed": false
+      },
+      "removed": true
+    }
+  ]
+}

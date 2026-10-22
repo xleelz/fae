@@ -1,0 +1,12 @@
+package completion
+
+func RestartDropsOriginalBase() {
+ receipt:=make(chan int)
+ originalBase:=make(chan int)
+ executionHead:=make(chan int)
+ go func(){ originalBase<-1 }()
+ go func(){ receipt<-2 }()
+ go func(){ h:=<-receipt; executionHead<-h }()
+ <-executionHead
+ // Original base is discarded instead of being supplied to reconciliation.
+}

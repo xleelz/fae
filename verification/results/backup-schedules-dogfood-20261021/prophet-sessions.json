@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-0306a4e0f38ce4a4161b3232ec9fb0c9",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-21T20:10:01.478555Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-0306a4e0f38ce4a4161b3232ec9fb0c9",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-0306a4e0f38ce4a4161b3232ec9fb0c9-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done. Supplied records show the change was committed and integrated at 2fa473038fca63a4657ebff3c6fac0f82245151f, with passing post-merge tests and unchanged frozen test bytes. No other task IDs are visible.",
+      "reply_to": "prophet-0306a4e0f38ce4a4161b3232ec9fb0c9",
+      "time": "2026-10-21T20:10:08.81977Z",
+      "detail": {
+        "answer": {
+          "reply": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done. Supplied records show the change was committed and integrated at 2fa473038fca63a4657ebff3c6fac0f82245151f, with passing post-merge tests and unchanged frozen test bytes. No other task IDs are visible.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-a35900383dfeeebc0296f273d1a92e66",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-21T20:10:09.311723Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-a35900383dfeeebc0296f273d1a92e66",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-a35900383dfeeebc0296f273d1a92e66-reply",
+      "author": "prophet",
+      "text": "Visible tasks:\n- cron-7d533ed758e7c6b84e828429-0: Done; Local mode; not live.\n- provider-beta: Done; Normal mode; live.\n- global: Current task header ID; no state supplied.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+      "reply_to": "prophet-a35900383dfeeebc0296f273d1a92e66",
+      "time": "2026-10-21T20:10:17.309953Z",
+      "detail": {
+        "answer": {
+          "reply": "Visible tasks:\n- cron-7d533ed758e7c6b84e828429-0: Done; Local mode; not live.\n- provider-beta: Done; Normal mode; live.\n- global: Current task header ID; no state supplied.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

@@ -1,0 +1,463 @@
+{
+  "date": "2026-10-19",
+  "status": "passed",
+  "implemented": [
+    "Immutable target schema v2 for Normal disposition, installed tool identity and arguments, review workspace/approved baseline and ticket policies; admission, restart, dispatch and outbox drift refusal",
+    "Read-only evidence census and snapshot-bound paced one-row audited retirement with partial-progress reporting",
+    "Verified Dolt plane backup and paced retired-worktree cleanup; all archive refs verified before deletion, exact backup coverage, physical ownership and dirty/symbolic-ref refusal, CAS deletion and restart idempotence"
+  ],
+  "requirements": [
+    "FAE-CLI-021 Normal installed-adapter subset",
+    "FAE-CTL-040",
+    "FAE-CTL-041",
+    "FAE-CTL-042",
+    "FAE-CP-013 retired-ref cleanup prerequisite"
+  ],
+  "verification": {
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1165,
+      "packages": 26,
+      "statement_coverage_percent": 74.0,
+      "daemon_package_seconds": 914.606,
+      "vet": "passed",
+      "scratch_census": "passed",
+      "supplement": "Final same-SHA symbolic archive and already-removed regression fixtures were strengthened after full-suite launch and passed a separate focused race run. No production changes followed full-suite launch."
+    },
+    "builds": [
+      "bin/fae",
+      "bin/fae-codex-bridge"
+    ],
+    "gobra": {
+      "production_guards": 42,
+      "rejected_mutations": 42
+    },
+    "gomela": {
+      "positive_models": 43,
+      "firing_negative_controls": 41
+    },
+    "hash_manifests_verified": {
+      "normal-target-census-cleanup-source-hashes.json": 410,
+      "normal-target-census-cleanup-formal/source-hashes.json": 124,
+      "normal-target-census-cleanup-dogfood-20261019/source-hashes.json": 407,
+      "normal-target-census-cleanup-dogfood-20261019/sha256.json": 25
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-rgcpxq2q",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "provider-beta"
+      ],
+      "target_configs": {
+        "revision_1": {
+          "id": "dogfood-target",
+          "revision": 1,
+          "hash": "761b181fcce8782c56cfcc7ff56638c103b360652e0a78a2a226999151395ed5",
+          "retired": false
+        },
+        "revision_2": {
+          "id": "dogfood-target",
+          "revision": 2,
+          "hash": "781c962c9fdf6b33b0b0f84585291a4c2200d358c818ee782fcc0f7b5a3e8e56",
+          "retired": false
+        },
+        "pinned_tasks": [
+          "cron-7d533ed758e7c6b84e828429-0",
+          "provider-beta"
+        ]
+      },
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+          "ProcessBirth": "1792457976.808392",
+          "Workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+          "Holds": null,
+          "PID": 20486,
+          "DoltPID": 20499,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-20T00:59:38.25665Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "6d1295734e41e06cd26a34c119972abd6117eb00ac1da2978aaac0091a98655f",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+          "ProcessBirth": "1792457976.808392",
+          "Workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+          "Holds": null,
+          "PID": 20486,
+          "DoltPID": 20499,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-20T00:59:38.25665Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "6d1295734e41e06cd26a34c119972abd6117eb00ac1da2978aaac0091a98655f",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+          "ProcessBirth": "1792457976.808392",
+          "Workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+          "Holds": null,
+          "PID": 20486,
+          "DoltPID": 20499,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-20T00:59:38.25665Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "6d1295734e41e06cd26a34c119972abd6117eb00ac1da2978aaac0091a98655f",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a156d2-3334-7c80-ab46-35b3c3c2d5d9"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": []
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+            "socket_path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "intake-gate",
+          "version": 7,
+          "artifacts": 1
+        },
+        "provider-beta": {
+          "state": "intake-gate",
+          "version": 4,
+          "artifacts": 1
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+          "drive_rounds": 1,
+          "new_pid": 22770,
+          "old_pid": 20486,
+          "pid": 22770
+        },
+        "old_pid": 20486,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a156d5-0469-7960-9935-da01b2d724d7"
+      },
+      "cron_schedules": {
+        "completed": 1,
+        "admitted": 1,
+        "duplicate_occurrences": 0
+      },
+      "normal_targets": {
+        "local_task": "cron-7d533ed758e7c6b84e828429-0",
+        "live_task": "provider-beta",
+        "live_effects": 1,
+        "normal_revision": {
+          "id": "dogfood-normal",
+          "revision": 1,
+          "hash": "83e593ecd9e2a1224daef0fabedaf39b1099176eabec07a871dd9cc1be71551b",
+          "retired": false
+        },
+        "adapter": "disposable localhost fixture"
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0,
+        "durable_health_observations": 2
+      },
+      "retirement": {
+        "transferred": {
+          "dependent_effect": "transferred",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [],
+          "id": "retire-old",
+          "reason_class": "superseded-by",
+          "reference": "retire-successor",
+          "state": "Retired",
+          "version": 3
+        },
+        "held": {
+          "dependent_effect": "held",
+          "held_dependents": [
+            "retire-dependent"
+          ]
+        },
+        "hidden_by_default": true,
+        "dependent_withheld": true
+      },
+      "census_cleanup": {
+        "applied": [
+          "retire-successor"
+        ],
+        "removed": [
+          "retire-old",
+          "retire-successor"
+        ],
+        "verified_backup": true,
+        "archives_verified": 2
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 68,
+        "released": 67,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 9,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "provider-beta": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "provider-beta": {
+          "artifact_records": 36,
+          "version": 85
+        }
+      },
+      "integration_sha": "f2fbf81502a4330361ebf399cfd475701869a810",
+      "base_sha": "444ca714afb15741459330878c89c901aa26bdf7",
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 4
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 9,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 0,
+        "mixed_mode_isolation": true,
+        "task_bound_resumed_turns": 6
+      }
+    }
+  },
+  "review_findings_fixed": [
+    "Cleanup citation needed consumed-class compatibility and explicit grant scope checks without plane writes",
+    "Symbolic source/archive refs could redirect deletion; now refused with no-deref reference operations and same-SHA regressions",
+    "API schema now matches backup envelopes, backup-free dry runs and conditional apply constraints"
+  ],
+  "dogfood_harness_fixes": [
+    "First attempt refused Normal admission through Local-only cron. Final run keeps one Local cron occurrence and explicitly admits the Normal task.",
+    "Second attempt completed all tasks/effects/cleanup but failed obsolete cross-task sharing assertion. Different modes/revisions correctly isolate provider contexts; final run asserts isolation plus restart reuse. Both unsuccessful attempt logs and evidence are retained."
+  ],
+  "limits": [
+    "Normal target policies match installed adapters; conflicting per-target aliases and dynamic review-workspace provisioning are not supported.",
+    "Cron remains Local-only. Real-provider dogfood used one Local cron task and one explicit Normal task.",
+    "External-effect dogfood uses a disposable localhost configurable adapter, not a selected real vendor.",
+    "Census supersession/obsolete classification requires explicit operator evidence; retained task-owned evidence is required for containment.",
+    "Cleanup only covers retired live-task refs/worktrees. Scratch destruction, backup pruning and remote backup policy remain unimplemented.",
+    "Backup/cleanup RPCs are bounded to two minutes. Guard/model proofs do not verify Git, Dolt or provider internals."
+  ],
+  "evidence_sha256": {
+    "normal-target-census-cleanup-census-tests.log": "a8f2821085782b2fbda499d731e79d70124c699c5d59dadb77a512a4e3170a16",
+    "normal-target-census-cleanup-cleanup-review.log": "38be190cab428274d330c48ee11eef85d717a7b7b385abb24530ce0bfaf481b5",
+    "normal-target-census-cleanup-cleanup-tests.log": "aa47cb904924d577ac2549f50c7c0de12cb459be175e80fc7ad64bb29b5ece62",
+    "normal-target-census-cleanup-coverage.out": "2e298a8b000630272086392e3a10adbd8faba6042f30abaffe66293b34c3d1f4",
+    "normal-target-census-cleanup-dogfood-initial.log": "15d6e41b33c408e30d267843aefeabf6bbbf98a8a3d38271056c4755bfb67519",
+    "normal-target-census-cleanup-dogfood-session-assertion.log": "ad8682ac6a2bd3e5302246cc54e0e01697b077e66828a6ff94850ebaa9c47298",
+    "normal-target-census-cleanup-dogfood.log": "b8182e8cf05b7040e58050bea28741d44f7bd414588a3988b4dd863401234dbe",
+    "normal-target-census-cleanup-normal-review.log": "285325beff0830bfd3802197d1f87ed95bb6d779279e028b06c34ad208fa51cf",
+    "normal-target-census-cleanup-normal-tests.log": "72f21b7b3db55ed560e8a0ddce62311ddb9bc738fbc6d47096252b69b7771092",
+    "normal-target-census-cleanup-source-hashes.json": "6b4239fd8457c087a3341d9c906a4cfea2dfb1d6043d0939e4cbccda1b35a76c",
+    "normal-target-census-cleanup-suite.json.gz": "f2b6cd9b9a0089c2930c7d0dbe637d906372f22215bec71b542029aee084ded6",
+    "normal-target-census-cleanup-suite.log": "15a88aab82be74b2456b98fa4ff3aa6a3c9d2c1d160101ee45aa10630eca291d",
+    "normal-target-census-cleanup-symbolic-tests.log": "a6c62774821dba6cbf2da061e62bc12e01a9a49c1b7534a8fa6a85861625079a",
+    "normal-target-census-cleanup-dogfood-20261019/census-cleanup.json": "22bb06e74b6277d595c36e012b492e33ff3c258f130508f8ba9c1c147db44c47",
+    "normal-target-census-cleanup-dogfood-20261019/controller-lifecycle.json": "93faab7f49a3f5471baa51477dedb6f1d5e3850dea702347fa28567a24a37d7d",
+    "normal-target-census-cleanup-dogfood-20261019/crash-before.json": "922c4b67925575958736fd109e6e2e5bcb43e2990a531fbfb943594a72a59853",
+    "normal-target-census-cleanup-dogfood-20261019/crash-provider-starts.json": "d724278ef810388b12251bec0d832e2d8f34b1a618d018f95662b8d74e9823fa",
+    "normal-target-census-cleanup-dogfood-20261019/crash-recovered.json": "aca554cc3b304d4c7dea80d23930e9396344a355db0d0359500812d911a85641",
+    "normal-target-census-cleanup-dogfood-20261019/cron-schedules.json": "117b05ed3eb1d67713074f13d20f1116318e3a5e4e259e1c14107707029f09f3",
+    "normal-target-census-cleanup-dogfood-20261019/drive-restart-checkpoint.json": "03d032cd735ac7549d3a163f0254e101ee3609d1f5024b0f6d1cd4d0ceda7421",
+    "normal-target-census-cleanup-dogfood-20261019/drive-restart.json": "a22572e7d866e4810ae5e7012bdcd85bd25605a126ff78fe68e9fe771d771f27",
+    "normal-target-census-cleanup-dogfood-20261019/final-evidence.json": "a2b8c8780853ce9505c53e72c58b3ed22b1f79b43ce0f01586a0292f3e70cc59",
+    "normal-target-census-cleanup-dogfood-20261019/lease-audit.json": "0ed29216aae761b2576193d4f5fb370251c584307111f7b3646bec6ddd7d2121",
+    "normal-target-census-cleanup-dogfood-20261019/normal-targets.json": "c53ec85558a3c83fe08762b4cc6be5104a46293ae32470251212e0e62dafb9c4",
+    "normal-target-census-cleanup-dogfood-20261019/pane-audit-final.json": "8c8e61442ad03cdb0e451ff2b6e6f9bfcafbd57d682da110213970a6dd6139eb",
+    "normal-target-census-cleanup-dogfood-20261019/pane-audit.json": "19f2893d401ce1f634e01707e96e645dd7348c03a712d0196901c9ff8874f379",
+    "normal-target-census-cleanup-dogfood-20261019/prophet-sessions.json": "63d68f2b5426295a973fa1f58b8513e6df468e2ff63dc9b7ba43fdb9e81c36f7",
+    "normal-target-census-cleanup-dogfood-20261019/provider-health.json": "a472a08d529a03dc600872956302cea1db101bbe37079de6d413ee7cb4afadb1",
+    "normal-target-census-cleanup-dogfood-20261019/provider-log.json": "05ff907e79baa7336033a6ad208217f5d42afaf966391465feb230b602c3ea41",
+    "normal-target-census-cleanup-dogfood-20261019/provider-loop.json": "7ecf04172a3ea8e6468cbcb5442a5e80bff199bc7ae58a00d5003832304c9d7f",
+    "normal-target-census-cleanup-dogfood-20261019/provider-sessions.json": "577584e80f36932616df74c53c54016944caa51d616f072a69c6cb45a1580a48",
+    "normal-target-census-cleanup-dogfood-20261019/provider-turns.json": "efff1ae00d29d6d2496fd21799b3ea17896e6fb8a569092eb6c837445585ae68",
+    "normal-target-census-cleanup-dogfood-20261019/resident-sessions.json": "a2a2fb3f52d35ba92e99393a6fc5798736a6e5c2ec6c00ae84195bfbcb2529bf",
+    "normal-target-census-cleanup-dogfood-20261019/restart-checkpoint.json": "cd7e1c755e09d0c63a38cef6fe82378b471d916cd87abe2938700485c4963d38",
+    "normal-target-census-cleanup-dogfood-20261019/result.json": "e4ba929bd812750abc5ad737cb9aaa5297a71ccee457c72461dffae1b520a760",
+    "normal-target-census-cleanup-dogfood-20261019/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "normal-target-census-cleanup-dogfood-20261019/sha256.json": "f136a5ebdb3786560fc47b24a3ed931c265dc107a0a10b99b1e5c3284354f787",
+    "normal-target-census-cleanup-dogfood-20261019/source-hashes.json": "cebcf6afd616b36126e9e9e6851189db5a8df7d32d56a7e05c2850d680e0b27e",
+    "normal-target-census-cleanup-dogfood-20261019/target-configs.json": "2c8c074ebbac48dfcec84aa54fddd868fca98ab0307a849feafbceb32bbe67ca",
+    "normal-target-census-cleanup-dogfood-20261019-initial/crash-before.json": "129acaaea886b3a008ff60c164df126717627966ffab9d479819a96a86ed772a",
+    "normal-target-census-cleanup-dogfood-20261019-initial/crash-provider-starts.json": "659c37747cee2e0c18155790b1700e5163de8d36f1c9cd65d7c2b27d7e7715a7",
+    "normal-target-census-cleanup-dogfood-20261019-initial/crash-recovered.json": "d57b8bbabea8a64318dfe194b5007e0836398c6ef22875327dd5abab5b38a20a",
+    "normal-target-census-cleanup-dogfood-20261019-initial/result.json": "73c2816167d3d6bffc3294e004b6c4ffe6ed8576ae5e52bcbc7d6425733c1a73",
+    "normal-target-census-cleanup-dogfood-20261019-initial/sha256.json": "a6acd62e3564f69cc0f95fb4cfcee2b960c8135736d7849620f6c781b602a5ab",
+    "normal-target-census-cleanup-dogfood-20261019-initial/source-hashes.json": "e7890a055c6ea97d9e7c914d2f45f989b0eaeede741ac88d7ad9d81d268961b1",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/census-cleanup.json": "cf66493f68b320cafc5da9d905f566cf777fd213885682f85d23dc014cf0c31b",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/controller-lifecycle.json": "64c718fc41042a3e31466ea291a74408523a3320a29f5058ba0c83c1d0ca5ed4",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/crash-before.json": "f72e098601ec31e350716da6bcd66fd26311bda1a0b08b9ac0da6b546d0cfa36",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/crash-provider-starts.json": "b079063ddb619525ef0f16c618fd42ad516689d13ac3f4ae7a1e65d5aa7f7ce7",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/crash-recovered.json": "8623e8a72c0fdfd954515eef9df9e50af2a13a3ea260a2c549244a8384089deb",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/cron-schedules.json": "b74ed472144e019e0181d752024ec928089a44e3ac3185dadaea4f811c800b49",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/drive-restart-checkpoint.json": "728f8e4e076810f5f09931e5a87c4b0945bb2e2a10022ef624f5f347eab639c7",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/drive-restart.json": "aba08287ff3c69008d17cf61922b692622f81ab2440c55026a6686bbb92b1715",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/final-evidence.json": "f2308fd2b0b0edbbdd4834e0a8020199fdfedf75c85c91c4f3c7fb712499d930",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/lease-audit.json": "8a2723d6d6c4d6dd0fdadd432a963a2ee884a87e5d93d66853c143d9fd456fd5",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/normal-targets.json": "a5736e7209562ab57c34586b7b2a3dbd2f83864d6dd10c581349335c5857def9",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/pane-audit-final.json": "ed61fad351d95029d9f6b08a38e56c01ef11130560e9d33517399e76a6a1a410",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/pane-audit.json": "1588d63b592972f321c0e95c67e3886efdffc1e3821e80977a6ceb29ae381c30",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/prophet-sessions.json": "fe8a7441d22536ed2bc3c17bcc3a6a20b762916b783cd532840c2dd0c7eea4c0",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/provider-health.json": "e3bf8de275746fa895b31358f6c6168243edfdaea4e93a6a5cd55005c555f3fe",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/provider-log.json": "b392f248b7216dc9ded0fdc49d5f4b302dcd92a65672dc9d7f5ceba3167a6291",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/provider-loop.json": "083ded7167344abcaf0705be1a9b87cc42b7474f51f116839221190db53b653b",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/provider-turns.json": "e11d302eeebfd9ba4ab061141c535d09f5d9f96c09097765a550c871d7f98835",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/resident-sessions.json": "c15fd4ad88f8439d1264995722bd236cbda3308bbd821f2e774875be71da2872",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/restart-checkpoint.json": "12c5f7ba9a0360b2f67e39b90167472d363616894765b7f3e2d03bb06b4802e0",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/result.json": "391554d5a1aac085861c2b5f48968b563c17fc9cf417d2adc11a842374435233",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/sha256.json": "1c84bc66303194eefede1081df18545e36c57cff08cdfea3d9180ea4a1ee786b",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/source-hashes.json": "5eb84b2545e9764d33b20e596ed74afe10019aa79976ce2b1ae86df0b8f3695d",
+    "normal-target-census-cleanup-dogfood-20261019-session-assertion/target-configs.json": "6fd922751a005a565a47537c7559a61ce1d8074b6e17c7e38454dba85ec1e7de",
+    "normal-target-census-cleanup-formal/gomela-negative.csv": "f67962d1cb38240c7f6de00c6cedbf746e8b0a5ee8827a335df118a604269aea",
+    "normal-target-census-cleanup-formal/gomela-positive.csv": "9e6970673a89c19e7dc6c8f17b0d7add8b8e5d09112792158432a6f941a9a737",
+    "normal-target-census-cleanup-formal/logs-models.tar.gz": "859579e3e60fa46cdbab5994dbec51787ee185981837c110bcc2c06c52b41800",
+    "normal-target-census-cleanup-formal/source-hashes.json": "140a94742ce74acc4e93755d69454d0eccb00f770a8cb3eb493c72fc5329309e",
+    "normal-target-census-cleanup-formal/verification.log": "20af7aee3e9e105e2a0d9bf9dcb3293de08aa475a32fe5491c1a54a30b5435e0"
+  }
+}

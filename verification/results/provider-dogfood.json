@@ -1,0 +1,21 @@
+{
+  "model": "gpt-6-astra",
+  "adapter": "multiplexer",
+  "status": "passed",
+  "artifact_records": 22,
+  "version": 52,
+  "integration_sha": "116e5a46d19cd72c34438d3c856b6504292ad9ab",
+  "date": "2026-10-16",
+  "provider": "codex",
+  "cli_version": "0.163.0-alpha.10.2",
+  "scope": "One isolated task through the full default workflow; not the two-task restart acceptance milestone.",
+  "observed": [
+    "Provider-authored failing RED test",
+    "Provider-authored implementation",
+    "Brokered GREEN tests and formatting",
+    "Independent review sessions, oracle and QA",
+    "Exact-tree commit and dedicated integration ref",
+    "Graceful daemon shutdown"
+  ],
+  "reproduce": "scripts/dogfood.py --model <available-model> --dolt <absolute-dolt-binary> --codex <absolute-codex-binary>"
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-4a59ba4b835eee8b94e93aa34ef9b804",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-20T06:11:10.593422Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-4a59ba4b835eee8b94e93aa34ef9b804",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-4a59ba4b835eee8b94e93aa34ef9b804-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done, according to the supplied current state and final history transition. No other task IDs are visible.",
+      "reply_to": "prophet-4a59ba4b835eee8b94e93aa34ef9b804",
+      "time": "2026-10-20T06:11:16.921178Z",
+      "detail": {
+        "answer": {
+          "reply": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done, according to the supplied current state and final history transition. No other task IDs are visible.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-2306bf310fe1e9dd1ccf22bf8d6649da",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-20T06:11:16.965672Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-2306bf310fe1e9dd1ccf22bf8d6649da",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-2306bf310fe1e9dd1ccf22bf8d6649da-reply",
+      "author": "prophet",
+      "text": "Visible task IDs and states:\n- cron-7d533ed758e7c6b84e828429-0: Done.\n- provider-beta: Done.\n- global: current task header; stage prophet, no task state supplied.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+      "reply_to": "prophet-2306bf310fe1e9dd1ccf22bf8d6649da",
+      "time": "2026-10-20T06:11:26.606866Z",
+      "detail": {
+        "answer": {
+          "reply": "Visible task IDs and states:\n- cron-7d533ed758e7c6b84e828429-0: Done.\n- provider-beta: Done.\n- global: current task header; stage prophet, no task state supplied.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

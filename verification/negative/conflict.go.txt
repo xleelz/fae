@@ -1,0 +1,19 @@
+package completion
+
+// Negative control: landing skips receipt of refreshed gate approval, leaving
+// the mandatory approval producer blocked. This is a bounded protocol failure,
+// not a complete proof of Git or every runtime transition.
+func ConflictMissingFreshApproval() {
+ original := make(chan int)
+ checked := make(chan int)
+ approved := make(chan int)
+ landed := make(chan int)
+ go conflictBadResolver(original, checked)
+ go conflictBadGates(checked, approved)
+ go conflictBadLanding(landed)
+ original <- 1
+ <-landed
+}
+func conflictBadResolver(original, checked chan int) { <-original; checked <- 1 }
+func conflictBadGates(checked, approved chan int) { <-checked; approved <- 1 }
+func conflictBadLanding(landed chan int) { close(landed) }

@@ -1,0 +1,207 @@
+{
+  "date": "2026-10-18",
+  "status": "passed",
+  "unit_and_integration": {
+    "test_cases": 621,
+    "packages": 25,
+    "statement_coverage_percent": 74.8,
+    "race": true,
+    "vet": true,
+    "scratch_census": true,
+    "command": "FAE_TEST_DOLT_BINARY=/tmp/dolt-darwin-arm64/bin/dolt bash scripts/test.sh",
+    "initial_run": "One native lifecycle fixture exceeded its former 40-second bound; its final read already showed Done. The helper now allows 60 seconds within the 90-second fixture context and checks the final observation. The complete fresh rerun passed. Original failed stream retained."
+  },
+  "gobra": {
+    "production_predicates": 24,
+    "rejected_mutations": 24
+  },
+  "gomela": {
+    "positive_models": 25,
+    "firing_negative_controls": 23
+  },
+  "real_provider_dogfood": {
+    "evidence_directory": "cron-controller-effects-dogfood-20261018",
+    "model": "gpt-6-astra",
+    "herdr_version": "herdr 0.9.5",
+    "provider_version": "codex-cli 0.163.0-alpha.10.2",
+    "adapter": "herdr",
+    "scratch": "/private/tmp/fhd-gtw9kcib",
+    "status": "passed",
+    "task_ids": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "cron-1c405e1c25c7422088d7a718-0"
+    ],
+    "crash_recovery": {
+      "signal": "SIGKILL",
+      "started_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "uncertain_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "resolutions": [
+        {
+          "action": "redispatch",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "id": "cron-7d533ed758e7c6b84e828429-0",
+          "version": 5
+        }
+      ],
+      "automatic_replay": false
+    },
+    "dynamic_limits": {
+      "during_active_turns": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "after_restart": {
+        "dynamic": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "fixed": {
+          "instance_root": "/private/tmp/fhd-gtw9kcib/i/dogfood",
+          "socket_path": "/private/tmp/fhd-gtw9kcib/i/dogfood/run/rpc.sock"
+        }
+      },
+      "raised": {
+        "effective_pane_limit": 24,
+        "heavy_capacity": 2,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 24,
+        "tasks_in_flight": 2
+      }
+    },
+    "restart_checkpoint": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "state": "intake-gate",
+        "version": 7,
+        "artifacts": 1
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "state": "intake-gate",
+        "version": 4,
+        "artifacts": 1
+      }
+    },
+    "controller_lifecycle": {
+      "stopped": {
+        "id": "maintenance-1792310900832508000",
+        "old_pid": 61844,
+        "state": "stopped"
+      },
+      "started": {
+        "accepted": true,
+        "drive_rounds": 1,
+        "pid": 63745
+      },
+      "maintenance_marker_cleared": true,
+      "watchdog_suppressed_dead_alert": true
+    },
+    "provider_loop": {
+      "iterations": 5,
+      "state": "completed",
+      "session_id": "loop-dogfood-loop",
+      "provider_thread_id": "01a14e10-93f4-7b41-92c3-4fef99efb1cc"
+    },
+    "cron_schedules": {
+      "completed": 2,
+      "admitted": 2,
+      "duplicate_occurrences": 0
+    },
+    "lease_audit": {
+      "capacity": 2,
+      "granted": 66,
+      "released": 65,
+      "recovered": 1,
+      "final_holders": 0
+    },
+    "pane_audit": {
+      "before_shutdown_reservations": 6,
+      "final_reservations": 0
+    },
+    "stall_recoveries": {
+      "cron-7d533ed758e7c6b84e828429-0": 0,
+      "cron-1c405e1c25c7422088d7a718-0": 0
+    },
+    "tasks": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "artifact_records": 22,
+        "version": 55
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "artifact_records": 35,
+        "version": 87
+      }
+    },
+    "integration_sha": "d78d905a291376c9a7593ee1a4665946fe3a4906",
+    "base_sha": "966ea6b2e3ff4a4e0d855508bd19ae6619ea5ce4",
+    "crashed_completed_uncollected": [],
+    "resident_sessions": {
+      "audited_turns": 19,
+      "reused_panes": 7
+    },
+    "real_completed_turns": 34,
+    "persistent_sessions": {
+      "audited_turns": 18,
+      "resumed_turns": 12,
+      "resumed_after_restart": 2,
+      "cross_task_threads": 3,
+      "task_bound_resumed_turns": 6
+    }
+  },
+  "verification_scope": "Production predicate proofs and bounded concurrency models; native crash tests and provider dogfood are separate evidence, not a whole-system proof.",
+  "limitations": [
+    "Controller build-from-ref, critical-task indefinite overlap policy and deployed-tip integration fast-forward remain follow-up work.",
+    "A failed drive currently terminates the daemon; watchdog restart/rearm independence remains follow-up work. Watchdog mutations require renewed fresh authority beyond 24 hours.",
+    "Local effect recovery supports HostCommand, FreezeArtifact, CompareFrozen, VcsCommit and Integrate. Complex merge/conflict and external-service effects remain unsupported; integration adoption requires exact intended target SHA."
+  ],
+  "source_and_binary_hashes_verified": true,
+  "evidence_sha256": {
+    "cron-controller-effects-first-suite.log.gz": "9b24abd7c402eddd39881257ed62b3001b63c7c792618b6dd6d8601418ede041",
+    "cron-controller-effects-first-test.json.gz": "4ae9b392556707bb2f8f12282bdc7e6bd97995704dc9c956bba07e64f1c45827",
+    "cron-controller-effects-first.cover.gz": "fd20702b3a084e1429ea905b2241ef8c6c80e64b1e01efc2bb430fab007d55e5",
+    "cron-controller-effects-suite.log": "f96194101f0e33b3d15c16235f639aa11800a59c89b1d51b02b4ea2904f4c200",
+    "cron-controller-effects-test.json.gz": "1ffef53f1c2d579795bcdd00dcf66b47784e85f81685bb22a1823ae5d7b628e9",
+    "cron-controller-effects.cover.gz": "6459ebccd2e3df879025c2fd0cad1c3d1a42e4a28be981335f3b69f88db89fa1",
+    "cron-controller-effects-formal/gomela-negative.csv": "58729639e665730bc1f29e4896f830ab2d467d3f8d175aa5427481416f3f5608",
+    "cron-controller-effects-formal/gomela-positive.csv": "aac4844a6420b5a97b3f1570b32e5f3ee54eaddb0567039994408ebefc2e9524",
+    "cron-controller-effects-formal/logs.tar.gz": "482a8de1fa69e469be10f5cacddfd127bebc4ecc97a2a3c4ef8f9627642c24b2",
+    "cron-controller-effects-formal/source-hashes.json": "df5ee35ee3cea81105e676fdb56523073fb0ca826c040634eddde189ef85b578",
+    "cron-controller-effects-formal/summary.log": "878eee5a16fbad47ebe397490279ca4dd201a0fe1f99da378c18178123a551fa",
+    "cron-controller-effects-dogfood-20261018/sha256.json": "7dcd9f371ed7ccebadbbfac07d46cd1d7c8a70f3eff2c198714d8d696f6abb25"
+  }
+}

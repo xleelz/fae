@@ -1,0 +1,32 @@
+name: test
+on: [push, pull_request]
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: ./scripts/test.sh
+  formal:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: sbt/setup-sbt@v1
+      - run: sudo apt-get update && sudo apt-get install -y z3 bison build-essential
+      - run: ./scripts/install-verifiers.sh
+      - run: ./scripts/verify.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: formal-verification
+          path: verification/

@@ -1,0 +1,547 @@
+{
+  "date": "2026-10-20",
+  "status": "passed",
+  "implemented": [
+    "Opt-in durable singleton automatic plane-backup retention policy with configure/pause/resume/status, explicit structured operator grant, fresh authority checks on every run and before apply, weighted host admission and drain/maintenance suppression",
+    "Durable bounded occurrence claims and no overlap; restart blocks interrupted claims until explicit resume, which computes a new safe preview instead of replaying stale deletions",
+    "Offline reviewed cleanup of exact redundant scratch-archive siblings, preserving completed canonical archive/journal and Git refs; private ownership and inode-bound fsynced receipts allow interrupted partial removal retry"
+  ],
+  "requirements": [
+    "User-requested automatic retention and safe scratch-archive cleanup extensions",
+    "FAE-CP-013 verified recovery evidence preserved before deletion",
+    "FAE-CTL-043 completed scratch cleanup remains independently verifiable",
+    "FAE-HOST-020 disk-backed scratch and weighted scheduled IO",
+    "FAE-VER-011 real-provider dogfood"
+  ],
+  "verification": {
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1319,
+      "packages": 26,
+      "statement_coverage_percent": 73.6,
+      "daemon_package_seconds": 1025.328,
+      "vet": "passed",
+      "scratch_census": "passed",
+      "native_start_manifest": "retention-automation-native-start-hashes.json",
+      "post_start_delta": [
+        "bin/fae",
+        "cmd/fae/cleanup_test.go",
+        "cmd/fae/retention_schedule.go"
+      ],
+      "affected_package_reverification": "Final cmd/fae and api race tests passed after CLI default changed from 24h to 1h and a default assertion was added. All daemon/library/formal sources are unchanged from the full native start; final dogfood reran with the rebuilt binary."
+    },
+    "gobra": {
+      "production_guards": 52,
+      "rejected_mutations": 52
+    },
+    "gomela": {
+      "positive_models": 53,
+      "firing_negative_controls": 51
+    },
+    "hash_manifests_verified": {
+      "retention-automation-source-hashes.json": 471,
+      "retention-automation-formal/source-hashes.json": 154,
+      "retention-automation-dogfood-20261020/source-hashes.json": 468,
+      "retention-automation-dogfood-20261020/sha256.json": 34
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-j806u6e8",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "provider-beta"
+      ],
+      "target_configs": {
+        "revision_1": {
+          "id": "dogfood-target",
+          "revision": 1,
+          "hash": "1db3a6ba0b505acfb8f9b2153de06ce45b3e18aac8ae445d58e5028057d8785e",
+          "retired": false
+        },
+        "revision_2": {
+          "id": "dogfood-target",
+          "revision": 2,
+          "hash": "d62de320167c39704d7c7c39a1b86b94e347c611dff9e28924786e041005a92b",
+          "retired": false
+        },
+        "pinned_tasks": [
+          "cron-7d533ed758e7c6b84e828429-0",
+          "provider-beta"
+        ]
+      },
+      "fleet_provisioning": {
+        "performed": 1,
+        "lost_ack_recovered_after_restart": true,
+        "duplicate_mutations": 0,
+        "baseline_after_receipt": true,
+        "idempotent_prepare": true
+      },
+      "dynamic_provisioning": {
+        "adapter_revision": {
+          "id": "dogfood-adapter",
+          "revision": 1,
+          "hash": "d3e79192d38c5294fd12361f0df94e96f0bd0f4b56d9094b4a0b5c25a3921bd4"
+        },
+        "later_revision": {
+          "id": "dogfood-adapter",
+          "revision": 2,
+          "hash": "166c2796d883e927cf8203f3b7c25389c30824c97cce0e99ed501fb81978a2c8"
+        },
+        "workspace": "/private/tmp/fhd-j806u6e8/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+        "ready": true,
+        "idempotent_prepare": true
+      },
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "adapter_retirement": {
+        "first_tombstone_preserved": true,
+        "new_bindings_refused": [
+          "write",
+          "target"
+        ],
+        "bound_task": "provider-beta",
+        "bound_task_completed_after_restart": true
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+          "ProcessBirth": "1792563630.600082",
+          "Workspace": "/private/tmp/fhd-j806u6e8/repo",
+          "Holds": null,
+          "PID": 63257,
+          "DoltPID": 63270,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-21T06:20:32.166594Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "88dfb2830d30de87fa4a7e0b9bda0c79fd97a6a2c1569c78cb92e1d20bb5ded3",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+          "ProcessBirth": "1792563630.600082",
+          "Workspace": "/private/tmp/fhd-j806u6e8/repo",
+          "Holds": null,
+          "PID": 63257,
+          "DoltPID": 63270,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-21T06:20:32.166594Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "88dfb2830d30de87fa4a7e0b9bda0c79fd97a6a2c1569c78cb92e1d20bb5ded3",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+          "ProcessBirth": "1792563630.600082",
+          "Workspace": "/private/tmp/fhd-j806u6e8/repo",
+          "Holds": null,
+          "PID": 63257,
+          "DoltPID": 63270,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-21T06:20:32.166594Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "88dfb2830d30de87fa4a7e0b9bda0c79fd97a6a2c1569c78cb92e1d20bb5ded3",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a15d1e-59dc-73b1-96d3-9f43a0e08a32"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": []
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-j806u6e8/i/dogfood",
+            "socket_path": "/private/tmp/fhd-j806u6e8/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "intake-gate",
+          "version": 7,
+          "artifacts": 1
+        },
+        "provider-beta": {
+          "state": "intake-gate",
+          "version": 4,
+          "artifacts": 1
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+          "drive_rounds": 1,
+          "new_pid": 66895,
+          "old_pid": 63257,
+          "pid": 66895
+        },
+        "old_pid": 63257,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a15d21-5de2-7db2-8cb0-f5da53d4e374"
+      },
+      "cron_schedules": {
+        "completed": 1,
+        "admitted": 1,
+        "duplicate_occurrences": 0
+      },
+      "normal_targets": {
+        "local_task": "cron-7d533ed758e7c6b84e828429-0",
+        "live_task": "provider-beta",
+        "live_effects": 1,
+        "normal_revision": {
+          "id": "dogfood-normal",
+          "revision": 1,
+          "hash": "409acb3dccdfbc3ed7cfc616db8ba93e87631b8d8f307a187f454567f9e96c9d",
+          "retired": false
+        },
+        "adapter": "disposable localhost fixture"
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0,
+        "durable_health_observations": 2
+      },
+      "retirement": {
+        "transferred": {
+          "dependent_effect": "transferred",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [],
+          "id": "retire-old",
+          "reason_class": "superseded-by",
+          "reference": "retire-successor",
+          "state": "Retired",
+          "version": 3
+        },
+        "held": {
+          "dependent_effect": "held",
+          "held_dependents": [
+            "retire-dependent"
+          ]
+        },
+        "hidden_by_default": true,
+        "dependent_withheld": true
+      },
+      "census_cleanup": {
+        "applied": [
+          "retire-successor"
+        ],
+        "removed": [
+          "retire-old",
+          "retire-successor"
+        ],
+        "verified_backup": true,
+        "archives_verified": 2
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 71,
+        "released": 70,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 9,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "provider-beta": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "provider-beta": {
+          "artifact_records": 36,
+          "version": 85
+        }
+      },
+      "integration_sha": "fe492731ff78d678a6ccf0cda0f3c64d053e1af8",
+      "base_sha": "5ecf917c006845be0b75f14b8de41815b14fdc0d",
+      "backup_policy": {
+        "lost_ack_recovered_after_restart": true,
+        "uploads": 1,
+        "remote_content_verified": true,
+        "remote_restore_fsck": true,
+        "idempotent_repeat": true,
+        "replication_pin_invalidated_preview": true,
+        "removed": 2,
+        "retained": 1
+      },
+      "retention_automation": {
+        "paused_across_restart": true,
+        "automatic_prune": true,
+        "newest_retained": true,
+        "replication_pin_retained": true,
+        "runs": 1,
+        "final_state": "paused",
+        "final_host_holders": 0
+      },
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 4
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 9,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 0,
+        "mixed_mode_isolation": true,
+        "task_bound_resumed_turns": 6
+      },
+      "scratch_cleanup": {
+        "completed": true,
+        "root_absent": true,
+        "backup_retained": true,
+        "backup_files_verified": 2102,
+        "archives_verified": 4,
+        "idempotent_repeat": true
+      },
+      "scratch_archive_cleanup": {
+        "redundant_removed": true,
+        "canonical_retained": true,
+        "uncovered_data_refused": true,
+        "idempotent_retry": true,
+        "scratch_cleanup_still_valid": true
+      }
+    }
+  },
+  "review_findings_fixed": [
+    "Automatic authority requires an explicit structured runtime or BackupRetention grant and retains ordinary message expiry; status reports blocked authority and fresh resume renews citation",
+    "Scheduled scans obtain host capacity, skip drain/maintenance, and use unique lease occurrence IDs even when configuration resets counters",
+    "Scratch archive removal keeps canonical journal unchanged and refuses unique content; durable receipts precede deletion and bind exact source/survivor inode identities",
+    "Parent directory fsync after removal receipt-directory creation and on source-already-absent retry closes power-loss durability gaps",
+    "CLI default interval changed from 24h to 1h because default 24h message authority expires before the first 24h run; added default-value assertion and reran affected race tests plus real-provider dogfood",
+    "Final dogfood checks the post-retention host ledger Pool holders/waiters and matching releases, not only earlier workflow lease audit"
+  ],
+  "limits": [
+    "Automatic retention manages existing local plane backups only; it creates no backups and schedules no replication. One interval policy per instance; no calendar cron expression or multiple retention policies.",
+    "Normal authorization expiry applies (default 24h); automatic pruning blocks when its grant expires or is removed, until an operator resumes with fresh authority.",
+    "Interrupted running claims block after restart. Partial plane-backup deletion remains fail-closed and needs operator investigation; no force recovery is added.",
+    "Historical job coverage and monotonic replication source pins can exceed keep. No unpin API is provided.",
+    "Scratch-archive cleanup only removes exact noncanonical duplicates of the CURRENT completed cleanup archive. Unique old backups, incomplete attempts, arbitrary orphans, canonical last copies and Git refs are preserved.",
+    "Offline archive cleanup uses local filesystem ownership plus explicit apply and reviewed digest; it does not trust expired authorization messages from a deleted instance. Same-user malicious filesystem mutation remains outside the ownership contract.",
+    "Native and real-provider network effects stay within disposable localhost adapter/replica fixtures. No vendor-specific remote retention service or credential manager is installed.",
+    "Formal proofs cover production predicates and bounded scheduling/removal models, not full filesystem, Dolt, HTTP, Git or provider internals."
+  ],
+  "evidence_sha256": {
+    "retention-automation-archive-final.log": "fe5d4aa39a32967d5ad8aa5e8c51cee7010141526aa7931c142d186dfd0d5b3c",
+    "retention-automation-archive-focused.log": "42db490576fa3df2660dea1d748e03545f687b2ff60c7c0f8bdc816ab20aceec",
+    "retention-automation-cli-final.log": "5c386fd026a4c9ae72f19ffa80f299dc2187e3f72e75b874a1fc7a2a2626755e",
+    "retention-automation-cli-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "retention-automation-cli.log": "b89285cf71b845c946eb7faf5be9ad8cf39f7cfb5a5c47f00c5d6be895426cae",
+    "retention-automation-coverage.out": "e69562366cf0b38acb28f39c603f245c85b2f600743c622fad10f75bb71abdd0",
+    "retention-automation-dogfood-before-default-fix.log": "6fe0e918c2a7d38c2b438dd7616527e36acb035c68d4513527e4d2ab6d42c01a",
+    "retention-automation-dogfood.log": "d75d93792e3efd60b69539d444dbcd9ddad562debe6995469d43d637dc7001f4",
+    "retention-automation-native-start-hashes.json": "239f1b63d8ff5e3929516d7886a7feb7290578e73eb1e6bee88c1e585aea7d63",
+    "retention-automation-preflight.log": "87abf4ec01979a7018c9e133e24b4e4a98732592386056fef95b497c7af06fe0",
+    "retention-automation-preflight.py": "caf9ba7c35fb71e5a371cdb4ea22bac9e2d325ff3382d23b07748c832487a899",
+    "retention-automation-schedule-final.log": "4568dd8d08022d214547b6652c72a610aae83fb0b8f876126060a23641f141ec",
+    "retention-automation-schedule-focused.log": "e8b5cd1524695b9001bfac342a42a89a30585299ec028b798711ec20a47bfa27",
+    "retention-automation-source-hashes.json": "8fe58d23e33f8909fb3c9e3eeb691eda9c292e9b3d814c0c58891599aced1502",
+    "retention-automation-suite.json.gz": "5717fd782767a5e638aa86fe3751ad3917197a9fa2474a9a5aff4c020b05b2c0",
+    "retention-automation-suite.log": "2f692d5b3dfb9f8fcbe2c42b6061badc145c2f9df76088d62179e36782817d2e",
+    "retention-automation-dogfood-20261020/adapter-retirement.json": "4203f1608c72acd9a6f8ef4299d8c840931b94941f0fc7a5fa8763b6ae51d163",
+    "retention-automation-dogfood-20261020/backup-policy.json": "4da9d77a51012afc526cafe46aef0872cd8f655f01160013dc19876bf6f81e89",
+    "retention-automation-dogfood-20261020/census-cleanup.json": "e0f387c56ec436f561e5ff48bfc3ad0ad0230da709442b364454986835614c03",
+    "retention-automation-dogfood-20261020/controller-lifecycle.json": "2d05ca59b5732f0cac360bb2c133e93391c6053fce3c865bcb442f7ec265aae3",
+    "retention-automation-dogfood-20261020/crash-before.json": "6eca3723a666cc40d3702ab6d95737045d3b763ba5baf97f0d79318829c96978",
+    "retention-automation-dogfood-20261020/crash-provider-starts.json": "23bd301860f76fb748efea56ec82a257a7a6c1991f88abdce9509230f4f18410",
+    "retention-automation-dogfood-20261020/crash-recovered.json": "429d0944ee45065242c46e53e9ccbaec78c66d3f23a088ab686fcdb2e3fb1578",
+    "retention-automation-dogfood-20261020/cron-schedules.json": "a28fe87af1eeea5645bb751156cbad01d5a6e27a12ffe335215cc014db3505f0",
+    "retention-automation-dogfood-20261020/drive-restart-checkpoint.json": "eedb905d42d65f191a4fb80fb8bf1fde38990a06cce1d95d6015aa6894bcdd27",
+    "retention-automation-dogfood-20261020/drive-restart.json": "c61ba451f4d124aa3feb73418a9a8a93b5e6bfe46575651984054226823aecf2",
+    "retention-automation-dogfood-20261020/dynamic-provisioning.json": "54436cedbc60ff6bd50bf9c6a9bb93652be6ebf05c1ebc6c20f2ac49d9ed44f1",
+    "retention-automation-dogfood-20261020/final-evidence.json": "46173a139566a9c059ad8e642d41868b16abc13aea0e1fd1149458f4de29d249",
+    "retention-automation-dogfood-20261020/fleet-provisioning.json": "6b1e093f6560a8d00d1cb1543edcb5a99020e8931419a739b434053354697b9e",
+    "retention-automation-dogfood-20261020/lease-audit.json": "03f651f867c1c59451643ea1aafce613dbf456d751253ac72d6ae97f01b05030",
+    "retention-automation-dogfood-20261020/normal-targets.json": "a5e3932332f1996cbaec6ce5d7114b0ccced74c43834a20e1652b8451bee873a",
+    "retention-automation-dogfood-20261020/pane-audit-final.json": "aca19d90b475c7f2cba9c6e2996a9070478ae527a6eb35be42c76db506b11205",
+    "retention-automation-dogfood-20261020/pane-audit.json": "c18975567552e73ea5a38fd3aa16c72dea2afc59fc49b3b5351535269eb8e548",
+    "retention-automation-dogfood-20261020/prophet-sessions.json": "288569c79646aa5b30f670c991432c2b4672d2979f39f70715fb981ec46625c0",
+    "retention-automation-dogfood-20261020/provider-health.json": "193fd0978682063d3c6abdd183c32fea36fc2afb35a34a4cd92e0049fb3b057f",
+    "retention-automation-dogfood-20261020/provider-log.json": "103bfe5cc4cd1daefbe7e1c93e530694c6cfa305c629e53a93e4d9caa671ecaf",
+    "retention-automation-dogfood-20261020/provider-loop.json": "52010539dc7369c843f21107899c10495cb31c548af11b7cd255a6779ea3a0e6",
+    "retention-automation-dogfood-20261020/provider-sessions.json": "b4b1c1b0560879d4968580ca26fc574e3282687893ae6b64e7735dc3d3db88fc",
+    "retention-automation-dogfood-20261020/provider-turns.json": "ce329a65ecc6dc5f04827be52d45332d062618030795c9103431d1246aab4f5e",
+    "retention-automation-dogfood-20261020/replica-fsck.log": "692a091a7cfd9b8df3aa3aab9acefeca708ad8a1d0cd3da5c178a93b83e205f3",
+    "retention-automation-dogfood-20261020/resident-sessions.json": "55c8ab7aa0e244f888597cc8f0a7a0def0926319052adb1144a13ef2c9e5094e",
+    "retention-automation-dogfood-20261020/restart-checkpoint.json": "63d6c869b007f09523f556930b1bf8b51614b6a212bc952c5c1b1362c7b04e1b",
+    "retention-automation-dogfood-20261020/result.json": "8f313e0440b8b5bcd7232f108caa283f0d85f04f9cc16d6235d660c1e62123fb",
+    "retention-automation-dogfood-20261020/retention-automation.json": "f676605f1eae47e88827340670a3efc3b31a589dc5c5a2fed2f130d72a3c6fa6",
+    "retention-automation-dogfood-20261020/retention-lease-audit.json": "2e40c6ba54ae562b4d0ef77d23f6d740c7d364a8a4b064899275e1ce5a1cf1b1",
+    "retention-automation-dogfood-20261020/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "retention-automation-dogfood-20261020/scratch-archive-cleanup.json": "16ffd21d801dc5ca8aa31d59257032c9f073a676f88ecfab9f7a8a37686fafa3",
+    "retention-automation-dogfood-20261020/scratch-cleanup.json": "7403448cc7f1b5c8db564d9e561405fd7f4af7168fe223e8a8167088828b875d",
+    "retention-automation-dogfood-20261020/sha256.json": "510220be15adc40a187672f94ac2d6c3fda113cedea91b91ac4dfe375c51f1fe",
+    "retention-automation-dogfood-20261020/source-hashes.json": "4125af17e6bb1b91b6effaadcdcbedc031fee4dcce5c50521f53a59ef814c267",
+    "retention-automation-dogfood-20261020/target-configs.json": "b95720b8278cfebd4ff5747cee3f4bbc1d2e1c4b5e7de36c354d22766782ea9f",
+    "retention-automation-dogfood-before-default-fix/adapter-retirement.json": "e6a49b33352956ca41c656ea2694bec537eab0965e1360ee0331a771ce1f8053",
+    "retention-automation-dogfood-before-default-fix/backup-policy.json": "19c83cff6bbf92633eb3362c384848c8132433b7d9609289cc912f559913a6b6",
+    "retention-automation-dogfood-before-default-fix/census-cleanup.json": "21ec0c0d0d1aeba615dfb2af6d21643e858bb00bbea306e11abe7c25a65545d6",
+    "retention-automation-dogfood-before-default-fix/controller-lifecycle.json": "37724925aa550c034b10f386c47f519e07eb11e9155e2fae6a1656bea5d0f064",
+    "retention-automation-dogfood-before-default-fix/crash-before.json": "153205bccdc057b46d28d956a2b2656e5d6aca8e95eca9b2fa584d77151f9c60",
+    "retention-automation-dogfood-before-default-fix/crash-provider-starts.json": "8ff7575f2a3f927f6cfd536510e89a714c0c1db38b08ad7890a9f8dd76041b62",
+    "retention-automation-dogfood-before-default-fix/crash-recovered.json": "c6ecc897f498b9982e75d03f2d979e3381463484a3bc3de5cb04665f73532d9e",
+    "retention-automation-dogfood-before-default-fix/cron-schedules.json": "ad8e1a9726e868ce19e15b96dd5f25da6a2efeec9eb2235d5c1076b59479273c",
+    "retention-automation-dogfood-before-default-fix/drive-restart-checkpoint.json": "e9851428a38799cff052d18528d5e87a9b13964854ef425411817ec6c001d628",
+    "retention-automation-dogfood-before-default-fix/drive-restart.json": "49d569bd3efd196e7e4dfb4f5f8e4d1ed77692092f7784f82e922c00c04d63fb",
+    "retention-automation-dogfood-before-default-fix/dynamic-provisioning.json": "ee75f134f38fa5803c0f56a0c07e7f664a64b25fa2620a7efcfc8fd266dcfda7",
+    "retention-automation-dogfood-before-default-fix/final-evidence.json": "3acf8f9135e82aabba9d788828ccbed0fd684fe65b295b93110d6180bf61f488",
+    "retention-automation-dogfood-before-default-fix/fleet-provisioning.json": "de9494b0910c633344242c79f627ef1d0b8fda97d2717fe9289f484482663b80",
+    "retention-automation-dogfood-before-default-fix/lease-audit.json": "5e50dc12e3aba1feb3d3416ee9da345733c2ca48db8ed2cc06eec56b8356e22c",
+    "retention-automation-dogfood-before-default-fix/normal-targets.json": "49ed4d78a59a2dd5a5db01fe193ac04471c52b004d2821be70dcd579a083d44e",
+    "retention-automation-dogfood-before-default-fix/pane-audit-final.json": "e623496e184ac205a6f890afad7e3f8dd89158e9e889c433f7d1ab41f91fcbd7",
+    "retention-automation-dogfood-before-default-fix/pane-audit.json": "26e602ea35f71c8bc3a6adbd46710bfbd37ba6a6b31adbdd127e47dba00069ae",
+    "retention-automation-dogfood-before-default-fix/prophet-sessions.json": "86a304afc5571a0d46722013fd5be0bfa826c0632c64e1c1e843d11a74614bdb",
+    "retention-automation-dogfood-before-default-fix/provider-health.json": "2b448d7e48e24529729fda5a34440df933a931bbf2a88593bfaa4ea2e04bff2f",
+    "retention-automation-dogfood-before-default-fix/provider-log.json": "42f376811ace47a6817397be5059f1871a67e26b51e7f7e5770f819c4f31f15c",
+    "retention-automation-dogfood-before-default-fix/provider-loop.json": "0bb16516ba49644fe87b47559602ef7c10bdff266bcff84c29afd81bcef9bbcd",
+    "retention-automation-dogfood-before-default-fix/provider-sessions.json": "dd5d235bf88c97fc10679e266245da53f086d6d60b990238b00028ab199f2f16",
+    "retention-automation-dogfood-before-default-fix/provider-turns.json": "89e78b2802ee17383a294090152a8199b35130eb6dc7aefed3fee3861bd68ca3",
+    "retention-automation-dogfood-before-default-fix/replica-fsck.log": "afaa3b72387c060a2dd733dc00b808a74bdd74f16ab79d950a0d1f61d544ca2e",
+    "retention-automation-dogfood-before-default-fix/resident-sessions.json": "c1e635e57419570bddf890685918943dcd949c5c0314a0e1bfef75e03d541c79",
+    "retention-automation-dogfood-before-default-fix/restart-checkpoint.json": "7d8bb6cccc0152490a6d3c701093590370e71742489229f31ccabe94843ddcee",
+    "retention-automation-dogfood-before-default-fix/result.json": "b385ac2011ea8440b7843f60311e8c541018961199d2f31bd9ffc17b20200c3a",
+    "retention-automation-dogfood-before-default-fix/retention-automation.json": "a57c85b540bb4aaf08bdd97fc55a58f2b2a330cf2eeecd32ff620b64a215a2a9",
+    "retention-automation-dogfood-before-default-fix/retention-lease-audit.json": "c18cdb12bc37fb0978f5cc733dc2f9e7dcbdf736e02f12f259c659da0361534f",
+    "retention-automation-dogfood-before-default-fix/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "retention-automation-dogfood-before-default-fix/scratch-archive-cleanup.json": "d1c6ac2aae4d06d79a190368d993a4c3728256089bcf510ab65942aa543e37c9",
+    "retention-automation-dogfood-before-default-fix/scratch-cleanup.json": "acb02534e6d760dba09fb8caa5a975a9d3adfed414b2b1a8a93820af6897147a",
+    "retention-automation-dogfood-before-default-fix/sha256.json": "b3802b66817c34f957ed9f7a9c61f1361293608238d55b4b3f47acc970c51319",
+    "retention-automation-dogfood-before-default-fix/source-hashes.json": "999bd671a5a64c02f166c8aa81804e9f4e9b21bfecfc13a31c800dec5079052f",
+    "retention-automation-dogfood-before-default-fix/target-configs.json": "773ae8ac63fb65bae7f1749add7398a4f60a77a7bdf8b31157cb9ef10b421f2c",
+    "retention-automation-formal/gomela-negative.csv": "68e5af031121cf42a7424624d8738bcda65acf8ba94c5a0642c2b2feef5cd1a7",
+    "retention-automation-formal/gomela-positive.csv": "e97afe4812d296e9f9315f0a9b53fe4a09d679b76843d450f6a09ad989b1275b",
+    "retention-automation-formal/logs-models.tar.gz": "cd70499de129cb721a12041ccdae8b94001afddc4e9d0af045b3109276467aa9",
+    "retention-automation-formal/source-hashes.json": "6623ef633ce5a93eb31eb8aa837c74cbe80227f208b85b367ef473669dde98a8",
+    "retention-automation-formal/verify.log": "3c6bcb142fc5dcf12ee994aad6d1e0a509dce783c36045436d1b727617e8d4e4"
+  }
+}

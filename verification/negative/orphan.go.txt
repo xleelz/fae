@@ -1,0 +1,16 @@
+package completion
+// Lost group-death acknowledgement prevents safe lease reuse.
+func ParentDeathMissingAcknowledgement(){
+ death:=make(chan int)
+ groupGone:=make(chan int)
+ reusable:=make(chan int,1)
+ done:=make(chan int)
+ go orphanLost(death)
+ go orphanBlocked(groupGone,reusable)
+ go orphanWaiting(reusable,done)
+ close(death)
+ <-done
+}
+func orphanLost(death chan int){<-death}
+func orphanBlocked(groupGone,reusable chan int){<-groupGone;reusable<-1}
+func orphanWaiting(reusable,done chan int){<-reusable;close(done)}

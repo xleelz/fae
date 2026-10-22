@@ -1,0 +1,8 @@
+package completion
+func SlowSubscriberPinsPublisher(){
+ slow:=make(chan int)
+ fast:=make(chan int)
+ go func(){slow<-1;fast<-1}()
+ <-fast
+ <-slow
+}

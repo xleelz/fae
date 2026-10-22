@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+(c) Copyright ETH Zurich 2012 - 2026
+17:14:01.433 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - processowner [17:14:01]
+17:14:03.482 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/orphan-negative.go:4:9> Postcondition might not hold. 
+Assertion ok == (ownerMatches && identityMatches && groupMatches && privateRecord) might not hold.
+17:14:03.494 [thread-6] ERROR viper.gobra.Gobra - Gobra found 1 error.

@@ -1,0 +1,349 @@
+{
+  "date": "2026-10-18",
+  "status": "passed",
+  "implemented": [
+    "Server-bound authenticated principals and transactional operator-message class consumption",
+    "Ten durable task controls with frozen dispatch context, in-flight evidence preservation, stage-aware resume and exact uncertain-checkpoint reconciliation",
+    "Principal-scoped bounded/coalesced reads, cached schedule/controller health, audited monotonic event retention floor and explicit stream gaps"
+  ],
+  "unit_and_integration": {
+    "test_cases": 993,
+    "packages": 26,
+    "statement_coverage_percent": 75.3,
+    "race": true,
+    "vet": true,
+    "scratch_census": true,
+    "daemon_elapsed_seconds": 743.853,
+    "command": "FAE_TEST_DOLT_BINARY=/tmp/dolt-darwin-arm64/bin/dolt bash scripts/test.sh",
+    "initial_run": "Stale deployment health assertion corrected for cached read semantics while retaining executable replacement refusal in mutating preflight. Expanded daemon package exceeded previous Go ten-minute default; suite timeout is now twenty minutes, individual operation deadlines unchanged. Original failure and timeout logs retained; complete fresh suite passed."
+  },
+  "gobra": {
+    "production_predicates": 33,
+    "rejected_mutations": 33
+  },
+  "gomela": {
+    "positive_models": 34,
+    "firing_negative_controls": 32
+  },
+  "formal_scope": "Production predicate proofs and bounded concurrent models only; not whole-daemon verification. Exact input hashes and original outputs archived.",
+  "real_provider_dogfood": {
+    "model": "gpt-6-astra",
+    "herdr_version": "herdr 0.9.5",
+    "provider_version": "codex-cli 0.163.0-alpha.10.2",
+    "adapter": "herdr",
+    "scratch": "/private/tmp/fhd-y2gsny8c",
+    "status": "passed",
+    "task_ids": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "cron-1c405e1c25c7422088d7a718-0"
+    ],
+    "crash_recovery": {
+      "signal": "SIGKILL",
+      "started_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "uncertain_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "resolutions": [
+        {
+          "action": "redispatch",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "id": "cron-7d533ed758e7c6b84e828429-0",
+          "version": 5
+        }
+      ],
+      "automatic_replay": false
+    },
+    "independent_drive": {
+      "before": {
+        "BinaryHash": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+        "ProcessBirth": "1792381037.028294",
+        "Workspace": "/private/tmp/fhd-y2gsny8c/repo",
+        "Holds": null,
+        "PID": 47161,
+        "DoltPID": 47174,
+        "OldPID": 0,
+        "DriveAlive": true,
+        "DriveGeneration": 1,
+        "DriveCause": "",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-19T03:37:22.692441Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "c3a17f6feee00ef131e2d2346760e484b73fe9c9a1b7ca129a8e46ae9a717b01",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "stopped": {
+        "BinaryHash": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+        "ProcessBirth": "1792381037.028294",
+        "Workspace": "/private/tmp/fhd-y2gsny8c/repo",
+        "Holds": null,
+        "PID": 47161,
+        "DoltPID": 47174,
+        "OldPID": 0,
+        "DriveAlive": false,
+        "DriveGeneration": 1,
+        "DriveCause": "operator-stop",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-19T03:37:22.692441Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "c3a17f6feee00ef131e2d2346760e484b73fe9c9a1b7ca129a8e46ae9a717b01",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "resumed": {
+        "BinaryHash": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+        "ProcessBirth": "1792381037.028294",
+        "Workspace": "/private/tmp/fhd-y2gsny8c/repo",
+        "Holds": null,
+        "PID": 47161,
+        "DoltPID": 47174,
+        "OldPID": 0,
+        "DriveAlive": true,
+        "DriveGeneration": 2,
+        "DriveCause": "operator-stop",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-19T03:37:23.22182Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "c3a17f6feee00ef131e2d2346760e484b73fe9c9a1b7ca129a8e46ae9a717b01",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "retained_dispatches": {
+        "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+        "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"
+      },
+      "daemon_and_plane_unchanged": true,
+      "retained_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+      ],
+      "provider_start_evidence": [
+        {
+          "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "events": [
+            {
+              "type": "thread.started",
+              "thread_id": "01a1523c-2fcc-7b41-a0a4-492454246a3b"
+            },
+            {
+              "type": "turn.started"
+            }
+          ]
+        }
+      ],
+      "deferred_before_execution": [
+        {
+          "session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+          "events": [
+            {
+              "attempt": 1,
+              "cause": "inputs-resolved",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "dispatch",
+              "stage": "intake"
+            },
+            {
+              "attempt": 1,
+              "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "execution-diagnostic",
+              "stage": "intake"
+            },
+            {
+              "attempt": 0,
+              "cause": "infrastructure-deferred",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "park",
+              "stage": "intake"
+            }
+          ]
+        }
+      ]
+    },
+    "dynamic_limits": {
+      "during_active_turns": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "after_restart": {
+        "dynamic": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "fixed": {
+          "instance_root": "/private/tmp/fhd-y2gsny8c/i/dogfood",
+          "socket_path": "/private/tmp/fhd-y2gsny8c/i/dogfood/run/rpc.sock"
+        }
+      },
+      "raised": {
+        "effective_pane_limit": 24,
+        "heavy_capacity": 2,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 24,
+        "tasks_in_flight": 2
+      }
+    },
+    "restart_checkpoint": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "state": "intake-gate",
+        "version": 7,
+        "artifacts": 1
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "state": "intake-gate",
+        "version": 6,
+        "artifacts": 1
+      }
+    },
+    "controller_lifecycle": {
+      "roll": {
+        "accepted": true,
+        "binary_sha256": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+        "drive_rounds": 1,
+        "new_pid": 49279,
+        "old_pid": 47161,
+        "pid": 49279
+      },
+      "old_pid": 47161,
+      "maintenance_marker_cleared": true
+    },
+    "provider_loop": {
+      "iterations": 5,
+      "state": "completed",
+      "session_id": "loop-dogfood-loop",
+      "provider_thread_id": "01a1523f-3755-7391-983c-3cd356f6f7b6"
+    },
+    "cron_schedules": {
+      "completed": 2,
+      "admitted": 2,
+      "duplicate_occurrences": 0
+    },
+    "lease_audit": {
+      "capacity": 2,
+      "granted": 63,
+      "released": 62,
+      "recovered": 1,
+      "final_holders": 0
+    },
+    "pane_audit": {
+      "before_shutdown_reservations": 6,
+      "final_reservations": 0
+    },
+    "stall_recoveries": {
+      "cron-7d533ed758e7c6b84e828429-0": 0,
+      "cron-1c405e1c25c7422088d7a718-0": 0
+    },
+    "tasks": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "artifact_records": 22,
+        "version": 55
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "artifact_records": 32,
+        "version": 78
+      }
+    },
+    "integration_sha": "5dea6acc3ca0ea45243f63ff1ade4890359f5a24",
+    "base_sha": "41a59f0127399767fa432cbf627b214ef86d9a84",
+    "crashed_completed_uncollected": [],
+    "resident_sessions": {
+      "audited_turns": 19,
+      "reused_panes": 7
+    },
+    "real_completed_turns": 34,
+    "persistent_sessions": {
+      "audited_turns": 18,
+      "resumed_turns": 12,
+      "resumed_after_restart": 2,
+      "cross_task_threads": 3,
+      "task_bound_resumed_turns": 6
+    }
+  },
+  "remaining_limits": [
+    "Full Prophet sessions, task migration/retirement and complete backlog dependency orchestration",
+    "Live post-commit restart refuses HEAD beyond durable reconciliation base; separate execution-head reconciliation needed",
+    "Blocked stages without declared remediation routes cannot use ordinary Resume",
+    "Logical event retention preserves physical archive rows; backed-up compaction not implemented",
+    "Complete topology/host-metric/backlog APIs and broader provider/OS/crash matrices",
+    "Third-party review/ticket adapters tested against local services; no authenticated vendor mutation in dogfood"
+  ],
+  "evidence_sha256": {
+    "operator-controls-reads-coverage.out.gz": "122052936383ada7034602c354e97980d04a3d8dc4a10f165c34b391daa9f2f7",
+    "operator-controls-reads-dogfood-20261018/controller-lifecycle.json": "1e9c1ee613d3a6adb495708bc77ec323bb41c47d61efdb379b5103437b2e88f1",
+    "operator-controls-reads-dogfood-20261018/crash-before.json": "060cee02b8d1f4fa0600ab765e3c8cfb3c24a87f35bf4c439190a1450bb07526",
+    "operator-controls-reads-dogfood-20261018/crash-provider-starts.json": "227185566382434b2105372bd4e0536a2194f81f9299bfee40f324e7be00825f",
+    "operator-controls-reads-dogfood-20261018/crash-recovered.json": "a6ed6daebcb6b598ebe221f2922263dbd80cad20de109e8fb86ef2b4f7bf7bf1",
+    "operator-controls-reads-dogfood-20261018/cron-schedules.json": "dbef17ec1a000b03d08b45eb67ccbc7752bf29053f30b97f8add245c074c037c",
+    "operator-controls-reads-dogfood-20261018/drive-restart-checkpoint.json": "2a0407dbe50434b00ddc4eed4caa043f4759b84b3951784a5bd96733b8dcf4ca",
+    "operator-controls-reads-dogfood-20261018/drive-restart.json": "c6f21f317bedafb8369188022203527d68804e7151a3fc4222760a291e44b381",
+    "operator-controls-reads-dogfood-20261018/final-evidence.json": "14b17b10436ddc3e450812994e4686760614cf0f2bf17dca73ee1203427c606d",
+    "operator-controls-reads-dogfood-20261018/lease-audit.json": "f947b514e4e4c661b547947c11408926f008d325615b3f961e06f039d3ead1fd",
+    "operator-controls-reads-dogfood-20261018/pane-audit-final.json": "77af99266dcfc0a43f454d07c00166992ef6ba72a466cb33641454a6a805ae9c",
+    "operator-controls-reads-dogfood-20261018/pane-audit.json": "6709f02bffe132c6205a946932a13230bde9c8bd1e1e23f383690c3bf44a95aa",
+    "operator-controls-reads-dogfood-20261018/provider-health.json": "039d64ef680eead8079c02a06009425e9b131bdc28aaa6ce495e5356b1417ad6",
+    "operator-controls-reads-dogfood-20261018/provider-log.json": "efd75172d4141dd0a1edd5953c8969dd1c47bfb38f3b8b0c1ac4a8a8cf0b34a8",
+    "operator-controls-reads-dogfood-20261018/provider-loop.json": "6305e7ced972ac09abb2a3a0f1ea6294f43e6e10aa0a37f28096e7041a2fefe9",
+    "operator-controls-reads-dogfood-20261018/provider-sessions.json": "597df9e08458ecbf1bb7a12913c36a55d4a9f3e5a587d8df63387c3222a1ae89",
+    "operator-controls-reads-dogfood-20261018/provider-turns.json": "f8bc3b2e6ef2b024f5a146ab5f036dce097e168a6b95fd33ef037b2bd9320e5d",
+    "operator-controls-reads-dogfood-20261018/resident-sessions.json": "ecb3600ed4e53db3c0990da55ae99e45a17dc972875400cc389e078015bf59a8",
+    "operator-controls-reads-dogfood-20261018/restart-checkpoint.json": "a4b722210f41f2c67b8518c3258a827bf8ceb8a8e6a3a3849fa88acf8c96b646",
+    "operator-controls-reads-dogfood-20261018/result.json": "d236890b00894b286d4ca7048fdd1f6e63ea745569e9ce1f2b1234500b1f813c",
+    "operator-controls-reads-dogfood-20261018/sha256.json": "56b67447f65269097b03ae7a3a049c2e09001c6760710fc048afc84a3d770749",
+    "operator-controls-reads-dogfood-20261018/source-hashes.json": "f1731ec5140f8e19d17e58d0ae8dc2cd34ef22ddddd7d6573ea0cf15dcea6a63",
+    "operator-controls-reads-dogfood.log": "37c76c116379361504497fddc613c77d99c0d62d8c793453f8a5b604a9fd0341",
+    "operator-controls-reads-formal/gomela-negative.csv": "2588f6046cda9d99ec7d2614a21a271b10fc68b45d63d844c5149039fe542bc9",
+    "operator-controls-reads-formal/gomela-positive.csv": "63d58a383a94a3477b2855f90a931983deb94cfc668f949f89e8b4426e4d2d76",
+    "operator-controls-reads-formal/logs-models.tar.gz": "5ea7e16835b07faa1660e63bb26044863c707c65aadfa107cfe0b3eb39db4dba",
+    "operator-controls-reads-formal/source-hashes.json": "7c11b26a198e67ef3655fa4188b762e5b304b4be9ac831233683bb513de4ad6b",
+    "operator-controls-reads-formal/verification.log": "d10b229da7729947a8f9c46eca618a5e03f534ac6516f826283c1ddcdd3acbf0",
+    "operator-controls-reads-initial-suite.log.gz": "3763946bad7d782c2323800d7aef492d124555a59af65060c1b444375e969554",
+    "operator-controls-reads-initial-tests.json.gz": "fce3feed1430a1d2b20b205ac834c0b223ee164b99b4463d8f68359b78686834",
+    "operator-controls-reads-source-hashes.json": "c8d2972bb8f502e9c0f6fea9219d42984624adcec70167072b1c7270f0d06338",
+    "operator-controls-reads-suite.log": "d10e2e47ecd95899e70170f2271cc3dc66f591106ddad83381c9ad373e5156dc",
+    "operator-controls-reads-tests.json.gz": "56cada177322cdee0e37e8dccbc3c2f7bb1cc3be064e4c67a4ab3fc7cb72d173"
+  }
+}

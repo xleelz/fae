@@ -1,0 +1,2 @@
+package completion
+func CronMissingAdmission(){admitted:=make(chan int);checkpoint:=make(chan int);go func(){<-admitted;checkpoint<-1}();<-checkpoint}

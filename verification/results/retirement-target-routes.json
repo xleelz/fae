@@ -1,0 +1,442 @@
+{
+  "date": "2026-10-19",
+  "status": "passed",
+  "implemented": [
+    "Audited Escalated-to-Retired control with exact contained evidence, obsolete holds, atomic dependency transfer, bounded supersession-chain resolution and retired-read opt-in",
+    "Versioned immutable Local target configurations, first-write retirement tombstones, pinned run/backlog/cron admission and execution/restart enforcement",
+    "Prophet ordered routes sharing durable provider health; bounded failover requires persisted observation and confirmed process/lease cleanup; fresh scoped contexts preserved"
+  ],
+  "requirements": [
+    "FAE-OPS-010 retirement",
+    "FAE-OPS-011",
+    "FAE-OPS-012 retained task evidence",
+    "FAE-CLI-037",
+    "FAE-CLI-021 Local target subset",
+    "FAE-RT-007/-009 Prophet routing extension"
+  ],
+  "verification": {
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1116,
+      "packages": 26,
+      "statement_coverage_percent": 74.1,
+      "daemon_package_seconds": 851.326,
+      "vet": "passed",
+      "scratch_census": "passed",
+      "note": "Complete rerun after final successor-chain fix; earlier full pass archived separately."
+    },
+    "builds": [
+      "bin/fae",
+      "bin/fae-codex-bridge"
+    ],
+    "gobra": {
+      "production_guards": 39,
+      "rejected_mutations": 39
+    },
+    "gomela": {
+      "positive_models": 40,
+      "firing_negative_controls": 38
+    },
+    "hash_manifests_verified": {
+      "retirement-target-routes-dogfood-20261018/sha256.json": 23,
+      "retirement-target-routes-dogfood-20261018/source-hashes.json": 386,
+      "retirement-target-routes-formal/source-hashes.json": 115,
+      "retirement-target-routes-source-hashes.json": 389
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-idscp8xb",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "cron-1c405e1c25c7422088d7a718-0"
+      ],
+      "target_configs": {
+        "revision_1": {
+          "id": "dogfood-target",
+          "revision": 1,
+          "hash": "bd9b83015aea66dbd265ea70724847197c173e67e5daf3d6d7b535e5c2cc4dbd",
+          "retired": false
+        },
+        "revision_2": {
+          "id": "dogfood-target",
+          "revision": 2,
+          "hash": "25fb1ce80d489a0dacc71ceaeb2b8a7b8ef0082f5d419f257b61c1e9b4ceae6f",
+          "retired": false
+        },
+        "pinned_tasks": [
+          "cron-7d533ed758e7c6b84e828429-0",
+          "cron-1c405e1c25c7422088d7a718-0"
+        ]
+      },
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221",
+          "ProcessBirth": "1792392919.671530",
+          "Workspace": "/private/tmp/fhd-idscp8xb/repo",
+          "Holds": null,
+          "PID": 28606,
+          "DoltPID": 28621,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-19T06:55:25.261577Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "dfff590c312159bf19bdb7a7e00a7f00e1425405c3761c019c72067059dfa7e0",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221",
+          "ProcessBirth": "1792392919.671530",
+          "Workspace": "/private/tmp/fhd-idscp8xb/repo",
+          "Holds": null,
+          "PID": 28606,
+          "DoltPID": 28621,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 5,
+          "LastTransition": "2026-10-19T06:55:25.353819Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "dfff590c312159bf19bdb7a7e00a7f00e1425405c3761c019c72067059dfa7e0",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221",
+          "ProcessBirth": "1792392919.671530",
+          "Workspace": "/private/tmp/fhd-idscp8xb/repo",
+          "Holds": null,
+          "PID": 28606,
+          "DoltPID": 28621,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 5,
+          "LastTransition": "2026-10-19T06:55:25.824574Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "dfff590c312159bf19bdb7a7e00a7f00e1425405c3761c019c72067059dfa7e0",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a152f1-8078-7b42-a845-c6ede30d495c"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": [
+          {
+            "session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+            "events": [
+              {
+                "attempt": 1,
+                "cause": "inputs-resolved",
+                "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+                "kind": "dispatch",
+                "stage": "intake"
+              },
+              {
+                "attempt": 1,
+                "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active",
+                "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+                "kind": "execution-diagnostic",
+                "stage": "intake"
+              },
+              {
+                "attempt": 0,
+                "cause": "infrastructure-deferred",
+                "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+                "kind": "park",
+                "stage": "intake"
+              }
+            ]
+          }
+        ]
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-idscp8xb/i/dogfood",
+            "socket_path": "/private/tmp/fhd-idscp8xb/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "intake-gate",
+          "version": 7,
+          "artifacts": 1
+        },
+        "cron-1c405e1c25c7422088d7a718-0": {
+          "state": "intake-gate",
+          "version": 6,
+          "artifacts": 1
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "ce3d9b02ebde5ca4e83da307f7a29e4e402dccb42deb49de403b1bcf74d61221",
+          "drive_rounds": 1,
+          "new_pid": 30787,
+          "old_pid": 28606,
+          "pid": 30787
+        },
+        "old_pid": 28606,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a152f4-b470-7c61-8bbf-9468a790020b"
+      },
+      "cron_schedules": {
+        "completed": 2,
+        "admitted": 2,
+        "duplicate_occurrences": 0
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0,
+        "durable_health_observations": 2
+      },
+      "retirement": {
+        "transferred": {
+          "dependent_effect": "transferred",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [],
+          "id": "retire-old",
+          "reason_class": "superseded-by",
+          "reference": "retire-successor",
+          "state": "Retired",
+          "version": 3
+        },
+        "held": {
+          "dependent_effect": "held",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [
+            "retire-dependent"
+          ],
+          "id": "retire-successor",
+          "reason_class": "obsolete",
+          "reference": "dogfood-ruling-1",
+          "state": "Retired",
+          "version": 3
+        },
+        "hidden_by_default": true,
+        "dependent_withheld": true
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 69,
+        "released": 68,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 6,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "cron-1c405e1c25c7422088d7a718-0": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "cron-1c405e1c25c7422088d7a718-0": {
+          "artifact_records": 35,
+          "version": 89
+        }
+      },
+      "integration_sha": "e59f85ce879b01d1e968d8a102eaad48294afb65",
+      "base_sha": "7854f249ac8ad0c48bc01b83ede99b95b420ed27",
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 7
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 12,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 3,
+        "task_bound_resumed_turns": 6
+      }
+    },
+    "independent_review": "Found retired-successor chain bug, then reviewed transactional fix and focused regression; no further blocking finding. Final full native suite includes fix."
+  },
+  "fixes_and_diagnostics": [
+    "Startup previously required every TargetID to equal Workspace; now validates explicit pinned identity/revision/hash and retains legacy binding checks.",
+    "Retiring A as superseded by already-superseded B could strand dependents. SQL transaction now resolves bounded successor chains, rejects loops and validates/deduplicates resulting edges.",
+    "Containment fixture initially omitted required Commit.files, producing no receipt; corrected fixture, kept production containment guard.",
+    "Old Prophet guard test lacked provider-health store fixture; added health-read mock while retaining role-slot refusal.",
+    "Some early focused logs were overwritten during agent iteration; retained diagnostic transcriptions explicitly identify this limitation. Initial and final full-suite logs are preserved."
+  ],
+  "remaining_limits": [
+    "Explicit target v1 supports Local mode only; external/deployment policy, no-red classifiers, scoped always-required QA commands, typed placeholders and structured test admission remain gaps and unsupported fields fail closed.",
+    "Legacy admissions without explicit target selectors still use instance live configuration.",
+    "Contained retirement requires retained task-owned live commit/integration evidence; subject-only integration discovery without that evidence fails closed.",
+    "Supersession semantic acceptance coverage remains an operator judgment; identity, provenance and dependency graph safety are enforced.",
+    "Formal results are scoped predicate proofs and bounded protocol models, not whole-program verification.",
+    "Dogfood uses real Codex with Herdr; failover failure injection and alternate bindings are verified by native fixtures, not a second authenticated vendor."
+  ],
+  "dogfood_command": "python3 scripts/dogfood.py --model gpt-6-astra --dolt /tmp/dolt-darwin-arm64/bin/dolt --codex /Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex --herdr /Users/lbethay/.local/bin/herdr --resident-sessions --provider-loop --crash-during-turn --cron-schedules --controller-lifecycle --drive-restart --deployment-roll --prophet-sessions --target-configs --retirement --evidence-dir verification/results/retirement-target-routes-dogfood-20261018",
+  "evidence_sha256": {
+    "retirement-target-routes-coverage.out": "bfb4f8aca54db553f6d46685b06840a051d675275f6deb86d895a5b2906c2efe",
+    "retirement-target-routes-dogfood-20261018/controller-lifecycle.json": "15a4eb780c6fdd882e9195f6370099a24aac9efb469442d39a93662889c78f56",
+    "retirement-target-routes-dogfood-20261018/crash-before.json": "b9ea392c942ef340b131c9dd023965e25d43f7964d996342be56b9fcbb811ddf",
+    "retirement-target-routes-dogfood-20261018/crash-provider-starts.json": "189320ed378e29e7983313c1f1fe1c6baad7289efea0f29955a54f576503f875",
+    "retirement-target-routes-dogfood-20261018/crash-recovered.json": "d667bd54c87cb2596f7379011b959bf1eba4ae6f2b1d1e24fb7e3811ac085e3e",
+    "retirement-target-routes-dogfood-20261018/cron-schedules.json": "e42ca9a6b43dd8a9ab87b54cd31d2ee0e2bb9f185955d87e6bf5a8fdad8429e5",
+    "retirement-target-routes-dogfood-20261018/drive-restart-checkpoint.json": "cd6c1fc98bc3003f7a2de8fc3b8ce61cc691147679b8c5881d763578c2b9b7d4",
+    "retirement-target-routes-dogfood-20261018/drive-restart.json": "8ad96200450ac7c10d48a0f3882013499e4e8f484b97647af80162186ff3a13a",
+    "retirement-target-routes-dogfood-20261018/final-evidence.json": "a9146094c4408cacd3faa84e270f23901c01d1a4ac76c931e286d682c4be1b42",
+    "retirement-target-routes-dogfood-20261018/lease-audit.json": "8866b5f349ffbfab84565aa2d6e8f07c5ccf33a771625dd0929fb6078ea12c15",
+    "retirement-target-routes-dogfood-20261018/pane-audit-final.json": "809a43a0f532911642b107fb87d558584755c606e5e8a409939d65dd5a513619",
+    "retirement-target-routes-dogfood-20261018/pane-audit.json": "3a04d87a384d15bb9a290931a395674909976096f44a7ee6e059ba5411a107d1",
+    "retirement-target-routes-dogfood-20261018/prophet-sessions.json": "53b92adc30bf6b93a7c4b65d5203ca1a355468d7fe928ae2d7bb447ba2e3882f",
+    "retirement-target-routes-dogfood-20261018/provider-health.json": "f4d90046e14ee5aa9af7d15dfedffb48e6747bb82bfa13e22b52f598693c1bbc",
+    "retirement-target-routes-dogfood-20261018/provider-log.json": "22f46bb2f66dfa4aa7684154b849ede3a1bcd4cd90aa5a67c4821cc311c470f8",
+    "retirement-target-routes-dogfood-20261018/provider-loop.json": "2b6810ccccfe31653da490dae963924ac981017605c5c60417f30b83ba200e14",
+    "retirement-target-routes-dogfood-20261018/provider-sessions.json": "377fc3ea10505f885797a3b44bf055110611f03608b90fa07ad0aa4682a268fb",
+    "retirement-target-routes-dogfood-20261018/provider-turns.json": "87ff9137ae557e52ef761386708ad060c75387e915bd0c93b65115c980824bc9",
+    "retirement-target-routes-dogfood-20261018/resident-sessions.json": "e4bb4fd0962a606ed190a19a51ef1b73969d14d9a1c97ca99b6e3948cd7066d9",
+    "retirement-target-routes-dogfood-20261018/restart-checkpoint.json": "ff5bb796608e94aec5094f9b307f89aa16733a8ee838c76711cdd437d648ec4f",
+    "retirement-target-routes-dogfood-20261018/result.json": "a9db93e9a51cf28b7faeef71eccbe6830fa9a8e679db8c9e122626d166df52f4",
+    "retirement-target-routes-dogfood-20261018/retirement.json": "432ee5d300704a020f9e777d34f28792a7520ad97ae744df4f0c683a4a72da73",
+    "retirement-target-routes-dogfood-20261018/sha256.json": "1e31f54343111d8499a2f5e024bfefff8503bc6802c05c1e8dce3ec654ab35dc",
+    "retirement-target-routes-dogfood-20261018/source-hashes.json": "3f20795a0e3fede1bbc09b99b8b6a0702cd4316fa2d750c8c32a32fb1d2f9a9a",
+    "retirement-target-routes-dogfood-20261018/target-configs.json": "5b6d8b2e7a96dc78b784fa2c7360710c07ce0557fc4a6c05cab02c57dc3a8117",
+    "retirement-target-routes-dogfood.log": "53a5f80775aea13919396f3942158c6200b432ead0ce01526dce1ce9fb9e1330",
+    "retirement-target-routes-formal/gomela-negative.csv": "42a5ea504cbeb8031c79eb6ab25246691de9b2a3ccb11bdf3d2525195f80443c",
+    "retirement-target-routes-formal/gomela-positive.csv": "96a56f813b594e8ebefd0795224c0039cd2022084ad200da2c0abab6067d09e9",
+    "retirement-target-routes-formal/logs-models.tar.gz": "48a6fff961317b9da688e4805a8bcdb1d4af0854ea2d60867fe0789b6fbb0c84",
+    "retirement-target-routes-formal/source-hashes.json": "c7aa577849e9d0c500ff6cf3e69a787d0636241baa9bbab736d7229218bc2329",
+    "retirement-target-routes-formal/verification.log": "bd9b2de837b626f1cd04dae4ac7f260ace8fe31a51fb34a91fb568b03ef14ea6",
+    "retirement-target-routes-initial-suite.json.gz": "d997efceb8c2fae8229b5b094ceaebb1afa515a5b27a4186fea8a8831830ce4f",
+    "retirement-target-routes-initial-suite.log": "d57d162cb21d4cbe78b6ba979b2030eb2c624f13feb10e813b1a259fde86908f",
+    "retirement-target-routes-prophet-routes-initial-failure.txt": "287ebd4680d1731172498ff18ce3b113c6cc8c52d438b7aca550032c3fb5d4ef",
+    "retirement-target-routes-prophet-routes-tests.log": "d4de2727f19a721335dae580435fe1b1b3efefe72f184f7c67d0d5f4b8b4ff82",
+    "retirement-target-routes-retirement-chain-final-test.log": "ee58556f542551722449f7ee44f571d904b7bb038fdbbdea5ea7a896e5985bfe",
+    "retirement-target-routes-retirement-contained-initial-diagnostic.log": "b8f221144ca28db941c09a2d595cb8239ff322db4a6831e2c6d983db68816415",
+    "retirement-target-routes-retirement-test.log": "b8d85c644c4acc602962d6c3f8dc391b1c0cfcd0ca15d45467a7501f92737427",
+    "retirement-target-routes-source-hashes.json": "a56854ea61350b925aa28d2696645cd3cc8cd56c2ffbc6459c934d84970b0b40",
+    "retirement-target-routes-suite.json.gz": "fb9527b3dcc6420c56ac38d84e18ee21aaae6896a6557e60e59c457144ad0cf6",
+    "retirement-target-routes-suite.log": "6a0f90261ec5958ec28116b32dfdc0a4decb6701c566555f4cc60e8ae7d3b53b",
+    "retirement-target-routes-target-native.log": "d961b82418d54e90e17272a7133606210c7849126813c33c289e0fccedc11ced"
+  }
+}

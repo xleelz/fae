@@ -1,0 +1,642 @@
+[
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5",
+    "role": "coder",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12940,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 160,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "05c539bf3e2716ad5f6dcdcaf51ee054b7363dd44d78febf13d08f8d53d63874"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/3",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-architecture",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12950,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "be749ad6c6f2eeec8177a367afdf263ab7192477732f6704d566fd0b67f6d966"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/8/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/8",
+    "role": "coder",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 13180,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 167,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "a96ea006c04409e54305d97e2a844370942b32966bc90cbc0fe5f7a3023f15ce"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+    "role": "spec",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12359,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 364,
+      "reasoning_output_tokens": 54
+    },
+    "events_sha256": "a9695ad6dc0e58cbee97ff2b9866707cd24420ece76fda1e64fb28b15a6ab7cf"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24",
+    "role": "oracle",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11945,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 85,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "beb3cb4aa716432b1f92461195ee1eb65ef8680015ca40c28a1ad95eb971b4a5"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+    "role": "spec",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12728,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 479,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "0d22a51b20d9d4b8b9ae00b7bb410b2f2164b0965a6235dcbc2f9e94c2681002"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4",
+    "role": "planner",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12219,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 320,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "f808d075696a48699219a243b540c3146bc1c36c4669b7e919a48c2c28feb5d8"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/1",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3",
+    "role": "spec-reviewer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 13004,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 126,
+      "reasoning_output_tokens": 33
+    },
+    "events_sha256": "e764027de3d22f41bf0bae6a78813d0444d6db7855b3c2bcfa3f09562b36f8bc"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5",
+    "role": "coder",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11760,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 172,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "5ff92cc3ea5c4e8cc2fe73f920dc2ceca13bf0598d336e9e9b844ba5316dc50d"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3",
+    "role": "spec-reviewer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11826,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 123,
+      "reasoning_output_tokens": 33
+    },
+    "events_sha256": "80ea417505bf788a41112e9a68caf8f1f91de2fd8dd11e6d371f8a161eca53e8"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13",
+    "role": "oracle",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 13121,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 84,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "7c2cb37511a4326f403ec710b1247e0cb98bd9a3ad6725a4f020d9b668bd46f1"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/1",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-quality",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11792,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "57648fe3b10a575402e76193a02fa570f930d889dba073ff0eaf6ddf8f1a6e85"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23/session/3",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23",
+    "role": "reviewer-architecture",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12956,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 48,
+      "reasoning_output_tokens": 17
+    },
+    "events_sha256": "2ab0bf774f596012cd5a9a5b22a9a228378836342da3d5ecb3b3299758cffc9b"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/2",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-security",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11792,
+      "cached_input_tokens": 9088,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "01a6a003475f447bfc56332cad25cbf890ecc0896d6ef36007eae5415133651d"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23/session/1",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23",
+    "role": "reviewer-quality",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11774,
+      "cached_input_tokens": 9088,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "12f9ca26b13baa566436ef2c38e0136f3cf865f04a5cb44c688f6c60b42c85b6"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+    "role": "spec",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12359,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 367,
+      "reasoning_output_tokens": 65
+    },
+    "events_sha256": "a56bccbd0780e3987d1cef30c9242332d70d31cfbdd6f6cef4d8dbf6bf73667f"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/2",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-security",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12950,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "7011411e2aeb0df444da44eadc6f1282023cc045bad90286316236f6a046b57c"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3",
+    "role": "spec-reviewer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11812,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 47,
+      "reasoning_output_tokens": 20
+    },
+    "events_sha256": "59b282bba1cb490c17a38779acef66cdb3bdf820892baded6b2780ee3a3d2385"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/1",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3",
+    "role": "spec-reviewer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12992,
+      "cached_input_tokens": 11520,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 43,
+      "reasoning_output_tokens": 16
+    },
+    "events_sha256": "eea81f8442690300f60600a40169073c754d8f2cf9196e9c838bee9b9b6d92d2"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/3",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-architecture",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12972,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "75b77d2ef6c6ef777bd4ae2b2e2adc9935edbaaa8292a1f1e6159f2203d23bd3"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13",
+    "role": "oracle",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 13105,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 85,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "36184327dad81083eaf4738d057a16c3f79373c04312ef9b0709c5e99349deeb"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+    "role": "spec",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12728,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 580,
+      "reasoning_output_tokens": 42
+    },
+    "events_sha256": "154087d6c0821b2f51f2fd5425446d1034625a4404cd6780d01ab5dc622dd9c3"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/1",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-quality",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12948,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 29,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "cdb1d3ca21d926eeda019873c6febaf8dbdb5f6f4c7a2d377e5753b8b125cbd2"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23",
+    "role": "reviewer-correctness",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11776,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 51,
+      "reasoning_output_tokens": 19
+    },
+    "events_sha256": "07e7c4ff9f76b6677a6e88de87a91febe4ed495df052e1d73a74cb6f2db61df5"
+  },
+  {
+    "task_id": "provider-beta",
+    "session_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/0",
+    "dispatch_id": "provider-beta/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-correctness",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 11792,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 30,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "fcf865356e8aee4304e2571761c29fb3254f3f7e388ce5b373e3b624de9a4f74"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4",
+    "role": "planner",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 13540,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 321,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "3b58b9cf6d147956a20ebc50262ece5ebbcaf9d6ddd48826f9861d0cd972a892"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/8/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/8",
+    "role": "coder",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 13172,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 168,
+      "reasoning_output_tokens": 0
+    },
+    "events_sha256": "5e5562723b57fe8a08021ce18946302ab6dbeaa6c7b297ffbd0a48ed12850474"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23/session/2",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/23",
+    "role": "reviewer-security",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12954,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 45,
+      "reasoning_output_tokens": 14
+    },
+    "events_sha256": "5ebcb4fdd42fcaa88de0d4bd316c662713600aa8729c3f8fbb9b64b83975b1e8"
+  },
+  {
+    "task_id": "provider-alpha",
+    "session_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12/session/0",
+    "dispatch_id": "provider-alpha/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/12",
+    "role": "reviewer-correctness",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "event_types": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "usage": {
+      "input_tokens": 12948,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 45,
+      "reasoning_output_tokens": 13
+    },
+    "events_sha256": "f4bb49050d64f57632292983c489aabd54fed177b59954613f004494aab78158"
+  }
+]

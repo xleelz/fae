@@ -1,0 +1,6 @@
+--- FAIL: TestEffectSIGKILLBoundariesAndAuditedAdoption (4.01s)
+    --- FAIL: TestEffectSIGKILLBoundariesAndAuditedAdoption/post-cas (4.01s)
+        effect_recovery_test.go:307: effect retirement not proved; missing result cannot be reconstructed
+FAIL
+FAIL	github.com/xleelz/fae/daemon	4.288s
+FAIL

@@ -1,0 +1,188 @@
+[
+  {
+    "sequence": 58,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+    "created": "2026-10-21T20:06:49.728006Z"
+  },
+  {
+    "sequence": 62,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1/session/0",
+    "created": "2026-10-21T20:06:50.492736Z"
+  },
+  {
+    "sequence": 85,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/2/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/2/session/0",
+    "created": "2026-10-21T20:07:06.836125Z"
+  },
+  {
+    "sequence": 92,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/0",
+    "created": "2026-10-21T20:07:08.033816Z"
+  },
+  {
+    "sequence": 99,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/3/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/3/session/0",
+    "created": "2026-10-21T20:07:11.520781Z"
+  },
+  {
+    "sequence": 104,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/0",
+    "created": "2026-10-21T20:07:13.943759Z"
+  },
+  {
+    "sequence": 109,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/3/session/1",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/3/session/1",
+    "created": "2026-10-21T20:07:16.544504Z"
+  },
+  {
+    "sequence": 117,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/1",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/1",
+    "created": "2026-10-21T20:07:20.860267Z"
+  },
+  {
+    "sequence": 125,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/4/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/4/session/0",
+    "created": "2026-10-21T20:07:30.183934Z"
+  },
+  {
+    "sequence": 133,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5/session/0",
+    "created": "2026-10-21T20:07:34.20109Z"
+  },
+  {
+    "sequence": 141,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/5/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/5/session/0",
+    "created": "2026-10-21T20:07:36.912614Z"
+  },
+  {
+    "sequence": 147,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/6/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/6/session/0",
+    "created": "2026-10-21T20:07:40.728966Z"
+  },
+  {
+    "sequence": 180,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/8/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/8/session/0",
+    "created": "2026-10-21T20:07:50.16254Z"
+  },
+  {
+    "sequence": 186,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/9/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/9/session/0",
+    "created": "2026-10-21T20:07:52.920371Z"
+  },
+  {
+    "sequence": 228,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/0",
+    "created": "2026-10-21T20:08:02.635747Z"
+  },
+  {
+    "sequence": 233,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/0",
+    "created": "2026-10-21T20:08:04.921301Z"
+  },
+  {
+    "sequence": 238,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/1",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/1",
+    "created": "2026-10-21T20:08:08.006626Z"
+  },
+  {
+    "sequence": 243,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/1",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/1",
+    "created": "2026-10-21T20:08:10.297411Z"
+  },
+  {
+    "sequence": 248,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/2",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/2",
+    "created": "2026-10-21T20:08:13.541964Z"
+  },
+  {
+    "sequence": 253,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/2",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/2",
+    "created": "2026-10-21T20:08:15.744103Z"
+  },
+  {
+    "sequence": 258,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/3",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/3",
+    "created": "2026-10-21T20:08:18.506547Z"
+  },
+  {
+    "sequence": 266,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/3",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/3",
+    "created": "2026-10-21T20:08:20.893312Z"
+  },
+  {
+    "sequence": 310,
+    "session": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/13/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/13/session/0",
+    "created": "2026-10-21T20:08:25.572598Z"
+  },
+  {
+    "sequence": 317,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/14/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/14/session/0",
+    "created": "2026-10-21T20:08:31.736195Z"
+  },
+  {
+    "sequence": 407,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/0",
+    "created": "2026-10-21T20:09:02.849212Z"
+  },
+  {
+    "sequence": 412,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/1",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/1",
+    "created": "2026-10-21T20:09:07.923502Z"
+  },
+  {
+    "sequence": 417,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/2",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/2",
+    "created": "2026-10-21T20:09:14.131049Z"
+  },
+  {
+    "sequence": 422,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/3",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/24/session/3",
+    "created": "2026-10-21T20:09:19.153948Z"
+  },
+  {
+    "sequence": 430,
+    "session": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/25/session/0",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/25/session/0",
+    "created": "2026-10-21T20:09:26.156342Z"
+  },
+  {
+    "sequence": 494,
+    "session": "prophet-0306a4e0f38ce4a4161b3232ec9fb0c9",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session prophet-0306a4e0f38ce4a4161b3232ec9fb0c9",
+    "created": "2026-10-21T20:10:08.812159Z"
+  },
+  {
+    "sequence": 500,
+    "session": "prophet-a35900383dfeeebc0296f273d1a92e66",
+    "line": "provider codex model gpt-6-astra outcome ok score 100.000 session prophet-a35900383dfeeebc0296f273d1a92e66",
+    "created": "2026-10-21T20:10:17.29989Z"
+  }
+]

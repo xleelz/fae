@@ -1,0 +1,12 @@
+package completion
+
+// Dropping the archive acknowledgment strands its sender.
+func CleanupDropsArchiveAcknowledgment() {
+ backup := make(chan int)
+ archive := make(chan int)
+ removed := make(chan int)
+ go func(){ backup <- 1 }()
+ go func(){ archive <- 1 }()
+ go func(){ <-backup; removed <- 1 }()
+ <-removed
+}

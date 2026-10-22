@@ -1,0 +1,9 @@
+package completion
+// Omitting prerequisite collection leaks the landing producer.
+func BacklogReleaseWithoutCommit() {
+ committed := make(chan int)
+ released := make(chan int)
+ go func() { committed <- 1 }()
+ go func() { released <- 1 }()
+ <-released
+}

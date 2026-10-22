@@ -1,0 +1,254 @@
+[
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/23/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/23/session/2",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/1",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "loop-dogfood-loop-3-attempt-3",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/3",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/5/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/4/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "loop-dogfood-loop-5-attempt-5",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "loop-dogfood-loop-1-attempt-1",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/2",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/1",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/3/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/6/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/8/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/24/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "loop-dogfood-loop-2-attempt-2",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "prophet-962ded45d05c0ebe66c4189d4081b1fb",
+    "task_id": "global",
+    "workflow_id": "fae-prophet",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/13/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/3/session/1",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/14/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/3",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/9/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/23/session/1",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/5/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "prophet-313b69e6bdb0e9c66341a842877ad17c",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "fae-prophet",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/2/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/4/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/23/session/3",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/12/session/1",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/3/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "loop-dogfood-loop-4-attempt-4",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/13/session/2",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  }
+]

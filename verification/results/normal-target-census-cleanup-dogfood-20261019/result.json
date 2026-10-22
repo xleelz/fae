@@ -1,0 +1,323 @@
+{
+  "model": "gpt-6-astra",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "codex-cli 0.163.0-alpha.10.2",
+  "adapter": "herdr",
+  "scratch": "/private/tmp/fhd-rgcpxq2q",
+  "status": "passed",
+  "task_ids": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ],
+  "target_configs": {
+    "revision_1": {
+      "id": "dogfood-target",
+      "revision": 1,
+      "hash": "761b181fcce8782c56cfcc7ff56638c103b360652e0a78a2a226999151395ed5",
+      "retired": false
+    },
+    "revision_2": {
+      "id": "dogfood-target",
+      "revision": 2,
+      "hash": "781c962c9fdf6b33b0b0f84585291a4c2200d358c818ee782fcc0f7b5a3e8e56",
+      "retired": false
+    },
+    "pinned_tasks": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "provider-beta"
+    ]
+  },
+  "crash_recovery": {
+    "signal": "SIGKILL",
+    "started_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+    ],
+    "uncertain_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+    ],
+    "resolutions": [
+      {
+        "action": "redispatch",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+        "id": "cron-7d533ed758e7c6b84e828429-0",
+        "version": 5
+      }
+    ],
+    "automatic_replay": false
+  },
+  "independent_drive": {
+    "before": {
+      "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "ProcessBirth": "1792457976.808392",
+      "Workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+      "Holds": null,
+      "PID": 20486,
+      "DoltPID": 20499,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 1,
+      "DriveCause": "",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T00:59:38.25665Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "6d1295734e41e06cd26a34c119972abd6117eb00ac1da2978aaac0091a98655f",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "stopped": {
+      "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "ProcessBirth": "1792457976.808392",
+      "Workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+      "Holds": null,
+      "PID": 20486,
+      "DoltPID": 20499,
+      "OldPID": 0,
+      "DriveAlive": false,
+      "DriveGeneration": 1,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T00:59:38.25665Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "6d1295734e41e06cd26a34c119972abd6117eb00ac1da2978aaac0091a98655f",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "resumed": {
+      "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "ProcessBirth": "1792457976.808392",
+      "Workspace": "/private/tmp/fhd-rgcpxq2q/repo",
+      "Holds": null,
+      "PID": 20486,
+      "DoltPID": 20499,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 2,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T00:59:38.25665Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "6d1295734e41e06cd26a34c119972abd6117eb00ac1da2978aaac0091a98655f",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "retained_dispatches": {
+      "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+      "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+    },
+    "daemon_and_plane_unchanged": true,
+    "retained_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+    ],
+    "provider_start_evidence": [
+      {
+        "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+        "events": [
+          {
+            "type": "thread.started",
+            "thread_id": "01a156d2-3334-7c80-ab46-35b3c3c2d5d9"
+          },
+          {
+            "type": "turn.started"
+          }
+        ]
+      }
+    ],
+    "deferred_before_execution": []
+  },
+  "dynamic_limits": {
+    "during_active_turns": {
+      "effective_pane_limit": 16,
+      "heavy_capacity": 1,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 16,
+      "tasks_in_flight": 1
+    },
+    "after_restart": {
+      "dynamic": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "fixed": {
+        "instance_root": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+        "socket_path": "/private/tmp/fhd-rgcpxq2q/i/dogfood/run/rpc.sock"
+      }
+    },
+    "raised": {
+      "effective_pane_limit": 24,
+      "heavy_capacity": 2,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 24,
+      "tasks_in_flight": 2
+    }
+  },
+  "restart_checkpoint": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "state": "intake-gate",
+      "version": 7,
+      "artifacts": 1
+    },
+    "provider-beta": {
+      "state": "intake-gate",
+      "version": 4,
+      "artifacts": 1
+    }
+  },
+  "controller_lifecycle": {
+    "roll": {
+      "accepted": true,
+      "binary_sha256": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "drive_rounds": 1,
+      "new_pid": 22770,
+      "old_pid": 20486,
+      "pid": 22770
+    },
+    "old_pid": 20486,
+    "maintenance_marker_cleared": true
+  },
+  "provider_loop": {
+    "iterations": 5,
+    "state": "completed",
+    "session_id": "loop-dogfood-loop",
+    "provider_thread_id": "01a156d5-0469-7960-9935-da01b2d724d7"
+  },
+  "cron_schedules": {
+    "completed": 1,
+    "admitted": 1,
+    "duplicate_occurrences": 0
+  },
+  "normal_targets": {
+    "local_task": "cron-7d533ed758e7c6b84e828429-0",
+    "live_task": "provider-beta",
+    "live_effects": 1,
+    "normal_revision": {
+      "id": "dogfood-normal",
+      "revision": 1,
+      "hash": "83e593ecd9e2a1224daef0fabedaf39b1099176eabec07a871dd9cc1be71551b",
+      "retired": false
+    },
+    "adapter": "disposable localhost fixture"
+  },
+  "prophet_sessions": {
+    "answered": 2,
+    "scopes": [
+      "task",
+      "global"
+    ],
+    "actions_enacted": 0,
+    "durable_health_observations": 2
+  },
+  "retirement": {
+    "transferred": {
+      "dependent_effect": "transferred",
+      "dependents": [
+        "retire-dependent"
+      ],
+      "held_dependents": [],
+      "id": "retire-old",
+      "reason_class": "superseded-by",
+      "reference": "retire-successor",
+      "state": "Retired",
+      "version": 3
+    },
+    "held": {
+      "dependent_effect": "held",
+      "held_dependents": [
+        "retire-dependent"
+      ]
+    },
+    "hidden_by_default": true,
+    "dependent_withheld": true
+  },
+  "census_cleanup": {
+    "applied": [
+      "retire-successor"
+    ],
+    "removed": [
+      "retire-old",
+      "retire-successor"
+    ],
+    "verified_backup": true,
+    "archives_verified": 2
+  },
+  "lease_audit": {
+    "capacity": 2,
+    "granted": 68,
+    "released": 67,
+    "recovered": 1,
+    "final_holders": 0
+  },
+  "pane_audit": {
+    "before_shutdown_reservations": 9,
+    "final_reservations": 0
+  },
+  "stall_recoveries": {
+    "cron-7d533ed758e7c6b84e828429-0": 0,
+    "provider-beta": 0
+  },
+  "tasks": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "artifact_records": 22,
+      "version": 55
+    },
+    "provider-beta": {
+      "artifact_records": 36,
+      "version": 85
+    }
+  },
+  "integration_sha": "f2fbf81502a4330361ebf399cfd475701869a810",
+  "base_sha": "444ca714afb15741459330878c89c901aa26bdf7",
+  "crashed_completed_uncollected": [],
+  "resident_sessions": {
+    "audited_turns": 19,
+    "reused_panes": 4
+  },
+  "real_completed_turns": 36,
+  "persistent_sessions": {
+    "audited_turns": 18,
+    "resumed_turns": 9,
+    "resumed_after_restart": 2,
+    "cross_task_threads": 0,
+    "mixed_mode_isolation": true,
+    "task_bound_resumed_turns": 6
+  }
+}

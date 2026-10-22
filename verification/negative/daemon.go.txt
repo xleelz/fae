@@ -1,0 +1,11 @@
+package negative
+// One slot cannot hold two abandoned completions; one producer remains blocked.
+func ShutdownWithInsufficientBuffer(){
+ result:=make(chan int,1)
+ cancel:=make(chan int,2)
+ go worker(result,cancel)
+ go worker(result,cancel)
+ cancel<-1
+ cancel<-1
+}
+func worker(result,cancel chan int){<-cancel;result<-1}

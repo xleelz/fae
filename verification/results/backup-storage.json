@@ -1,0 +1,518 @@
+{
+  "date": "2026-10-21",
+  "status": "passed",
+  "implemented": [
+    "Digest-bound replication unpin preview/apply verifies all remote outboxes and complete content, refuses pending claims, rechecks authority, and preserves local data and historical retention coverage",
+    "Durable configurable byte/count backup quota counts partial backups and orphan spools, refuses new allocation at limits and bounds tar writes by remaining byte allowance; overrun exports are preserved",
+    "Manual replica reconfirmation verifies the exact local manifest before restoring a source pin"
+  ],
+  "requirements": [
+    "User-requested safe replication unpinning and backup storage quota extensions",
+    "FAE-CP-013 verified backup lifecycle",
+    "FAE-HOST-020 disk-backed bounded backup scratch",
+    "FAE-VER-011 real-provider dogfood"
+  ],
+  "verification": {
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1352,
+      "packages": 26,
+      "statement_coverage_percent": 73.6,
+      "daemon_package_seconds": 984.818,
+      "vet": "passed",
+      "scratch_census": "passed"
+    },
+    "gobra": {
+      "production_guards": 56,
+      "rejected_mutations": 56
+    },
+    "gomela": {
+      "positive_models": 57,
+      "firing_negative_controls": 55
+    },
+    "hash_manifests_verified": {
+      "backup-storage-source-hashes.json": 490,
+      "backup-storage-formal/source-hashes.json": 166,
+      "backup-storage-dogfood-20261021/source-hashes.json": 487,
+      "backup-storage-dogfood-20261021/sha256.json": 36
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-b2a3tphx",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "provider-beta"
+      ],
+      "target_configs": {
+        "revision_1": {
+          "id": "dogfood-target",
+          "revision": 1,
+          "hash": "5fff685c370cbb337f138a7e9b5de7108e1ab59a9bd65d322fd8458fbe81e529",
+          "retired": false
+        },
+        "revision_2": {
+          "id": "dogfood-target",
+          "revision": 2,
+          "hash": "5cfb751d0777969a0bdd4f29be5529d16cc8e7d87d7a1b4c2da9b55a8c008614",
+          "retired": false
+        },
+        "pinned_tasks": [
+          "cron-7d533ed758e7c6b84e828429-0",
+          "provider-beta"
+        ]
+      },
+      "fleet_provisioning": {
+        "performed": 1,
+        "lost_ack_recovered_after_restart": true,
+        "duplicate_mutations": 0,
+        "baseline_after_receipt": true,
+        "idempotent_prepare": true
+      },
+      "dynamic_provisioning": {
+        "adapter_revision": {
+          "id": "dogfood-adapter",
+          "revision": 1,
+          "hash": "209c7e8caf4aaddc4ed7e753d043bcddca8edbf8293db3b5c027d59d67da7208"
+        },
+        "later_revision": {
+          "id": "dogfood-adapter",
+          "revision": 2,
+          "hash": "ac44ead83678250bd767eb0ae20aa1c494af2a4c267ce089079b7e7ed12c39a4"
+        },
+        "workspace": "/private/tmp/fhd-b2a3tphx/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+        "ready": true,
+        "idempotent_prepare": true
+      },
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "adapter_retirement": {
+        "first_tombstone_preserved": true,
+        "new_bindings_refused": [
+          "write",
+          "target"
+        ],
+        "bound_task": "provider-beta",
+        "bound_task_completed_after_restart": true
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "249061ca8904728dcd3e08e9beed0e14837a92ce04cd7397e328be2e4680e8ca",
+          "ProcessBirth": "1792628192.883163",
+          "Workspace": "/private/tmp/fhd-b2a3tphx/repo",
+          "Holds": null,
+          "PID": 7506,
+          "DoltPID": 7530,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-22T00:16:34.510133Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "e6b7b1ebc53f813dc81e946b79d2df718aed45777957cc84d46e5ee3cdfe4c38",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "249061ca8904728dcd3e08e9beed0e14837a92ce04cd7397e328be2e4680e8ca",
+          "ProcessBirth": "1792628192.883163",
+          "Workspace": "/private/tmp/fhd-b2a3tphx/repo",
+          "Holds": null,
+          "PID": 7506,
+          "DoltPID": 7530,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-22T00:16:34.510133Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "e6b7b1ebc53f813dc81e946b79d2df718aed45777957cc84d46e5ee3cdfe4c38",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "249061ca8904728dcd3e08e9beed0e14837a92ce04cd7397e328be2e4680e8ca",
+          "ProcessBirth": "1792628192.883163",
+          "Workspace": "/private/tmp/fhd-b2a3tphx/repo",
+          "Holds": null,
+          "PID": 7506,
+          "DoltPID": 7530,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-22T00:16:34.510133Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "e6b7b1ebc53f813dc81e946b79d2df718aed45777957cc84d46e5ee3cdfe4c38",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a160f7-7f26-7a71-903f-db88e225183c"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": []
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-b2a3tphx/i/dogfood",
+            "socket_path": "/private/tmp/fhd-b2a3tphx/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "intake-gate",
+          "version": 7,
+          "artifacts": 1
+        },
+        "provider-beta": {
+          "state": "intake-gate",
+          "version": 4,
+          "artifacts": 1
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "249061ca8904728dcd3e08e9beed0e14837a92ce04cd7397e328be2e4680e8ca",
+          "drive_rounds": 1,
+          "new_pid": 12584,
+          "old_pid": 7506,
+          "pid": 12584
+        },
+        "old_pid": 7506,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a160fa-7649-7702-8eec-2138da3df613"
+      },
+      "cron_schedules": {
+        "completed": 1,
+        "admitted": 1,
+        "duplicate_occurrences": 0
+      },
+      "normal_targets": {
+        "local_task": "cron-7d533ed758e7c6b84e828429-0",
+        "live_task": "provider-beta",
+        "live_effects": 1,
+        "normal_revision": {
+          "id": "dogfood-normal",
+          "revision": 1,
+          "hash": "4a1581890a9cd3e4ec6c2f67dca05a4f7719b9feadc2fff869e302f80b08f1ea",
+          "retired": false
+        },
+        "adapter": "disposable localhost fixture"
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0,
+        "durable_health_observations": 2
+      },
+      "retirement": {
+        "transferred": {
+          "dependent_effect": "transferred",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [],
+          "id": "retire-old",
+          "reason_class": "superseded-by",
+          "reference": "retire-successor",
+          "state": "Retired",
+          "version": 3
+        },
+        "held": {
+          "dependent_effect": "held",
+          "held_dependents": [
+            "retire-dependent"
+          ]
+        },
+        "hidden_by_default": true,
+        "dependent_withheld": true
+      },
+      "census_cleanup": {
+        "applied": [
+          "retire-successor"
+        ],
+        "removed": [
+          "retire-old",
+          "retire-successor"
+        ],
+        "verified_backup": true,
+        "archives_verified": 2
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 71,
+        "released": 70,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 9,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "provider-beta": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "provider-beta": {
+          "artifact_records": 36,
+          "version": 85
+        }
+      },
+      "integration_sha": "c2bd59e6d40b7b1feffc88f813f2f2c5ac1b5e78",
+      "base_sha": "93b3bb0384b8c3dc2b4b5cbd8157bab83684b818",
+      "backup_policy": {
+        "lost_ack_recovered_after_restart": true,
+        "uploads": 1,
+        "remote_content_verified": true,
+        "remote_restore_fsck": true,
+        "idempotent_repeat": true,
+        "replication_pin_invalidated_preview": true,
+        "removed": 2,
+        "retained": 1
+      },
+      "retention_automation": {
+        "paused_across_restart": true,
+        "automatic_prune": true,
+        "newest_retained": true,
+        "replication_pin_retained": true,
+        "runs": 1,
+        "final_state": "paused",
+        "final_host_holders": 0
+      },
+      "backup_schedules": {
+        "paused_across_restart": true,
+        "automatic_creation_verified": true,
+        "automatic_replication_verified": true,
+        "pending_destination_change_refused": true,
+        "pending_survived_restart": true,
+        "duplicate_uploads": 0,
+        "scheduled_uploads": 2,
+        "final_creation_state": "paused",
+        "final_replication_state": "paused"
+      },
+      "backup_storage": {
+        "pending_unpin_refused": true,
+        "confirmed_unpin_verified": true,
+        "unpin_preserved_source": true,
+        "unpin_invalidated_retention_preview": true,
+        "unpin_uploads": 0,
+        "count_quota_refused_before_allocation": true,
+        "byte_quota_refused_before_allocation": true,
+        "quota_survived_restart": true,
+        "raised_quota_allowed_verified_backup": true
+      },
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 4
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 9,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 0,
+        "mixed_mode_isolation": true,
+        "task_bound_resumed_turns": 6
+      },
+      "scratch_cleanup": {
+        "completed": true,
+        "root_absent": true,
+        "backup_retained": true,
+        "backup_files_verified": 1886,
+        "archives_verified": 4,
+        "idempotent_repeat": true
+      },
+      "scratch_archive_cleanup": {
+        "redundant_removed": true,
+        "canonical_retained": true,
+        "uncovered_data_refused": true,
+        "idempotent_retry": true,
+        "scratch_cleanup_still_valid": true
+      }
+    }
+  },
+  "review_findings_fixed": [
+    "Reconfirmation cannot repin missing or substituted local sources after unpin/retention; exact verified manifest required",
+    "Unpin enumerates every bounded outbox and refuses partial evidence or pending claims at any destination; schedule and backup locks serialize selection, retention and pin release",
+    "Quota counts actual partial and orphan storage, includes tar overhead in bounded spool writes, preserves unknown-sized Dolt export overruns, and denies subsequent allocation"
+  ],
+  "limits": [
+    "Dolt export quota enforcement is admission plus post-export/verification checkpoints, not a hard filesystem quota. Apparent regular-file bytes exclude allocated-block overhead and filesystem metadata.",
+    "Quota scope is owned instance backup and replication-spool directories. External scratch archives are outside policy. No implicit pruning, unpinning, partial cleanup or remote deletion.",
+    "Unpin requires local verified evidence and fresh full remote proof for all recorded destinations. Pending or corrupt records remain conservatively pinned. Remote proof establishes current availability only.",
+    "Repeated unpin apply safely refuses an already unpinned source; later successful explicit replication repins it after verifying local identity.",
+    "Outbox enumeration is bounded to 10000 entries and 64KiB per payload, failing closed instead of truncating.",
+    "Native and real-provider network mutations use disposable localhost adapter/replica services. No vendor-specific production deployment.",
+    "Formal checks cover production predicates and bounded lifecycle/order models, not entire filesystem, Dolt, HTTP, Git or provider implementations."
+  ],
+  "evidence_sha256": {
+    "backup-storage-cli.log": "e9aa61e7fb11f67059119c7149877d3114d93f2b6a64ccb475584402484e0d1f",
+    "backup-storage-coverage.out": "89bd40e1b7f44d8833a0e5fc49a5bf835f0f9e444b9c5d5184f71cdbb0386ae1",
+    "backup-storage-dogfood.log": "1ecd34e342db2778b42d8380db21b17be67e6703a720553b99511e09dcf53b41",
+    "backup-storage-preflight.log": "0256f3126b7c1539695ca08d8e5919cf494691a423268d405b8246383628ccde",
+    "backup-storage-preflight.py": "e2cb71cd46c7aa7abbbc61e4bb63181fc461a9179983011ebea87185acc9efdc",
+    "backup-storage-quota-focused.log": "ad7e57c22fe82341458cbd3fb6e61a910b5e93685febe90b649b8a29255c1d75",
+    "backup-storage-source-hashes.json": "dcb4f667a373af7e685d1f96580472161dcfb65e7b819eaab5eec2d34bad1659",
+    "backup-storage-suite.json.gz": "bfe733afd695f54f4024e2c7c578e23a1e0ad056f870def6147a69cf1afef152",
+    "backup-storage-suite.log": "79a98adb583075899b82d7899ec622e4b24be1e102053bd273944554a2931515",
+    "backup-storage-unpin-focused.log": "bd08ccb53a873bd5e2ad0c0ae419adecb3187b871164593d232a962f00062026",
+    "backup-storage-dogfood-20261021/adapter-retirement.json": "1c49e082c00c383f511fa4a92433df449fec22840d5c7a836e1bdaa7fcc0d19f",
+    "backup-storage-dogfood-20261021/backup-policy.json": "7998c8ac947188f455cd711d92ed6a50a1b688a9317ce7954c56f263ad484481",
+    "backup-storage-dogfood-20261021/backup-schedules.json": "63180e5f7d6da1a293da7530ec7f7cd74200d11ab1b0ad1c4fbb787d587dc5ea",
+    "backup-storage-dogfood-20261021/backup-storage.json": "68c5c2b20677c782079e2247a1fd7566a8b96d49c41a9595038a196b36ab384e",
+    "backup-storage-dogfood-20261021/census-cleanup.json": "bdc543076ecaba2cf50d0b757f361b352ef8a7ea584092d9f16ac59ac172884b",
+    "backup-storage-dogfood-20261021/controller-lifecycle.json": "6f0bf2d225db907c7d72114724369e01bcff731ad0a58281deabbd7e1cbcdaf2",
+    "backup-storage-dogfood-20261021/crash-before.json": "222c886d44f8b2239b69998128e36f605e9b6cb4c851a89d90056eae11027bba",
+    "backup-storage-dogfood-20261021/crash-provider-starts.json": "22546079e6304a373df151a7bb5fde0aa7a1d3094ff7cfd71ae89c1db882a7dc",
+    "backup-storage-dogfood-20261021/crash-recovered.json": "255dc46b740c144c0ceda21050daee3372b4d707ec9f2a09be239a8b62649fbc",
+    "backup-storage-dogfood-20261021/cron-schedules.json": "88fa6740cd273afe8b2c4d057c76e3cc98848c041e692b220cabd79e19745bbb",
+    "backup-storage-dogfood-20261021/drive-restart-checkpoint.json": "403a51d136e775b055bad05350195cd18f5e93cacab0c13fda121f5341f25da9",
+    "backup-storage-dogfood-20261021/drive-restart.json": "609369871e61335828e7dc8f76a168856a82094cbf07838e1cfe5c6feddcc341",
+    "backup-storage-dogfood-20261021/dynamic-provisioning.json": "c3f256470a82377f1c826855c2c452b37c2e9f357427839960e69ac12f89e6a5",
+    "backup-storage-dogfood-20261021/final-evidence.json": "d4a6672722896d588fa5ed6440bebfc9123e4662605674f886af25d2fa9cb5ad",
+    "backup-storage-dogfood-20261021/fleet-provisioning.json": "62a73d3af39954df787c099e1c531ee1a6e796a1d8e2947e93f532c122f3ff7e",
+    "backup-storage-dogfood-20261021/lease-audit.json": "fc3a74afb1a20e99639ef4e74aaacd926cfc976e31e15127c58964f7eebc9f8c",
+    "backup-storage-dogfood-20261021/normal-targets.json": "85b529af175fd5db57f4052db5c74a612048e33614ec8f24c9400e9fef0fee76",
+    "backup-storage-dogfood-20261021/pane-audit-final.json": "0561dc2663b472a2495eb3944484b77e2f05b0a1bb32f7e0a1958436e92d474c",
+    "backup-storage-dogfood-20261021/pane-audit.json": "cee94b0ba9ddfcaa317f6c9cd1228d4caddb969d5fe4e0c444567b544a554bff",
+    "backup-storage-dogfood-20261021/prophet-sessions.json": "6ef8020378eb08ddc2db322ffd8793b4083d3ea6c2912090ffa01487ce95e47b",
+    "backup-storage-dogfood-20261021/provider-health.json": "ce9d55ace1aa69135dcb7ce551641da48236cb66800a37e002204e7be5a0335a",
+    "backup-storage-dogfood-20261021/provider-log.json": "9fff29783539b1dbd092046db370b9d432443577ccbc1e51e9f43844572d1b5d",
+    "backup-storage-dogfood-20261021/provider-loop.json": "bf519e98208e11ebb6212be6492b22b0137cddea5d7895a9b7b85e0dd3e75d8c",
+    "backup-storage-dogfood-20261021/provider-sessions.json": "7176a679e98bd3a699f003d200d0fed93baf94b6f3fb0e108460e92437802a6d",
+    "backup-storage-dogfood-20261021/provider-turns.json": "92d56b628f1ae6d42938bc218d8d374e1b8a02e29a32227650e3a3c37be756a9",
+    "backup-storage-dogfood-20261021/replica-fsck.log": "2c5bef06a3ca982e1c6caa1c37e09ee86769058f70f0286fb1197e5fd97f7e6f",
+    "backup-storage-dogfood-20261021/resident-sessions.json": "bb4cc83ffab655a130551e30e9c7d57d5a629d89f50af325f28193ccb339970b",
+    "backup-storage-dogfood-20261021/restart-checkpoint.json": "729cd810636ab3e7777400910a471b36263452276bcd2fe6d5e9df608c115256",
+    "backup-storage-dogfood-20261021/result.json": "d6ea9588c131a54493050e75b60b2d17a5059fdaad6ada18de512500bb83323c",
+    "backup-storage-dogfood-20261021/retention-automation.json": "b6d0686995c39bcf751b1167d9c008fc8ac9bded9ed3ce5b71919ca4ccbb2a80",
+    "backup-storage-dogfood-20261021/retention-lease-audit.json": "b643473ec57c5a35f81cc38dae18660d9b2683049e331d7098dc91d34fa056c6",
+    "backup-storage-dogfood-20261021/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "backup-storage-dogfood-20261021/scratch-archive-cleanup.json": "c437e4988fe4e4a4ae9e0471b9d160b22a0ed47beec13621ae21183bf6a97839",
+    "backup-storage-dogfood-20261021/scratch-cleanup.json": "4b00498d9abd14ac581be3866336c6c0e7ebc89ed00991701365b2b3e5d5c66c",
+    "backup-storage-dogfood-20261021/sha256.json": "c208c60357879f7dc2ad7d2b152b5ce036dcdb074b5b9d03a4e60cb2a415c990",
+    "backup-storage-dogfood-20261021/source-hashes.json": "90f7851f96e9890924155f29d84670e88e7c7663d16129778aa1d528b365404a",
+    "backup-storage-dogfood-20261021/target-configs.json": "e3d0e46d8935bb4f06c0dc8642d287f8438a7e37cb9507fb460210097ffbd226",
+    "backup-storage-formal/gomela-negative.csv": "b2443cb3637bcce0eda934d8c012fe09abd2f434e41324bf397cd97ae294d11b",
+    "backup-storage-formal/gomela-positive.csv": "910238582c68e57210ab85ee6948e5a0d96f1e8b5106ba52518b941e3e4ccfaa",
+    "backup-storage-formal/logs-models.tar.gz": "0638ba8d21feafb561638173410faac20fc8ddaa4fa3b144a50a7a71d7df8f6a",
+    "backup-storage-formal/source-hashes.json": "b59149eaf6c4fd74ede32612004a9820e507490f6f5bb22b30f2ba8bbd52b55b",
+    "backup-storage-formal/verify.log": "b8fb3c82497b6501a5f210161c220583b601315109f2d3676981ba535ca0bc34"
+  }
+}

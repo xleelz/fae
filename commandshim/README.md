@@ -1,0 +1,9 @@
+# Command policy
+
+Supported Go build/test/vet and gofmt host-command vectors pass the existing literal broker allowlist, then command policy, before process launch under the caller's durable heavy lease. Go package and test concurrency are capped at two; Go flags with tool execution, overlays, external targets, or unknown semantics are refused. Formatter trees are bounded to 10,000 entries / 64 MiB and expanded to explicit Go files; individual files must be at most 1 MiB / 30,000 lines. Symlink escapes and RAM-temporary output paths are refused. VCS operations use the dedicated VCS broker.
+
+Every Direct/Herdr role session and Codex provider process gets private PATH-first wrappers. They return 77 for build/test/formatter/VCS attempts, and host-command child processes inherit equivalent wrappers: a nested build never gets an implicit free resource slot. Operator-declared unknown command vectors remain trusted, literal-allowlisted host effects; they are not a sandbox.
+
+The supported Codex bridge disables command tools altogether, including absolute-path tool attempts. It proposes edits; the engine executes separate broker stages. PATH wrappers alone cannot prevent a hostile arbitrary bridge or a trusted command from executing absolute binaries, resetting PATH, or forking directly. Other provider tool integrations require a real pre-tool enforcement boundary before enabling command tools. Cargo/Rust formatter/module-following semantics, external build wrappers, interactive broker RPC, and an operator formatter override are unsupported and fail closed.
+
+`guard.go` is a production Gobra proof target for admission conjunction only; native tests cover path measurement and actual wrapper execution. The Gomela model abstracts lease return after nested refusal and process retirement; it is not an OS containment proof.

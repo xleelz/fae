@@ -1,0 +1,5 @@
+--- FAIL: TestDynamicAdapterReviewLifecycleRecovery (2.21s)
+    review_lifecycle_test.go:350: sql: database is closed
+FAIL
+FAIL	github.com/xleelz/fae/daemon	2.467s
+FAIL

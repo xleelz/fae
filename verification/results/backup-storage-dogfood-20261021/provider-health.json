@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-22T00:20:31.644021Z",
+  "bindings": [
+    {
+      "effective_score": 100,
+      "eligible": true,
+      "health": {
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "outcome": "ok",
+        "score": 100,
+        "failures": 0,
+        "last_ok": "2026-10-22T00:20:28.37986Z",
+        "last_failure": "0001-01-01T00:00:00Z",
+        "hold_until": "0001-01-01T00:00:00Z"
+      }
+    }
+  ]
+}

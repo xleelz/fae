@@ -1,0 +1,7 @@
+--- FAIL: TestScratchIPCSnapshotAndRefusals (0.26s)
+    scratch_ipc_test.go:55: open FIFO accepted
+--- FAIL: TestScratchIPCUnknownAndLiveSocket (0.00s)
+    scratch_ipc_test.go:90: listen unix /Users/lbethay/workplace/fae/.cache/tmp/TestScratchIPCUnknownAndLiveSocket2191112979/001/sessions/resident-test/mux-client.sock: bind: invalid argument
+FAIL
+FAIL	github.com/xleelz/fae/daemon	0.766s
+FAIL

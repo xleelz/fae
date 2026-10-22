@@ -1,0 +1,12 @@
+package completion
+func EffectMissingReceipt(){
+ intent:=make(chan int)
+ performed:=make(chan int)
+ receipt:=make(chan int)
+ adopted:=make(chan int)
+ go func(){intent<-1}()
+ go func(){<-intent;performed<-1}()
+ go func(){<-performed}()
+ go func(){<-receipt;adopted<-1}()
+ <-adopted
+}

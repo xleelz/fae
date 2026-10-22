@@ -1,0 +1,8 @@
+package completion
+func StallMissingRetirement() {
+ stop:=make(chan int)
+ retired:=make(chan int)
+ go func(){ <-stop }()
+ stop<-1
+ <-retired
+}

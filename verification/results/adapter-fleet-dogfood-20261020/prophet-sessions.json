@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-3dde25c56880dba93df367bacd0b53eb",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-20T23:48:12.385431Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-3dde25c56880dba93df367bacd0b53eb",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-3dde25c56880dba93df367bacd0b53eb-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done. The supplied context records the alpha() change to return 42, preserved frozen test bytes, passing engine tests, and integration of commit 64300299073f81d97953721580ed8588dab77b09. No other task IDs are visible.",
+      "reply_to": "prophet-3dde25c56880dba93df367bacd0b53eb",
+      "time": "2026-10-20T23:48:18.879007Z",
+      "detail": {
+        "answer": {
+          "reply": "cron-7d533ed758e7c6b84e828429-0 \u2014 Done. The supplied context records the alpha() change to return 42, preserved frozen test bytes, passing engine tests, and integration of commit 64300299073f81d97953721580ed8588dab77b09. No other task IDs are visible.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-e46325d4767c4f8c3f975b8397017f81",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-20T23:48:19.162799Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-e46325d4767c4f8c3f975b8397017f81",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-e46325d4767c4f8c3f975b8397017f81-reply",
+      "author": "prophet",
+      "text": "Visible task IDs and states:\n- cron-7d533ed758e7c6b84e828429-0: Done.\n- provider-beta: Done.\n- global: current task header; prophet stage, no state specified.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+      "reply_to": "prophet-e46325d4767c4f8c3f975b8397017f81",
+      "time": "2026-10-20T23:48:26.130519Z",
+      "detail": {
+        "answer": {
+          "reply": "Visible task IDs and states:\n- cron-7d533ed758e7c6b84e828429-0: Done.\n- provider-beta: Done.\n- global: current task header; prophet stage, no state specified.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

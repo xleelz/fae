@@ -1,0 +1,9 @@
+package completion
+
+// Replay waits for a mutation permit that crash recovery deliberately withholds.
+func TicketBlindReplay(){
+ started:=make(chan int);mutationPermit:=make(chan int);done:=make(chan int)
+ go func(){started<-1}()
+ go func(){<-started;<-mutationPermit;done<-1}()
+ <-done
+}

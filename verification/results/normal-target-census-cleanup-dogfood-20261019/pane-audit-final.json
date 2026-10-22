@@ -1,0 +1,750 @@
+{
+  "Version": 1,
+  "Pool": {
+    "Capacity": 60,
+    "TTL": 21600000000000,
+    "WarnAfter": 300000000000,
+    "MaxWait": 1800000000000,
+    "Holders": null,
+    "Waiting": null
+  },
+  "Audit": [
+    {
+      "At": "2026-10-20T00:59:30.818458Z",
+      "Action": "pane-limit-configured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "requested=60 effective=60",
+      "Owner": {
+        "PID": 0,
+        "Started": 0
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:36.401008Z",
+      "Action": "pane-reserved",
+      "ID": "478dab8d5cd0c4a347507372df9f461b5735da4d20bf216573b25f804567272b",
+      "Reason": "live=0 pending=0 memory=0",
+      "Owner": {
+        "PID": 20304,
+        "Started": 1792457970
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:37.075099Z",
+      "Action": "pane-limit-configured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "requested=60 effective=60",
+      "Owner": {
+        "PID": 0,
+        "Started": 0
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:37.084511Z",
+      "Action": "pane-recovered",
+      "ID": "478dab8d5cd0c4a347507372df9f461b5735da4d20bf216573b25f804567272b",
+      "Reason": "exact owner death; live runtime panes counted separately",
+      "Owner": {
+        "PID": 20304,
+        "Started": 1792457970
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:38.367327Z",
+      "Action": "pane-reserved",
+      "ID": "478dab8d5cd0c4a347507372df9f461b5735da4d20bf216573b25f804567272b",
+      "Reason": "live=0 pending=0 memory=0",
+      "Owner": {
+        "PID": 20486,
+        "Started": 1792457976
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:38.572468Z",
+      "Action": "pane-reserved",
+      "ID": "285c6f7f8c62c79bc750e664eade6fe096fa47b1047d125cfbbe13af38cfd7b3",
+      "Reason": "live=1 pending=0 memory=1",
+      "Owner": {
+        "PID": 20486,
+        "Started": 1792457976
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:39.783026Z",
+      "Action": "pane-limit-configured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "requested=16 effective=16",
+      "Owner": {
+        "PID": 0,
+        "Started": 0
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:53.640439Z",
+      "Action": "pane-released",
+      "ID": "478dab8d5cd0c4a347507372df9f461b5735da4d20bf216573b25f804567272b",
+      "Reason": "",
+      "Owner": {
+        "PID": 20486,
+        "Started": 1792457976
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:53.811013Z",
+      "Action": "pane-released",
+      "ID": "285c6f7f8c62c79bc750e664eade6fe096fa47b1047d125cfbbe13af38cfd7b3",
+      "Reason": "",
+      "Owner": {
+        "PID": 20486,
+        "Started": 1792457976
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:53.85581Z",
+      "Action": "pane-limit-unconfigured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 20486,
+        "Started": 1792457976
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:54.22264Z",
+      "Action": "pane-limit-configured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "requested=16 effective=16",
+      "Owner": {
+        "PID": 0,
+        "Started": 0
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:54.476576Z",
+      "Action": "pane-limit-configured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "requested=24 effective=24",
+      "Owner": {
+        "PID": 0,
+        "Started": 0
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:54.845046Z",
+      "Action": "pane-reserved",
+      "ID": "285c6f7f8c62c79bc750e664eade6fe096fa47b1047d125cfbbe13af38cfd7b3",
+      "Reason": "live=0 pending=0 memory=0",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T00:59:55.057429Z",
+      "Action": "pane-reserved",
+      "ID": "478dab8d5cd0c4a347507372df9f461b5735da4d20bf216573b25f804567272b",
+      "Reason": "live=1 pending=0 memory=1",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:08.671502Z",
+      "Action": "pane-reserved",
+      "ID": "b0b725c2b91c73c96697e3d45158b5871bb359158f793f495672ce9f30db0548",
+      "Reason": "live=2 pending=0 memory=2",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:09.716582Z",
+      "Action": "pane-reserved",
+      "ID": "4e4f3f97775d498891d006dea16aa4c641df90a47f4998131d363b086f8f861c",
+      "Reason": "live=3 pending=0 memory=3",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:15.06828Z",
+      "Action": "pane-released",
+      "ID": "b0b725c2b91c73c96697e3d45158b5871bb359158f793f495672ce9f30db0548",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:15.125737Z",
+      "Action": "pane-reserved",
+      "ID": "33153da8acce5af9220a04588a2866aad8628aa03726e3bd021dbfbd2626d067",
+      "Reason": "live=2 pending=1 memory=3",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:15.303998Z",
+      "Action": "pane-released",
+      "ID": "4e4f3f97775d498891d006dea16aa4c641df90a47f4998131d363b086f8f861c",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:15.365607Z",
+      "Action": "pane-reserved",
+      "ID": "ba21e323cd8b50a2f39b3765c16cd4c5f0cc3f9a2a31f18dbfccf386c67e0ae6",
+      "Reason": "live=3 pending=0 memory=3",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:20.567644Z",
+      "Action": "pane-released",
+      "ID": "ba21e323cd8b50a2f39b3765c16cd4c5f0cc3f9a2a31f18dbfccf386c67e0ae6",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:21.057029Z",
+      "Action": "pane-reserved",
+      "ID": "a2f3c48e166ae239ba9d20a39123bcbb6a81c16dacd7c01a9b9a0eb0446d69bd",
+      "Reason": "live=3 pending=0 memory=3",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:23.00178Z",
+      "Action": "pane-released",
+      "ID": "33153da8acce5af9220a04588a2866aad8628aa03726e3bd021dbfbd2626d067",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:23.489587Z",
+      "Action": "pane-reserved",
+      "ID": "6244ec1104af9f7e244769eeb4a09b12a5b0251bd97d22139a53048ce32faf9a",
+      "Reason": "live=3 pending=0 memory=3",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:34.133237Z",
+      "Action": "pane-reserved",
+      "ID": "ceffa88a4f0a3ac980dbc2b486ffaae9c6f3cb7362d2157d4b7372ab237ebf26",
+      "Reason": "live=4 pending=0 memory=4",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:34.429133Z",
+      "Action": "pane-reserved",
+      "ID": "7414fdf2063b3c216f5ad9c6781804ab29ec6958a13e7ff89773813aee3161e3",
+      "Reason": "live=5 pending=0 memory=5",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:00:57.762451Z",
+      "Action": "pane-reserved",
+      "ID": "9b431bf443c2cf6f16495bf0d0565028fc8182d9ddee50afd4af123260c16033",
+      "Reason": "live=6 pending=0 memory=6",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:00.047866Z",
+      "Action": "pane-reserved",
+      "ID": "d428b9c4d60ea4ebde5d8f504ab05dabe4c5b0ee466f967857cca3e95edf717b",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:07.103195Z",
+      "Action": "pane-released",
+      "ID": "9b431bf443c2cf6f16495bf0d0565028fc8182d9ddee50afd4af123260c16033",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:07.158732Z",
+      "Action": "pane-reserved",
+      "ID": "30ed1ce884f93e104c76fd359d4d00626b956f9f1e556d9e5c323e1a52f25530",
+      "Reason": "live=6 pending=1 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:07.30039Z",
+      "Action": "pane-released",
+      "ID": "d428b9c4d60ea4ebde5d8f504ab05dabe4c5b0ee466f967857cca3e95edf717b",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:07.362868Z",
+      "Action": "pane-reserved",
+      "ID": "4201c585db8ab1d14a6044c537087dbe84b570ce0e801d3a67b5b83c50742339",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:12.282803Z",
+      "Action": "pane-released",
+      "ID": "30ed1ce884f93e104c76fd359d4d00626b956f9f1e556d9e5c323e1a52f25530",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:12.335608Z",
+      "Action": "pane-reserved",
+      "ID": "ccb5d05dfeb6d0d91a18761fd8113ac451988e8d428b89fd4eef809809fc2a2d",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:17.016343Z",
+      "Action": "pane-released",
+      "ID": "4201c585db8ab1d14a6044c537087dbe84b570ce0e801d3a67b5b83c50742339",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:17.070068Z",
+      "Action": "pane-reserved",
+      "ID": "a3015a44b8e653400588a2607d25d527c6545f4fa6f5999ba5c76967015c12fa",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:22.029575Z",
+      "Action": "pane-released",
+      "ID": "a3015a44b8e653400588a2607d25d527c6545f4fa6f5999ba5c76967015c12fa",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:22.083454Z",
+      "Action": "pane-reserved",
+      "ID": "11d3707a8561fc6bcc241907b28d83164baa403973a642175cb04659840da0f0",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:26.381974Z",
+      "Action": "pane-released",
+      "ID": "11d3707a8561fc6bcc241907b28d83164baa403973a642175cb04659840da0f0",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:27.258045Z",
+      "Action": "pane-released",
+      "ID": "ccb5d05dfeb6d0d91a18761fd8113ac451988e8d428b89fd4eef809809fc2a2d",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:27.298354Z",
+      "Action": "pane-reserved",
+      "ID": "2cff86e016d592aac664d314a775e1d7caf6411d839ec19f42568c77551e16b6",
+      "Reason": "live=6 pending=0 memory=6",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:27.414497Z",
+      "Action": "pane-reserved",
+      "ID": "07481c7e4c37aa7e8d7e0f5f91eeb3bf6666679ed336d76609c9bda911f6289b",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:32.101511Z",
+      "Action": "pane-released",
+      "ID": "07481c7e4c37aa7e8d7e0f5f91eeb3bf6666679ed336d76609c9bda911f6289b",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:01:34.642008Z",
+      "Action": "pane-reserved",
+      "ID": "351a47642a7dcd7aab818640794b2191ec954b89f162150cf9bc88359ab86217",
+      "Reason": "live=7 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:03.286678Z",
+      "Action": "pane-reserved",
+      "ID": "3a02ab6848899eb4a92d7ae299a7e10b537c06e9c4f2bd240fdf49b4b3ced925",
+      "Reason": "live=8 pending=0 memory=8",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:07.719008Z",
+      "Action": "pane-released",
+      "ID": "3a02ab6848899eb4a92d7ae299a7e10b537c06e9c4f2bd240fdf49b4b3ced925",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:07.774753Z",
+      "Action": "pane-reserved",
+      "ID": "ed61c059ef00743a2a1a9a9e8de83ff6910a1e6b3019c689aa95307f704b1e03",
+      "Reason": "live=8 pending=0 memory=8",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:15.478462Z",
+      "Action": "pane-released",
+      "ID": "ed61c059ef00743a2a1a9a9e8de83ff6910a1e6b3019c689aa95307f704b1e03",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:15.531927Z",
+      "Action": "pane-reserved",
+      "ID": "2a983378a427ace90abbb6252811f412bab9fa893a9dbc53fc4c6be3fe0b740c",
+      "Reason": "live=8 pending=0 memory=8",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:20.573017Z",
+      "Action": "pane-released",
+      "ID": "2a983378a427ace90abbb6252811f412bab9fa893a9dbc53fc4c6be3fe0b740c",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:20.627867Z",
+      "Action": "pane-reserved",
+      "ID": "24d570cb8644e8dda41a70a21a05b5099bcff1c36e0f12b8c871b06889f17cb5",
+      "Reason": "live=8 pending=0 memory=8",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:25.173569Z",
+      "Action": "pane-released",
+      "ID": "24d570cb8644e8dda41a70a21a05b5099bcff1c36e0f12b8c871b06889f17cb5",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:02:42.971833Z",
+      "Action": "pane-reserved",
+      "ID": "9ee328dc0625be1a9d492d81f30b195d655c2cb270cbb12850b68602b748b8bf",
+      "Reason": "live=8 pending=0 memory=8",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:05.878424Z",
+      "Action": "pane-reserved",
+      "ID": "8d133306b7770d3d52b4c0d333f0955a8e3b5ebea0e83c730138affd7621a5a9",
+      "Reason": "live=9 pending=0 memory=8",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:11.83952Z",
+      "Action": "pane-released",
+      "ID": "8d133306b7770d3d52b4c0d333f0955a8e3b5ebea0e83c730138affd7621a5a9",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:12.243915Z",
+      "Action": "pane-reserved",
+      "ID": "d251102710850d3bcee169a478398f24951878502e8e6662ecf114f826d4d5fb",
+      "Reason": "live=9 pending=0 memory=7",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:22.496787Z",
+      "Action": "pane-released",
+      "ID": "d251102710850d3bcee169a478398f24951878502e8e6662ecf114f826d4d5fb",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:25.539493Z",
+      "Action": "pane-released",
+      "ID": "351a47642a7dcd7aab818640794b2191ec954b89f162150cf9bc88359ab86217",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:25.724956Z",
+      "Action": "pane-released",
+      "ID": "285c6f7f8c62c79bc750e664eade6fe096fa47b1047d125cfbbe13af38cfd7b3",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:25.909969Z",
+      "Action": "pane-released",
+      "ID": "ceffa88a4f0a3ac980dbc2b486ffaae9c6f3cb7362d2157d4b7372ab237ebf26",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:26.096716Z",
+      "Action": "pane-released",
+      "ID": "9ee328dc0625be1a9d492d81f30b195d655c2cb270cbb12850b68602b748b8bf",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:26.281294Z",
+      "Action": "pane-released",
+      "ID": "478dab8d5cd0c4a347507372df9f461b5735da4d20bf216573b25f804567272b",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:26.469737Z",
+      "Action": "pane-released",
+      "ID": "a2f3c48e166ae239ba9d20a39123bcbb6a81c16dacd7c01a9b9a0eb0446d69bd",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:26.651214Z",
+      "Action": "pane-released",
+      "ID": "6244ec1104af9f7e244769eeb4a09b12a5b0251bd97d22139a53048ce32faf9a",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:26.825404Z",
+      "Action": "pane-released",
+      "ID": "7414fdf2063b3c216f5ad9c6781804ab29ec6958a13e7ff89773813aee3161e3",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:27.002177Z",
+      "Action": "pane-released",
+      "ID": "2cff86e016d592aac664d314a775e1d7caf6411d839ec19f42568c77551e16b6",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-20T01:03:27.052737Z",
+      "Action": "pane-limit-unconfigured",
+      "ID": "/private/tmp/fhd-rgcpxq2q/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 22770,
+        "Started": 1792457994
+      },
+      "Events": null
+    }
+  ]
+}

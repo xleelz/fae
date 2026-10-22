@@ -1,0 +1,13 @@
+package completion
+
+func ReplicationScheduleDropsReceiptBeforeAdvance() {
+ pinned:=make(chan int)
+ attempted:=make(chan int)
+ verified:=make(chan int)
+ advanced:=make(chan int)
+ go func(){pinned<-1}()
+ go func(){<-pinned;attempted<-1}()
+ go func(){<-attempted;verified<-1}()
+ go func(){advanced<-1}()
+ <-advanced
+}

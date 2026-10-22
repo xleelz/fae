@@ -1,0 +1,25 @@
+=== RUN   TestRetirementStateMachine
+--- PASS: TestRetirementStateMachine (0.25s)
+PASS
+ok  	github.com/xleelz/fae/engine	1.569s
+=== RUN   TestBacklogReleaseGuardAndKinds
+--- PASS: TestBacklogReleaseGuardAndKinds (0.00s)
+=== RUN   TestBacklogLandingIdentity
+--- PASS: TestBacklogLandingIdentity (0.00s)
+=== RUN   TestRetirementReleaseAndContainmentGuard
+--- PASS: TestRetirementReleaseAndContainmentGuard (0.00s)
+=== RUN   TestRetirementNativeAtomicTransferCycleHoldAndReads
+--- PASS: TestRetirementNativeAtomicTransferCycleHoldAndReads (2.97s)
+=== RUN   TestRetirementContainedRequiresOwnResolvingReceipt
+--- PASS: TestRetirementContainedRequiresOwnResolvingReceipt (1.37s)
+=== RUN   TestRetirementBoardAndStatusOptIn
+--- PASS: TestRetirementBoardAndStatusOptIn (0.00s)
+PASS
+ok  	github.com/xleelz/fae/daemon	5.581s
+testing: warning: no tests to run
+PASS
+ok  	github.com/xleelz/fae/controlplane	1.120s [no tests to run]
+=== RUN   TestTaskControlCLIThinRPCs
+--- PASS: TestTaskControlCLIThinRPCs (0.01s)
+PASS
+ok  	github.com/xleelz/fae/cmd/fae	1.158s

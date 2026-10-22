@@ -1,0 +1,14 @@
+{
+  "provider-alpha": {
+    "known_integration_races": 1,
+    "genuine_red_runs": 1,
+    "fresh_green_runs": 2,
+    "real_model_turns": 17
+  },
+  "provider-beta": {
+    "known_integration_races": 0,
+    "genuine_red_runs": 1,
+    "fresh_green_runs": 1,
+    "real_model_turns": 12
+  }
+}

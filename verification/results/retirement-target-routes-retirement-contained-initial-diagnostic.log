@@ -1,0 +1,6 @@
+Initial focused retirement test failure (transcribed before final passing rerun):
+=== RUN   TestRetirementContainedRequiresOwnResolvingReceipt
+    retirement_test.go:184: contained requires a resolving exact SHA from this task's own commit evidence
+--- FAIL: TestRetirementContainedRequiresOwnResolvingReceipt (1.05s)
+Cause: synthetic live commit completion supplied {sha} but the Commit artifact schema also requires files. Engine correctly treated malformed completion as failure and produced no commit receipt; containment correctly refused. Fixed test fixture to supply files. Production containment guard was not loosened.
+The original aggregate log path was reused by the rerun; this is a diagnostic transcription, not the original raw log.

@@ -1,0 +1,11 @@
+package completion
+
+func AuthorityMissingPermission() {
+ authenticated := make(chan int)
+ permitted := make(chan int)
+ committed := make(chan int)
+ go func(){authenticated <- 1}()
+ go func(){<-authenticated}()
+ go func(){<-permitted;committed <- 1}()
+ <-committed
+}

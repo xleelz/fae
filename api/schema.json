@@ -1,0 +1,1714 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fae RPC request version 1",
+  "description": "POST /v1/rpc over an owner-only Unix-domain socket. Credentials resolve to server-configured principals; request fields cannot select an actor. Read RPCs default to a five-second deadline and coalesce within authenticated scope. GET /v1/events?after=N streams committed NDJSON events and explicit retention/overflow gaps. Supported task-control methods include Escalate, Block, Cancel, Defer, Undefer, Reprioritize, SetAttemptLimit, RestartWithInformation, ResumeWithContext and Resume. Mutation citations must satisfy action permissions and message-class consumption. Prophet chats enqueue asynchronous task/global liaison turns; bounded pages carry replies and outcomes. BacklogAdmit validates a graph atomically; BacklogEdge edits dependencies; BacklogShow reports readiness; ReconcileDone repairs proven landed mirrors. Retire accepts superseded-by, contained, or obsolete reasons and updates dependency handling atomically. Read methods accept include_retired=false by default. TargetConfigPut/Get/List/Retire manage immutable local target policies; admissions pin target_config and target_revision. Target schema v2 pins Normal-mode installed adapters and review/ticket policies. Census produces a reviewed snapshot artifact; CensusApply retires one unchanged row. PlaneBackup verifies an offline restore; CleanupRetired requires that backup and archives all candidates before deletion. Backup and cleanup have scoped two-minute deadlines; shorter caller deadlines still apply. AdapterPut/Get/List/Retire manage immutable schema-discovered adapter revisions and first-write retirement tombstones. Retirement refuses new bindings but preserves already bound tasks and pending preparations. Target schema v3 pins a separate adapter bundle. ReviewWorkspacePlan computes owned bindings; operator ReviewWorkspacePrepare provisions and baseline-checks the task workspace outside the drive. Optional fleet provisioning persists exact intent and attempted marker before a single mutation, then verified binding receipt before baseline readiness; uncertain retries query without replay. Scratch cleanup is a local controller operation with creation-time marker and externally retained backups. BackupRetention previews and applies a digest-bound policy while retaining historical cleanup coverage. BackupReplicate uses a durable attempted marker, receipt query recovery and remote content checksum verification. BackupRetentionSchedule configures, pauses, resumes and inspects an opt-in durable plane-backup retention policy; scheduled runs revalidate operator authorization and preserve all retention safeguards. Scratch-archive cleanup is an offline owner-only preview/apply operation that removes only exact redundant copies while preserving the canonical completed-cleanup archive. BackupSchedule controls durable automatic verified plane-backup creation. BackupReplicationSchedule processes one verified local backup per interval, preserving a pending source/destination across restart and using query-only recovery after uncertain upload. Both require fresh explicit recurring authority and run outside provider workflows. BackupReplicationUnpin previews and applies a digest-bound release of a replication source pin after proving every remote replica and excluding pending claims. BackupQuota configures durable byte and backup-count admission limits, counts partial backups and replication spool files, and preserves data on an export overrun.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "method"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "key": {
+      "type": "string"
+    },
+    "params": {},
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional absolute request deadline. Default server maximum is five seconds; authenticated PlaneBackup, BackupRetention, BackupReplicate, CleanupRetired and ReviewWorkspacePrepare allow up to two minutes."
+    }
+  },
+  "$defs": {
+    "taskControlParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "authorizing_message"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authorizing_message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "information": {
+          "type": "string",
+          "maxLength": 1048576
+        },
+        "context": {
+          "type": "string",
+          "maxLength": 1048576
+        },
+        "until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 10
+        },
+        "attempt_limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expected_version": {
+          "type": "integer"
+        },
+        "expected_digest": {
+          "type": "string"
+        },
+        "census_digest": {
+          "type": "string"
+        },
+        "census_evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "eventGap": {
+      "type": "object",
+      "required": [
+        "kind",
+        "reason",
+        "requested_after",
+        "resume_after",
+        "timestamp"
+      ],
+      "properties": {
+        "kind": {
+          "const": "gap"
+        },
+        "reason": {
+          "enum": [
+            "retention",
+            "overflow"
+          ]
+        },
+        "requested_after": {
+          "type": "integer"
+        },
+        "resume_after": {
+          "type": "integer"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Stream gap record. RPC event-gap errors contain this object serialized in message. Resume strictly after resume_after."
+    },
+    "prophetParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "after": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "direct": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "RestartWithInformation",
+              "ResumeWithContext"
+            ]
+          }
+        },
+        "action_task": {
+          "type": "string"
+        }
+      },
+      "description": "Chats enqueue a bounded provider turn and return its id. Page session messages after the submitted entry sequence; replies cite reply_to. Global enactment requires an explicit action_task."
+    },
+    "backlogEdge": {
+      "type": "object",
+      "required": [
+        "from",
+        "to",
+        "kind"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "blocking",
+            "relates"
+          ]
+        }
+      }
+    },
+    "targetConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "enum": [
+            1,
+            2,
+            3
+          ]
+        },
+        "workspace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integration_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protected_branches": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allowed_commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "normal": {
+          "$ref": "#/$defs/normalTarget"
+        }
+      },
+      "required": [
+        "schema_version",
+        "workspace",
+        "integration_ref",
+        "protected_branches",
+        "allowed_commands"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "schema_version": {
+                "enum": [
+                  2,
+                  3
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "normal"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "normal"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "schema_version": {
+                "const": 3
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "normal": {
+                "required": [
+                  "adapter"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "normal": {
+                "not": {
+                  "required": [
+                    "adapter"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "targetPut": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "document": {
+          "$ref": "#/$defs/targetConfig"
+        },
+        "authorizing_message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "document",
+        "authorizing_message"
+      ]
+    },
+    "targetGet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "targetRetire": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authorizing_message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "reason",
+        "authorizing_message"
+      ]
+    },
+    "normalTool": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "server": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arguments": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "minProperties": 1
+        }
+      },
+      "required": [
+        "endpoint",
+        "server",
+        "name",
+        "role",
+        "arguments"
+      ]
+    },
+    "normalReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integration_tip": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline_tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status_tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "remediation_stage": {
+          "type": "string"
+        },
+        "poll_seconds": {
+          "type": "integer"
+        },
+        "max_polls": {
+          "type": "integer"
+        },
+        "max_revisions": {
+          "type": "integer"
+        },
+        "operations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "argument_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "baseline_approved": {
+          "const": true
+        },
+        "disable_publish_merge": {
+          "type": "boolean"
+        },
+        "provision_tool": {
+          "type": "string",
+          "description": "Optional installed fleet provisioning alias. Its package/workspace/branch/integration_tip arguments must exactly match the planned binding. Invoked only by explicit ReviewWorkspacePrepare."
+        }
+      },
+      "required": [
+        "package",
+        "workspace",
+        "branch",
+        "integration_tip",
+        "baseline_tool",
+        "status_tool",
+        "baseline_approved"
+      ]
+    },
+    "ticketAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "tool",
+        "action"
+      ]
+    },
+    "normalTicketWorkflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ticketAction"
+          }
+        },
+        "refresh_seconds": {
+          "type": "integer"
+        },
+        "workflows": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "actions",
+        "refresh_seconds",
+        "workflows"
+      ]
+    },
+    "normalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "type": "string",
+          "minLength": 1
+        },
+        "push_namespace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ticket_room": {
+          "type": "string"
+        },
+        "tools": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "#/$defs/normalTool"
+          }
+        },
+        "review_task": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review": {
+          "$ref": "#/$defs/normalReview"
+        },
+        "ticket_workflow": {
+          "$ref": "#/$defs/normalTicketWorkflow"
+        },
+        "disable_review_publish_merge": {
+          "type": "boolean"
+        },
+        "adapter": {
+          "$ref": "#/$defs/adapterBinding"
+        }
+      },
+      "required": [
+        "destination",
+        "push_namespace",
+        "tools"
+      ],
+      "dependentRequired": {
+        "review": [
+          "review_task"
+        ],
+        "review_task": [
+          "review"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "ticket_workflow"
+            ]
+          },
+          "then": {
+            "required": [
+              "ticket_room"
+            ],
+            "properties": {
+              "ticket_room": {
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "disable_review_publish_merge"
+            ],
+            "properties": {
+              "disable_review_publish_merge": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "review"
+            ]
+          }
+        }
+      ]
+    },
+    "censusProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "id",
+        "reason",
+        "evidence"
+      ]
+    },
+    "censusParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "include_blocked": {
+          "type": "boolean"
+        },
+        "proposals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/censusProposal"
+          }
+        }
+      },
+      "required": []
+    },
+    "censusRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "enum": [
+            "Escalated",
+            "Blocked"
+          ]
+        },
+        "snapshot_digest": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "branch_tip": {
+          "type": "string"
+        },
+        "branch_error": {
+          "type": "string"
+        },
+        "landing_evidence": {
+          "type": "string"
+        },
+        "classification": {
+          "enum": [
+            "live",
+            "obsolete",
+            "contained",
+            "superseded-by"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "state",
+        "snapshot_digest",
+        "branch_tip",
+        "landing_evidence",
+        "classification",
+        "reason",
+        "evidence",
+        "version"
+      ]
+    },
+    "censusArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": 1
+        },
+        "instance": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/censusRow"
+          }
+        },
+        "digest": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "instance",
+        "rows",
+        "digest"
+      ]
+    },
+    "censusApply": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/censusArtifact"
+        },
+        "row_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authorizing_message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "artifact",
+        "row_id",
+        "authorizing_message"
+      ]
+    },
+    "planeBackup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backup": {
+          "type": "string"
+        },
+        "apply": {
+          "type": "boolean"
+        },
+        "dry_run": {
+          "type": "boolean"
+        },
+        "pace_ms": {
+          "type": "integer",
+          "anyOf": [
+            {
+              "const": 0
+            },
+            {
+              "minimum": 10,
+              "maximum": 60000
+            }
+          ]
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "authorizing_message"
+      ],
+      "description": "The CLI uses the CleanupParams envelope for both commands; only authorizing_message is used by PlaneBackup."
+    },
+    "cleanupRetired": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backup": {
+          "type": "string"
+        },
+        "apply": {
+          "type": "boolean"
+        },
+        "dry_run": {
+          "type": "boolean"
+        },
+        "pace_ms": {
+          "type": "integer",
+          "anyOf": [
+            {
+              "const": 0
+            },
+            {
+              "minimum": 10,
+              "maximum": 60000
+            }
+          ]
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "apply"
+            ],
+            "properties": {
+              "apply": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "backup",
+              "authorizing_message"
+            ],
+            "properties": {
+              "backup": {
+                "minLength": 1
+              },
+              "authorizing_message": {
+                "minLength": 1
+              },
+              "dry_run": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "adapterBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^([a-f0-9]{64})?$"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "adapterDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "tools": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 100,
+          "additionalProperties": {
+            "$ref": "#/$defs/normalTool"
+          }
+        },
+        "review_policies": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/normalReview"
+          }
+        },
+        "ticket_workflow": {
+          "$ref": "#/$defs/normalTicketWorkflow"
+        },
+        "disable_review_publish_merge": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "tools"
+      ]
+    },
+    "adapterPut": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "document": {
+          "$ref": "#/$defs/adapterDocument"
+        },
+        "authorizing_message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "document",
+        "authorizing_message"
+      ]
+    },
+    "adapterGet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "reviewWorkspaceParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "adapter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/adapterBinding"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "const": ""
+                },
+                "revision": {
+                  "const": 0
+                },
+                "hash": {
+                  "const": ""
+                }
+              },
+              "required": [
+                "id",
+                "revision",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "task"
+      ]
+    },
+    "adapterRetire": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "authorizing_message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "reason",
+        "authorizing_message"
+      ]
+    },
+    "backupRetention": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "keep": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "apply": {
+          "type": "boolean"
+        },
+        "plan_digest": {
+          "type": "string"
+        },
+        "authorizing_message": {
+          "type": "string"
+        },
+        "dry_run": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "keep"
+      ]
+    },
+    "backupReplicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backup": {
+          "type": "string",
+          "minLength": 1
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1073741824
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "backup",
+        "endpoint",
+        "authorizing_message"
+      ]
+    },
+    "backupRetentionSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "configure",
+            "pause",
+            "resume",
+            "status"
+          ]
+        },
+        "interval_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31536000
+        },
+        "keep": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    },
+    "backupSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "configure",
+            "pause",
+            "resume",
+            "status"
+          ]
+        },
+        "interval_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31536000
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    },
+    "backupReplicationSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "configure",
+            "pause",
+            "resume",
+            "status"
+          ]
+        },
+        "interval_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31536000
+        },
+        "authorizing_message": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1073741824
+        }
+      },
+      "required": [
+        "action"
+      ]
+    },
+    "backupQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "configure",
+            "status"
+          ]
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1152921504606846976
+        },
+        "max_backups": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    },
+    "backupReplicationUnpin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backup": {
+          "type": "string",
+          "minLength": 1
+        },
+        "apply": {
+          "type": "boolean"
+        },
+        "plan_digest": {
+          "type": "string"
+        },
+        "authorizing_message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "backup"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "enum": [
+              "Escalate",
+              "Block",
+              "Cancel",
+              "Defer",
+              "Undefer",
+              "Reprioritize",
+              "SetAttemptLimit",
+              "RestartWithInformation",
+              "ResumeWithContext",
+              "Resume",
+              "Retire"
+            ]
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/taskControlParams"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "enum": [
+              "ProphetSession",
+              "ProphetChatRead",
+              "ProphetChat"
+            ]
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/prophetParams"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "TargetConfigPut"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/targetPut"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "TargetConfigGet"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/targetGet"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "TargetConfigRetire"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/targetRetire"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "Census"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/censusParams"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "CensusApply"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/censusApply"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "PlaneBackup"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/planeBackup"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "CleanupRetired"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/cleanupRetired"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "AdapterPut"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/adapterPut"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "AdapterGet"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/adapterGet"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "ReviewWorkspacePlan"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/reviewWorkspaceParams"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "ReviewWorkspacePrepare"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/reviewWorkspaceParams"
+              },
+              {
+                "required": [
+                  "adapter",
+                  "authorizing_message"
+                ],
+                "properties": {
+                  "adapter": {
+                    "$ref": "#/$defs/adapterBinding"
+                  },
+                  "authorizing_message": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "ScratchCleanupAuthorize"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/planeBackup"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "AdapterRetire"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/adapterRetire"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupRetention"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupRetention"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupReplicate"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupReplicate"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupRetentionSchedule"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupRetentionSchedule"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupSchedule"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupSchedule"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupReplicationSchedule"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupReplicationSchedule"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupQuota"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupQuota"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "BackupReplicationUnpin"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "$ref": "#/$defs/backupReplicationUnpin"
+          }
+        }
+      }
+    }
+  ]
+}

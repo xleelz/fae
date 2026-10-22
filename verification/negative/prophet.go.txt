@@ -1,0 +1,8 @@
+package completion
+
+func ProphetMissingDirection() {
+ direction:=make(chan int)
+ reply:=make(chan int)
+ go func(){ <-direction; reply<-1 }()
+ <-reply
+}

@@ -1,0 +1,13 @@
+package completion
+
+// Negative control: a worker omits release; its sibling can never acquire.
+func LeaseReleaseMissing() {
+ token:=make(chan int,1)
+ done:=make(chan int,2)
+ token<-1
+ go missingRelease(token,done)
+ go missingRelease(token,done)
+ <-done
+ <-done
+}
+func missingRelease(token,done chan int){<-token;done<-1}

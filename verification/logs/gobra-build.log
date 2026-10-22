@@ -1,0 +1,756 @@
+[info] [launcher] getting org.scala-sbt sbt 1.13.0  (this may take some time)...
+[info] [launcher] getting Scala 2.12.21 (for sbt)...
+[info] welcome to sbt 1.13.0 (Homebrew Java 17.0.20.1)
+[info] loading settings for project gobra-build from plugins.sbt...
+[info] loading project definition from /Users/lbethay/workplace/fae/.tools/gobra/project
+[info] loading settings for project gobra from build.sbt...
+[info] loading settings for project server from build.sbt...
+[info] loading settings for project silicon from build.sbt...
+[info] loading settings for project carbon from build.sbt...
+[info] loading settings for project silver from build.sbt...
+[info] loading settings for project silver from build.sbt...
+[info] set current project to Gobra (in build file:/Users/lbethay/workplace/fae/.tools/gobra/)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 2089k  100 2089k    0     0  7769k      0 --:--:-- --:--:-- --:--:-- 7795k
+[0;32mGenerating the lexer:[0m
+warning(146): GobraLexer.g4:524:0: non-fragment lexer rule OTHER can match the empty string
+[0;32mGenerating the parser:[0m
+warning(109): GoParser.g4:40:0: options ignored in imported grammar GoParser
+[0;32mMoving the generated files:[0m
+/Users/lbethay/workplace/fae/.tools/gobra/src/main/antlr4/GobraLexer.java -> /Users/lbethay/workplace/fae/.tools/gobra/src/main/java/viper/gobra/frontend/GobraLexer.java
+/Users/lbethay/workplace/fae/.tools/gobra/src/main/antlr4/GobraParser.java -> /Users/lbethay/workplace/fae/.tools/gobra/src/main/java/viper/gobra/frontend/GobraParser.java
+/Users/lbethay/workplace/fae/.tools/gobra/src/main/antlr4/GobraParserBaseVisitor.java -> /Users/lbethay/workplace/fae/.tools/gobra/src/main/java/viper/gobra/frontend/GobraParserBaseVisitor.java
+/Users/lbethay/workplace/fae/.tools/gobra/src/main/antlr4/GobraParserVisitor.java -> /Users/lbethay/workplace/fae/.tools/gobra/src/main/java/viper/gobra/frontend/GobraParserVisitor.java
+[info] compiling 116 Scala sources to /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/target/scala-2.13/classes ...
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/GenericAxiomRewriter.scala:217:11: pattern var qvar in value $anonfun is never used
+[warn]     for ((qvar, entries) <- solved;
+[warn]           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/GenericAxiomRewriter.scala:218:34: pattern var solution in value $anonfun is never used
+[warn]          (invalidTerm, substVar, solution) <- entries) {
+[warn]                                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/Triggers.scala:56:34: Auto-application to `()` is deprecated. Supply the empty argument list `()` explicitly to invoke method getArgs,
+[warn] or remove the empty argument list from its definition (Java-defined methods are exempt).
+[warn] In Scala 3, an unapplied method like this will be eta-expanded into a function. [quickfixable]
+[warn]       case fa: FieldAccess => fa.getArgs
+[warn]                                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/rewriter/RegexStrategy.scala:131:22: parameter ancList in method get is never used
+[warn]     def get(node: N, ancList: Seq[N]): Option[CTXT] = {
+[warn]                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/rewriter/Strategy.scala:240:45: evidence parameter evidence$15 of type reflect.runtime.universe.TypeTag[N] in class Strategy is never used
+[warn] class Strategy[N <: Rewritable : reflection.TypeTag : scala.reflect.ClassTag, C <: Context[N]](p: PartialFunction[(N, C), (N, C)]) extends StrategyInterface[N] {
+[warn]                                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/rewriter/Strategy.scala:240:69: evidence parameter evidence$16 of type scala.reflect.ClassTag[N] in class Strategy is never used
+[warn] class Strategy[N <: Rewritable : reflection.TypeTag : scala.reflect.ClassTag, C <: Context[N]](p: PartialFunction[(N, C), (N, C)]) extends StrategyInterface[N] {
+[warn]                                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/rewriter/Strategy.scala:799:20: parameter n in method updateCustom is never used
+[warn]   def updateCustom(n: N): ContextC[N, CUSTOM] = {
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/rewriter/Strategy.scala:823:20: parameter n in method updateCustom is never used
+[warn]   def updateCustom(n: N): ContextCustom[N, CUSTOM] = {
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/rewriter/TRegex.scala:97:28: evidence parameter evidence$2 of type reflect.runtime.universe.TypeTag[T] in method matches is never used
+[warn]   protected def matches[T: TypeTag](n: T): Boolean = {
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/cfg/silver/SilverCfg.scala:107:9: local var visited in method findJoinPoint is never updated: consider using immutable val
+[warn]     var visited: mutable.Set[SilverBlock] = mutable.Set.from(visitedInit)
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/cfg/silver/SilverCfg.scala:109:9: local var loopHeads in method findJoinPoint is never updated: consider using immutable val
+[warn]     var loopHeads: mutable.Set[SilverBlock] = mutable.Set.from(loopHeadsSeen)
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/FastParser.scala:58:16: Implicit definition should have explicit type (inferred viper.silver.parser.FastParserCompanion.LeadingWhitespace[T]) [quickfixable]
+[warn]   implicit def LeadingWhitespace[T](p: => P[T]) = new LeadingWhitespace(() => p)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/FastParser.scala:59:16: Implicit definition should have explicit type (inferred viper.silver.parser.FastParserCompanion.PositionParsing[T]) [quickfixable]
+[warn]   implicit def PositionParsing[T](p: => P[Pos => T]) = new PositionParsing(() => p)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/FastParser.scala:60:16: Implicit definition should have explicit type (inferred viper.silver.parser.FastParserCompanion.ExtendedParsing[T]) [quickfixable]
+[warn]   implicit def ExtendedParsing[T](p: => P[T]) = new ExtendedParsing(() => p)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/FastParser.scala:46:16: Implicit definition should have explicit type (inferred fastparse.ParsingRun[_] => fastparse.P[Unit]) [quickfixable]
+[warn]   implicit val whitespace = {
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/FastParser.scala:357:16: Implicit definition should have explicit type (inferred fastparse.ParsingRun[_] => fastparse.P[Unit]) [quickfixable]
+[warn]   implicit val whitespace = {
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/MacroExpander.scala:542:18: pattern var r in value replaced is never used
+[warn]             case r =>
+[warn]                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/plugin/ParserPluginTemplate.scala:9:159: Unused import
+[warn] import viper.silver.parser.{NameAnalyser, PAnnotationsPosition, PExp, PExtender, PKeyword, PKw, PMember, PReserved, PSpecification, PStmt, PTypeSubstitution, RNode, ReformatterContext, Translator, TypeChecker}
+[warn]                                                                                                                                                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/plugin/ParserPluginTemplate.scala:9:166: Unused import
+[warn] import viper.silver.parser.{NameAnalyser, PAnnotationsPosition, PExp, PExtender, PKeyword, PKw, PMember, PReserved, PSpecification, PStmt, PTypeSubstitution, RNode, ReformatterContext, Translator, TypeChecker}
+[warn]                                                                                                                                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/verifier/Counterexample.scala:143:31: pattern var re in value $anonfun is never used
+[warn]   heapEntries.foreach { case (re,he) => if (he.entryType == QPFieldType || he.entryType == QPPredicateType || he.entryType == QPMagicWandType) containsQP = true}
+[warn]                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/parser/FastParser.scala:1006:25: method copyArrayToImmutableIndexedSeq in class LowPriorityImplicits2 is deprecated (since 2.13.0): implicit conversions from Array to immutable.IndexedSeq are implemented by copying; use `toIndexedSeq` explicitly if you want to copy, or use the more efficient non-copying ArraySeq.unsafeWrapArray
+[warn]         value.offsets = _line_offset;
+[warn]                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/Statement.scala:57:113: match may not be exhaustive.
+[warn] It would fail on the following input: LocalVarWithVersion(_, _)
+[warn]   def apply(lhs: Lhs, rhs: Exp)(pos: Position = NoPosition, info: Info = NoInfo, errT: ErrorTrafo = NoTrafos) = lhs match {
+[warn]                                                                                                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/Expressions.scala:17:33: match may not be exhaustive.
+[warn] It would fail on the following inputs: Exists(_, _, _), Forall(_, _, _)
+[warn]   def isPure(e: Exp): Boolean = e match {
+[warn]                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/QuantifiedPermissions.scala:266:36: Exhaustivity analysis reached max recursion depth, not all missing cases are reported.
+[warn] (Please try with scalac -Ypatmat-exhaust-depth 80 or -Ypatmat-exhaust-depth off.)
+[warn]             desugaredWithoutLet.map{
+[warn]                                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/ast/utility/Simplifier.scala:31:55: Cannot check match for unreachability.
+[warn] The analysis required more space than allowed.
+[warn] Please try with scalac -Ypatmat-exhaust-depth 80 or -Ypatmat-exhaust-depth off.
+[warn]     val simplifySingle: PartialFunction[Node, Node] = {
+[warn]                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/cfg/Cfg.scala:111:35: match may not be exhaustive.
+[warn] It would fail on the following inputs: PostconditionBlock(), PreconditionBlock()
+[warn]       val mapped: Block[S2, E2] = block match {
+[warn]                                   ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/cfg/Cfg.scala:156:45: match may not be exhaustive.
+[warn] It would fail on the following inputs: PostconditionBlock(), PreconditionBlock()
+[warn]     def label(block: Block[S, E]): String = block match {
+[warn]                                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/silver/src/main/scala/viper/silver/plugin/standard/termination/transformation/MethodCheck.scala:245:28: The outer reference in this type test cannot be checked at run time.
+[warn]   private final case class Transformed() extends Info {
+[warn]                            ^
+[warn] 28 warnings found
+[info] done compiling
+[info] compiling 8 Scala sources to /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/common/target/scala-2.13/classes ...
+[info] compiling 66 Scala sources to /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/target/scala-2.13/classes ...
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/common/src/main/scala/collections/mutable/MultiMap.scala:15:39: inheritance from class LinkedHashMap in package mutable is deprecated (since 2.13.11): LinkedHashMap will be made final; use .withDefault for the common use case of computing a default value
+[warn] trait MMultiMap[A, B] extends mutable.LinkedHashMap[A, mutable.LinkedHashSet[B]] {
+[warn]                                       ^
+[warn] one warning found
+[info] done compiling
+[info] compiling 141 Scala sources to /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/target/scala-2.13/classes ...
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:14:26: Unused import
+[warn] import viper.silver.ast.{Field, Member, Predicate, Resource}
+[warn]                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:175:17: pattern var k in value $anonfun is never used
+[warn]           for ((k, v) <- opValues.asInstanceOf[MapEntry].options) {
+[warn]                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:268:17: pattern var k in value $anonfun is never used
+[warn]           for ((k, v) <- opValues.asInstanceOf[MapEntry].options) {
+[warn]                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:393:17: pattern var k in value $anonfun is never used
+[warn]           for ((k, v) <- opValues.asInstanceOf[MapEntry].options) {
+[warn]                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:1030:53: parameter genmap in method detFunction is never used
+[warn]   def detFunction(model: Model, func: ast.FuncLike, genmap: scala.collection.immutable.Map[ast.TypeVar, ast.Type], heapInst: Seq[(String, String)], program: ast.Program, hd: Boolean, boogieNames: Map[String, String]): BasicFunctionEntry = {
+[warn]                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:1030:149: parameter program in method detFunction is never used
+[warn]   def detFunction(model: Model, func: ast.FuncLike, genmap: scala.collection.immutable.Map[ast.TypeVar, ast.Type], heapInst: Seq[(String, String)], program: ast.Program, hd: Boolean, boogieNames: Map[String, String]): BasicFunctionEntry = {
+[warn]                                                                                                                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/CarbonResolvedCounterexample.scala:1134:122: parameter translNames in method detHeap is never used
+[warn]   def detHeap(opMapping: Map[Seq[String], String], basicHeap: RawHeap, program: Program, collections: Seq[CECollection], translNames: Map[String, String], model: Model, wandNames: Option[Map[MagicWandStructure.MagicWandStructure, Func]]): HeapCounterexample = {
+[warn]                                                                                                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/Implicits.scala:17:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Seqn) [quickfixable]
+[warn]   implicit def liftStmt(ss: Seq[Stmt]) = Seqn(ss)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/Implicits.scala:18:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Implicits.BoolSeq) [quickfixable]
+[warn]   implicit def liftSeq(ss: Seq[Exp]) = new BoolSeq(ss)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/Config.scala:767:43: adaptation of an empty argument list by inserting () is deprecated: this is unlikely to be what you want
+[warn]         signature: Right.apply[A, B](value: B): scala.util.Right[A,B]
+[warn]   given arguments: <none>
+[warn]  after adaptation: Right((): Unit)
+[warn]     case (Some(true), Some(true)) => Right()
+[warn]                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/Config.scala:769:20: adaptation of an empty argument list by inserting () is deprecated: this is unlikely to be what you want
+[warn]         signature: Right.apply[A, B](value: B): scala.util.Right[A,B]
+[warn]   given arguments: <none>
+[warn]  after adaptation: Right((): Unit)
+[warn]     case _ => Right()
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/Config.scala:816:20: adaptation of an empty argument list by inserting () is deprecated: this is unlikely to be what you want
+[warn]         signature: Right.apply[A, B](value: B): scala.util.Right[A,B]
+[warn]   given arguments: <none>
+[warn]  after adaptation: Right((): Unit)
+[warn]     case _ => Right()
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/UnicodeString.scala:24:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.UnicodeString) [quickfixable]
+[warn]   implicit def string2unicodestring(s: String) = new UnicodeString(s)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/Silicon.scala:29:28: Unused import
+[warn] import scala.util.chaining._
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/boogie.scala:51:13: parameter n in method visit is never used
+[warn]   def visit(n: Node, f1: PartialFunction[Node, Unit], f2: PartialFunction[Node, Unit]): Unit = {
+[warn]             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/boogie.scala:59:16: parameter n in method visitOpt is never used
+[warn]   def visitOpt(n: Node)(f: Node => Boolean): Unit = {
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/boogie.scala:67:16: parameter n in method visitOpt is never used
+[warn]   def visitOpt(n: Node, f1: Node => Boolean, f2: Node => Unit): Unit = {
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:158:24: pattern var b in method transform is never used
+[warn]           case BoolLit(b) => exp
+[warn]                        ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:159:24: pattern var b in method transform is never used
+[warn]           case RealLit(b) => exp
+[warn]                        ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:161:25: pattern var n in method transform is never used
+[warn]           case LocalVar(n, tt) => exp
+[warn]                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:161:28: pattern var tt in method transform is never used
+[warn]           case LocalVar(n, tt) => exp
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:162:26: pattern var n in method transform is never used
+[warn]           case GlobalVar(n, tt) => exp
+[warn]                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:162:29: pattern var tt in method transform is never used
+[warn]           case GlobalVar(n, tt) => exp
+[warn]                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/boogie/utility.scala:163:22: pattern var i in method transform is never used
+[warn]           case Const(i) => exp
+[warn]                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/ExhaleModule.scala:9:39: Unused import
+[warn] import components.{ComponentRegistry, DefinednessState, ExhaleComponent}
+[warn]                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/HeapModule.scala:12:29: Unused import
+[warn] import viper.carbon.utility.PolyMapDesugarHelper
+[warn]                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/HeapModule.scala:13:26: Unused import
+[warn] import viper.silver.ast.{LocationAccess, MagicWand}
+[warn]                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/HeapModule.scala:13:42: Unused import
+[warn] import viper.silver.ast.{LocationAccess, MagicWand}
+[warn]                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:21:23: parameter e in method freeAssumptions is never used
+[warn]   def freeAssumptions(e: sil.Exp): Stmt = Statements.EmptyStmt
+[warn]                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:33:43: parameter e in method simplePartialCheckDefinednessBefore is never used
+[warn]   def simplePartialCheckDefinednessBefore(e: sil.Exp, error: PartialVerificationError, makeChecks: Boolean,
+[warn]                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:33:55: parameter error in method simplePartialCheckDefinednessBefore is never used
+[warn]   def simplePartialCheckDefinednessBefore(e: sil.Exp, error: PartialVerificationError, makeChecks: Boolean,
+[warn]                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:33:88: parameter makeChecks in method simplePartialCheckDefinednessBefore is never used
+[warn]   def simplePartialCheckDefinednessBefore(e: sil.Exp, error: PartialVerificationError, makeChecks: Boolean,
+[warn]                                                                                        ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:34:43: parameter definednessStateOpt in method simplePartialCheckDefinednessBefore is never used
+[warn]                                           definednessStateOpt: Option[DefinednessState]): Stmt = Statements.EmptyStmt
+[warn]                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:40:42: parameter e in method simplePartialCheckDefinednessAfter is never used
+[warn]   def simplePartialCheckDefinednessAfter(e: sil.Exp, error: PartialVerificationError, makeChecks: Boolean,
+[warn]                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:40:54: parameter error in method simplePartialCheckDefinednessAfter is never used
+[warn]   def simplePartialCheckDefinednessAfter(e: sil.Exp, error: PartialVerificationError, makeChecks: Boolean,
+[warn]                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:40:87: parameter makeChecks in method simplePartialCheckDefinednessAfter is never used
+[warn]   def simplePartialCheckDefinednessAfter(e: sil.Exp, error: PartialVerificationError, makeChecks: Boolean,
+[warn]                                                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/DefinednessComponent.scala:41:42: parameter definednessStateOpt in method simplePartialCheckDefinednessAfter is never used
+[warn]                                          definednessStateOpt: Option[DefinednessState]): Stmt = Statements.EmptyStmt
+[warn]                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/ExhaleComponent.scala:22:17: parameter e in method exhaleExp is never used
+[warn]   def exhaleExp(e: sil.Exp, error: PartialVerificationError, definednessStateOpt: Option[DefinednessState]): Stmt = Statements.EmptyStmt
+[warn]                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/ExhaleComponent.scala:22:29: parameter error in method exhaleExp is never used
+[warn]   def exhaleExp(e: sil.Exp, error: PartialVerificationError, definednessStateOpt: Option[DefinednessState]): Stmt = Statements.EmptyStmt
+[warn]                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/ExhaleComponent.scala:22:62: parameter definednessStateOpt in method exhaleExp is never used
+[warn]   def exhaleExp(e: sil.Exp, error: PartialVerificationError, definednessStateOpt: Option[DefinednessState]): Stmt = Statements.EmptyStmt
+[warn]                                                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/components/StmtComponent.scala:38:18: parameter fb in method freshReads is never used
+[warn]   def freshReads(fb: Seq[LocalVar]): Stmt = Statements.EmptyStmt
+[warn]                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultDomainModule.scala:28:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val namespace = verifier.freshNamespace("domain")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/debugger/DebugExp.scala:19:15: private var idCounter in object DebugExp is never updated: consider using immutable val
+[warn]   private var idCounter: AtomicInteger = new AtomicInteger(0)
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExhaleModule.scala:26:21: Unused import
+[warn]   import permModule._
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExhaleModule.scala:114:32: private default argument in class DefaultExhaleModule is never used
+[warn]                                havocHeap: Boolean = true, statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false,
+[warn]                                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExhaleModule.scala:114:59: private default argument in class DefaultExhaleModule is never used
+[warn]                                havocHeap: Boolean = true, statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false,
+[warn]                                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExhaleModule.scala:114:104: private default argument in class DefaultExhaleModule is never used
+[warn]                                havocHeap: Boolean = true, statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false,
+[warn]                                                                                                        ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExpModule.scala:16:26: Unused import
+[warn] import viper.silver.ast.{LocationAccess, MagicWand, PredicateAccess, Ref}
+[warn]                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExpModule.scala:16:42: Unused import
+[warn] import viper.silver.ast.{LocationAccess, MagicWand, PredicateAccess, Ref}
+[warn]                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExpModule.scala:16:53: Unused import
+[warn] import viper.silver.ast.{LocationAccess, MagicWand, PredicateAccess, Ref}
+[warn]                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExpModule.scala:16:70: Unused import
+[warn] import viper.silver.ast.{LocationAccess, MagicWand, PredicateAccess, Ref}
+[warn]                                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultExpModule.scala:483:87: parameter makeChecks in method checkDefinednessWand is never used
+[warn]   private def checkDefinednessWand(e: sil.MagicWand, error: PartialVerificationError, makeChecks: Boolean): Stmt = {
+[warn]                                                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:44:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val fpNamespace = verifier.freshNamespace("funcpred")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:57:15: private val specialRef in class DefaultFuncPredModule is never used
+[warn]   private val specialRef = Const(specialRefName)
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:324:75: pattern var perm in value $anonfun is never used
+[warn]         case Unfolding(PredicateAccessPredicate(predacc: PredicateAccess, perm), exp)
+[warn]                                                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:324:82: pattern var exp in value $anonfun is never used
+[warn]         case Unfolding(PredicateAccessPredicate(predacc: PredicateAccess, perm), exp)
+[warn]                                                                                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:348:65: private default argument in class DefaultFuncPredModule is never used
+[warn]   private def transformFuncAppsToLimitedOrTriggerForm(exp: Exp, heightToSkip : Int = -1, triggerForm: Boolean = false): Exp = {
+[warn]                                                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:348:90: private default argument in class DefaultFuncPredModule is never used
+[warn]   private def transformFuncAppsToLimitedOrTriggerForm(exp: Exp, heightToSkip : Int = -1, triggerForm: Boolean = false): Exp = {
+[warn]                                                                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:450:73: pattern var perm in value $anonfun is never used
+[warn]       case Unfolding(PredicateAccessPredicate(predacc: PredicateAccess, perm), exp)
+[warn]                                                                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:450:80: pattern var exp in value $anonfun is never used
+[warn]       case Unfolding(PredicateAccessPredicate(predacc: PredicateAccess, perm), exp)
+[warn]                                                                                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:603:15: local val mask1 in value $anonfun is never used
+[warn]           val mask1 = permModule.currentStateContributions
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:619:15: local val mask2 in value $anonfun is never used
+[warn]           val mask2 = permModule.currentStateContributions
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:988:54: pattern var pa in method translateFold is never used
+[warn]       case sil.Fold(acc@sil.PredicateAccessPredicate(pa@sil.PredicateAccess(_, _), perm)) => {
+[warn]                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:1008:30: private default argument in class DefaultFuncPredModule is never used
+[warn]                            , statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false): (Stmt,Stmt) = {
+[warn]                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:1008:75: private default argument in class DefaultFuncPredModule is never used
+[warn]                            , statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false): (Stmt,Stmt) = {
+[warn]                                                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:1033:56: pattern var pa in method translateUnfold is never used
+[warn]       case sil.Unfold(acc@sil.PredicateAccessPredicate(pa@sil.PredicateAccess(_, _), perm)) =>
+[warn]                                                        ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:1124:12: pattern var pap in method exhaleExpBeforeAfter is never used
+[warn]       case pap@sil.PredicateAccessPredicate(loc@sil.PredicateAccess(args, predicateName), _) if duringUnfold =>
+[warn]            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:1125:13: local val oldVersion in method exhaleExpBeforeAfter is never used
+[warn]         val oldVersion = LocalVar(Identifier("oldVersion"), predicateVersionType)
+[warn]             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultFuncPredModule.scala:1171:76: pattern var perm in method inhaleExp is never used
+[warn]       case pap@sil.PredicateAccessPredicate(loc@sil.PredicateAccess(_, _), perm) =>
+[warn]                                                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/debugger/SiliconDebugger.scala:174:23: parameter identifierFactory in class SiliconDebugger is never used
+[warn]                       identifierFactory: IdentifierFactory,
+[warn]                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/debugger/SiliconDebugger.scala:175:23: parameter reporter in class SiliconDebugger is never used
+[warn]                       reporter: Reporter,
+[warn]                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/debugger/SiliconDebugger.scala:422:15: private method chooseAssertion in class SiliconDebugger is never used
+[warn]   private def chooseAssertion(obl: ProofObligation): ProofObligation = {
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/debugger/SiliconDebugger.scala:578:15: private method printSingleAssumption in class SiliconDebugger is never used
+[warn]   private def printSingleAssumption(obl: ProofObligation): Unit={
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/Decider.scala:336:47: parameter de in method debuggerAssume is never used
+[warn]     def debuggerAssume(terms: Iterable[Term], de: DebugExp) = {
+[warn]                                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:36:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val heapNamespace = verifier.freshNamespace("heap")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:10:63: Unused import
+[warn] import viper.carbon.modules.components.{DefinednessComponent, InhaleComponent, SimpleStmtComponent}
+[warn]                                                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:18:30: Unused import
+[warn] import viper.silver.verifier.PartialVerificationError
+[warn]                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:82:15: private val qpHeap in class DefaultHeapModule is never used
+[warn]   private val qpHeap = LocalVar(qpHeapName, heapTyp)
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:112:9: local val obj2 in method preamble is never used
+[warn]     val obj2 = LocalVarDecl(Identifier("o2")(axiomNamespace), refType)
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:116:9: local val field2 in method preamble is never used
+[warn]     val field2 = LocalVarDecl(Identifier("f2")(axiomNamespace), NamedType(fieldTypeName, Seq(TypeVar("A2"), TypeVar("B2"))))
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:117:9: local val predField in method preamble is never used
+[warn]     val predField = LocalVarDecl(Identifier("pm_f")(axiomNamespace),
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:572:12: pattern var w in method rcvAndFieldExp is never used
+[warn]       case w: sil.MagicWand => (nullLit, translateResource(f))
+[warn]            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:584:76: private default argument in class DefaultHeapModule is never used
+[warn]   private def heapUpdateLoc(heap: Exp, f: sil.LocationAccess, newVal: Exp, isPMask: Boolean = false): Exp = {
+[warn]                                                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:636:59: pattern var perm in value $anonfun is never used
+[warn]           case sil.Fold(sil.PredicateAccessPredicate(loc, perm)) => // AS: this should really be taken care of in the FuncPredModule (and factored out to share code with unfolding case, if possible)
+[warn]                                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:683:42: pattern var perm in method addPermissionToWMask is never used
+[warn]       case sil.FieldAccessPredicate(loc, perm) =>
+[warn]                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:685:46: pattern var perm in method addPermissionToWMask is never used
+[warn]       case sil.PredicateAccessPredicate(loc, perm) =>
+[warn]                                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:756:42: pattern var perm in method addPermissionToPMaskHelper is never used
+[warn]       case sil.FieldAccessPredicate(loc, perm) =>
+[warn]                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultHeapModule.scala:758:46: pattern var perm in method addPermissionToPMaskHelper is never used
+[warn]       case sil.PredicateAccessPredicate(loc, perm) =>
+[warn]                                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultInhaleModule.scala:66:108: private default argument in class DefaultInhaleModule is never used
+[warn]   private def inhaleConnective(e: sil.Exp, error: PartialVerificationError, addDefinednessChecks: Boolean, statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false): Stmt = {
+[warn]                                                                                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultInhaleModule.scala:66:153: private default argument in class DefaultInhaleModule is never used
+[warn]   private def inhaleConnective(e: sil.Exp, error: PartialVerificationError, addDefinednessChecks: Boolean, statesStackForPackageStmt: List[Any] = null, insidePackageStmt: Boolean = false): Stmt = {
+[warn]                                                                                                                                                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/PathConditions.scala:412:50: Auto-application to `()` is deprecated. Supply the empty argument list `()` explicitly to invoke method definitionsOnly,
+[warn] or remove the empty argument list from its definition (Java-defined methods are exempt).
+[warn] In Scala 3, an unapplied method like this will be eta-expanded into a function. [quickfixable]
+[warn]     new DefaultRecordedPathConditions(from.map(_.definitionsOnly))
+[warn]                                                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/PathConditions.scala:362:21: parameter name in method quantifiedExp is never used
+[warn]                     name: String,
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/PathConditions.scala:363:21: parameter isGlobal in method quantifiedExp is never used
+[warn]                     isGlobal: Boolean,
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/PathConditions.scala:364:21: parameter ignore in method quantifiedExp is never used
+[warn]                     ignore: Term )
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:40:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val namespace = verifier.freshNamespace("loop")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:10:33: Unused import
+[warn] import viper.silver.ast.utility.ViperStrategy
+[warn]                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:58:15: private var currentMethodIsAbstract in class DefaultLoopModule is never used
+[warn]   private var currentMethodIsAbstract = false;
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:313:12: pattern var node in method relevantForLoops is never used
+[warn]       case node@(_: sil.If | _: sil.Seqn) => false
+[warn]            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:491:51: private default argument in class DefaultLoopModule is never used
+[warn]   private def handleStmtLoopDetector(s: sil.Stmt, statesStackOfPackageStmt: List[Any] = null, allStateAssms: Exp = TrueLit(), insidePackageStmt: Boolean = false): (Seqn => Seqn) = {
+[warn]                                                   ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:491:95: private default argument in class DefaultLoopModule is never used
+[warn]   private def handleStmtLoopDetector(s: sil.Stmt, statesStackOfPackageStmt: List[Any] = null, allStateAssms: Exp = TrueLit(), insidePackageStmt: Boolean = false): (Seqn => Seqn) = {
+[warn]                                                                                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultLoopModule.scala:491:127: private default argument in class DefaultLoopModule is never used
+[warn]   private def handleStmtLoopDetector(s: sil.Stmt, statesStackOfPackageStmt: List[Any] = null, allStateAssms: Exp = TrueLit(), insidePackageStmt: Boolean = false): (Seqn => Seqn) = {
+[warn]                                                                                                                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultMainModule.scala:46:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val mainNamespace = verifier.freshNamespace("main")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultMainModule.scala:41:20: Unused import
+[warn]   import expModule._
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultMapModule.scala:26:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val namespace = verifier.freshNamespace("map")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultSeqModule.scala:37:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val namespace = verifier.freshNamespace("seq")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultSeqModule.scala:65:16: pattern var a in method translateSeqExp is never used
+[warn]           case a :: as =>
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultSeqModule.scala:65:21: pattern var as in method translateSeqExp is never used
+[warn]           case a :: as =>
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultSeqModule.scala:80:31: pattern var seq in method translateSeqExp is never used
+[warn]       case sexp@sil.SeqUpdate(seq, idx, elem) =>
+[warn]                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultSetModule.scala:35:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val namespace = verifier.freshNamespace("set")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultStateModule.scala:28:16: Implicit definition should have explicit type (inferred viper.carbon.boogie.Namespace) [quickfixable]
+[warn]   implicit val stateNamespace = verifier.freshNamespace("state")
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/carbon/src/main/scala/viper/carbon/modules/impls/DefaultStateModule.scala:234:9: local val s in method getCopyState is never used
+[warn]     val s = for (c <- components) yield {
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToSMTLib2Converter.scala:306:35: pattern var r in method render is never used
+[warn]     case HeapSingleton(at, value, r) =>
+[warn]                                   ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToSMTLib2Converter.scala:434:69: parameter outSort in method renderSMTApp is never used
+[warn]   protected def renderSMTApp(functionName: String, args: Seq[Term], outSort: Sort) = {
+[warn]                                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/logger/LogConfig.scala:40:16: Implicit definition should have explicit type (inferred spray.json.RootJsonFormat[viper.silicon.logger.RecordConfig]) [quickfixable]
+[warn]   implicit val recordConfigFormat = jsonFormat2(RecordConfig.apply)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/logger/LogConfig.scala:41:16: Implicit definition should have explicit type (inferred spray.json.RootJsonFormat[viper.silicon.logger.LogConfig]) [quickfixable]
+[warn]   implicit val logConfigFormat = jsonFormat6(LogConfig.apply)
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/logger/records/data/SingleMergeRecord.scala:11:47: Unused import
+[warn] import viper.silicon.interfaces.state.{Chunk, NonQuantifiedChunk}
+[warn]                                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:10:72: Unused import
+[warn] import viper.silver.ast.{CondExp, Exp, FieldAccessPredicate, LocalVar, Member, NeCmp, Predicate, Program, Resource, Type}
+[warn]                                                                        ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:17:65: Unused import
+[warn] import viper.silicon.state.{BasicChunk, DefaultSymbolConverter, SimpleIdentifier, State, Store, SymbolConverter}
+[warn]                                                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:180:17: pattern var k in value $anonfun is never used
+[warn]           for ((k, v) <- opValues.asInstanceOf[MapEntry].options) {
+[warn]                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:301:17: pattern var k in value $anonfun is never used
+[warn]           for ((k, v) <- opValues.asInstanceOf[MapEntry].options) {
+[warn]                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:686:12: pattern var c in value $anonfun is never used
+[warn]       case c@BasicChunk(id, _, _, _, _, _, _, _, _) =>
+[warn]            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:686:25: pattern var id in value $anonfun is never used
+[warn]       case c@BasicChunk(id, _, _, _, _, _, _, _, _) =>
+[warn]                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/ChunkSupporter.scala:247:28: parameter argsExp in method lookupGreedy is never used
+[warn]                            argsExp: Option[Seq[ast.Exp]],
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Evaluator.scala:25:28: Unused import
+[warn] import viper.silicon.utils.toSf
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/ExecutionFlowController.scala:9:21: Unused import
+[warn] import viper.silver.ast
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Executor.scala:182:13: local val sepIdentifier in method follows is never used
+[warn]         val sepIdentifier = v.symbExLog.openScope(condEdgeRecord)
+[warn]             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Executor.scala:714:124: parameter s in method ssaifyRhs is never used
+[warn]    private def ssaifyRhs(rhs: Term, rhsExp: ast.Exp, rhsExpNew: Option[ast.Exp], name: String, typ: ast.Type, v: Verifier, s : State): (Term, Option[ast.Exp]) = {
+[warn]                                                                                                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/FunctionSupporter.scala:11:31: Unused import
+[warn] import viper.silicon.verifier.Verifier
+[warn]                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MagicWandSupporter.scala:15:32: Unused import
+[warn] import viper.silicon.resources.MagicWandID
+[warn]                                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MagicWandSupporter.scala:18:41: Unused import
+[warn] import viper.silicon.state.terms.sorts.{PredHeapSort, WandHeapSort}
+[warn]                                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MagicWandSupporter.scala:18:55: Unused import
+[warn] import viper.silicon.state.terms.sorts.{PredHeapSort, WandHeapSort}
+[warn]                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:18:73: Unused import
+[warn] import viper.silicon.state.terms.{And, App, AtLeast, AtMost, DummyHeap, First, HeapDepFun, HeapMapTerm, HeapSingleton, MagicWandSnapshot, MaskMapTerm, MWSFLookup, Forall, FullPerm, GoodFieldMask, GoodMask, Greater, HeapLookup, HeapToSnap, HeapUpdate, IdenticalOnKnownLocations, Implies, Ite, MaskAdd, MaskDiff, MaskSum, MergeHeaps, MergeSingle, NoPerm, Not, Null, PermAtMost, PermLess, PermMin, PermMinus, PermNegation, PermTimes, PredZeroMask, Quantification, Second, SnapToHeap, Sort, SortWrapper, Term, Trigger, True, Var, ZeroMask, fromSnapTree, perms, sorts, toSnapTree}
+[warn]                                                                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:18:462: Unused import
+[warn] import viper.silicon.state.terms.{And, App, AtLeast, AtMost, DummyHeap, First, HeapDepFun, HeapMapTerm, HeapSingleton, MagicWandSnapshot, MaskMapTerm, MWSFLookup, Forall, FullPerm, GoodFieldMask, GoodMask, Greater, HeapLookup, HeapToSnap, HeapUpdate, IdenticalOnKnownLocations, Implies, Ite, MaskAdd, MaskDiff, MaskSum, MergeHeaps, MergeSingle, NoPerm, Not, Null, PermAtMost, PermLess, PermMin, PermMinus, PermNegation, PermTimes, PredZeroMask, Quantification, Second, SnapToHeap, Sort, SortWrapper, Term, Trigger, True, Var, ZeroMask, fromSnapTree, perms, sorts, toSnapTree}
+[warn]                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:96:52: parameter s in method findOrCreateMaskHeapChunk is never used
+[warn]   def findOrCreateMaskHeapChunk(h: Heap, res: Any, s: State, v: Verifier) = {
+[warn]                                                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:140:60: parameter s in method convertFromSnapshot is never used
+[warn]   def convertFromSnapshot(snap: Term, resources: Seq[Any], s: State, v: Verifier): immutable.ListMap[Any, Term] = {
+[warn]                                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:140:70: parameter v in method convertFromSnapshot is never used
+[warn]   def convertFromSnapshot(snap: Term, resources: Seq[Any], s: State, v: Verifier): immutable.ListMap[Any, Term] = {
+[warn]                                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:170:26: pattern var v in method traverse is never used
+[warn]       case MaskAdd(m, r, v) => receivers.add(r); traverse(m)
+[warn]                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:336:29: parameter codomainQVars in method consumeSingleLocation is never used
+[warn]                             codomainQVars: Seq[Var], /* rs := r_1, ..., r_m */
+[warn]                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:338:29: parameter argumentsExp in method consumeSingleLocation is never used
+[warn]                             argumentsExp: Option[Seq[ast.Exp]],
+[warn]                             ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:366:103: parameter rPermExp in anonymous function is never used
+[warn]       magicWandSupporter.transfer(s, permissions, permissionsExp, failure, Seq(), v)((s1, h1a, rPerm, rPermExp, v1) => {
+[warn]                                                                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:612:113: parameter rPermExp in anonymous function is never used
+[warn]               magicWandSupporter.transfer(s, lossOfInvOfLoc, lossExp, failure, formalQVars, v)((s1, h1a, rPerm, rPermExp, v1) => {
+[warn]                                                                                                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/MaskHeapSupporter.scala:612:123: parameter v1 in anonymous function is never used
+[warn]               magicWandSupporter.transfer(s, lossOfInvOfLoc, lossExp, failure, formalQVars, v)((s1, h1a, rPerm, rPermExp, v1) => {
+[warn]                                                                                                                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/PredicateSupporter.scala:20:28: Unused import
+[warn] import viper.silicon.utils.toSf
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/QuantifiedChunkSupport.scala:25:28: Unused import
+[warn] import viper.silicon.utils.freshSnap
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/QuantifiedChunkSupport.scala:30:25: Unused import
+[warn] import viper.silver.ast.TrueLit
+[warn]                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/QuantifiedChunkSupport.scala:34:70: Unused import
+[warn] import viper.silver.verifier.{ErrorReason, PartialVerificationError, VerificationError}
+[warn]                                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/QuantifiedChunkSupport.scala:1560:28: parameter s in method assertReadPermission is never used
+[warn]   def assertReadPermission(s: State,
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/StateConsolidator.scala:23:25: Unused import
+[warn] import viper.silver.ast.Exp
+[warn]                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/StateConsolidator.scala:25:28: Unused import
+[warn] import viper.silver.parser.PUnknown
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/StateConsolidator.scala:405:21: private method partition in class DefaultStateConsolidator is never used
+[warn]   private final def partition(h: Heap): (Seq[NonQuantifiedChunk], Seq[Chunk]) = {
+[warn]                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:227:112: pattern var qpTag1 in method merge is never used
+[warn]                  qpFields1, qpPredicates1, qpMagicWands1, permResources1, smCache1, pmCache1, smDomainNeeded1, qpTag1,
+[warn]                                                                                                                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:254:126: pattern var qpTag1 in method merge is never used
+[warn]                      `qpFields1`, `qpPredicates1`, `qpMagicWands1`, `permResources1`, smCache2, pmCache2, `smDomainNeeded1`, qpTag1,
+[warn]                                                                                                                              ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:410:101: pattern var qpTag1 in method merge is never used
+[warn]       qpFields1, qpPredicates1, qpMagicWands1, permResources1, smCache1, pmCache1, smDomainNeeded1, qpTag1,
+[warn]                                                                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:436:113: pattern var qpTag1 in method merge is never used
+[warn]           `qpFields1`, `qpPredicates1`, `qpMagicWands1`, `permResources1`, smCache2, pmCache2, smDomainNeeded2, qpTag1,
+[warn]                                                                                                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:438:11: pattern var moreCompleteExhale2 in method merge is never used
+[warn]           moreCompleteExhale2, moreCompleteExhaleQP2, `moreJoins`) =>
+[warn]           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:438:32: pattern var moreCompleteExhaleQP2 in method merge is never used
+[warn]           moreCompleteExhale2, moreCompleteExhaleQP2, `moreJoins`) =>
+[warn]                                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/State.scala:459:32: parameter cond2 in anonymous function is never used
+[warn]               ((v1, cond1, v2, cond2) => {
+[warn]                                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/Terms.scala:532:20: the type test for pattern viper.silicon.state.terms.ConditionalFlyweight[T,V] cannot be checked at runtime because it has type parameters eliminated by erasure
+[warn]           case se: ConditionalFlyweight[T, V] if this.getClass.eq(se.getClass) =>
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/AnnotationSupporter.scala:117:16: This catches all Throwables. If this is really intended, use `case _ : Throwable` to clear this warning.
+[warn]           case _ =>
+[warn]                ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/ExpressionTranslator.scala:13:31: Unused import
+[warn] import viper.silicon.verifier.Verifier
+[warn]                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/ExpressionTranslator.scala:59:31: local default argument in method translate is never used
+[warn]                               anysetTypedExp: ast.Exp = exp): Term =
+[warn]                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/ExpressionTranslator.scala:118:22: pattern var s in value weight is never used
+[warn]                 case s =>
+[warn]                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/MagicWandSnapFunctionsContributor.scala:65:15: private method extractPreambleLines in class MagicWandSnapFunctionsContributor is never used
+[warn]   private def extractPreambleLines(lines: Iterable[String]*): Iterable[String] =
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/functions/FunctionData.scala:25:28: Unused import
+[warn] import viper.silver.parser.PUnknown
+[warn]                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/functions/FunctionEncoding.scala:27:27: parameter data in method adaptAxiom is never used
+[warn]   def adaptAxiom(t: Term, data: FunctionData): Term = t
+[warn]                           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/functions/FunctionEncoding.scala:30:26: parameter data in method auxiliaryFunctions is never used
+[warn]   def auxiliaryFunctions(data: FunctionData): Seq[Fun] = Seq()
+[warn]                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/functions/FunctionEncoding.scala:34:23: parameter data in method auxiliaryAxioms is never used
+[warn]   def auxiliaryAxioms(data: FunctionData): Seq[Term] = Seq()
+[warn]                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/functions/FunctionEncoding.scala:38:33: parameter data in method declsAfterWellDefinedness is never used
+[warn]   def declsAfterWellDefinedness(data: FunctionData): Seq[Decl] = Seq()
+[warn]                                 ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/functions/MaskHeapFunctionEncoding.scala:17:31: Unused import
+[warn] import viper.silicon.verifier.Verifier
+[warn]                               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/supporters/qps/MaskHeapFunctionsContributor.scala:23:36: parameter config in class MaskHeapFunctionsContributor is never used
+[warn]                                    config: Config)
+[warn]                                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/verifier/DefaultMainVerifier.scala:34:55: Unused import
+[warn] import viper.silver.ast.utility.QuantifiedPermissions.collectInDependencies
+[warn]                                                       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/state/Terms.scala:2520:20: fruitless type test: a value of type viper.silicon.state.terms.Sort cannot also be a viper.silicon.state.terms.HeapLookup
+[warn]     case HeapLookup(otherHeap, at2) if v0._1 == at2 => otherHeap
+[warn]                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/PathConditions.scala:411:7: method with a single empty parameter list overrides method definitionsOnly in trait RecordedPathConditions defined without a parameter list [quickfixable]
+[warn]   def definitionsOnly(): RecordedPathConditions = {
+[warn]       ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/QuantifiedChunkSupport.scala:2038:11: method copyArrayToImmutableIndexedSeq in class LowPriorityImplicits2 is deprecated (since 2.13.0): implicit conversions from Array to immutable.IndexedSeq are implemented by copying; use `toIndexedSeq` explicitly if you want to copy, or use the more efficient non-copying ArraySeq.unsafeWrapArray
+[warn]     (res, imagesOfCodomains)
+[warn]           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToSMTLib2Converter.scala:77:44: Exhaustivity analysis reached max recursion depth, not all missing cases are reported.
+[warn] (Please try with scalac -Ypatmat-exhaust-depth 80 or -Ypatmat-exhaust-depth off.)
+[warn]   protected def render(decl: Decl): Cont = decl match {
+[warn]                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToSMTLib2Converter.scala:111:41: match may not be exhaustive.
+[warn] It would fail on the following inputs: Bool, FieldPermFunction(), FieldValueFunction(_, _), Int, MagicWandSnapFunction, Map(_, _), Multiset(_), Perm, PredicatePermFunction(), PredicateSnapFunction(_, _), Ref, SMTSort(_), Seq(_), Set(_), Snap, Unit, UserSort(_)
+[warn]   private def renderHeapType(s: Sort) = s match {
+[warn]                                         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToSMTLib2Converter.scala:118:44: Exhaustivity analysis reached max recursion depth, not all missing cases are reported.
+[warn] (Please try with scalac -Ypatmat-exhaust-depth 80 or -Ypatmat-exhaust-depth off.)
+[warn]   protected def render(term: Term): Cont = term match {
+[warn]                                            ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToSMTLib2Converter.scala:449:50: match may not be exhaustive.
+[warn] It would fail on the following input: IntLiteral()
+[warn]   protected def render(literal: Literal): Cont = literal match {
+[warn]                                                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToZ3APIConverter.scala:98:15: match may not be exhaustive.
+[warn] It would fail on the following inputs: HeapSort(_), PredHeapSort, PredMaskSort, WandHeapSort
+[warn]     val res = s match {
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToZ3APIConverter.scala:140:5: match may not be exhaustive.
+[warn] It would fail on the following inputs: HeapSort(_), PredHeapSort, PredMaskSort, WandHeapSort
+[warn]     s match {
+[warn]     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToZ3APIConverter.scala:217:9: match may not be exhaustive.
+[warn] It would fail on the following inputs: IntLiteral(), PredZeroMask, ZeroMask
+[warn]         l match {
+[warn]         ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/TermToZ3APIConverter.scala:215:15: Exhaustivity analysis reached max recursion depth, not all missing cases are reported.
+[warn] (Please try with scalac -Ypatmat-exhaust-depth 80 or -Ypatmat-exhaust-depth off.)
+[warn]     val res = term match {
+[warn]               ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/decider/Z3ProverAPI.scala:453:5: match may not be exhaustive.
+[warn] It would fail on the following input: SortDecl()
+[warn]     decl match {
+[warn]     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/interfaces/Verification.scala:179:11: Exhaustivity analysis reached max recursion depth, not all missing cases are reported.
+[warn] (Please try with scalac -Ypatmat-exhaust-depth 80 or -Ypatmat-exhaust-depth off.)
+[warn]     }.map {
+[warn]           ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/Converter.scala:715:18: match may not be exhaustive.
+[warn] It would fail on the following input: LocalVarWithVersion(_, _)
+[warn]       val name = variable match {
+[warn]                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/Converter.scala:806:19: match may not be exhaustive.
+[warn] It would fail on the following inputs: ImpliesOp, IntPermMulOp, LeOp, LtOp, MagicWandOp, ModOp, MulOp, NegOp, NotOp, OrOp, PermAddOp, PermDivOp, PermGeOp, PermGtOp, PermLeOp, PermLtOp, PermMulOp, PermNegOp, PermSubOp, SubOp, _
+[warn]     val smtfunc = func match {
+[warn]                   ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/Converter.scala:984:5: match may not be exhaustive.
+[warn] It would fail on the following inputs: MultiSetEntry(_, _), PredHeapEntry(_, _, _), SetEntry(_, _)
+[warn]     is match {
+[warn]     ^
+[warn] 97 warnings found
+[info] done compiling
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/reporting/SiliconResolvedCounterexample.scala:984:19: match may not be exhaustive.
+[warn] It would fail on the following inputs: ImpliesOp, IntPermMulOp, LeOp, LtOp, MagicWandOp, ModOp, MulOp, NegOp, NotOp, OrOp, PermAddOp, PermDivOp, PermGeOp, PermGtOp, PermLeOp, PermLtOp, PermMulOp, PermNegOp, PermSubOp, SubOp, _
+[warn]     val smtfunc = func match {
+[warn]                   ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Consumer.scala:292:106: match may not be exhaustive.
+[warn] It would fail on the following input: (_, _, _, _, _, Some((_, _, _, (_, _), _)), _)
+[warn]         evalQuantified(s0, Forall, forall.variables, Seq(cond), ePerm +: eArgs, optTrigger, qid, pve, v) {
+[warn]                                                                                                          ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Evaluator.scala:531:100: match may not be exhaustive.
+[warn] It would fail on the following input: (_, _, _, _, _, Some((_, _, _, (_, _), _)), _)
+[warn]         evalQuantified(s0, qantOp, eQuant.variables, Nil, Seq(body), Some(eTriggers), name, pve, v){
+[warn]                                                                                                    ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Evaluator.scala:814:50: match may not be exhaustive.
+[warn] It would fail on the following inputs: (_, List(_), _, _), (_, Nil, _, _)
+[warn]         evals2(s, Seq(e0, e1), Nil, _ => pve, v)({case (s1, Seq(t0, t1), esNew, v1) =>
+[warn]                                                  ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Evaluator.scala:840:54: match may not be exhaustive.
+[warn] It would fail on the following inputs: (_, List(_), _, _), (_, Nil, _, _)
+[warn]         evals2(s, Seq(e0, e1, e2), Nil, _ => pve, v)({ case (s1, Seq(t0, t1, t2), esNew, v1) =>
+[warn]                                                      ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Evaluator.scala:955:53: match may not be exhaustive.
+[warn] It would fail on the following inputs: (_, List(_), _, _), (_, Nil, _, _)
+[warn]         evals2(s, Seq(base, key), Nil, _ => pve, v)({
+[warn]                                                     ^
+[warn] /Users/lbethay/workplace/fae/.tools/gobra/viperserver/silicon/src/main/scala/rules/Evaluator.scala:976:60: match may not be exhaustive.
+[warn] It would fail on the following inputs: (_, List(_), _, _), (_, Nil, _, _)
+[warn]         evals2(s, Seq(base, key, value), Nil, _ => pve, v)({
+[warn]                                                            ^
+[warn] 97 warnings found
+[info] done compiling
+[info] compiling 68 Scala sources to /Users/lbethay/workplace/fae/.tools/gobra/viperserver/target/scala-2.13/classes ...
+[info] done compiling
+[info] compiling 240 Scala sources and 5 Java sources to /Users/lbethay/workplace/fae/.tools/gobra/target/scala-2.13/classes ...
+[info] done compiling
+[info] 27 file(s) merged using strategy 'Rename' (Run the task at debug level to see the details)
+[info] 84 file(s) merged using strategy 'Deduplicate' (Run the task at debug level to see the details)
+[info] 174 file(s) merged using strategy 'Discard' (Run the task at debug level to see the details)
+[info] 7 file(s) merged using strategy 'Concat' (Run the task at debug level to see the details)
+[info] Built: /Users/lbethay/workplace/fae/.tools/gobra/target/scala-2.13/gobra.jar
+[info] Jar hash: 617ebc419e776f8eedfebbeac49898677d81c278
+[success] Total time: 96 s (0:01:36.0), completed Oct 16, 2026, 10:51:59 PM

@@ -1,0 +1,14 @@
+package completion
+// A missing retirement acknowledgement must prevent pane slot reuse.
+func MissingPaneRetirement(){
+ lock:=make(chan int,1)
+ retired:=make(chan int)
+ done:=make(chan int,2)
+ lock<-1
+ go paneMissingFirst(lock,done)
+ go paneMissingSecond(lock,retired,done)
+ <-done
+ <-done
+}
+func paneMissingFirst(lock,done chan int){<-lock;lock<-1;done<-1}
+func paneMissingSecond(lock,retired,done chan int){<-retired;<-lock;lock<-1;done<-1}

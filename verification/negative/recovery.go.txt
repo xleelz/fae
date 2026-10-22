@@ -1,0 +1,12 @@
+package completion
+// Missing terminal proof must leave capacity withheld and blocks this waiter.
+func MissingLeaseRecoveryProof(){
+ proof:=make(chan int)
+ capacity:=make(chan int,1)
+ done:=make(chan int)
+ go recoveryBlocked(proof,capacity)
+ go recoveryWaiting(capacity,done)
+ <-done
+}
+func recoveryBlocked(proof,capacity chan int){<-proof;capacity<-1}
+func recoveryWaiting(capacity,done chan int){<-capacity;close(done)}

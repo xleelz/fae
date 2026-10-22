@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+(c) Copyright ETH Zurich 2012 - 2026
+17:14:20.669 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - scheduler [17:14:20]
+17:14:22.690 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/recovery-negative.go:4:9> Postcondition might not hold. 
+Assertion allowed == (ownerDead && linkageMatches && (neverLaunched || retired)) might not hold.
+17:14:22.704 [thread-3] ERROR viper.gobra.Gobra - Gobra found 1 error.

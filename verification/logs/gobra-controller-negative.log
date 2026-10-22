@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+(c) Copyright ETH Zurich 2012 - 2026
+17:15:34.690 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - controller [17:15:34]
+17:15:36.761 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/controller-negative.go:4:9> Postcondition might not hold. 
+Assertion ok == (clearEffects && (!whenClear || clearQA) && (clearOverlap || acknowledged)) might not hold.
+17:15:36.776 [thread-6] ERROR viper.gobra.Gobra - Gobra found 1 error.

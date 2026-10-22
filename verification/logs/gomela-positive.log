@@ -1,0 +1,741 @@
+Verifying model : completion++AbandonedCollection23.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++AbandonedCollection23.pml
+Number of states :  68
+Time to verify model :  657  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++AdapterPinBeforeEffect4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++AdapterPinBeforeEffect4.pml
+Number of states :  223
+Time to verify model :  678  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++AdapterRetirementSerialized4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++AdapterRetirementSerialized4.pml
+Number of states :  394
+Time to verify model :  766  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++AuthorityBeforeMutation3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++AuthorityBeforeMutation3.pml
+Number of states :  1104
+Time to verify model :  760  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++BacklogCommitBeforeRelease4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++BacklogCommitBeforeRelease4.pml
+Number of states :  223
+Time to verify model :  705  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++BackupQuotaSerializesStorageWriters5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++BackupQuotaSerializesStorageWriters5.pml
+Number of states :  394
+Time to verify model :  740  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++BackupReplicationVerifiesBeforeReceipt5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++BackupReplicationVerifiesBeforeReceipt5.pml
+Number of states :  24970
+Time to verify model :  1080  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++BackupRetentionRequiresSurvivorAndIdentity4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++BackupRetentionRequiresSurvivorAndIdentity4.pml
+Number of states :  1104
+Time to verify model :  813  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++BackupScheduleClaimsBeforeCreation5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++BackupScheduleClaimsBeforeCreation5.pml
+Number of states :  5317
+Time to verify model :  889  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++BackupUnpinWaitsForProofAndNoPendingClaim5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++BackupUnpinWaitsForProofAndNoPendingClaim5.pml
+Number of states :  1104
+Time to verify model :  771  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++CensusSnapshotBeforeRetirement3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++CensusSnapshotBeforeRetirement3.pml
+Number of states :  223
+Time to verify model :  691  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++CleanupWaitsForBackupAndArchive4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++CleanupWaitsForBackupAndArchive4.pml
+Number of states :  1104
+Time to verify model :  767  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++CommitReceiptAfterIndexReconciliation5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++CommitReceiptAfterIndexReconciliation5.pml
+Number of states :  1104
+Time to verify model :  791  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++Completion5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++Completion5.pml
+Number of states :  247
+Time to verify model :  781  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ConflictRemediation6.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ConflictRemediation6.pml
+Number of states :  1939
+Time to verify model :  813  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ControlHoldCollectsBeforeResume5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ControlHoldCollectsBeforeResume5.pml
+Number of states :  1137
+Time to verify model :  858  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ControllerLifecycle5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ControllerLifecycle5.pml
+Number of states :  80
+Time to verify model :  804  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++CrashResolutionBarrier5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++CrashResolutionBarrier5.pml
+Number of states :  1104
+Time to verify model :  774  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++CronAdmissionBeforeCursor3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++CronAdmissionBeforeCursor3.pml
+Number of states :  52
+Time to verify model :  735  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++DeploymentAcceptance4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++DeploymentAcceptance4.pml
+Number of states :  70
+Time to verify model :  769  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++DrainBeforeRestart5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++DrainBeforeRestart5.pml
+Number of states :  7086
+Time to verify model :  880  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++DurableLeaseRecovery5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++DurableLeaseRecovery5.pml
+Number of states :  984
+Time to verify model :  786  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++DynamicHostDrain5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++DynamicHostDrain5.pml
+Number of states :  789
+Time to verify model :  840  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++DynamicPaneLimitUpdate5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++DynamicPaneLimitUpdate5.pml
+Number of states :  953
+Time to verify model :  834  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++EffectReceiptBeforeAdoption5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++EffectReceiptBeforeAdoption5.pml
+Number of states :  24970
+Time to verify model :  1137  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ExternalQueryBeforeAdoption5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ExternalQueryBeforeAdoption5.pml
+Number of states :  24970
+Time to verify model :  1090  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++FleetReceiptBeforeBaselineReady3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++FleetReceiptBeforeBaselineReady3.pml
+Number of states :  5317
+Time to verify model :  893  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++IdleRetirement5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++IdleRetirement5.pml
+Number of states :  262
+Time to verify model :  748  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++IsolatedReadCompletion3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++IsolatedReadCompletion3.pml
+Number of states :  92
+Time to verify model :  742  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++LeaseRelease6.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++LeaseRelease6.pml
+Number of states :  26893
+Time to verify model :  802  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++LoopCheckpointBeforePrompt3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++LoopCheckpointBeforePrompt3.pml
+Number of states :  52
+Time to verify model :  669  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++NormalPolicyBeforeEffect4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++NormalPolicyBeforeEffect4.pml
+Number of states :  223
+Time to verify model :  684  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++OwnedPaneLifecycle6.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++OwnedPaneLifecycle6.pml
+Number of states :  1172
+Time to verify model :  986  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++PaneReservationLifecycle5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++PaneReservationLifecycle5.pml
+Number of states :  734
+Time to verify model :  800  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ParentDeathRetirement6.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ParentDeathRetirement6.pml
+Number of states :  984
+Time to verify model :  788  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++PersistBeforeDispatch5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++PersistBeforeDispatch5.pml
+Number of states :  523
+Time to verify model :  782  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++PersistentProviderCommit5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++PersistentProviderCommit5.pml
+Number of states :  416
+Time to verify model :  791  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ProphetDirectionBeforeAction3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ProphetDirectionBeforeAction3.pml
+Number of states :  1104
+Time to verify model :  796  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ProphetObservationAndRetirementBeforeFailover3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ProphetObservationAndRetirementBeforeFailover3.pml
+Number of states :  1104
+Time to verify model :  780  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ProviderObservationBeforeDispatch6.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ProviderObservationBeforeDispatch6.pml
+Number of states :  607
+Time to verify model :  824  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ReplicationSchedulePinsBeforeAttemptAndAdvance5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ReplicationSchedulePinsBeforeAttemptAndAdvance5.pml
+Number of states :  5317
+Time to verify model :  897  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ResidentTurns5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ResidentTurns5.pml
+Number of states :  112
+Time to verify model :  964  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++RestartAfterCommitReceipt5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++RestartAfterCommitReceipt5.pml
+Number of states :  1124
+Time to verify model :  768  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++RetentionScheduleClaimsBeforePruning5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++RetentionScheduleClaimsBeforePruning5.pml
+Number of states :  5317
+Time to verify model :  936  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++RetireTransfersBeforePublish4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++RetireTransfersBeforePublish4.pml
+Number of states :  236
+Time to verify model :  733  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ReviewMergeAfterIndependentGates3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ReviewMergeAfterIndependentGates3.pml
+Number of states :  5317
+Time to verify model :  902  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++SchemaBeforeEffect3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++SchemaBeforeEffect3.pml
+Number of states :  1104
+Time to verify model :  924  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ScratchArchiveRequiresSurvivorAndJournalProof5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ScratchArchiveRequiresSurvivorAndJournalProof5.pml
+Number of states :  1104
+Time to verify model :  770  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ScratchRemovalWaitsForStopAndBackup3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ScratchRemovalWaitsForStopAndBackup3.pml
+Number of states :  1104
+Time to verify model :  766  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++SerializedDriveGenerations3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++SerializedDriveGenerations3.pml
+Number of states :  53
+Time to verify model :  659  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ShimLeaseRetirement6.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ShimLeaseRetirement6.pml
+Number of states :  418
+Time to verify model :  788  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++ShutdownWithTwoWorkers28.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++ShutdownWithTwoWorkers28.pml
+Number of states :  810
+Time to verify model :  669  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++StallRetirementBeforeRetry5.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++StallRetirementBeforeRetry5.pml
+Number of states :  1152
+Time to verify model :  840  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++StartupProofBeforeRetry4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++StartupProofBeforeRetry4.pml
+Number of states :  232
+Time to verify model :  726  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++TargetPolicyBeforeCommand4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++TargetPolicyBeforeCommand4.pml
+Number of states :  223
+Time to verify model :  678  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++TicketOutboxRecovery4.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++TicketOutboxRecovery4.pml
+Number of states :  24970
+Time to verify model :  1065  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------
+Verifying model : completion++WorkspaceReadyAfterBaseline3.pml
+there is  0  optionnal params.
+-------------------------------
+Result for source:completion++WorkspaceReadyAfterBaseline3.pml
+Number of states :  223
+Time to verify model :  677  ms
+Send on close safety error : false.
+Close safety error : false.
+Negative counter safety error : false.
+Double unlock error : false.
+Model deadlock : false.
+Panic reached : false.
+-------------------------------

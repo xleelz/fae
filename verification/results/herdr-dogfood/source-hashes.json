@@ -1,0 +1,13 @@
+{
+  "bin/fae": "00f038e482846400dfb5571cfe7dd9444cfa91a224c19d3f74797ad49db9673a",
+  "bin/fae-codex-bridge": "1949bc24b1a7b448d10160ef0a15884cecc6e6692025497934ddb2eb07e91c8b",
+  "runtime/multiplexer.go": "a05382aef2aca565aba8b332c48c1ef9d5d86b33b54737a00a516183f6723e48",
+  "runtime/direct.go": "4506e88807fc5df4d69ae2f7f5ca1576d8696acfd0911ad770c7b8249732c23d",
+  "processowner/process.go": "91e9896d01b4a93fca998a61994e90c1eaf6e82c104b1cb918668418a29477de",
+  "daemon/live.go": "20aa664899599bc58e40b0e82b6a0ca31492b9bd80e6d278f240a7341832d6b9",
+  "daemon/live_admission.go": "803a68cbb9122ec5850e385a19282fc17514486eca5e0f2b4741ad6fe3141367",
+  "engine/engine.go": "fd8ccd08c6074154652bc1596474efde868882d2f82aad196330cccbf5635095",
+  "defaults/defaults.go": "c6238f960c7045a0e1df5ecb74d1004ded58483ce3be26c763c5b12308a0e039",
+  "provider/codex.go": "fd17b0259cac302ca6f3c5685dbe04841852b651873eba60a69da108e1eefed4",
+  "scripts/dogfood.py": "e7de5176595f964955049f5af3066517b63f2196978a9267ac154bf6a69309db"
+}

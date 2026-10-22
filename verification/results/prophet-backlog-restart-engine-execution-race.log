@@ -1,0 +1,16 @@
+ok  	github.com/xleelz/fae/engine	225.962s
+--- FAIL: TestAgentExecutionAndAdmission (0.01s)
+    executor_test.go:67: startup-not-executed: role=coder dispatch=dispatch handoff=/Users/lbethay/workplace/fae/.cache/tmp/TestAgentExecutionAndAdmission1190528401/001/session-3656030406/handoff.json: fork/exec /bin/ps: operation not permitted
+--- FAIL: TestReviewIsolation (0.01s)
+    executor_test.go:79: startup-not-executed: role=coder dispatch=dispatch handoff=/Users/lbethay/workplace/fae/.cache/tmp/TestReviewIsolation2186857861/001/session-3854820402/handoff.json: fork/exec /bin/ps: operation not permitted
+--- FAIL: TestTreeChanges (0.01s)
+    --- FAIL: TestTreeChanges/producer (0.01s)
+        executor_test.go:111: {  live  dispatch task tree one null [] uncertain 2026-10-19 04:31:36.541347 +0000 UTC} startup-not-executed: role=coder dispatch=dispatch handoff=/Users/lbethay/workplace/fae/.cache/tmp/TestTreeChangesproducer487764514/001/session-2473990698/handoff.json: fork/exec /bin/ps: operation not permitted
+--- FAIL: TestLeaseHeldThroughValidation (0.02s)
+    --- FAIL: TestLeaseHeldThroughValidation/none (0.01s)
+        executor_test.go:190: startup-not-executed: role=coder dispatch=dispatch handoff=/Users/lbethay/workplace/fae/.cache/tmp/TestLeaseHeldThroughValidationnone4017275526/001/session-3860583859/handoff.json: fork/exec /bin/ps: operation not permitted
+--- FAIL: TestDurableAdmissionBoundaryOrder (0.01s)
+    executor_test.go:222: startup-not-executed: role=coder dispatch=dispatch handoff=/Users/lbethay/workplace/fae/.cache/tmp/TestDurableAdmissionBoundaryOrder3787079258/001/session-3680713642/handoff.json: fork/exec /bin/ps: operation not permitted
+FAIL
+FAIL	github.com/xleelz/fae/execution	0.271s
+FAIL

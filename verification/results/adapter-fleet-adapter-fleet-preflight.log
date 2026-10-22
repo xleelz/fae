@@ -1,0 +1,2 @@
+{"preflight": "provisioned", "result": {"adapter_revision": {"id": "dogfood-adapter", "revision": 1, "hash": "397a4887f9aa6a70e5678e1a605ca4f3936ffe94ac84ed2949550167c8fa637d"}, "later_revision": {"id": "dogfood-adapter", "revision": 2, "hash": "75619c862c8ec97f04d2e38fde246b5553fb5ac8b9cc42accc25cf56837a247b"}, "workspace": "/private/tmp/fhd-wm4qma3g/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194", "ready": true, "idempotent_prepare": true}}
+{"preflight": "passed", "scratch_cleanup": true, "prepared_workspace_archived": true}

@@ -1,0 +1,7 @@
+package negative
+// Removing the production protocol's buffer strands the producer when abandoned.
+func AbandonedWithoutBuffer() {
+ result := make(chan int)
+ go send(result)
+}
+func send(result chan int) { result <- 1; close(result) }

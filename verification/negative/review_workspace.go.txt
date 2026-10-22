@@ -1,0 +1,9 @@
+package completion
+
+func WorkspaceReadyWithoutBaseline() {
+ approved:=make(chan int)
+ ready:=make(chan int)
+ go func(){approved<-1}()
+ go func(){ready<-1}()
+ <-ready
+}

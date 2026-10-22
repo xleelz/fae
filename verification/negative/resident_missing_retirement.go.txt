@@ -1,0 +1,14 @@
+package completion
+
+func ResidentMissingRetirement() {
+ request:=make(chan int)
+ registered:=make(chan int)
+ released:=make(chan int)
+ retired:=make(chan int)
+ go residentMissingWorker(request,registered,released)
+ request<-1
+ <-registered
+ released<-1
+ <-retired
+}
+func residentMissingWorker(request,registered,released chan int){<-request;registered<-1;<-released}

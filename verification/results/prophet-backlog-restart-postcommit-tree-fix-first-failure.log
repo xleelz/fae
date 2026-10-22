@@ -1,0 +1,5 @@
+--- FAIL: TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch (83.56s)
+    postcommit_restart_test.go:120: restart escalated: AttemptCap
+FAIL
+FAIL	github.com/xleelz/fae/daemon	84.052s
+FAIL

@@ -1,0 +1,28 @@
+[
+  {
+    "authorizing_message": "authorization",
+    "spec": {
+      "id": "dogfood-alpha",
+      "kind": "cron",
+      "anchor": "2026-10-20T06:24:07.700758Z",
+      "interval_seconds": 60,
+      "end": "2026-10-20T06:24:08.700758Z",
+      "catch_up_limit": 1,
+      "template": {
+        "target_config": "dogfood-target",
+        "target_revision": 1,
+        "workflow_id": "default",
+        "revision": 2,
+        "content": "Implement alpha() int returning 42 instead of 0. Only alpha.go and alpha_test.go may change. RED: add exactly one ordinary Go unit test named TestAlpha in alpha_test.go; if alpha()!=42 call t.Fatal(\"got 0 want 42\"). Do not change production code until implement stage. Preserve all test bytes in implementation. Use package sample, standard gofmt tabs and blank lines. Report actual complete test source in source fields. No other functions, dependencies, commands, external effects or files are needed. Each reviewer must report its assigned dimension independently and assess actual evidence. Engine performs builds/tests/format checks/commits. Other concurrent tasks have separate file scopes; do not touch them.",
+        "priority": 10,
+        "run_id": "cron-dogfood-alpha",
+        "mode": "Local"
+      }
+    },
+    "state": "completed",
+    "next_occurrence": 1,
+    "admitted": 1,
+    "skipped": 0,
+    "last_task": "cron-7d533ed758e7c6b84e828429-0"
+  }
+]

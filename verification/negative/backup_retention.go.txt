@@ -1,0 +1,12 @@
+package completion
+
+// Dropping survivor acknowledgment strands its verifier: unsafe deletion is observable.
+func BackupRetentionDropsSurvivorProof() {
+ survivor := make(chan int)
+ unchanged := make(chan int)
+ removed := make(chan int)
+ go func(){survivor <- 1}()
+ go func(){unchanged <- 1}()
+ go func(){<-unchanged; removed <- 1}()
+ <-removed
+}

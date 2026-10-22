@@ -1,0 +1,609 @@
+{
+  "date": "2026-10-19",
+  "status": "passed",
+  "implemented": [
+    "Creation-only scratch identity; local controller authorization before shutdown/recovery, external lifecycle lock, offline Dolt backup/restore/fsck and retained file hashes, all owned refs archived before deletion, inode-bound staged removal and verified interrupted retry",
+    "Audited immutable adapter installation with runtime schema discovery and revision/hash pins; target v3 and private per-task configuration resolution across admission, effects, review recovery and ticket outbox",
+    "Explicit review workspace planning and weighted preparation outside drive; durable pending/ready lifecycle, baseline approval and health, strict existing physical binding checks, task admission reuse and retired-cleanup restart support"
+  ],
+  "requirements": [
+    "FAE-CTL-043",
+    "FAE-CP-013 scratch cleanup prerequisite",
+    "FAE-CLI-021 dynamic installed-adapter target extension",
+    "FAE-EXT-015 explicit pre-provisioned Git workspace binding",
+    "FAE-EXT-016 baseline gate",
+    "FAE-EXT-022 runtime discovered schema pins"
+  ],
+  "verification": {
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1242,
+      "packages": 26,
+      "statement_coverage_percent": 73.6,
+      "daemon_package_seconds": 916.139,
+      "vet": "passed",
+      "scratch_census": "passed",
+      "source_frozen_before_full_suite": true,
+      "note": "Production, tests and binaries were frozen before the final native suite and dogfood."
+    },
+    "builds": [
+      "bin/fae",
+      "bin/fae-codex-bridge"
+    ],
+    "gobra": {
+      "production_guards": 46,
+      "rejected_mutations": 46
+    },
+    "gomela": {
+      "positive_models": 47,
+      "firing_negative_controls": 45
+    },
+    "hash_manifests_verified": {
+      "scratch-provisioning-source-hashes.json": 438,
+      "scratch-provisioning-formal/source-hashes.json": 136,
+      "scratch-provisioning-dogfood-20261019/source-hashes.json": 435,
+      "scratch-provisioning-dogfood-20261019/sha256.json": 27
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-rptne47o",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "provider-beta"
+      ],
+      "target_configs": {
+        "revision_1": {
+          "id": "dogfood-target",
+          "revision": 1,
+          "hash": "4c197431e34b1aa5d872478884b6e3c16c53c8498078d4e436609a42f685c67e",
+          "retired": false
+        },
+        "revision_2": {
+          "id": "dogfood-target",
+          "revision": 2,
+          "hash": "2da01022c1b5fa97534a98352077a9769658ae236af8eb46d6d0d8398704546f",
+          "retired": false
+        },
+        "pinned_tasks": [
+          "cron-7d533ed758e7c6b84e828429-0",
+          "provider-beta"
+        ]
+      },
+      "dynamic_provisioning": {
+        "adapter_revision": {
+          "id": "dogfood-adapter",
+          "revision": 1,
+          "hash": "80aac8f6f6a741fb4cf40be760b7014a1b4329d8fd0ab5ada6ff6971cb6b28f8"
+        },
+        "later_revision": {
+          "id": "dogfood-adapter",
+          "revision": 2,
+          "hash": "2c7f7b293e540ab2fcef0b3c7eb1a3e996759baf52a8ed6c38339d7fedb2f4b9"
+        },
+        "workspace": "/private/tmp/fhd-rptne47o/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+        "ready": true,
+        "idempotent_prepare": true
+      },
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "01d5ec410551fee81b6e6ef57d647b18232959f9a593e2cbaf25cc43c800dfb2",
+          "ProcessBirth": "1792478649.856058",
+          "Workspace": "/private/tmp/fhd-rptne47o/repo",
+          "Holds": null,
+          "PID": 45978,
+          "DoltPID": 45996,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-20T06:44:11.521081Z",
+          "InFlight": 3,
+          "Maintenance": null,
+          "EnvironmentHash": "07cedd51aafde77109c47ce2a5f3311ed6ea4a1e804a2766edc53e8a9a18249e",
+          "Consistent": true,
+          "Unsafe": [
+            "ticket-outbox"
+          ],
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "01d5ec410551fee81b6e6ef57d647b18232959f9a593e2cbaf25cc43c800dfb2",
+          "ProcessBirth": "1792478649.856058",
+          "Workspace": "/private/tmp/fhd-rptne47o/repo",
+          "Holds": null,
+          "PID": 45978,
+          "DoltPID": 45996,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-20T06:44:11.521081Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "07cedd51aafde77109c47ce2a5f3311ed6ea4a1e804a2766edc53e8a9a18249e",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "01d5ec410551fee81b6e6ef57d647b18232959f9a593e2cbaf25cc43c800dfb2",
+          "ProcessBirth": "1792478649.856058",
+          "Workspace": "/private/tmp/fhd-rptne47o/repo",
+          "Holds": null,
+          "PID": 45978,
+          "DoltPID": 45996,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-20T06:44:11.521081Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "07cedd51aafde77109c47ce2a5f3311ed6ea4a1e804a2766edc53e8a9a18249e",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a1580d-a6d1-7b93-b750-6169bcf0eabe"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": []
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-rptne47o/i/dogfood",
+            "socket_path": "/private/tmp/fhd-rptne47o/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "intake-gate",
+          "version": 7,
+          "artifacts": 1
+        },
+        "provider-beta": {
+          "state": "intake-gate",
+          "version": 4,
+          "artifacts": 1
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "01d5ec410551fee81b6e6ef57d647b18232959f9a593e2cbaf25cc43c800dfb2",
+          "drive_rounds": 1,
+          "new_pid": 50604,
+          "old_pid": 45978,
+          "pid": 50604
+        },
+        "old_pid": 45978,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a15810-875c-7e63-8d03-e3e1f2d6e4d1"
+      },
+      "cron_schedules": {
+        "completed": 1,
+        "admitted": 1,
+        "duplicate_occurrences": 0
+      },
+      "normal_targets": {
+        "local_task": "cron-7d533ed758e7c6b84e828429-0",
+        "live_task": "provider-beta",
+        "live_effects": 1,
+        "normal_revision": {
+          "id": "dogfood-normal",
+          "revision": 1,
+          "hash": "00d269d0928272e0cb687000ec8352ecb726f7eb56558d3eb121a49c786c95af",
+          "retired": false
+        },
+        "adapter": "disposable localhost fixture"
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0,
+        "durable_health_observations": 2
+      },
+      "retirement": {
+        "transferred": {
+          "dependent_effect": "transferred",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [],
+          "id": "retire-old",
+          "reason_class": "superseded-by",
+          "reference": "retire-successor",
+          "state": "Retired",
+          "version": 3
+        },
+        "held": {
+          "dependent_effect": "held",
+          "held_dependents": [
+            "retire-dependent"
+          ]
+        },
+        "hidden_by_default": true,
+        "dependent_withheld": true
+      },
+      "census_cleanup": {
+        "applied": [
+          "retire-successor"
+        ],
+        "removed": [
+          "retire-old",
+          "retire-successor"
+        ],
+        "verified_backup": true,
+        "archives_verified": 2
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 70,
+        "released": 69,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 9,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "provider-beta": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "provider-beta": {
+          "artifact_records": 36,
+          "version": 85
+        }
+      },
+      "integration_sha": "5f935921e6f6f37d11ec391911bae7c9c7182c8f",
+      "base_sha": "3ca798be3791b4e7a00b6e89c7f06faad1d5aff3",
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 4
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 9,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 0,
+        "mixed_mode_isolation": true,
+        "task_bound_resumed_turns": 6
+      },
+      "scratch_cleanup": {
+        "completed": true,
+        "root_absent": true,
+        "backup_retained": true,
+        "backup_files_verified": 2076,
+        "archives_verified": 4,
+        "idempotent_repeat": true
+      }
+    }
+  },
+  "review_findings_fixed": [
+    "Conflict remediation now installs the new base index atomically while leaving combined/resolved working files unstaged; deferred lock cleanup no longer removes a subsequent writer lock after rename.",
+    "Retired Herdr FIFOs and client sockets now require exact owned runtime binding, private metadata and no open descriptors; hashed endpoint identity metadata supports source/staged checks without reading streams. Darwin open-FIFO and escaped-path regressions fixed unsafe lsof assumptions.",
+    "Real-provider scratch cleanup exposed stale Git staging after commit-tree/ref CAS. Guarded atomic index reconciliation now runs at commit and verified adoption, preserves foreign staging and worktree bytes, and fsyncs the index directory.",
+    "Lost ready workspace now refuses before admission Ensure; no silent hot-path re-creation",
+    "Retired startup recovery validates immutable target and adapter but tolerates legitimately archived physical workspace",
+    "Scratch authorization precedes live shutdown and offline owned-process recovery",
+    "Staged deletion verifies every remaining backed-up file and refuses new/changed content; preview does not falsely report completion",
+    "Offline Dolt client telemetry/config now isolated from source and retained backup, preserving strict staged checks"
+  ],
+  "diagnostics": [
+    "A full native run found conflict-remediation staging left at the temporary merge tree; reconciliation now atomically normalizes its own known index to the new base. The subsequent dogfood had passed scratch cleanup before this native fix; final verification reruns both.",
+    "Third dogfood completed both tasks and 36 turns with clean indexes, but scratch backup refused retired Herdr FIFOs. Owned runtime IPC handling was implemented and tested before the final rerun; failed evidence retained.",
+    "Second dogfood completed both tasks and 36 real turns but correctly refused dirty-index cleanup. Its evidence is retained; production commit-index reconciliation and native crash controls were added before the final suite/rerun.",
+    "Initial new crash fixture directly updated the ref without broker retirement evidence and correctly failed adoption. Corrected fixture retains owned effect evidence and materializes the interrupted index state.",
+    "Initial dogfood retirement fixtures inherited the latest Normal workflow without adapter binding. Pinned non-executing Local fixtures to their base workflow; initial run evidence retained.",
+    "Initial dynamic-review fixture retained an executor linked to a closed pre-restart database; fixture was rehydrated.",
+    "Workspace fixture initial failures corrected exact pins, configured integration ref and captured review identity; observations retained.",
+    "Existing external typed-intent fixture needed schema endpoint for new freshness checks; locally invalid intent still refuses before network.",
+    "A supporting-package invocation omitted short TMPDIR and failed Unix socket length; corrected invocation passed.",
+    "Native staged recovery exposed source telemetry writes, corrected in production by external per-invocation tool environment."
+  ],
+  "limits": [
+    "Retired runtime IPC cleanup requires lsof descriptor enumeration; missing tooling, ambiguous diagnostics and unsupported escaped/non-ASCII endpoint paths refuse deletion.",
+    "A process crash that leaves an unknown Git index.lock or index.lock.lock requires explicit operator inspection/repair; automatic recovery preserves unknown locks and refuses adoption. A SIGKILL regression verifies this refusal.",
+    "Adapter installation configures reachable adapter endpoints; it does not install or launch vendor executables. Adapter retirement remains unimplemented.",
+    "Review preparation creates a deterministic Git worktree; vendor-specific fleet/build-workspace provisioning remains adapter responsibility.",
+    "External integration dogfood uses a disposable localhost configurable adapter, not a selected third-party vendor.",
+    "Cron remains Local-only; dogfood explicitly admits its Normal task.",
+    "Scratch backup/pruning/remote replication policy is not implemented; verified archives remain under configured instance home.",
+    "Failed startup without an authorizable plane, or an orphan plane preventing offline authorization, refuses automatic scratch deletion.",
+    "Scratch/provision operations have bounded two-minute budgets; formal guard/model checks do not prove Git, Dolt, filesystem or provider internals."
+  ],
+  "evidence_sha256": {
+    "scratch-provisioning-adapter-review.log": "c0211a2de2bda825edd3a41491c07f50eee7384cf0a33f70ec3969bf2e25d020",
+    "scratch-provisioning-adapter-supporting-packages-final.log": "c86ec1ec60a012b864dd7dcd00ade733b1c6554d3d3df409d91108428a2f8d68",
+    "scratch-provisioning-adapter-supporting-packages.log": "7f31ff278dbe29923d1863296ac16fb02ee0be29480667df9645c62d4192b919",
+    "scratch-provisioning-commit-index-adoption-initial.log": "aea51892a54ea3ced4de231fe2375523c605b1e979e2bc75c9dec95fa19b2d5c",
+    "scratch-provisioning-commit-index-adoption.log": "ff91f1e887630a01614b0ff0f939d5b8ee1fd80dfb272d557e1a84c6c2ed7c7e",
+    "scratch-provisioning-commit-index-daemon.log": "9da106cbb53ef7128dc0fec545c26368964be4722de091722b9f8389bb5208db",
+    "scratch-provisioning-commit-index-effects.log": "4a18e0ca082125a5f407fbfefa8c21df08e68cc775f549727e6a0fa0e5cfd4d1",
+    "scratch-provisioning-commit-index-final.log": "e9c47f86602561931ab09a9086ac1fa6dbe2e15231a8e74133cb4e4fed6625cc",
+    "scratch-provisioning-coverage.out": "39e701709c744bd48201a59ed13af3ae2f3a97bbc6a910af546bc72a4b4035f9",
+    "scratch-provisioning-dogfood-before-reconcile-fix.log": "92c834c3bc60796da9bf2a8220dc12b1af215b406a4f763574c775f136d0ec40",
+    "scratch-provisioning-dogfood-initial.log": "c8a38a30e4c00fb714fd384ff6dbd49c522b734a6ff0911f3f2573fe5ddce12e",
+    "scratch-provisioning-dogfood-retired-ipc.log": "245d6eaa4cbbb80a0df8c8b9f771865c77422a1969725e7339c6de95b6e578b9",
+    "scratch-provisioning-dogfood-stale-index.log": "90c64b3c7b4b322550bf5191adaf9216530715f6a903ea2260c0fca2d512a6ff",
+    "scratch-provisioning-dogfood.log": "6ca74847cd00090d28300dbc91bf1b9fd70adebc97c6d6bb6e390f8b182cb185",
+    "scratch-provisioning-dynamic-adapter-final.log": "6150b0165a0d331e3003bb2f22fd97ebf1a0dfefa2b63ed7ea44a6355fb48e69",
+    "scratch-provisioning-index-conflict-failure.json.gz": "352ac999c0e3e3890d953196c419a7d4d765e2f2e2e6f7c7338eaffb79e1c950",
+    "scratch-provisioning-index-conflict-failure.log": "4f146f539695b94a7b7f214dc204069723dc105d9942e8016ef2c338a0fdc2a3",
+    "scratch-provisioning-initial-coverage.out": "b2e09beb00e72a4da90dc80effe4c11ec3b6879a5d3b91801134a294e6b09ff5",
+    "scratch-provisioning-initial-source-hashes.json": "3c0f6b89fc19be9d03887d7aded526529b0a500f2f1cf7c97512a4a2e3f9d873",
+    "scratch-provisioning-initial-suite.json.gz": "aa27e1dbf65334a6e817e3639804acc848dbd8f01b84bff671e66342a4e1fb4a",
+    "scratch-provisioning-initial-suite.log": "5d26d72b66694848606a2449ae6c05bd7dce4a0b0b7f2218088c730f0d1f4c56",
+    "scratch-provisioning-preflight.py": "f3b8a26a6aa089dbd77d3d2d8579cd53d3606d91ffc341c03115d38186be9e32",
+    "scratch-provisioning-reconcile-index-daemon.log": "fa61a5bd5f30eb342678e039e6f312aaf4d9e26f1df0ddaec510d6db45ae90d4",
+    "scratch-provisioning-reconcile-index-effects-final.log": "ea261ec19cdd20b22ae6646f96f6ff6917c15a8a78d04d09316485bff386c999",
+    "scratch-provisioning-reconcile-index-effects.log": "98b850c2c038151cb775deec767a3d499df00b9b71dd7e6611b171b22d88a9d5",
+    "scratch-provisioning-review-workspace-initial-diagnostics.txt": "e83c0090f97f217849168e0b30534a36352042865b918bf2769eda2ee871502e",
+    "scratch-provisioning-review-workspace-tests.log": "2b8cb496babc7011f5e7e36e6d33facf2506782f5d8105c8686862dbc9479dae",
+    "scratch-provisioning-scratch-focused-final.log": "395890ec7321126e1607317ae2babd0dec24cb8c69503a158d182e71d39ce32d",
+    "scratch-provisioning-scratch-ipc-continuation-repeat.json": "b93a7e0f14c007c1b7740a9a2f1b5bc586e8cb0e72110cfafc1c1dfd6365a872",
+    "scratch-provisioning-scratch-ipc-continuation.json": "b93a7e0f14c007c1b7740a9a2f1b5bc586e8cb0e72110cfafc1c1dfd6365a872",
+    "scratch-provisioning-scratch-ipc-focused.log": "71435a9136fe9a7e9d41001a73efbcd9634fbb569a3fdf96cc61f2c8896b4e13",
+    "scratch-provisioning-scratch-ipc-native-final.log": "91f9a1e262281abeebebd2c2476a28cd86e6ae5004cfccbf29d4c8d8acd733d2",
+    "scratch-provisioning-scratch-ipc-regressions.log": "23d861b551abf2c46eda13668dbc88d6bc86ab32a26f42c698ce91870cca881e",
+    "scratch-provisioning-scratch-ipc-review-final.log": "7b165c30d230c071d3663c4bdbba217f11158ae75d35d43f6296b033cf595a94",
+    "scratch-provisioning-scratch-ipc-review.log": "4cc221865b71c68a05a9d67c114760a2eced679f10e964117d4d4390ca91e6bd",
+    "scratch-provisioning-scratch-provisioning-preflight.log": "e71efe0820b29fd8bb06db2604ac213827422bfe16d846d7adbcfecfd024925e",
+    "scratch-provisioning-scratch-staged-content-fix.log": "ae8ba18555f0f8206fbd5105b000a8c29784d6c747fb226ea091ed5ddb54cb1f",
+    "scratch-provisioning-scratch-staged-content-initial-failure.log": "79452b3a65c35a5a1abdcb279d7cecb0fdbceb04fccb9d6a3e87c522dc8f5911",
+    "scratch-provisioning-source-hashes.json": "1b6614d543917ef3eddf4a05dd5a5f702ef6a15387a5a71c46e688c0fd563404",
+    "scratch-provisioning-suite.json.gz": "b6e7753a9908c0d8bb896902d89c425072947bdb4471f645411b6b99b1e6cd25",
+    "scratch-provisioning-suite.log": "59b6fa494dcd2d7b19d27359ae8b0fbf9c53ce5cacdfc8fb7aafb2970574aa45",
+    "scratch-provisioning-dogfood-20261019/census-cleanup.json": "6ad6a8db129bc7c8cc30e83efbb5f706b0e3f08cdbda52964b222d963dd266af",
+    "scratch-provisioning-dogfood-20261019/controller-lifecycle.json": "e57f47899fc051136c4132beffca9b91f608d6252b2e7a1d4bde48ff317e7159",
+    "scratch-provisioning-dogfood-20261019/crash-before.json": "81984d9f1850e7f370eb9605af8d95873a3d39c4c1efb9d158601ebadf6726fa",
+    "scratch-provisioning-dogfood-20261019/crash-provider-starts.json": "8d2105d0178b02c25ff0130110adfdede3158dc7f91188303da82940e2b3f4a9",
+    "scratch-provisioning-dogfood-20261019/crash-recovered.json": "c3e8cd1f644802b1cb7725ac4c3f991d41cc42b49483fca483148e6b15c34910",
+    "scratch-provisioning-dogfood-20261019/cron-schedules.json": "d55624aaee786c708ea05fa262d58f5d1b9dfde640d42a1368ce22b780b5745f",
+    "scratch-provisioning-dogfood-20261019/drive-restart-checkpoint.json": "eca7f38a29f78ae96f931f50b8b12f74baac0ce8dbb381903113aba238dc1c50",
+    "scratch-provisioning-dogfood-20261019/drive-restart.json": "1d4be798566e4573c2ee30531a5d095da6109bff9087686623177b403d3636b9",
+    "scratch-provisioning-dogfood-20261019/dynamic-provisioning.json": "6f125dc3d96083ccadd4353e8eec968d7594708970e616468905c59badb1d665",
+    "scratch-provisioning-dogfood-20261019/final-evidence.json": "93fd8afcc5d760bf6c6b7c8189322e5c3fbd3d87254dc389587ecaf24291e84e",
+    "scratch-provisioning-dogfood-20261019/lease-audit.json": "754d700c99bafd2b5adf2e9b700642816867e21bcd13bd6ba11f5217612ae87b",
+    "scratch-provisioning-dogfood-20261019/normal-targets.json": "cf6e89a2855069ddde1172a71df57856733c5482a6fdd32d7d3b0daa817eca43",
+    "scratch-provisioning-dogfood-20261019/pane-audit-final.json": "375bf680b5df4e95c01fde9192cbbdf16216376e9684cda3099ae5aa9c39735e",
+    "scratch-provisioning-dogfood-20261019/pane-audit.json": "f948701f11cb16c85519c962f58c32109b93f1b85da8d3d39614a724e821c26d",
+    "scratch-provisioning-dogfood-20261019/prophet-sessions.json": "08ff89c85f0c725aae525fdeb10ef7cdc3012756beb9bf122d242cfa4567aafa",
+    "scratch-provisioning-dogfood-20261019/provider-health.json": "e23f115edc7e49c4a0fcdfa23bb966ab6e57444aa06f5e9c005f69dedd759615",
+    "scratch-provisioning-dogfood-20261019/provider-log.json": "17edd0562782d63827adfd9b0ae3c24d57034c7aef63d1ad7dfa76cfb2df9bda",
+    "scratch-provisioning-dogfood-20261019/provider-loop.json": "7405e4a8921e79cd37c45ba84dababa963d2bf6e6ba667b48cbc54e206f96cb7",
+    "scratch-provisioning-dogfood-20261019/provider-sessions.json": "e782637244beff7b808b047a8c7e68a7a5fdd06870670499e5cb4009a1c87d52",
+    "scratch-provisioning-dogfood-20261019/provider-turns.json": "b89667dc598e1b8314dad11c1570745b23190ac0de8f508164e01944d46aa5db",
+    "scratch-provisioning-dogfood-20261019/resident-sessions.json": "e2f97971ea6ac682c0aaefaf62b522d1b5927f5bb9903fee2785a6637fc723b4",
+    "scratch-provisioning-dogfood-20261019/restart-checkpoint.json": "238ad1d56270ffcdc8a7cf597799b35828f8516e7940d418ae76323acdde1de5",
+    "scratch-provisioning-dogfood-20261019/result.json": "dabdeeb575dcc1af5487e87ccb1dc9fa5003c81037c1d4eaa8b9441563e10335",
+    "scratch-provisioning-dogfood-20261019/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "scratch-provisioning-dogfood-20261019/scratch-cleanup.json": "7c414ba17fcd6c4f4026ab8c5db14940e03b7fe3f8977e4863e2735610a14cfe",
+    "scratch-provisioning-dogfood-20261019/sha256.json": "c6c79bdf94338c49ac9a07f043895c489da51b65a311a6cb3babd633f526bb21",
+    "scratch-provisioning-dogfood-20261019/source-hashes.json": "e29c828b740eedfedbd87a992a07b13f4b6bec5a6cc2318555c5e52bff8b6389",
+    "scratch-provisioning-dogfood-20261019/target-configs.json": "d0e4d1a18521c1d1430c85c6643cc3d4f82383fb173ff2b24623f2e12ca92abc",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/census-cleanup.json": "c2de47b82de9e7766350c75be651b6490dcb82a3b7c5649de94620afbdf835eb",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/controller-lifecycle.json": "aac056fad99545f5e4dd253a47e6904272f42ab6612714683153156267c2a5fa",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/crash-before.json": "fa31a4ad2996da5f63c288e65a859c6cee4e83214ed0a3641faad7c78002ad1e",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/crash-provider-starts.json": "80395634b25ef1454cfdc85d4fcbca09305646f25c68e2c2d4fc784733166b27",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/crash-recovered.json": "cdd5426eee7009736da17e989b7fb28516fdeae2262d743bc6443bb0e46b2f9e",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/cron-schedules.json": "b132417757a201018103e8ed3cab05e69f1e6ac7c8158d778d6244e0aa9db7c6",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/drive-restart-checkpoint.json": "1f64f9e362afea283329eedf21e2bfd5bc9763142140b11f5e50213ac92b9585",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/drive-restart.json": "3076fb619c16275984bfe27f8900479ecd38e514f5c5b4b0cf471aac3c7a1f0a",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/dynamic-provisioning.json": "07d31f52ce66968b1ed85171a8e392e5d5f786453afddef0f5c0ac894aa2a801",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/final-evidence.json": "956bb698f32d092d7387736b45077307de9e4e0ac091eba2f1321f13f379270c",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/lease-audit.json": "6f57c297d9bf34f0d3a1ba251d707eab084f08fa6eec0043ddb61634243b295a",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/normal-targets.json": "4e9cbb69a53c7d3870451c7ad78a639c467a7cfe752e1e6c20da0563f0b059f5",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/pane-audit-final.json": "9be69b855fda5fed0ef571400586176805a5b1c844647e1a7eb64af9aff44cbb",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/pane-audit.json": "a29b37ee2e3fa904396fb59292f19faeb9bb74685a9177f7a18242e44ca2c016",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/prophet-sessions.json": "27b9607ede54e7f21085c0852176066844306e6dc16d4d4f2e5ce3a3414e9a9f",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/provider-health.json": "c27a2cb7343ecb1c5abad52e339cf31a081a0efb0d1d8dff07f6baabfbe5241a",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/provider-log.json": "7414062538964391fa29b46cc71eba1e05a923b5ade9b7dea7c483c30813e3ef",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/provider-loop.json": "e95e24c9d0d7013503b4da326bd8412a4fd4b56d05f51f402936bd9ab56b5bbd",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/provider-sessions.json": "4ea9845fef316c99a4b93b0ad92557c515c61212c4e79b005b4a9c16b372a72d",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/provider-turns.json": "132ecdc349da190354d4bb6902f444e592a55507a0de01629e147781dc931436",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/resident-sessions.json": "8e761c3eb0ff44b246bfd58c20778c51c4d9dbb7385712ad9d5519bada1d8921",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/restart-checkpoint.json": "3277ed451a2c9ea0e8a2135cb812322de6b5f5f753b24707042b9375c0af2dbc",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/result.json": "06293d42ad3e4b7a528ecd003236a1ab85cf2c27b6dd754d9e49cee6a26882e2",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/scratch-cleanup.json": "0b8f2ef5cca05494ba30604202584a5125df369ade0625f68dcb94baefc2c5c1",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/sha256.json": "3621a380918954e90b59bef82c35b5f2ba4f0e0c9a343a5f057025b9ac010a99",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/source-hashes.json": "a79eae1e245b56ba1c1703b441fda1f545fd4f80b9b6cd9cbba323072e83225c",
+    "scratch-provisioning-dogfood-20261019-before-reconcile-fix/target-configs.json": "6fb737c89e5942f0d9636e2c391e3d147ae447642c1eec0cc6a8066fe57c5d65",
+    "scratch-provisioning-dogfood-20261019-initial/controller-lifecycle.json": "804f0e36d418688e3111cf301212f32cd2b63fa5c3949d4c2e73b3b6a827ed4e",
+    "scratch-provisioning-dogfood-20261019-initial/crash-before.json": "144e12b82c259596872daec84cb98e508173809aac332bb5631ae4915e27c93f",
+    "scratch-provisioning-dogfood-20261019-initial/crash-provider-starts.json": "ea4636a621f7b22550f891bc9b39ade0a5cf33c2be500ede2cf19812e6a021f2",
+    "scratch-provisioning-dogfood-20261019-initial/crash-recovered.json": "b2033c9657e5db2042299c117cf951a682ac38552b04a631dcf5c82f62101908",
+    "scratch-provisioning-dogfood-20261019-initial/cron-schedules.json": "2a359e929fdb849e15f2c7a8168c9fdd7c67c864b5ce3f53341e0f663885e4e7",
+    "scratch-provisioning-dogfood-20261019-initial/drive-restart-checkpoint.json": "6afba7fbdff57bdb4795aeb8842bbc8ed880e8608ccb1a4625e94453ea118520",
+    "scratch-provisioning-dogfood-20261019-initial/drive-restart.json": "34c2ead3d0139544ad1edee3f91928a41ca7060bad3cdf01b3cb8265da02db18",
+    "scratch-provisioning-dogfood-20261019-initial/dynamic-provisioning.json": "cc1a3f474d6eb32b5e6d23d7306d8dd19b1bf9c35b6e383b6508db98a382b266",
+    "scratch-provisioning-dogfood-20261019-initial/normal-targets.json": "f0cd8f58f1cb3fd2eefea573131aeefbc0c608bc715a40327d6c4245d6d35aef",
+    "scratch-provisioning-dogfood-20261019-initial/partial-evidence.json": "785a92bd469689e87f4e19b96339f6890e44c7c69a0ec6f0287cd9bb95ea06a6",
+    "scratch-provisioning-dogfood-20261019-initial/prophet-sessions.json": "3fe9aecf4bca6ebaaf939653be727fc097d6510a43b2b7d93a72e05c7b21a313",
+    "scratch-provisioning-dogfood-20261019-initial/provider-loop.json": "4e9ff50a6ec58bc2d664ede92a56c853ad368e6f7def96ce426f26ee718d2133",
+    "scratch-provisioning-dogfood-20261019-initial/restart-checkpoint.json": "f415acdf5e91562947e4ad15bd971576a456b0aa5fe38ff06cc94cbbc02cf120",
+    "scratch-provisioning-dogfood-20261019-initial/result.json": "48b74e1e7f28c47864e80b9fa0e4ea44bf085e68af9ae752bf3c10b9cc571ed2",
+    "scratch-provisioning-dogfood-20261019-initial/sha256.json": "6fbb5d073776e0fc91f49afc288a802618c0789f11156c0849742550414a1c3a",
+    "scratch-provisioning-dogfood-20261019-initial/source-hashes.json": "10b92c970d5c445679b129280da0564ba103f522205f5eeb55a6509c1f5714fe",
+    "scratch-provisioning-dogfood-20261019-initial/target-configs.json": "6406f6ad4081f37c00a56e9026c9e2afea6cd2284b47fa951dcff6f2e9fb0ce4",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/census-cleanup.json": "b5cb95752e8a081613d04c0cdb15c239ec0ae57a324443eba12515a9e82300df",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/controller-lifecycle.json": "9aa4c6a1f92753edd7bd91e50d1c33846b1fd994f50930f3996ff078641441d7",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/crash-before.json": "192b78e3f1c0ae62a3eca1d6f2b2ddb56b4c7a2c600d42aab03ccced09c7b3fb",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/crash-provider-starts.json": "47f9ad5c47c358c35807c2d6a56c00b7103e430d7fedef4bb77bcd205abdc860",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/crash-recovered.json": "1f76e1e16ccec9e9ca88641ee362dc872d6d0bdb9991a4a8af44573079d7c25f",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/cron-schedules.json": "7f711a5b4c528ad7f4963caa296b35ef0ab35b474f36be3d013b95d782b9b431",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/drive-restart-checkpoint.json": "2c87c46c99cb23ee33d318b0b6d4524ec3068e3169ff6f7aa90da653cbaea0f8",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/drive-restart.json": "f4eba33feb2e1f4bb4441a8b233d5bfa54b25fb9667c4fb4b6af4db2cc371063",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/dynamic-provisioning.json": "3275acfb99a05f6e0315ede4d416809aabd97cbd12fb3ce0a0f25613bacbdafd",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/final-evidence.json": "16e5c522d0dee30838ff45060d277e1e0214e6bab65ca1e17a5d5a822828a036",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/lease-audit.json": "faf4625ff718f750530f8274ccf08cbf0a3c09349b590cd99099e61da2080f88",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/normal-targets.json": "2a928d2a9de4f32fccc2614a0d96fa94f0bed72cdd425125085ca7f6b94fef76",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/pane-audit-final.json": "0c983164fe2b80069551da3e60a9fb1e690cf9a6ed11056d9d843b70b338c255",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/pane-audit.json": "c4a8eaff9844bcb2b24a8078c471550d811ba9c9efe5ed1f4171140aa7e1158e",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/prophet-sessions.json": "d31cbac99e257547087e1fec8bf44f6d4118c519c3875e3718a119e110b1cf87",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/provider-health.json": "5ab3f77b72f21f8d228ccfa37f4698f5d8de2a0fecf44a041464c0d269c678af",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/provider-log.json": "f971c03f88c947eaa7ad90652f8675e78bd6f13a577a631b66f18c2bfe317d7e",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/provider-loop.json": "2997e917fb08bd8ea09c80bc23d4fe0ea0edbaf34585616df9639e5c723f2470",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/provider-sessions.json": "9741647fdc7b1c9444a0716a2b95936546e29bc448844d69f90a00870425175c",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/provider-turns.json": "7b8157074d3076c8b7db69363c7bc7cd8b49766e8a86fe65f8d805fa2ee97d1e",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/resident-sessions.json": "a30a3cd83697561999d2ca428f49e70688c39519457cb6ff2bbdbb4fb3ed32c7",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/restart-checkpoint.json": "bc97f59e084d7b0a8eb397827e66883e8388709185c985c7a7e4952d214cdfa0",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/result.json": "60634746f3f68170757bc4320d7dd0e0b7c5f7158c7323ec0072876785bad2f4",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/sha256.json": "9b7233c5efe653fc41f8a50e8d72900f68d369156503ca4a4b46a19839e77e42",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/source-hashes.json": "1f765565b43bf42a3d49e56cfca866737c3533d93e46fc30c2846efab55cfe96",
+    "scratch-provisioning-dogfood-20261019-retired-ipc/target-configs.json": "cf0a7b9afd5a01b889c0bc6ef7c965bcbfb1cb195639ed59a1875bf670ff2c79",
+    "scratch-provisioning-dogfood-20261019-stale-index/census-cleanup.json": "2bb9d8407d4f6bda164453a671d558082acea0ca07f9cc3484f7ecf239fbe649",
+    "scratch-provisioning-dogfood-20261019-stale-index/controller-lifecycle.json": "969e30b462eeab63e44a9e02348ed6070e4064d4aeca683157e30f26ca161c67",
+    "scratch-provisioning-dogfood-20261019-stale-index/crash-before.json": "f805417f550725fdfc8e05af2a6705569cf75fbb92d6595a4944e7c852aaf8f6",
+    "scratch-provisioning-dogfood-20261019-stale-index/crash-provider-starts.json": "bfd2bd83a7b59124002f9f8bee8ad0b23692a8b65999738678e0e1e845360133",
+    "scratch-provisioning-dogfood-20261019-stale-index/crash-recovered.json": "4586da14cfc423fbead49e08221caf70f7f1cfdc8743fa4e3990707ca42ad9d9",
+    "scratch-provisioning-dogfood-20261019-stale-index/cron-schedules.json": "f1e16fc2e4062180099a515014681f4ca488c28eef9a7d33b047c7b31e0a238f",
+    "scratch-provisioning-dogfood-20261019-stale-index/drive-restart-checkpoint.json": "4fb19e79c8b0c0c633bccd37eaf6cc664cacfd76e2f51efffdd85dd90f688c7c",
+    "scratch-provisioning-dogfood-20261019-stale-index/drive-restart.json": "55bcac6eda6ee5fa2e3d4592e003fcd81265ec964a0367adf9405389599b8ecb",
+    "scratch-provisioning-dogfood-20261019-stale-index/dynamic-provisioning.json": "b64e92c2b52cc9921cea436f2c5c9248517d6ebe7ef98f3ec8572ac05b833ea9",
+    "scratch-provisioning-dogfood-20261019-stale-index/final-evidence.json": "f6e2512a19c1a8e4ba4200993d9e5d1e5a1046ebcbfc9753f6bb35d21cde31f4",
+    "scratch-provisioning-dogfood-20261019-stale-index/lease-audit.json": "2d2aa7724f44da07f6165c58ee403fbdf111964ff73fd163d036ce2e96c845c6",
+    "scratch-provisioning-dogfood-20261019-stale-index/normal-targets.json": "3400d790816c551703638a51eaa77b1d752d2791b0b2e6f4cb88f6be89c703d8",
+    "scratch-provisioning-dogfood-20261019-stale-index/pane-audit-final.json": "0cb02a733e9c0bac2efc351f9ecedd35c339a86a6f3d8b48413d4e3b7cdf3c8d",
+    "scratch-provisioning-dogfood-20261019-stale-index/pane-audit.json": "321256b87e2cc7f93ff9b9e5348001203048140d5655a6aa06d6a515f905a519",
+    "scratch-provisioning-dogfood-20261019-stale-index/prophet-sessions.json": "bdd8aa7377edf3a52bd322f3dc6db30e475d00356a573baeffecfc34d184648b",
+    "scratch-provisioning-dogfood-20261019-stale-index/provider-health.json": "e9dc19a0caa50523606bfc11429d685055f9903aeeefac247839a4c5fe46a9fb",
+    "scratch-provisioning-dogfood-20261019-stale-index/provider-log.json": "bb302dc6ce998c7b929c01c2bafda2211ee2579d3e25fcdc7f9206d43057006a",
+    "scratch-provisioning-dogfood-20261019-stale-index/provider-loop.json": "4672617d376c23f00f1c7d68c5ba07180b46478f1f7f1a963ff871d55fef34c6",
+    "scratch-provisioning-dogfood-20261019-stale-index/provider-sessions.json": "fc33de2d7da48fdb21db83027483a984d548dab134d6fd24cb0b4be2a24e98df",
+    "scratch-provisioning-dogfood-20261019-stale-index/provider-turns.json": "31ddf349363a508ad348e7d7469fdf9d65da029617ff39c214a3124dfb35e7ea",
+    "scratch-provisioning-dogfood-20261019-stale-index/resident-sessions.json": "45bacb5328cc74ac1680bb29fc8e7b1488407a075f0c003312cb630df37d3164",
+    "scratch-provisioning-dogfood-20261019-stale-index/restart-checkpoint.json": "b8e29c4272661a5479534060be11aa1a7b33a0fb93269a4adf4506555f990fee",
+    "scratch-provisioning-dogfood-20261019-stale-index/result.json": "97adb1750111456095b399ae8fc567b280eef2ed8f013d0b45881ec1aa2bd854",
+    "scratch-provisioning-dogfood-20261019-stale-index/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "scratch-provisioning-dogfood-20261019-stale-index/sha256.json": "e16922b8ffd701193db5b8f359cd2556095872b4d251725bcf9921d5a194871f",
+    "scratch-provisioning-dogfood-20261019-stale-index/source-hashes.json": "528a1cbab2d7c0d807a0459dbd7fd3aa95429cbead311e80c14dbde3d26f781b",
+    "scratch-provisioning-dogfood-20261019-stale-index/target-configs.json": "3d711bd6c8b9ad99ea16152ac06f267bb0decdc4ec05eb9f931686df9388d4b1",
+    "scratch-provisioning-formal/gomela-negative.csv": "42a76dcedda7e6036b7670473f8c76a0bc10e233ebbc47db3d705d48e3050060",
+    "scratch-provisioning-formal/gomela-positive.csv": "e023e8bb81e703db08f8ed23810105a1c649d248e2152a678e04b6b284c7cde8",
+    "scratch-provisioning-formal/logs-models.tar.gz": "24903dfd5158192e55dafe5acd6aec7b5c44edbaf79822b17110c5bdad2a4e47",
+    "scratch-provisioning-formal/source-hashes.json": "d57316ddd6c60c11c62939f769815869cb7b7a5ccf8c056062e46c575b2ca9bb",
+    "scratch-provisioning-formal/verification.log": "d3015a68bff2237b7b7edd475d429226c5f119ea2e84613fee0bf51afa152287",
+    "scratch-provisioning-formal-initial/gomela-negative.csv": "4bba552f0804300ab791da6a4bec34668681fe781852f08622a15c7e8dc960ff",
+    "scratch-provisioning-formal-initial/gomela-positive.csv": "c57d9923b77a6df2389982a4c53732710a50985c8bd1539e1f0b44aa567e82b8",
+    "scratch-provisioning-formal-initial/logs-models.tar.gz": "f501d9ef079d80eef82edccac9fa28bc6619de91017c5aaf43badac2096186c3",
+    "scratch-provisioning-formal-initial/source-hashes.json": "32dd8b565e06401012c315ed76fb8f18c39d7ebe2966bf17c2365608eb59bf61",
+    "scratch-provisioning-formal-initial/verification.log": "4f5164efc27773225eb10a3962c933bacdd07c904b873ee8ab3179b80a6e8f26"
+  }
+}

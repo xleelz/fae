@@ -1,0 +1,341 @@
+{
+  "date": "2026-10-18",
+  "status": "passed",
+  "implemented": [
+    "Installed runtime vendor schema discovery, exact tool/schema/argument pins, typed arguments and bounded room action caches",
+    "Pre-provisioned review workspace and baseline health, draft creation, declared status gates, bounded same-review remediation and durable polling, separate publish/merge, explicit opt-out and current-tree merge floor",
+    "Durable ordered ticket outbox with per-row attempts/errors/audits, fair background workers, immutable intents, query-only uncertain recovery and restart-visible unsafe state"
+  ],
+  "unit_and_integration": {
+    "test_cases": 770,
+    "packages": 26,
+    "statement_coverage_percent": 74.8,
+    "race": true,
+    "vet": true,
+    "scratch_census": true,
+    "command": "FAE_TEST_DOLT_BINARY=/tmp/dolt-darwin-arm64/bin/dolt bash scripts/test.sh",
+    "full_workflow": "Production daemon performed two implementation/test/review/QA/commit cycles in one pre-provisioned task worktree; exactly one draft review, one same-ID revision, one publish and one merge; Done only after merge.",
+    "initial_run": "Two schema-v5 migration mock expectations were stale; crash helper readiness publication allowed a zero-length partial read. Added v5 interrupted-replay coverage and atomic readiness publication; complete fresh suite passed. Initial aggregate logs retained.",
+    "focused_initial_timeout": "Two-cycle workflow exceeded original 60s await helper after second implementation and verification; bounded 150s wait/180s context passed, followed by complete final suite. Original timeout retained."
+  },
+  "gobra": {
+    "production_predicates": 30,
+    "rejected_mutations": 30
+  },
+  "gomela": {
+    "positive_models": 31,
+    "firing_negative_controls": 29
+  },
+  "real_provider_dogfood": {
+    "evidence_directory": "vendor-review-ticket-dogfood-20261018",
+    "model": "gpt-6-astra",
+    "herdr_version": "herdr 0.9.5",
+    "provider_version": "codex-cli 0.163.0-alpha.10.2",
+    "adapter": "herdr",
+    "scratch": "/private/tmp/fhd-oamem69w",
+    "status": "passed",
+    "task_ids": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "cron-1c405e1c25c7422088d7a718-0"
+    ],
+    "crash_recovery": {
+      "signal": "SIGKILL",
+      "started_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "uncertain_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "resolutions": [
+        {
+          "action": "redispatch",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "id": "cron-7d533ed758e7c6b84e828429-0",
+          "version": 5
+        }
+      ],
+      "automatic_replay": false
+    },
+    "independent_drive": {
+      "before": {
+        "BinaryHash": "8255de59a4c74747bc95b956d1b0dfdd000abaa73b4a2f8835baab33d3d1ba0c",
+        "ProcessBirth": "1792376611.961169",
+        "Workspace": "/private/tmp/fhd-oamem69w/repo",
+        "Holds": null,
+        "PID": 59259,
+        "DoltPID": 59271,
+        "OldPID": 0,
+        "DriveAlive": true,
+        "DriveGeneration": 1,
+        "DriveCause": "",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-19T02:23:37.698638Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "37c0d1db6c145365439a4b63a566cebb91b4f800229b5d967ec5f109cc838dec",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "stopped": {
+        "BinaryHash": "8255de59a4c74747bc95b956d1b0dfdd000abaa73b4a2f8835baab33d3d1ba0c",
+        "ProcessBirth": "1792376611.961169",
+        "Workspace": "/private/tmp/fhd-oamem69w/repo",
+        "Holds": null,
+        "PID": 59259,
+        "DoltPID": 59271,
+        "OldPID": 0,
+        "DriveAlive": false,
+        "DriveGeneration": 1,
+        "DriveCause": "operator-stop",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-19T02:23:37.698638Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "37c0d1db6c145365439a4b63a566cebb91b4f800229b5d967ec5f109cc838dec",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "resumed": {
+        "BinaryHash": "8255de59a4c74747bc95b956d1b0dfdd000abaa73b4a2f8835baab33d3d1ba0c",
+        "ProcessBirth": "1792376611.961169",
+        "Workspace": "/private/tmp/fhd-oamem69w/repo",
+        "Holds": null,
+        "PID": 59259,
+        "DoltPID": 59271,
+        "OldPID": 0,
+        "DriveAlive": true,
+        "DriveGeneration": 2,
+        "DriveCause": "operator-stop",
+        "DriveRounds": 6,
+        "LastTransition": "2026-10-19T02:23:38.207435Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "37c0d1db6c145365439a4b63a566cebb91b4f800229b5d967ec5f109cc838dec",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "retained_dispatches": {
+        "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+        "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"
+      },
+      "daemon_and_plane_unchanged": true,
+      "retained_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+      ],
+      "provider_start_evidence": [
+        {
+          "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "events": [
+            {
+              "type": "thread.started",
+              "thread_id": "01a151f8-aae7-7611-8228-5820155ea073"
+            },
+            {
+              "type": "turn.started"
+            }
+          ]
+        }
+      ],
+      "deferred_before_execution": [
+        {
+          "session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+          "events": [
+            {
+              "attempt": 1,
+              "cause": "inputs-resolved",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "dispatch",
+              "stage": "intake"
+            },
+            {
+              "attempt": 1,
+              "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "execution-diagnostic",
+              "stage": "intake"
+            },
+            {
+              "attempt": 0,
+              "cause": "infrastructure-deferred",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "park",
+              "stage": "intake"
+            }
+          ]
+        }
+      ]
+    },
+    "dynamic_limits": {
+      "during_active_turns": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "after_restart": {
+        "dynamic": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "fixed": {
+          "instance_root": "/private/tmp/fhd-oamem69w/i/dogfood",
+          "socket_path": "/private/tmp/fhd-oamem69w/i/dogfood/run/rpc.sock"
+        }
+      },
+      "raised": {
+        "effective_pane_limit": 24,
+        "heavy_capacity": 2,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 24,
+        "tasks_in_flight": 2
+      }
+    },
+    "restart_checkpoint": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "state": "intake-gate",
+        "version": 7,
+        "artifacts": 1
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "state": "intake-gate",
+        "version": 6,
+        "artifacts": 1
+      }
+    },
+    "controller_lifecycle": {
+      "roll": {
+        "accepted": true,
+        "binary_sha256": "8255de59a4c74747bc95b956d1b0dfdd000abaa73b4a2f8835baab33d3d1ba0c",
+        "drive_rounds": 1,
+        "new_pid": 61100,
+        "old_pid": 59259,
+        "pid": 61100
+      },
+      "old_pid": 59259,
+      "maintenance_marker_cleared": true
+    },
+    "provider_loop": {
+      "iterations": 5,
+      "state": "completed",
+      "session_id": "loop-dogfood-loop",
+      "provider_thread_id": "01a151fb-8d74-71b3-b406-190153247384"
+    },
+    "cron_schedules": {
+      "completed": 2,
+      "admitted": 2,
+      "duplicate_occurrences": 0
+    },
+    "lease_audit": {
+      "capacity": 2,
+      "granted": 63,
+      "released": 62,
+      "recovered": 1,
+      "final_holders": 0
+    },
+    "pane_audit": {
+      "before_shutdown_reservations": 6,
+      "final_reservations": 0
+    },
+    "stall_recoveries": {
+      "cron-7d533ed758e7c6b84e828429-0": 0,
+      "cron-1c405e1c25c7422088d7a718-0": 0
+    },
+    "tasks": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "artifact_records": 22,
+        "version": 55
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "artifact_records": 32,
+        "version": 78
+      }
+    },
+    "integration_sha": "11caa84797ed041d0ceb3177d282c5ae4bc910fe",
+    "base_sha": "34748908a04492b629ef670e93f2b3bded2d7da5",
+    "crashed_completed_uncollected": [],
+    "resident_sessions": {
+      "audited_turns": 19,
+      "reused_panes": 7
+    },
+    "real_completed_turns": 34,
+    "persistent_sessions": {
+      "audited_turns": 18,
+      "resumed_turns": 12,
+      "resumed_after_restart": 2,
+      "cross_task_threads": 3,
+      "task_bound_resumed_turns": 6
+    }
+  },
+  "verification_scope": "Gobra proves selected production predicates; Gomela/SPIN checks bounded protocol models. Native SQL/HTTP/process tests and authenticated provider dogfood are separate evidence, not whole-system proofs.",
+  "limitations": [
+    "Vendor integration uses configurable HTTP adapters serving actual installed tool schemas and normalized review data; native MCP transport, vendor SDKs and authentication are adapter responsibilities. No third-party review or ticket service was mutated; new lifecycle/outbox tests use isolated local services.",
+    "Review workspaces must be pre-provisioned on the declared task branch. Fae does not provision or sync build workspaces in the drive. Pending status polling has a separate durable configurable budget (30 seconds / 120 observations by default).",
+    "Dogfood exercises authenticated Codex/Herdr delivery in a disposable Local repository; same-binary guarded roll is covered there, changed-build deployment policies remain native-fixture coverage.",
+    "General operator incompatible-verb consumption and complex local-effect merge/conflict adoption remain follow-up scope from previous phases."
+  ],
+  "hash_verification": {
+    "suite_sources": true,
+    "formal_sources": true,
+    "dogfood_sources_and_binaries": true,
+    "dogfood_evidence": true
+  },
+  "evidence_sha256": {
+    "vendor-review-ticket-coverage.out.gz": "ca461b870ef64650c7f5e36635a9812b21282ec8706e549dca43f280516efbe5",
+    "vendor-review-ticket-dogfood.log.gz": "60ada053ec4b7ed8bc7db22c0b71aadb27df4d9f4480434c4308ba0b23b1da68",
+    "vendor-review-ticket-prefinal-coverage.out.gz": "87006f95237e1fcb78b4a11349b356796cb06cf794d0dccfc05872a4fb039fa5",
+    "vendor-review-ticket-prefinal-source-hashes.json": "09bf93553db24d67e549735e1c4d4e2e8ba3faeea9d09ba42f734576d0afa71e",
+    "vendor-review-ticket-prefinal-suite.log.gz": "019d0190b2a7c84ec388df7aecf52f8c0351dae25b9ce247c69bd6e13a9d2eb9",
+    "vendor-review-ticket-prefinal-test.json.gz": "0f13f136c2a3e9561f02dbdbaa2a2b067a60741ce18fc3d6e89dcf88e277b17a",
+    "vendor-review-ticket-source-hashes.json": "c7b26a01803867ed3677a2b40fd32322b8a9c41e45ae85a85aa8be50b4a192eb",
+    "vendor-review-ticket-suite.log.gz": "48a15a280b8e073272f0c07c1a3d4d9fff7a0a358f71c3a3f8a87fe287bcdaf1",
+    "vendor-review-ticket-test.json.gz": "e1f4c12a1304f8ff9ac8fea89f88bc25db39978b5b818c4f6cdaad393073d310",
+    "vendor-review-ticket-formal/gomela-negative.csv": "9bc1eee847397f7aeb307ba990c15fe873cf18898ce58dc2e3f2a8e1ca40f245",
+    "vendor-review-ticket-formal/gomela-positive.csv": "81d37311d73b2e9ccc875cee158624641f50672d35804f85f7e3afc383bda7dd",
+    "vendor-review-ticket-formal/logs-models.tar.gz": "f76165975f7ee0fa264460471e27386375d6821b1f74fe733ab74ae92b48dc49",
+    "vendor-review-ticket-formal/source-hashes.json": "b1c3dfec1501a02606a618068216a54a2f149afdf589b2a668a131bfbdccbf28",
+    "vendor-review-ticket-formal/verification.log": "2ed5c0eb254b439abfc6c2d71313b53cd6fee21eb4e2df97051151d943a219dc",
+    "vendor-review-ticket-initial-checks/review-native-final.log": "3d8f218734894f76fbb32c95da085518790beb56e92ef9f6e26367609f60e87b",
+    "vendor-review-ticket-initial-checks/review-poll-final.log": "959c15fd1cec3817f6aead7374beae2d2e87155e2f13183ea95157d2c8cb833f",
+    "vendor-review-ticket-initial-checks/review-regression-final.log": "52d6b993670e0d164d389cbe204cd1dd0971d96bb372f9659075018b7bafa4bc",
+    "vendor-review-ticket-initial-checks/review-workflow-timeout.log.gz": "fa882b1b42eec52df570e6932e409b5d31018862addf87d11d2dd931d0ab0333",
+    "vendor-review-ticket-dogfood-20261018/sha256.json": "f490e01f423b771c8f8834105cb416b8484303b5abdb938919e70bc5f606e842"
+  }
+}

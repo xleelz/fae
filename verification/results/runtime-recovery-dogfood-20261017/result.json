@@ -1,0 +1,71 @@
+{
+  "model": "gpt-6-astra",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "codex-cli 0.163.0-alpha.10.2",
+  "adapter": "herdr",
+  "scratch": "/private/tmp/fhd-k0ky8msm",
+  "status": "passed",
+  "task_ids": [
+    "provider-alpha",
+    "provider-beta"
+  ],
+  "dynamic_limits": {
+    "during_active_turns": {
+      "effective_pane_limit": 16,
+      "pane_limit": 16
+    },
+    "after_restart": {
+      "dynamic": {
+        "effective_pane_limit": 16
+      },
+      "fixed": {
+        "heavy_capacity": 2,
+        "instance_root": "/private/tmp/fhd-k0ky8msm/i/dogfood",
+        "socket_path": "/private/tmp/fhd-k0ky8msm/i/dogfood/run/rpc.sock",
+        "tasks_in_flight": 2
+      }
+    },
+    "raised": {
+      "effective_pane_limit": 24,
+      "pane_limit": 24
+    }
+  },
+  "restart_checkpoint": {
+    "provider-alpha": {
+      "state": "spec-review",
+      "version": 8,
+      "artifacts": 2
+    },
+    "provider-beta": {
+      "state": "spec-review",
+      "version": 8,
+      "artifacts": 2
+    }
+  },
+  "lease_audit": {
+    "capacity": 2,
+    "granted": 58,
+    "released": 58,
+    "final_holders": 0
+  },
+  "pane_audit": {
+    "final_reservations": 0
+  },
+  "stall_recoveries": {
+    "provider-alpha": 0,
+    "provider-beta": 0
+  },
+  "tasks": {
+    "provider-alpha": {
+      "artifact_records": 35,
+      "version": 83
+    },
+    "provider-beta": {
+      "artifact_records": 22,
+      "version": 52
+    }
+  },
+  "integration_sha": "57f1fc52c96a8f0ecff9a79f651c81ab7c32bf03",
+  "base_sha": "8642e9d1ff195b1f72995aac25043fefc4d189b3",
+  "real_completed_turns": 29
+}

@@ -1,0 +1,5 @@
+Initial focused-test diagnostics (retained from tool output; original log path was overwritten by subsequent focused runs):
+1. TestReviewWorkspaceNativePrepareRestartAndEffects: Normal target requires destination, push namespace and exact tools. Fixture omitted required Normal.Tools despite pinning adapter; corrected fixture.
+2. target integration ref differs from live broker. Fixture targetFixture default refs/heads/main differed from live fixture's configured integration ref; corrected fixture/protected ref.
+3. target identity missing or changed. Fixture resolved unpinned input AdmitParams after admission, not immutable persisted admission including hash; corrected fixture to read durable envelope.
+4. review_revision review operation lacks existing review identity. Fixture used argument key review instead of default semantic review_id for $review; corrected fixture to use actual contract key. No production guard weakened.

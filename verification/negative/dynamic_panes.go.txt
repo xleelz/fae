@@ -1,0 +1,8 @@
+package completion
+
+func MissingPaneUpdateAcknowledgment(){
+ updated:=make(chan int)
+ done:=make(chan int)
+ go func(){ <-updated;done<-1 }()
+ <-done
+}

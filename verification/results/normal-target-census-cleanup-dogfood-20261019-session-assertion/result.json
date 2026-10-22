@@ -1,0 +1,316 @@
+{
+  "model": "gpt-6-astra",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "codex-cli 0.163.0-alpha.10.2",
+  "adapter": "herdr",
+  "scratch": "/private/tmp/fhd-_nwieos6",
+  "status": "failed",
+  "task_ids": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ],
+  "target_configs": {
+    "revision_1": {
+      "id": "dogfood-target",
+      "revision": 1,
+      "hash": "79c0adb69e1c58229d972e8705ef0526215f247779a2734d7781ec4f6c6ca231",
+      "retired": false
+    },
+    "revision_2": {
+      "id": "dogfood-target",
+      "revision": 2,
+      "hash": "20dce1d3a31aa7b2353a84a63a3103b4e6ebc4f5a1b5d080d2d7f4887325d9e8",
+      "retired": false
+    },
+    "pinned_tasks": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "provider-beta"
+    ]
+  },
+  "crash_recovery": {
+    "signal": "SIGKILL",
+    "started_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+    ],
+    "uncertain_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+    ],
+    "resolutions": [
+      {
+        "action": "redispatch",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+        "id": "cron-7d533ed758e7c6b84e828429-0",
+        "version": 5
+      }
+    ],
+    "automatic_replay": false
+  },
+  "independent_drive": {
+    "before": {
+      "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "ProcessBirth": "1792457673.325119",
+      "Workspace": "/private/tmp/fhd-_nwieos6/repo",
+      "Holds": null,
+      "PID": 98695,
+      "DoltPID": 98698,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 1,
+      "DriveCause": "",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T00:54:34.772855Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "ba31ec320ad3961901ba617847b24fa718a2075b0793216227805ffc32dd7694",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "stopped": {
+      "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "ProcessBirth": "1792457673.325119",
+      "Workspace": "/private/tmp/fhd-_nwieos6/repo",
+      "Holds": null,
+      "PID": 98695,
+      "DoltPID": 98698,
+      "OldPID": 0,
+      "DriveAlive": false,
+      "DriveGeneration": 1,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T00:54:34.772855Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "ba31ec320ad3961901ba617847b24fa718a2075b0793216227805ffc32dd7694",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "resumed": {
+      "BinaryHash": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "ProcessBirth": "1792457673.325119",
+      "Workspace": "/private/tmp/fhd-_nwieos6/repo",
+      "Holds": null,
+      "PID": 98695,
+      "DoltPID": 98698,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 2,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-20T00:54:34.772855Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "ba31ec320ad3961901ba617847b24fa718a2075b0793216227805ffc32dd7694",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "retained_dispatches": {
+      "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+      "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+    },
+    "daemon_and_plane_unchanged": true,
+    "retained_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+    ],
+    "provider_start_evidence": [
+      {
+        "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+        "events": [
+          {
+            "type": "thread.started",
+            "thread_id": "01a156cd-91ac-7971-bdcf-c6d8b3aa9e25"
+          },
+          {
+            "type": "turn.started"
+          }
+        ]
+      }
+    ],
+    "deferred_before_execution": []
+  },
+  "dynamic_limits": {
+    "during_active_turns": {
+      "effective_pane_limit": 16,
+      "heavy_capacity": 1,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 16,
+      "tasks_in_flight": 1
+    },
+    "after_restart": {
+      "dynamic": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "fixed": {
+        "instance_root": "/private/tmp/fhd-_nwieos6/i/dogfood",
+        "socket_path": "/private/tmp/fhd-_nwieos6/i/dogfood/run/rpc.sock"
+      }
+    },
+    "raised": {
+      "effective_pane_limit": 24,
+      "heavy_capacity": 2,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 24,
+      "tasks_in_flight": 2
+    }
+  },
+  "restart_checkpoint": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "state": "intake-gate",
+      "version": 7,
+      "artifacts": 1
+    },
+    "provider-beta": {
+      "state": "intake-gate",
+      "version": 4,
+      "artifacts": 1
+    }
+  },
+  "controller_lifecycle": {
+    "roll": {
+      "accepted": true,
+      "binary_sha256": "776c6235704dbd36f007aeda42178e0e42ce44a2c137a22c11d5538847055fc5",
+      "drive_rounds": 1,
+      "new_pid": 1424,
+      "old_pid": 98695,
+      "pid": 1424
+    },
+    "old_pid": 98695,
+    "maintenance_marker_cleared": true
+  },
+  "provider_loop": {
+    "iterations": 5,
+    "state": "completed",
+    "session_id": "loop-dogfood-loop",
+    "provider_thread_id": "01a156d0-1fcc-7841-989d-babea95c2448"
+  },
+  "cron_schedules": {
+    "completed": 1,
+    "admitted": 1,
+    "duplicate_occurrences": 0
+  },
+  "normal_targets": {
+    "local_task": "cron-7d533ed758e7c6b84e828429-0",
+    "live_task": "provider-beta",
+    "live_effects": 1,
+    "normal_revision": {
+      "id": "dogfood-normal",
+      "revision": 1,
+      "hash": "b193269c40d7dbc369f7585e76626169f971e7ee6cf0e858226fa0b11fbbaa63",
+      "retired": false
+    },
+    "adapter": "disposable localhost fixture"
+  },
+  "prophet_sessions": {
+    "answered": 2,
+    "scopes": [
+      "task",
+      "global"
+    ],
+    "actions_enacted": 0,
+    "durable_health_observations": 2
+  },
+  "retirement": {
+    "transferred": {
+      "dependent_effect": "transferred",
+      "dependents": [
+        "retire-dependent"
+      ],
+      "held_dependents": [],
+      "id": "retire-old",
+      "reason_class": "superseded-by",
+      "reference": "retire-successor",
+      "state": "Retired",
+      "version": 3
+    },
+    "held": {
+      "dependent_effect": "held",
+      "held_dependents": [
+        "retire-dependent"
+      ]
+    },
+    "hidden_by_default": true,
+    "dependent_withheld": true
+  },
+  "census_cleanup": {
+    "applied": [
+      "retire-successor"
+    ],
+    "removed": [
+      "retire-old",
+      "retire-successor"
+    ],
+    "verified_backup": true,
+    "archives_verified": 2
+  },
+  "lease_audit": {
+    "capacity": 2,
+    "granted": 68,
+    "released": 67,
+    "recovered": 1,
+    "final_holders": 0
+  },
+  "pane_audit": {
+    "before_shutdown_reservations": 9,
+    "final_reservations": 0
+  },
+  "stall_recoveries": {
+    "cron-7d533ed758e7c6b84e828429-0": 0,
+    "provider-beta": 0
+  },
+  "tasks": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "artifact_records": 35,
+      "version": 86
+    },
+    "provider-beta": {
+      "artifact_records": 23,
+      "version": 54
+    }
+  },
+  "integration_sha": "1adeaaf5514fcdc7f63f96c3d2e42210712fbc1d",
+  "base_sha": "01242c9bffbe663fa05e800b2bf1c1cd91f80d0c",
+  "crashed_completed_uncollected": [],
+  "resident_sessions": {
+    "audited_turns": 19,
+    "reused_panes": 4
+  },
+  "real_completed_turns": 36,
+  "error": "provider context did not resume across restart and tasks"
+}

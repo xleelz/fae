@@ -1,0 +1,8 @@
+package completion
+func PersistentProviderMissingCommit() {
+ commit:=make(chan int)
+ ack:=make(chan int)
+ go func(){<-commit}()
+ commit<-1
+ <-ack
+}

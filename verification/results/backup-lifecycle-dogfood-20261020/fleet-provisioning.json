@@ -1,0 +1,106 @@
+{
+  "result": {
+    "performed": 1,
+    "lost_ack_recovered_after_restart": true,
+    "duplicate_mutations": 0,
+    "baseline_after_receipt": true,
+    "idempotent_prepare": true
+  },
+  "calls": [
+    {
+      "schema_digest": "4b188541ca5873425765edb17f69dfd884ba1ed746cd078aba8010aab37660df",
+      "typed_arguments": {
+        "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+        "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+        "package": "sample",
+        "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+      },
+      "endpoint": "http://127.0.0.1:64232",
+      "server": "dogfood",
+      "key": "6474f57def964fb8ef9d59a8430bcb4438d1c52501772637172ab97fe90c23ca",
+      "task": "provider-beta",
+      "stage": "review-workspace-provision",
+      "tool": "fleet_prepare",
+      "arguments": {
+        "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+        "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+        "package": "sample",
+        "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+      },
+      "digest": "07cb1b3795168b02f3889b1f8c80941e69c2789cb3dd6799eda220121f79f893",
+      "tree": "10ab9d9f223762b935c062bd16f75bd759e36406",
+      "session": "review-prepare/ec64de8c3d7eab79cfa7fd50be705561a4cf857ce55466872af00029f4617215"
+    }
+  ],
+  "record": {
+    "task": "provider-beta",
+    "run_id": "dogfood",
+    "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "base": "10ab9d9f223762b935c062bd16f75bd759e36406",
+    "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+    "adapter": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "ef175b73e93d16d5a15bd9ef1de1a80c51cb760ed3f1eebf927807e99b21c82d"
+    },
+    "policy": {
+      "package": "sample",
+      "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+      "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+      "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+      "provision_tool": "fleet",
+      "baseline_tool": "baseline",
+      "status_tool": "read",
+      "baseline_approved": true
+    },
+    "state": "ready",
+    "health": {
+      "package": "sample",
+      "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+      "green": true
+    },
+    "provision": {
+      "intent": {
+        "schema_digest": "4b188541ca5873425765edb17f69dfd884ba1ed746cd078aba8010aab37660df",
+        "typed_arguments": {
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+          "package": "sample",
+          "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+        },
+        "endpoint": "http://127.0.0.1:64232",
+        "server": "dogfood",
+        "key": "6474f57def964fb8ef9d59a8430bcb4438d1c52501772637172ab97fe90c23ca",
+        "task": "provider-beta",
+        "stage": "review-workspace-provision",
+        "tool": "fleet_prepare",
+        "arguments": {
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+          "package": "sample",
+          "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+        },
+        "digest": "07cb1b3795168b02f3889b1f8c80941e69c2789cb3dd6799eda220121f79f893",
+        "tree": "10ab9d9f223762b935c062bd16f75bd759e36406",
+        "session": "review-prepare/ec64de8c3d7eab79cfa7fd50be705561a4cf857ce55466872af00029f4617215"
+      },
+      "attempted": true,
+      "receipt": {
+        "data": {
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "10ab9d9f223762b935c062bd16f75bd759e36406",
+          "package": "sample",
+          "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+        },
+        "key": "6474f57def964fb8ef9d59a8430bcb4438d1c52501772637172ab97fe90c23ca",
+        "task": "provider-beta",
+        "tool": "fleet_prepare",
+        "digest": "07cb1b3795168b02f3889b1f8c80941e69c2789cb3dd6799eda220121f79f893",
+        "external_id": "local-fleet-workspace",
+        "state": "performed",
+        "tree": "10ab9d9f223762b935c062bd16f75bd759e36406"
+      }
+    }
+  }
+}

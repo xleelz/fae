@@ -1,0 +1,12 @@
+--- FAIL: TestTypedIntentPinsAndSchemaDrift (0.00s)
+    schema_test.go:166: EOF
+    schema_test.go:169: wire boolean absent map[]
+    schema_test.go:185: schema server differs from exact pin
+FAIL
+FAIL	github.com/xleelz/fae/external	0.230s
+--- FAIL: TestTaskControlCLIThinRPCs (0.00s)
+    task_controls_test.go:44: listen unix /var/folders/qc/dgvk8bv12r10_395y3jsxhfc0000gn/T/TestTaskControlCLIThinRPCs103460979/001/test/run/rpc.sock: bind: invalid argument
+FAIL
+FAIL	github.com/xleelz/fae/cmd/fae	0.225s
+ok  	github.com/xleelz/fae/controlplane	1.170s
+FAIL

@@ -1,0 +1,8 @@
+package completion
+func DeploymentMissingAcceptance(){
+ accepted:=make(chan int)
+ done:=make(chan int)
+ go deploymentUnaccepted(accepted,done)
+ <-done
+}
+func deploymentUnaccepted(accepted,done chan int){<-accepted;done<-1}

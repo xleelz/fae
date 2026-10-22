@@ -1,0 +1,21 @@
+{
+  "test": [
+    {
+      "evidence": [
+        {
+          "id": "run-1",
+          "task_id": "demo",
+          "type": "Run",
+          "version": 1,
+          "stage": "test",
+          "tree": "scripted-tree",
+          "provenance": true,
+          "fields": {
+            "executed_count": 3,
+            "exit_code": 0
+          }
+        }
+      ]
+    }
+  ]
+}

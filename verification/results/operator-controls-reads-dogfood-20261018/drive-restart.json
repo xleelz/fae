@@ -1,0 +1,116 @@
+{
+  "before": {
+    "BinaryHash": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+    "ProcessBirth": "1792381037.028294",
+    "Workspace": "/private/tmp/fhd-y2gsny8c/repo",
+    "Holds": null,
+    "PID": 47161,
+    "DoltPID": 47174,
+    "OldPID": 0,
+    "DriveAlive": true,
+    "DriveGeneration": 1,
+    "DriveCause": "",
+    "DriveRounds": 5,
+    "LastTransition": "2026-10-19T03:37:22.692441Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "c3a17f6feee00ef131e2d2346760e484b73fe9c9a1b7ca129a8e46ae9a717b01",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "stopped": {
+    "BinaryHash": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+    "ProcessBirth": "1792381037.028294",
+    "Workspace": "/private/tmp/fhd-y2gsny8c/repo",
+    "Holds": null,
+    "PID": 47161,
+    "DoltPID": 47174,
+    "OldPID": 0,
+    "DriveAlive": false,
+    "DriveGeneration": 1,
+    "DriveCause": "operator-stop",
+    "DriveRounds": 5,
+    "LastTransition": "2026-10-19T03:37:22.692441Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "c3a17f6feee00ef131e2d2346760e484b73fe9c9a1b7ca129a8e46ae9a717b01",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "resumed": {
+    "BinaryHash": "ea61722a7df85c4fb8df587fa9786db528b33ffbbbd382ceb18fa87aa494b55a",
+    "ProcessBirth": "1792381037.028294",
+    "Workspace": "/private/tmp/fhd-y2gsny8c/repo",
+    "Holds": null,
+    "PID": 47161,
+    "DoltPID": 47174,
+    "OldPID": 0,
+    "DriveAlive": true,
+    "DriveGeneration": 2,
+    "DriveCause": "operator-stop",
+    "DriveRounds": 5,
+    "LastTransition": "2026-10-19T03:37:23.22182Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "c3a17f6feee00ef131e2d2346760e484b73fe9c9a1b7ca129a8e46ae9a717b01",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "retained_dispatches": {
+    "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+    "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"
+  },
+  "daemon_and_plane_unchanged": true,
+  "retained_provider_sessions": [
+    "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+  ],
+  "provider_start_evidence": [
+    {
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+      "events": [
+        {
+          "type": "thread.started",
+          "thread_id": "01a1523c-2fcc-7b41-a0a4-492454246a3b"
+        },
+        {
+          "type": "turn.started"
+        }
+      ]
+    }
+  ],
+  "deferred_before_execution": [
+    {
+      "session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+      "events": [
+        {
+          "attempt": 1,
+          "cause": "inputs-resolved",
+          "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "kind": "dispatch",
+          "stage": "intake"
+        },
+        {
+          "attempt": 1,
+          "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active",
+          "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "kind": "execution-diagnostic",
+          "stage": "intake"
+        },
+        {
+          "attempt": 0,
+          "cause": "infrastructure-deferred",
+          "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "kind": "park",
+          "stage": "intake"
+        }
+      ]
+    }
+  ]
+}

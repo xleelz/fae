@@ -1,0 +1,11 @@
+package completion
+
+func BackupUnpinDropsPendingClaimCheck() {
+ proof:=make(chan int)
+ unclaimed:=make(chan int)
+ unpinned:=make(chan int)
+ go func(){proof<-1}()
+ go func(){unclaimed<-1}()
+ go func(){<-proof;unpinned<-1}()
+ <-unpinned
+}

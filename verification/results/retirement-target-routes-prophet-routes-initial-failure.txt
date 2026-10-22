@@ -1,0 +1,10 @@
+Initial focused verification failed in TestProphetLiveGuardNoRoleSlotsAndPrivateContext:
+controlplane.(*Store).ProviderHealth dereferenced the old unit fixture's nil SQL store.
+Cause: the fixed-binding implementation did not require provider-health reads; the new
+routing implementation intentionally fails closed on durable-health access.
+Resolution: the pure guard fixture now installs a SQL mock that permits only the
+health read, retaining its negative assertion against workflow role reservations.
+Separate native tests exercise real Dolt observation writes, route failover, and restart.
+A prior local compile/test iteration also caught malformed schema text from an editing
+replacement and was corrected before the full Prophet test pass. No production
+routing bypass was introduced for tests.

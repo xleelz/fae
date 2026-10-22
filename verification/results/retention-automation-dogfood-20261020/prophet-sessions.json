@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-86acf237429163363562439e4d5eae23",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-21T06:24:15.569831Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-86acf237429163363562439e4d5eae23",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-86acf237429163363562439e4d5eae23-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "cron-7d533ed758e7c6b84e828429-0: Done. Supplied records show the change to return 42 was committed and integrated, with post-merge tests passing and frozen test bytes unchanged. No other task IDs are visible.",
+      "reply_to": "prophet-86acf237429163363562439e4d5eae23",
+      "time": "2026-10-21T06:24:22.444189Z",
+      "detail": {
+        "answer": {
+          "reply": "cron-7d533ed758e7c6b84e828429-0: Done. Supplied records show the change to return 42 was committed and integrated, with post-merge tests passing and frozen test bytes unchanged. No other task IDs are visible.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-477d363ef49224cde8fe80aeeeef83fd",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-21T06:24:22.857306Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-477d363ef49224cde8fe80aeeeef83fd",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-477d363ef49224cde8fe80aeeeef83fd-reply",
+      "author": "prophet",
+      "text": "Visible task IDs and states:\n- cron-7d533ed758e7c6b84e828429-0: Done.\n- provider-beta: Done.\n- global: current task header ID; no state supplied.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+      "reply_to": "prophet-477d363ef49224cde8fe80aeeeef83fd",
+      "time": "2026-10-21T06:24:30.405693Z",
+      "detail": {
+        "answer": {
+          "reply": "Visible task IDs and states:\n- cron-7d533ed758e7c6b84e828429-0: Done.\n- provider-beta: Done.\n- global: current task header ID; no state supplied.\n\nHealth reports 2 Done tasks and 0 active tasks.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

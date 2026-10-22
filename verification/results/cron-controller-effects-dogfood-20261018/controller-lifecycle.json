@@ -1,0 +1,14 @@
+{
+  "stopped": {
+    "id": "maintenance-1792310900832508000",
+    "old_pid": 61844,
+    "state": "stopped"
+  },
+  "started": {
+    "accepted": true,
+    "drive_rounds": 1,
+    "pid": 63745
+  },
+  "maintenance_marker_cleared": true,
+  "watchdog_suppressed_dead_alert": true
+}

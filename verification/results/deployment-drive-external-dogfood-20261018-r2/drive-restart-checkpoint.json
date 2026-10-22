@@ -1,0 +1,4578 @@
+{
+  "cron-7d533ed758e7c6b84e828429-0": {
+    "id": "cron-7d533ed758e7c6b84e828429-0",
+    "version": 6,
+    "workflow_id": "default",
+    "workflow_revision": 2,
+    "target_id": "/private/tmp/fhd-w1dstvd7/repo",
+    "target_revision": 1,
+    "state": "intake",
+    "payload": {
+      "admission": {
+        "authorizing_message": "authorization",
+        "content": "Implement alpha() int returning 42 instead of 0. Only alpha.go and alpha_test.go may change. RED: add exactly one ordinary Go unit test named TestAlpha in alpha_test.go; if alpha()!=42 call t.Fatal(\"got 0 want 42\"). Do not change production code until implement stage. Preserve all test bytes in implementation. Use package sample, standard gofmt tabs and blank lines. Report actual complete test source in source fields. No other functions, dependencies, commands, external effects or files are needed. Each reviewer must report its assigned dimension independently and assess actual evidence. Engine performs builds/tests/format checks/commits. Other concurrent tasks have separate file scopes; do not touch them.",
+        "id": "cron-7d533ed758e7c6b84e828429-0",
+        "mode": "Local",
+        "priority": 10,
+        "revision": 2,
+        "run_id": "cron-dogfood-alpha",
+        "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+        "workflow_id": "default"
+      },
+      "job": {
+        "admission_retry_after": "0001-01-01T00:00:00Z",
+        "attempts": 2,
+        "base": "d1ee262f4f3ddac9bc189a14d93cc4a3c60ff88a",
+        "counts": {
+          "intake": 2
+        },
+        "disposition": {
+          "live": false,
+          "mode": "Local"
+        },
+        "document": {
+          "artifacts": {
+            "Commit": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "sha": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "files",
+                  "sha"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Compare": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "identity": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "unchanged": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "identity",
+                  "unchanged"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "EngineRun": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "executed_count": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "expected_failure": {
+                    "type": "boolean"
+                  },
+                  "fresh_build": {
+                    "type": "boolean"
+                  },
+                  "matched_count": {
+                    "type": "integer"
+                  },
+                  "output_digest": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "red_passed": {
+                    "type": "boolean"
+                  },
+                  "test_in_source": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "executed_count",
+                  "exit_code",
+                  "expected_failure",
+                  "fresh_build",
+                  "matched_count",
+                  "output_digest",
+                  "red_passed",
+                  "test_in_source"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Format": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "new_debt": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "new_debt"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "FrozenIdentity": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "identity": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "identity"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "ImplementationReport": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "changed_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "hunks": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "proof": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "test_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "changed_files",
+                  "hunks",
+                  "proof",
+                  "source",
+                  "test_id"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Intake": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "accepted": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "accepted"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Integration": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "landed": {
+                    "type": "boolean"
+                  },
+                  "sha": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "landed",
+                  "sha"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "OracleVerdict": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "pass",
+                      "RedTest",
+                      "Production",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "rationale": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "valid_blocking": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "decision",
+                  "rationale",
+                  "valid_blocking"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Plan": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "declared_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "risks": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "steps": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "test_placement": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "declared_files",
+                  "risks",
+                  "steps",
+                  "test_placement"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "ReconcileReport": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "base": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "original_base": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "original_tree": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "patch_identical": {
+                    "type": "boolean"
+                  },
+                  "paths": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "plan_key": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "result": {
+                    "enum": [
+                      "clean",
+                      "conflicted",
+                      "own-hunk-loss"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "patch_identical",
+                  "result"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "RedReport": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "declared_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "expected_failure": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "test_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "test_shape": {
+                    "enum": [
+                      "go-unit"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "declared_files",
+                  "expected_failure",
+                  "source",
+                  "test_id",
+                  "test_shape"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Review": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "approved": {
+                    "type": "boolean"
+                  },
+                  "dimension": {
+                    "enum": [
+                      "correctness",
+                      "quality",
+                      "security",
+                      "architecture"
+                    ],
+                    "type": "string"
+                  },
+                  "findings": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "approved",
+                  "dimension",
+                  "findings"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Spec": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "acceptance": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "contracts": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "declared_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "required_tests": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "risks": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "scope": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "acceptance",
+                  "contracts",
+                  "declared_files",
+                  "required_tests",
+                  "risks",
+                  "scope"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "SpecReview": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "approved": {
+                    "type": "boolean"
+                  },
+                  "findings": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "approved",
+                  "findings"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            }
+          },
+          "code_bearing": true,
+          "edges": [
+            {
+              "from": "intake",
+              "to": "intake-gate"
+            },
+            {
+              "from": "intake-gate",
+              "to": "spec-loop"
+            },
+            {
+              "from": "intake-gate",
+              "to": "stop"
+            },
+            {
+              "from": "spec-loop",
+              "to": "spec"
+            },
+            {
+              "from": "spec",
+              "to": "spec-review"
+            },
+            {
+              "from": "spec-review",
+              "to": "spec-gate"
+            },
+            {
+              "from": "spec-gate",
+              "to": "plan"
+            },
+            {
+              "from": "spec-gate",
+              "to": "spec-loop"
+            },
+            {
+              "from": "plan",
+              "to": "red-loop"
+            },
+            {
+              "from": "red-loop",
+              "to": "test-first"
+            },
+            {
+              "from": "test-first",
+              "to": "run-red"
+            },
+            {
+              "from": "run-red",
+              "to": "red-gate"
+            },
+            {
+              "from": "red-gate",
+              "to": "freeze-red"
+            },
+            {
+              "from": "red-gate",
+              "to": "red-loop"
+            },
+            {
+              "from": "freeze-red",
+              "to": "implement-loop"
+            },
+            {
+              "from": "implement-loop",
+              "to": "implement"
+            },
+            {
+              "from": "implement",
+              "to": "run-tests"
+            },
+            {
+              "from": "run-tests",
+              "to": "compare-red"
+            },
+            {
+              "from": "compare-red",
+              "to": "green-gate"
+            },
+            {
+              "from": "green-gate",
+              "to": "format"
+            },
+            {
+              "from": "green-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "format",
+              "to": "format-gate"
+            },
+            {
+              "from": "format-gate",
+              "to": "reviews"
+            },
+            {
+              "from": "format-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "reviews",
+              "to": "reviews-gate"
+            },
+            {
+              "from": "reviews-gate",
+              "to": "oracle"
+            },
+            {
+              "from": "reviews-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "oracle",
+              "to": "verdict"
+            },
+            {
+              "from": "verdict",
+              "to": "stop"
+            },
+            {
+              "from": "verdict",
+              "to": "red-loop"
+            },
+            {
+              "from": "verdict",
+              "to": "implement-loop"
+            },
+            {
+              "from": "verdict",
+              "to": "qa"
+            },
+            {
+              "from": "qa",
+              "to": "qa-gate"
+            },
+            {
+              "from": "qa-gate",
+              "to": "merge"
+            },
+            {
+              "from": "qa-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "merge",
+              "to": "merge-route"
+            },
+            {
+              "from": "merge",
+              "to": "reverify-loop"
+            },
+            {
+              "from": "reverify-loop",
+              "to": "run-tests"
+            },
+            {
+              "from": "merge-route",
+              "to": "stop"
+            },
+            {
+              "from": "merge-route",
+              "to": "post-merge-qa"
+            },
+            {
+              "from": "merge-route",
+              "to": "implement-loop"
+            },
+            {
+              "from": "post-merge-qa",
+              "to": "post-merge-gate"
+            },
+            {
+              "from": "post-merge-gate",
+              "to": "commit"
+            },
+            {
+              "from": "post-merge-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "commit",
+              "to": "integrate"
+            },
+            {
+              "from": "integrate",
+              "to": "integration-gate"
+            },
+            {
+              "from": "integrate",
+              "to": "integration-retry-loop"
+            },
+            {
+              "from": "integration-retry-loop",
+              "to": "merge"
+            },
+            {
+              "from": "integration-gate",
+              "to": "Done"
+            },
+            {
+              "from": "integration-gate",
+              "to": "stop"
+            }
+          ],
+          "id": "default",
+          "limits": {
+            "attempts": 20,
+            "scope_widens": 3,
+            "test_runs": 8
+          },
+          "roles": {
+            "coder": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Test-first: author only declared tests. Implement: make the frozen RED pass with minimal clean code and proof. Do not edit frozen RED, widen scope silently or touch outside the worktree.",
+              "outputs": [
+                "ImplementationReport",
+                "RedReport"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff",
+                  "edit"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "oracle": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 1,
+              "instructions": "Decide acceptance with typed validity, severity and target for findings. Do not edit code or soften blocking findings.",
+              "outputs": [
+                "OracleVerdict"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "planner": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 2,
+              "instructions": "Produce ordered steps, declared files, test placement and risks. Do not write code or run builds.",
+              "outputs": [
+                "Plan"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "qa": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 1,
+              "instructions": "Interpret required engine runs and checks on the task tree. Do not edit source or skip tests.",
+              "outputs": null,
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "reviewer-architecture": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review architecture and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "reviewer-correctness": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review correctness and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "reviewer-quality": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review quality and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "reviewer-security": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review security and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "spec": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 2,
+              "instructions": "Turn the item into a precise testable spec with scope, acceptance criteria, contracts, risks and required test intent. Do not write or format code or run builds or tests.",
+              "outputs": [
+                "Intake",
+                "Spec"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "spec-reviewer": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 2,
+              "instructions": "Adversarially check ambiguity, untestability, contracts and scope. Approve or reject with findings; do not rewrite the spec, write code or run builds.",
+              "outputs": [
+                "SpecReview"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            }
+          },
+          "schema_version": 1,
+          "stages": {
+            "commit": {
+              "inputs": [
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                },
+                {
+                  "name": "frozen-check",
+                  "stage": "compare-red",
+                  "type": "Compare",
+                  "version": 1
+                },
+                {
+                  "name": "qa",
+                  "stage": "post-merge-qa",
+                  "type": "EngineRun",
+                  "version": 1
+                }
+              ],
+              "output": "Commit",
+              "primitive": "VcsCommit",
+              "protected": true
+            },
+            "compare-red": {
+              "inputs": [
+                {
+                  "name": "frozen",
+                  "stage": "freeze-red",
+                  "type": "FrozenIdentity",
+                  "version": 1
+                },
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                }
+              ],
+              "output": "Compare",
+              "primitive": "CompareFrozen",
+              "subject": "implement"
+            },
+            "format": {
+              "command": [
+                "gofmt",
+                "-l",
+                "."
+              ],
+              "output": "Format",
+              "primitive": "HostCommand",
+              "timeout_seconds": 60,
+              "weight": 1
+            },
+            "format-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "op": "field",
+                    "path": [
+                      "new_debt"
+                    ],
+                    "stage": "format"
+                  },
+                  {
+                    "op": "literal",
+                    "value": 0
+                  }
+                ],
+                "op": "eq"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate"
+            },
+            "freeze-red": {
+              "inputs": [
+                {
+                  "name": "red",
+                  "stage": "test-first",
+                  "type": "RedReport",
+                  "version": 1
+                },
+                {
+                  "name": "run",
+                  "stage": "run-red",
+                  "type": "EngineRun",
+                  "version": 1
+                }
+              ],
+              "output": "FrozenIdentity",
+              "primitive": "FreezeArtifact",
+              "subject": "test-first"
+            },
+            "green-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "op": "field",
+                                "path": [
+                                  "exit_code"
+                                ],
+                                "stage": "run-tests"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 0
+                              }
+                            ],
+                            "op": "eq"
+                          },
+                          {
+                            "args": [
+                              {
+                                "op": "field",
+                                "path": [
+                                  "executed_count"
+                                ],
+                                "stage": "run-tests"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 1
+                              }
+                            ],
+                            "op": "ge"
+                          }
+                        ],
+                        "op": "and"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "red_passed"
+                            ],
+                            "stage": "run-tests"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "unchanged"
+                        ],
+                        "stage": "compare-red"
+                      },
+                      {
+                        "op": "literal",
+                        "value": true
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate",
+              "test_stage": "run-tests"
+            },
+            "implement": {
+              "change_producer": true,
+              "inputs": [
+                {
+                  "name": "plan",
+                  "stage": "plan",
+                  "type": "Plan",
+                  "version": 1
+                },
+                {
+                  "name": "frozen",
+                  "stage": "freeze-red",
+                  "type": "FrozenIdentity",
+                  "version": 1
+                },
+                {
+                  "name": "reconciliation",
+                  "optional": true,
+                  "stage": "merge",
+                  "type": "ReconcileReport",
+                  "version": 1
+                }
+              ],
+              "output": "ImplementationReport",
+              "phase": "implement",
+              "primitive": "AgentTurn",
+              "role": "coder"
+            },
+            "implement-loop": {
+              "max_iterations": 8,
+              "primitive": "Loop"
+            },
+            "intake": {
+              "output": "Intake",
+              "primitive": "AgentTurn",
+              "role": "spec"
+            },
+            "intake-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "op": "field",
+                    "path": [
+                      "accepted"
+                    ],
+                    "stage": "intake"
+                  },
+                  {
+                    "op": "literal",
+                    "value": true
+                  }
+                ],
+                "op": "eq"
+              },
+              "failure": "stop",
+              "primitive": "Gate"
+            },
+            "integrate": {
+              "inputs": [
+                {
+                  "name": "commit",
+                  "stage": "commit",
+                  "type": "Commit",
+                  "version": 1
+                }
+              ],
+              "output": "Integration",
+              "primitive": "Integrate",
+              "protected": true,
+              "reverify": "integration-retry-loop"
+            },
+            "integration-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "op": "exists",
+                        "stage": "commit"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "landed"
+                            ],
+                            "stage": "integrate"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "sha"
+                        ],
+                        "stage": "integrate"
+                      },
+                      {
+                        "op": "field",
+                        "path": [
+                          "sha"
+                        ],
+                        "stage": "commit"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "stop",
+              "primitive": "Gate"
+            },
+            "integration-retry-loop": {
+              "max_iterations": 3,
+              "primitive": "Loop"
+            },
+            "merge": {
+              "output": "ReconcileReport",
+              "primitive": "Merge",
+              "reverify": "reverify-loop"
+            },
+            "merge-route": {
+              "cases": [
+                {
+                  "next": "post-merge-qa",
+                  "when": {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "result"
+                            ],
+                            "stage": "merge"
+                          },
+                          {
+                            "op": "literal",
+                            "value": "clean"
+                          }
+                        ],
+                        "op": "eq"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "patch_identical"
+                            ],
+                            "stage": "merge"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  }
+                },
+                {
+                  "next": "implement-loop",
+                  "when": {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "result"
+                        ],
+                        "stage": "merge"
+                      },
+                      {
+                        "op": "literal",
+                        "value": "conflicted"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                }
+              ],
+              "default": "stop",
+              "primitive": "Branch"
+            },
+            "oracle": {
+              "inputs": [
+                {
+                  "name": "reviews",
+                  "stage": "reviews",
+                  "type": "Review",
+                  "version": 1
+                }
+              ],
+              "output": "OracleVerdict",
+              "primitive": "AgentTurn",
+              "role": "oracle"
+            },
+            "plan": {
+              "inputs": [
+                {
+                  "name": "spec",
+                  "stage": "spec",
+                  "type": "Spec",
+                  "version": 1
+                },
+                {
+                  "name": "review",
+                  "stage": "spec-review",
+                  "type": "SpecReview",
+                  "version": 1
+                }
+              ],
+              "output": "Plan",
+              "primitive": "AgentTurn",
+              "role": "planner"
+            },
+            "post-merge-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "exit_code"
+                        ],
+                        "stage": "post-merge-qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 0
+                      }
+                    ],
+                    "op": "eq"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "executed_count"
+                        ],
+                        "stage": "post-merge-qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 1
+                      }
+                    ],
+                    "op": "ge"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate",
+              "test_stage": "post-merge-qa"
+            },
+            "post-merge-qa": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "oracle",
+                  "stage": "oracle",
+                  "type": "OracleVerdict",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 2
+            },
+            "qa": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "oracle",
+                  "stage": "oracle",
+                  "type": "OracleVerdict",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 2
+            },
+            "qa-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "exit_code"
+                        ],
+                        "stage": "qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 0
+                      }
+                    ],
+                    "op": "eq"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "executed_count"
+                        ],
+                        "stage": "qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 1
+                      }
+                    ],
+                    "op": "ge"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate",
+              "test_stage": "qa"
+            },
+            "red-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "exit_code"
+                                        ],
+                                        "stage": "run-red"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": 0
+                                      }
+                                    ],
+                                    "op": "ne"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "exit_code"
+                                        ],
+                                        "stage": "run-red"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": 127
+                                      }
+                                    ],
+                                    "op": "ne"
+                                  }
+                                ],
+                                "op": "and"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "op": "field",
+                                    "path": [
+                                      "matched_count"
+                                    ],
+                                    "stage": "run-red"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": 1
+                                  }
+                                ],
+                                "op": "eq"
+                              }
+                            ],
+                            "op": "and"
+                          },
+                          {
+                            "args": [
+                              {
+                                "op": "field",
+                                "path": [
+                                  "executed_count"
+                                ],
+                                "stage": "run-red"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 1
+                              }
+                            ],
+                            "op": "eq"
+                          }
+                        ],
+                        "op": "and"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "expected_failure"
+                            ],
+                            "stage": "run-red"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "test_in_source"
+                        ],
+                        "stage": "run-red"
+                      },
+                      {
+                        "op": "literal",
+                        "value": true
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "red-loop",
+              "primitive": "Gate"
+            },
+            "red-loop": {
+              "max_iterations": 8,
+              "primitive": "Loop"
+            },
+            "reverify-loop": {
+              "max_iterations": 3,
+              "primitive": "Loop"
+            },
+            "reviews": {
+              "inputs": [
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                },
+                {
+                  "name": "green",
+                  "stage": "run-tests",
+                  "type": "EngineRun",
+                  "version": 1
+                }
+              ],
+              "output": "Review",
+              "primitive": "Review",
+              "reviewers": [
+                "reviewer-correctness",
+                "reviewer-quality",
+                "reviewer-security",
+                "reviewer-architecture"
+              ],
+              "role": "reviewer-correctness"
+            },
+            "reviews-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "op": "field",
+                                            "path": [
+                                              "approved"
+                                            ],
+                                            "stage": "reviews"
+                                          },
+                                          {
+                                            "op": "literal",
+                                            "value": true
+                                          }
+                                        ],
+                                        "op": "eq"
+                                      }
+                                    ],
+                                    "op": "count",
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": 4
+                                  }
+                                ],
+                                "op": "eq"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "args": [
+                                              {
+                                                "op": "field",
+                                                "path": [
+                                                  "approved"
+                                                ],
+                                                "stage": "reviews"
+                                              },
+                                              {
+                                                "op": "literal",
+                                                "value": true
+                                              }
+                                            ],
+                                            "op": "eq"
+                                          },
+                                          {
+                                            "args": [
+                                              {
+                                                "op": "field",
+                                                "path": [
+                                                  "dimension"
+                                                ],
+                                                "stage": "reviews"
+                                              },
+                                              {
+                                                "op": "literal",
+                                                "value": "correctness"
+                                              }
+                                            ],
+                                            "op": "eq"
+                                          }
+                                        ],
+                                        "op": "and"
+                                      }
+                                    ],
+                                    "op": "count",
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": 1
+                                  }
+                                ],
+                                "op": "eq"
+                              }
+                            ],
+                            "op": "and"
+                          },
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "op": "field",
+                                            "path": [
+                                              "approved"
+                                            ],
+                                            "stage": "reviews"
+                                          },
+                                          {
+                                            "op": "literal",
+                                            "value": true
+                                          }
+                                        ],
+                                        "op": "eq"
+                                      },
+                                      {
+                                        "args": [
+                                          {
+                                            "op": "field",
+                                            "path": [
+                                              "dimension"
+                                            ],
+                                            "stage": "reviews"
+                                          },
+                                          {
+                                            "op": "literal",
+                                            "value": "quality"
+                                          }
+                                        ],
+                                        "op": "eq"
+                                      }
+                                    ],
+                                    "op": "and"
+                                  }
+                                ],
+                                "op": "count",
+                                "stage": "reviews"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 1
+                              }
+                            ],
+                            "op": "eq"
+                          }
+                        ],
+                        "op": "and"
+                      },
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "approved"
+                                        ],
+                                        "stage": "reviews"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": true
+                                      }
+                                    ],
+                                    "op": "eq"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "dimension"
+                                        ],
+                                        "stage": "reviews"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": "security"
+                                      }
+                                    ],
+                                    "op": "eq"
+                                  }
+                                ],
+                                "op": "and"
+                              }
+                            ],
+                            "op": "count",
+                            "stage": "reviews"
+                          },
+                          {
+                            "op": "literal",
+                            "value": 1
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "op": "field",
+                                    "path": [
+                                      "approved"
+                                    ],
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": true
+                                  }
+                                ],
+                                "op": "eq"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "op": "field",
+                                    "path": [
+                                      "dimension"
+                                    ],
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": "architecture"
+                                  }
+                                ],
+                                "op": "eq"
+                              }
+                            ],
+                            "op": "and"
+                          }
+                        ],
+                        "op": "count",
+                        "stage": "reviews"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 1
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate"
+            },
+            "run-red": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "red",
+                  "stage": "test-first",
+                  "type": "RedReport",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 1
+            },
+            "run-tests": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 1
+            },
+            "spec": {
+              "inputs": [
+                {
+                  "name": "intake",
+                  "stage": "intake",
+                  "type": "Intake",
+                  "version": 1
+                }
+              ],
+              "output": "Spec",
+              "primitive": "AgentTurn",
+              "role": "spec"
+            },
+            "spec-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "approved"
+                            ],
+                            "stage": "spec-review"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "count",
+                    "stage": "spec-review"
+                  },
+                  {
+                    "op": "literal",
+                    "value": 2
+                  }
+                ],
+                "op": "eq"
+              },
+              "failure": "spec-loop",
+              "primitive": "Gate"
+            },
+            "spec-loop": {
+              "max_iterations": 3,
+              "primitive": "Loop"
+            },
+            "spec-review": {
+              "count": 2,
+              "inputs": [
+                {
+                  "name": "spec",
+                  "stage": "spec",
+                  "type": "Spec",
+                  "version": 1
+                }
+              ],
+              "output": "SpecReview",
+              "primitive": "Review",
+              "role": "spec-reviewer"
+            },
+            "stop": {
+              "primitive": "Escalate"
+            },
+            "test-first": {
+              "change_producer": true,
+              "inputs": [
+                {
+                  "name": "plan",
+                  "stage": "plan",
+                  "type": "Plan",
+                  "version": 1
+                }
+              ],
+              "output": "RedReport",
+              "phase": "test-first",
+              "primitive": "AgentTurn",
+              "role": "coder"
+            },
+            "verdict": {
+              "cases": [
+                {
+                  "next": "red-loop",
+                  "when": {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "decision"
+                        ],
+                        "stage": "oracle"
+                      },
+                      {
+                        "op": "literal",
+                        "value": "RedTest"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                },
+                {
+                  "next": "implement-loop",
+                  "when": {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "decision"
+                        ],
+                        "stage": "oracle"
+                      },
+                      {
+                        "op": "literal",
+                        "value": "Production"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                },
+                {
+                  "next": "qa",
+                  "when": {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "decision"
+                            ],
+                            "stage": "oracle"
+                          },
+                          {
+                            "op": "literal",
+                            "value": "pass"
+                          }
+                        ],
+                        "op": "eq"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "valid_blocking"
+                            ],
+                            "stage": "oracle"
+                          },
+                          {
+                            "op": "literal",
+                            "value": 0
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  }
+                }
+              ],
+              "default": "stop",
+              "primitive": "Branch"
+            }
+          },
+          "start": "intake"
+        },
+        "evidence": null,
+        "execution_kind": "live",
+        "failures": {
+          "crash-recovery": 1
+        },
+        "history": [
+          {
+            "attempt": 1,
+            "cause": "admitted",
+            "from": "Pending",
+            "kind": "transition",
+            "stage": "Pending",
+            "to": "intake"
+          },
+          {
+            "attempt": 1,
+            "cause": "inputs-resolved",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "kind": "dispatch",
+            "stage": "intake"
+          },
+          {
+            "attempt": 0,
+            "cause": "execution outcome unknown; explicit resolution required",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "kind": "crash-recovery",
+            "stage": "intake"
+          },
+          {
+            "attempt": 1,
+            "cause": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "kind": "uncertainty-resolved",
+            "stage": "intake"
+          },
+          {
+            "attempt": 2,
+            "cause": "inputs-resolved",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "kind": "dispatch",
+            "stage": "intake"
+          }
+        ],
+        "in_flight": {
+          "attempt": 2,
+          "attempt_charged": true,
+          "base": "d1ee262f4f3ddac9bc189a14d93cc4a3c60ff88a",
+          "config": {
+            "output": "Intake",
+            "primitive": "AgentTurn",
+            "role": "spec"
+          },
+          "created_at": "2026-10-18T08:53:02.250157Z",
+          "execution_kind": "live",
+          "id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "inputs": [],
+          "sessions": [
+            {
+              "id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+              "role": "spec",
+              "route": {
+                "effort": "medium",
+                "model": "gpt-6-astra",
+                "provider": "codex"
+              }
+            }
+          ],
+          "stage": "intake",
+          "task_id": "cron-7d533ed758e7c6b84e828429-0",
+          "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+          "visit": 2
+        },
+        "parked": false,
+        "provenance": null,
+        "resolved_dispatches": [
+          {
+            "attempt": 1,
+            "attempt_charged": true,
+            "base": "d1ee262f4f3ddac9bc189a14d93cc4a3c60ff88a",
+            "config": {
+              "output": "Intake",
+              "primitive": "AgentTurn",
+              "role": "spec"
+            },
+            "created_at": "2026-10-18T08:53:00.284538Z",
+            "execution_kind": "live",
+            "id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "inputs": [],
+            "sessions": [
+              {
+                "id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+                "role": "spec",
+                "route": {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              }
+            ],
+            "stage": "intake",
+            "task_id": "cron-7d533ed758e7c6b84e828429-0",
+            "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+            "visit": 1
+          }
+        ],
+        "revision": 2,
+        "sequence": 2,
+        "state": "intake",
+        "task_id": "cron-7d533ed758e7c6b84e828429-0",
+        "test_runs": 0,
+        "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+        "workflow_hash": "1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057"
+      }
+    }
+  },
+  "cron-1c405e1c25c7422088d7a718-0": {
+    "id": "cron-1c405e1c25c7422088d7a718-0",
+    "version": 3,
+    "workflow_id": "default",
+    "workflow_revision": 2,
+    "target_id": "/private/tmp/fhd-w1dstvd7/repo",
+    "target_revision": 1,
+    "state": "intake",
+    "payload": {
+      "admission": {
+        "authorizing_message": "authorization",
+        "content": "Implement beta() int returning 7 instead of 0. Only beta.go and beta_test.go may change. RED: add exactly one ordinary Go unit test named TestBeta in beta_test.go; if beta()!=7 call t.Fatal(\"got 0 want 7\"). Do not change production code until implement stage. Preserve all test bytes in implementation. Use package sample, standard gofmt tabs and blank lines. Report actual complete test source in source fields. No other functions, dependencies, commands, external effects or files are needed. Each reviewer must report its assigned dimension independently and assess actual evidence. Engine performs builds/tests/format checks/commits. Other concurrent tasks have separate file scopes; do not touch them.",
+        "id": "cron-1c405e1c25c7422088d7a718-0",
+        "mode": "Local",
+        "priority": 10,
+        "revision": 2,
+        "run_id": "cron-dogfood-beta",
+        "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+        "workflow_id": "default"
+      },
+      "job": {
+        "admission_retry_after": "0001-01-01T00:00:00Z",
+        "attempts": 1,
+        "base": "d1ee262f4f3ddac9bc189a14d93cc4a3c60ff88a",
+        "counts": {
+          "intake": 1
+        },
+        "disposition": {
+          "live": false,
+          "mode": "Local"
+        },
+        "document": {
+          "artifacts": {
+            "Commit": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "sha": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "files",
+                  "sha"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Compare": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "identity": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "unchanged": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "identity",
+                  "unchanged"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "EngineRun": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "executed_count": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "expected_failure": {
+                    "type": "boolean"
+                  },
+                  "fresh_build": {
+                    "type": "boolean"
+                  },
+                  "matched_count": {
+                    "type": "integer"
+                  },
+                  "output_digest": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "red_passed": {
+                    "type": "boolean"
+                  },
+                  "test_in_source": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "executed_count",
+                  "exit_code",
+                  "expected_failure",
+                  "fresh_build",
+                  "matched_count",
+                  "output_digest",
+                  "red_passed",
+                  "test_in_source"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Format": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "new_debt": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "new_debt"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "FrozenIdentity": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "identity": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "identity"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "ImplementationReport": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "changed_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "hunks": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "proof": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "test_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "changed_files",
+                  "hunks",
+                  "proof",
+                  "source",
+                  "test_id"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Intake": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "accepted": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "accepted"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Integration": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "landed": {
+                    "type": "boolean"
+                  },
+                  "sha": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "landed",
+                  "sha"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "OracleVerdict": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "pass",
+                      "RedTest",
+                      "Production",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "rationale": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "valid_blocking": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "decision",
+                  "rationale",
+                  "valid_blocking"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Plan": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "declared_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "risks": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "steps": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "test_placement": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "declared_files",
+                  "risks",
+                  "steps",
+                  "test_placement"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "ReconcileReport": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "base": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "original_base": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "original_tree": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "patch_identical": {
+                    "type": "boolean"
+                  },
+                  "paths": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "plan_key": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "result": {
+                    "enum": [
+                      "clean",
+                      "conflicted",
+                      "own-hunk-loss"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "patch_identical",
+                  "result"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "RedReport": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "declared_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "expected_failure": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "test_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "test_shape": {
+                    "enum": [
+                      "go-unit"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "declared_files",
+                  "expected_failure",
+                  "source",
+                  "test_id",
+                  "test_shape"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Review": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "approved": {
+                    "type": "boolean"
+                  },
+                  "dimension": {
+                    "enum": [
+                      "correctness",
+                      "quality",
+                      "security",
+                      "architecture"
+                    ],
+                    "type": "string"
+                  },
+                  "findings": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "approved",
+                  "dimension",
+                  "findings"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "Spec": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "acceptance": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "contracts": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "declared_files": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "required_tests": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "risks": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "scope": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "acceptance",
+                  "contracts",
+                  "declared_files",
+                  "required_tests",
+                  "risks",
+                  "scope"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            },
+            "SpecReview": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "approved": {
+                    "type": "boolean"
+                  },
+                  "findings": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "approved",
+                  "findings"
+                ],
+                "type": "object"
+              },
+              "version": 1
+            }
+          },
+          "code_bearing": true,
+          "edges": [
+            {
+              "from": "intake",
+              "to": "intake-gate"
+            },
+            {
+              "from": "intake-gate",
+              "to": "spec-loop"
+            },
+            {
+              "from": "intake-gate",
+              "to": "stop"
+            },
+            {
+              "from": "spec-loop",
+              "to": "spec"
+            },
+            {
+              "from": "spec",
+              "to": "spec-review"
+            },
+            {
+              "from": "spec-review",
+              "to": "spec-gate"
+            },
+            {
+              "from": "spec-gate",
+              "to": "plan"
+            },
+            {
+              "from": "spec-gate",
+              "to": "spec-loop"
+            },
+            {
+              "from": "plan",
+              "to": "red-loop"
+            },
+            {
+              "from": "red-loop",
+              "to": "test-first"
+            },
+            {
+              "from": "test-first",
+              "to": "run-red"
+            },
+            {
+              "from": "run-red",
+              "to": "red-gate"
+            },
+            {
+              "from": "red-gate",
+              "to": "freeze-red"
+            },
+            {
+              "from": "red-gate",
+              "to": "red-loop"
+            },
+            {
+              "from": "freeze-red",
+              "to": "implement-loop"
+            },
+            {
+              "from": "implement-loop",
+              "to": "implement"
+            },
+            {
+              "from": "implement",
+              "to": "run-tests"
+            },
+            {
+              "from": "run-tests",
+              "to": "compare-red"
+            },
+            {
+              "from": "compare-red",
+              "to": "green-gate"
+            },
+            {
+              "from": "green-gate",
+              "to": "format"
+            },
+            {
+              "from": "green-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "format",
+              "to": "format-gate"
+            },
+            {
+              "from": "format-gate",
+              "to": "reviews"
+            },
+            {
+              "from": "format-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "reviews",
+              "to": "reviews-gate"
+            },
+            {
+              "from": "reviews-gate",
+              "to": "oracle"
+            },
+            {
+              "from": "reviews-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "oracle",
+              "to": "verdict"
+            },
+            {
+              "from": "verdict",
+              "to": "stop"
+            },
+            {
+              "from": "verdict",
+              "to": "red-loop"
+            },
+            {
+              "from": "verdict",
+              "to": "implement-loop"
+            },
+            {
+              "from": "verdict",
+              "to": "qa"
+            },
+            {
+              "from": "qa",
+              "to": "qa-gate"
+            },
+            {
+              "from": "qa-gate",
+              "to": "merge"
+            },
+            {
+              "from": "qa-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "merge",
+              "to": "merge-route"
+            },
+            {
+              "from": "merge",
+              "to": "reverify-loop"
+            },
+            {
+              "from": "reverify-loop",
+              "to": "run-tests"
+            },
+            {
+              "from": "merge-route",
+              "to": "stop"
+            },
+            {
+              "from": "merge-route",
+              "to": "post-merge-qa"
+            },
+            {
+              "from": "merge-route",
+              "to": "implement-loop"
+            },
+            {
+              "from": "post-merge-qa",
+              "to": "post-merge-gate"
+            },
+            {
+              "from": "post-merge-gate",
+              "to": "commit"
+            },
+            {
+              "from": "post-merge-gate",
+              "to": "implement-loop"
+            },
+            {
+              "from": "commit",
+              "to": "integrate"
+            },
+            {
+              "from": "integrate",
+              "to": "integration-gate"
+            },
+            {
+              "from": "integrate",
+              "to": "integration-retry-loop"
+            },
+            {
+              "from": "integration-retry-loop",
+              "to": "merge"
+            },
+            {
+              "from": "integration-gate",
+              "to": "Done"
+            },
+            {
+              "from": "integration-gate",
+              "to": "stop"
+            }
+          ],
+          "id": "default",
+          "limits": {
+            "attempts": 20,
+            "scope_widens": 3,
+            "test_runs": 8
+          },
+          "roles": {
+            "coder": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Test-first: author only declared tests. Implement: make the frozen RED pass with minimal clean code and proof. Do not edit frozen RED, widen scope silently or touch outside the worktree.",
+              "outputs": [
+                "ImplementationReport",
+                "RedReport"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff",
+                  "edit"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "oracle": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 1,
+              "instructions": "Decide acceptance with typed validity, severity and target for findings. Do not edit code or soften blocking findings.",
+              "outputs": [
+                "OracleVerdict"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "planner": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 2,
+              "instructions": "Produce ordered steps, declared files, test placement and risks. Do not write code or run builds.",
+              "outputs": [
+                "Plan"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "qa": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 1,
+              "instructions": "Interpret required engine runs and checks on the task tree. Do not edit source or skip tests.",
+              "outputs": null,
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "reviewer-architecture": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review architecture and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "reviewer-correctness": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review correctness and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "reviewer-quality": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review quality and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "reviewer-security": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 4,
+              "instructions": "Independently review security and record findings. Do not edit code or review other dimensions.",
+              "outputs": [
+                "Review"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            },
+            "spec": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 2,
+              "instructions": "Turn the item into a precise testable spec with scope, acceptance criteria, contracts, risks and required test intent. Do not write or format code or run builds or tests.",
+              "outputs": [
+                "Intake",
+                "Spec"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "workflow-global"
+            },
+            "spec-reviewer": {
+              "briefs": {
+                "main": "Evaluate bound typed artifacts and produce the required output."
+              },
+              "cap": 2,
+              "instructions": "Adversarially check ambiguity, untestability, contracts and scope. Approve or reject with findings; do not rewrite the spec, write code or run builds.",
+              "outputs": [
+                "SpecReview"
+              ],
+              "profile": {
+                "allowed": [
+                  "handoff"
+                ],
+                "build": false,
+                "denied": [
+                  "external-effect"
+                ],
+                "format": false,
+                "test": false
+              },
+              "routes": [
+                {
+                  "effort": "medium",
+                  "model": "gpt-6-astra",
+                  "provider": "codex"
+                }
+              ],
+              "scope": "task-bound"
+            }
+          },
+          "schema_version": 1,
+          "stages": {
+            "commit": {
+              "inputs": [
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                },
+                {
+                  "name": "frozen-check",
+                  "stage": "compare-red",
+                  "type": "Compare",
+                  "version": 1
+                },
+                {
+                  "name": "qa",
+                  "stage": "post-merge-qa",
+                  "type": "EngineRun",
+                  "version": 1
+                }
+              ],
+              "output": "Commit",
+              "primitive": "VcsCommit",
+              "protected": true
+            },
+            "compare-red": {
+              "inputs": [
+                {
+                  "name": "frozen",
+                  "stage": "freeze-red",
+                  "type": "FrozenIdentity",
+                  "version": 1
+                },
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                }
+              ],
+              "output": "Compare",
+              "primitive": "CompareFrozen",
+              "subject": "implement"
+            },
+            "format": {
+              "command": [
+                "gofmt",
+                "-l",
+                "."
+              ],
+              "output": "Format",
+              "primitive": "HostCommand",
+              "timeout_seconds": 60,
+              "weight": 1
+            },
+            "format-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "op": "field",
+                    "path": [
+                      "new_debt"
+                    ],
+                    "stage": "format"
+                  },
+                  {
+                    "op": "literal",
+                    "value": 0
+                  }
+                ],
+                "op": "eq"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate"
+            },
+            "freeze-red": {
+              "inputs": [
+                {
+                  "name": "red",
+                  "stage": "test-first",
+                  "type": "RedReport",
+                  "version": 1
+                },
+                {
+                  "name": "run",
+                  "stage": "run-red",
+                  "type": "EngineRun",
+                  "version": 1
+                }
+              ],
+              "output": "FrozenIdentity",
+              "primitive": "FreezeArtifact",
+              "subject": "test-first"
+            },
+            "green-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "op": "field",
+                                "path": [
+                                  "exit_code"
+                                ],
+                                "stage": "run-tests"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 0
+                              }
+                            ],
+                            "op": "eq"
+                          },
+                          {
+                            "args": [
+                              {
+                                "op": "field",
+                                "path": [
+                                  "executed_count"
+                                ],
+                                "stage": "run-tests"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 1
+                              }
+                            ],
+                            "op": "ge"
+                          }
+                        ],
+                        "op": "and"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "red_passed"
+                            ],
+                            "stage": "run-tests"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "unchanged"
+                        ],
+                        "stage": "compare-red"
+                      },
+                      {
+                        "op": "literal",
+                        "value": true
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate",
+              "test_stage": "run-tests"
+            },
+            "implement": {
+              "change_producer": true,
+              "inputs": [
+                {
+                  "name": "plan",
+                  "stage": "plan",
+                  "type": "Plan",
+                  "version": 1
+                },
+                {
+                  "name": "frozen",
+                  "stage": "freeze-red",
+                  "type": "FrozenIdentity",
+                  "version": 1
+                },
+                {
+                  "name": "reconciliation",
+                  "optional": true,
+                  "stage": "merge",
+                  "type": "ReconcileReport",
+                  "version": 1
+                }
+              ],
+              "output": "ImplementationReport",
+              "phase": "implement",
+              "primitive": "AgentTurn",
+              "role": "coder"
+            },
+            "implement-loop": {
+              "max_iterations": 8,
+              "primitive": "Loop"
+            },
+            "intake": {
+              "output": "Intake",
+              "primitive": "AgentTurn",
+              "role": "spec"
+            },
+            "intake-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "op": "field",
+                    "path": [
+                      "accepted"
+                    ],
+                    "stage": "intake"
+                  },
+                  {
+                    "op": "literal",
+                    "value": true
+                  }
+                ],
+                "op": "eq"
+              },
+              "failure": "stop",
+              "primitive": "Gate"
+            },
+            "integrate": {
+              "inputs": [
+                {
+                  "name": "commit",
+                  "stage": "commit",
+                  "type": "Commit",
+                  "version": 1
+                }
+              ],
+              "output": "Integration",
+              "primitive": "Integrate",
+              "protected": true,
+              "reverify": "integration-retry-loop"
+            },
+            "integration-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "op": "exists",
+                        "stage": "commit"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "landed"
+                            ],
+                            "stage": "integrate"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "sha"
+                        ],
+                        "stage": "integrate"
+                      },
+                      {
+                        "op": "field",
+                        "path": [
+                          "sha"
+                        ],
+                        "stage": "commit"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "stop",
+              "primitive": "Gate"
+            },
+            "integration-retry-loop": {
+              "max_iterations": 3,
+              "primitive": "Loop"
+            },
+            "merge": {
+              "output": "ReconcileReport",
+              "primitive": "Merge",
+              "reverify": "reverify-loop"
+            },
+            "merge-route": {
+              "cases": [
+                {
+                  "next": "post-merge-qa",
+                  "when": {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "result"
+                            ],
+                            "stage": "merge"
+                          },
+                          {
+                            "op": "literal",
+                            "value": "clean"
+                          }
+                        ],
+                        "op": "eq"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "patch_identical"
+                            ],
+                            "stage": "merge"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  }
+                },
+                {
+                  "next": "implement-loop",
+                  "when": {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "result"
+                        ],
+                        "stage": "merge"
+                      },
+                      {
+                        "op": "literal",
+                        "value": "conflicted"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                }
+              ],
+              "default": "stop",
+              "primitive": "Branch"
+            },
+            "oracle": {
+              "inputs": [
+                {
+                  "name": "reviews",
+                  "stage": "reviews",
+                  "type": "Review",
+                  "version": 1
+                }
+              ],
+              "output": "OracleVerdict",
+              "primitive": "AgentTurn",
+              "role": "oracle"
+            },
+            "plan": {
+              "inputs": [
+                {
+                  "name": "spec",
+                  "stage": "spec",
+                  "type": "Spec",
+                  "version": 1
+                },
+                {
+                  "name": "review",
+                  "stage": "spec-review",
+                  "type": "SpecReview",
+                  "version": 1
+                }
+              ],
+              "output": "Plan",
+              "primitive": "AgentTurn",
+              "role": "planner"
+            },
+            "post-merge-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "exit_code"
+                        ],
+                        "stage": "post-merge-qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 0
+                      }
+                    ],
+                    "op": "eq"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "executed_count"
+                        ],
+                        "stage": "post-merge-qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 1
+                      }
+                    ],
+                    "op": "ge"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate",
+              "test_stage": "post-merge-qa"
+            },
+            "post-merge-qa": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "oracle",
+                  "stage": "oracle",
+                  "type": "OracleVerdict",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 2
+            },
+            "qa": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "oracle",
+                  "stage": "oracle",
+                  "type": "OracleVerdict",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 2
+            },
+            "qa-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "exit_code"
+                        ],
+                        "stage": "qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 0
+                      }
+                    ],
+                    "op": "eq"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "executed_count"
+                        ],
+                        "stage": "qa"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 1
+                      }
+                    ],
+                    "op": "ge"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate",
+              "test_stage": "qa"
+            },
+            "red-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "exit_code"
+                                        ],
+                                        "stage": "run-red"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": 0
+                                      }
+                                    ],
+                                    "op": "ne"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "exit_code"
+                                        ],
+                                        "stage": "run-red"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": 127
+                                      }
+                                    ],
+                                    "op": "ne"
+                                  }
+                                ],
+                                "op": "and"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "op": "field",
+                                    "path": [
+                                      "matched_count"
+                                    ],
+                                    "stage": "run-red"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": 1
+                                  }
+                                ],
+                                "op": "eq"
+                              }
+                            ],
+                            "op": "and"
+                          },
+                          {
+                            "args": [
+                              {
+                                "op": "field",
+                                "path": [
+                                  "executed_count"
+                                ],
+                                "stage": "run-red"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 1
+                              }
+                            ],
+                            "op": "eq"
+                          }
+                        ],
+                        "op": "and"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "expected_failure"
+                            ],
+                            "stage": "run-red"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "test_in_source"
+                        ],
+                        "stage": "run-red"
+                      },
+                      {
+                        "op": "literal",
+                        "value": true
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "red-loop",
+              "primitive": "Gate"
+            },
+            "red-loop": {
+              "max_iterations": 8,
+              "primitive": "Loop"
+            },
+            "reverify-loop": {
+              "max_iterations": 3,
+              "primitive": "Loop"
+            },
+            "reviews": {
+              "inputs": [
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                },
+                {
+                  "name": "green",
+                  "stage": "run-tests",
+                  "type": "EngineRun",
+                  "version": 1
+                }
+              ],
+              "output": "Review",
+              "primitive": "Review",
+              "reviewers": [
+                "reviewer-correctness",
+                "reviewer-quality",
+                "reviewer-security",
+                "reviewer-architecture"
+              ],
+              "role": "reviewer-correctness"
+            },
+            "reviews-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "op": "field",
+                                            "path": [
+                                              "approved"
+                                            ],
+                                            "stage": "reviews"
+                                          },
+                                          {
+                                            "op": "literal",
+                                            "value": true
+                                          }
+                                        ],
+                                        "op": "eq"
+                                      }
+                                    ],
+                                    "op": "count",
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": 4
+                                  }
+                                ],
+                                "op": "eq"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "args": [
+                                              {
+                                                "op": "field",
+                                                "path": [
+                                                  "approved"
+                                                ],
+                                                "stage": "reviews"
+                                              },
+                                              {
+                                                "op": "literal",
+                                                "value": true
+                                              }
+                                            ],
+                                            "op": "eq"
+                                          },
+                                          {
+                                            "args": [
+                                              {
+                                                "op": "field",
+                                                "path": [
+                                                  "dimension"
+                                                ],
+                                                "stage": "reviews"
+                                              },
+                                              {
+                                                "op": "literal",
+                                                "value": "correctness"
+                                              }
+                                            ],
+                                            "op": "eq"
+                                          }
+                                        ],
+                                        "op": "and"
+                                      }
+                                    ],
+                                    "op": "count",
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": 1
+                                  }
+                                ],
+                                "op": "eq"
+                              }
+                            ],
+                            "op": "and"
+                          },
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "op": "field",
+                                            "path": [
+                                              "approved"
+                                            ],
+                                            "stage": "reviews"
+                                          },
+                                          {
+                                            "op": "literal",
+                                            "value": true
+                                          }
+                                        ],
+                                        "op": "eq"
+                                      },
+                                      {
+                                        "args": [
+                                          {
+                                            "op": "field",
+                                            "path": [
+                                              "dimension"
+                                            ],
+                                            "stage": "reviews"
+                                          },
+                                          {
+                                            "op": "literal",
+                                            "value": "quality"
+                                          }
+                                        ],
+                                        "op": "eq"
+                                      }
+                                    ],
+                                    "op": "and"
+                                  }
+                                ],
+                                "op": "count",
+                                "stage": "reviews"
+                              },
+                              {
+                                "op": "literal",
+                                "value": 1
+                              }
+                            ],
+                            "op": "eq"
+                          }
+                        ],
+                        "op": "and"
+                      },
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "approved"
+                                        ],
+                                        "stage": "reviews"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": true
+                                      }
+                                    ],
+                                    "op": "eq"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "op": "field",
+                                        "path": [
+                                          "dimension"
+                                        ],
+                                        "stage": "reviews"
+                                      },
+                                      {
+                                        "op": "literal",
+                                        "value": "security"
+                                      }
+                                    ],
+                                    "op": "eq"
+                                  }
+                                ],
+                                "op": "and"
+                              }
+                            ],
+                            "op": "count",
+                            "stage": "reviews"
+                          },
+                          {
+                            "op": "literal",
+                            "value": 1
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  },
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "op": "field",
+                                    "path": [
+                                      "approved"
+                                    ],
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": true
+                                  }
+                                ],
+                                "op": "eq"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "op": "field",
+                                    "path": [
+                                      "dimension"
+                                    ],
+                                    "stage": "reviews"
+                                  },
+                                  {
+                                    "op": "literal",
+                                    "value": "architecture"
+                                  }
+                                ],
+                                "op": "eq"
+                              }
+                            ],
+                            "op": "and"
+                          }
+                        ],
+                        "op": "count",
+                        "stage": "reviews"
+                      },
+                      {
+                        "op": "literal",
+                        "value": 1
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                ],
+                "op": "and"
+              },
+              "failure": "implement-loop",
+              "primitive": "Gate"
+            },
+            "run-red": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "red",
+                  "stage": "test-first",
+                  "type": "RedReport",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 1
+            },
+            "run-tests": {
+              "command": [
+                "go",
+                "test",
+                "-json",
+                "-count=1",
+                "-a",
+                "-x",
+                "./..."
+              ],
+              "inputs": [
+                {
+                  "name": "implementation",
+                  "stage": "implement",
+                  "type": "ImplementationReport",
+                  "version": 1
+                }
+              ],
+              "output": "EngineRun",
+              "primitive": "HostCommand",
+              "test_run": true,
+              "timeout_seconds": 60,
+              "weight": 1
+            },
+            "spec": {
+              "inputs": [
+                {
+                  "name": "intake",
+                  "stage": "intake",
+                  "type": "Intake",
+                  "version": 1
+                }
+              ],
+              "output": "Spec",
+              "primitive": "AgentTurn",
+              "role": "spec"
+            },
+            "spec-gate": {
+              "expression": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "approved"
+                            ],
+                            "stage": "spec-review"
+                          },
+                          {
+                            "op": "literal",
+                            "value": true
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "count",
+                    "stage": "spec-review"
+                  },
+                  {
+                    "op": "literal",
+                    "value": 2
+                  }
+                ],
+                "op": "eq"
+              },
+              "failure": "spec-loop",
+              "primitive": "Gate"
+            },
+            "spec-loop": {
+              "max_iterations": 3,
+              "primitive": "Loop"
+            },
+            "spec-review": {
+              "count": 2,
+              "inputs": [
+                {
+                  "name": "spec",
+                  "stage": "spec",
+                  "type": "Spec",
+                  "version": 1
+                }
+              ],
+              "output": "SpecReview",
+              "primitive": "Review",
+              "role": "spec-reviewer"
+            },
+            "stop": {
+              "primitive": "Escalate"
+            },
+            "test-first": {
+              "change_producer": true,
+              "inputs": [
+                {
+                  "name": "plan",
+                  "stage": "plan",
+                  "type": "Plan",
+                  "version": 1
+                }
+              ],
+              "output": "RedReport",
+              "phase": "test-first",
+              "primitive": "AgentTurn",
+              "role": "coder"
+            },
+            "verdict": {
+              "cases": [
+                {
+                  "next": "red-loop",
+                  "when": {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "decision"
+                        ],
+                        "stage": "oracle"
+                      },
+                      {
+                        "op": "literal",
+                        "value": "RedTest"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                },
+                {
+                  "next": "implement-loop",
+                  "when": {
+                    "args": [
+                      {
+                        "op": "field",
+                        "path": [
+                          "decision"
+                        ],
+                        "stage": "oracle"
+                      },
+                      {
+                        "op": "literal",
+                        "value": "Production"
+                      }
+                    ],
+                    "op": "eq"
+                  }
+                },
+                {
+                  "next": "qa",
+                  "when": {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "decision"
+                            ],
+                            "stage": "oracle"
+                          },
+                          {
+                            "op": "literal",
+                            "value": "pass"
+                          }
+                        ],
+                        "op": "eq"
+                      },
+                      {
+                        "args": [
+                          {
+                            "op": "field",
+                            "path": [
+                              "valid_blocking"
+                            ],
+                            "stage": "oracle"
+                          },
+                          {
+                            "op": "literal",
+                            "value": 0
+                          }
+                        ],
+                        "op": "eq"
+                      }
+                    ],
+                    "op": "and"
+                  }
+                }
+              ],
+              "default": "stop",
+              "primitive": "Branch"
+            }
+          },
+          "start": "intake"
+        },
+        "evidence": null,
+        "execution_kind": "live",
+        "failures": {},
+        "history": [
+          {
+            "attempt": 1,
+            "cause": "admitted",
+            "from": "Pending",
+            "kind": "transition",
+            "stage": "Pending",
+            "to": "intake"
+          },
+          {
+            "attempt": 1,
+            "cause": "inputs-resolved",
+            "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "kind": "dispatch",
+            "stage": "intake"
+          }
+        ],
+        "in_flight": {
+          "attempt": 1,
+          "attempt_charged": true,
+          "base": "d1ee262f4f3ddac9bc189a14d93cc4a3c60ff88a",
+          "config": {
+            "output": "Intake",
+            "primitive": "AgentTurn",
+            "role": "spec"
+          },
+          "created_at": "2026-10-18T08:53:06.857056Z",
+          "execution_kind": "live",
+          "id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "inputs": [],
+          "sessions": [
+            {
+              "id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+              "role": "spec",
+              "route": {
+                "effort": "medium",
+                "model": "gpt-6-astra",
+                "provider": "codex"
+              }
+            }
+          ],
+          "stage": "intake",
+          "task_id": "cron-1c405e1c25c7422088d7a718-0",
+          "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+          "visit": 1
+        },
+        "parked": false,
+        "provenance": null,
+        "revision": 2,
+        "sequence": 1,
+        "state": "intake",
+        "task_id": "cron-1c405e1c25c7422088d7a718-0",
+        "test_runs": 0,
+        "tree": "3dd3bf8c945e29edaab55f5816ae34a074a3e797",
+        "workflow_hash": "1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057"
+      }
+    }
+  }
+}

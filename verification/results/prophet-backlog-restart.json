@@ -1,0 +1,412 @@
+{
+  "date": "2026-10-18",
+  "status": "passed",
+  "implemented": [
+    "Async scoped per-task/global Prophet chat with durable pages, exact directed verb/target authorization and ordinary guarded provider turns",
+    "Atomic backlog graph admission and upsert, dependency dispatch gating, lifecycle mirrors and own-landing Done reconciliation",
+    "Separate broker-proved execution HEAD, exact restart preflight and legacy post-commit upgrade while preserving reconciliation origin"
+  ],
+  "verification": {
+    "focused_race_cases": 199,
+    "focused_packages": 4,
+    "engine_full_race": {
+      "status": "passed",
+      "seconds": 225.962
+    },
+    "controlplane_unit_race": "passed; native coverage included in final full suite",
+    "pure_engine_kernel_workflow_domain": "passed",
+    "vet": "passed",
+    "builds": [
+      "bin/fae",
+      "bin/fae-codex-bridge"
+    ],
+    "gobra": {
+      "production_guards": 36,
+      "rejected_mutations": 36
+    },
+    "gomela": {
+      "positive_models": 37,
+      "firing_negative_controls": 35
+    },
+    "formal_input_hashes_verified": 106,
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1062,
+      "packages": 26,
+      "statement_coverage_percent": 74.6,
+      "daemon_package_seconds": 853.892,
+      "vet": "passed",
+      "scratch_census": "passed"
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-pw6dudor",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "cron-1c405e1c25c7422088d7a718-0"
+      ],
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "69886d7b0232402092f0f3b326425b5191fba014b660a19c3a112d5f2308979a",
+          "ProcessBirth": "1792387530.660115",
+          "Workspace": "/private/tmp/fhd-pw6dudor/repo",
+          "Holds": null,
+          "PID": 34956,
+          "DoltPID": 34972,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-19T05:25:36.264428Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "799c3e1c421d41e577f18a64c1140f0f8ef210b3eba387b7c9301b82cc2666db",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "69886d7b0232402092f0f3b326425b5191fba014b660a19c3a112d5f2308979a",
+          "ProcessBirth": "1792387530.660115",
+          "Workspace": "/private/tmp/fhd-pw6dudor/repo",
+          "Holds": null,
+          "PID": 34956,
+          "DoltPID": 34972,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 5,
+          "LastTransition": "2026-10-19T05:25:36.355415Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "799c3e1c421d41e577f18a64c1140f0f8ef210b3eba387b7c9301b82cc2666db",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "69886d7b0232402092f0f3b326425b5191fba014b660a19c3a112d5f2308979a",
+          "ProcessBirth": "1792387530.660115",
+          "Workspace": "/private/tmp/fhd-pw6dudor/repo",
+          "Holds": null,
+          "PID": 34956,
+          "DoltPID": 34972,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 5,
+          "LastTransition": "2026-10-19T05:25:36.811519Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "799c3e1c421d41e577f18a64c1140f0f8ef210b3eba387b7c9301b82cc2666db",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a1529f-459c-7b22-89eb-f76d1af91d69"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": [
+          {
+            "session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+            "events": [
+              {
+                "attempt": 1,
+                "cause": "inputs-resolved",
+                "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+                "kind": "dispatch",
+                "stage": "intake"
+              },
+              {
+                "attempt": 1,
+                "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active",
+                "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+                "kind": "execution-diagnostic",
+                "stage": "intake"
+              },
+              {
+                "attempt": 0,
+                "cause": "infrastructure-deferred",
+                "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+                "kind": "park",
+                "stage": "intake"
+              }
+            ]
+          }
+        ]
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-pw6dudor/i/dogfood",
+            "socket_path": "/private/tmp/fhd-pw6dudor/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "spec-review",
+          "version": 11,
+          "artifacts": 2
+        },
+        "cron-1c405e1c25c7422088d7a718-0": {
+          "state": "intake",
+          "version": 4,
+          "artifacts": 0
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "69886d7b0232402092f0f3b326425b5191fba014b660a19c3a112d5f2308979a",
+          "drive_rounds": 1,
+          "new_pid": 36777,
+          "old_pid": 34956,
+          "pid": 36777
+        },
+        "old_pid": 34956,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a152a1-dfbf-73c0-95d8-56f5c9cb9028"
+      },
+      "cron_schedules": {
+        "completed": 2,
+        "admitted": 2,
+        "duplicate_occurrences": 0
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 67,
+        "released": 66,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 6,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "cron-1c405e1c25c7422088d7a718-0": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "cron-1c405e1c25c7422088d7a718-0": {
+          "artifact_records": 35,
+          "version": 85
+        }
+      },
+      "integration_sha": "0c7059fe2ad0a7fd66c990e0a9acd160ef19033e",
+      "base_sha": "9a5fcbd46b1b5b8aa8f661c6a6f9f3f1af746723",
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 7
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 12,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 3,
+        "task_bound_resumed_turns": 6
+      }
+    },
+    "formal_status": "Previously completed run remains applicable: all 106 formal input hashes match; fixture-only fixes changed no formal inputs."
+  },
+  "remaining_limits": [
+    "Task retirement/supersession, dependency transfer, target configuration and structured test-command admission remain separate gaps",
+    "Prophet turns use configurable provider/model but do not yet share workflow provider-health failover routing",
+    "Prophet transcripts retain immutable archive entries; oversized context refuses with paging/truncation metadata",
+    "Ordinary run admissions become backlog rows only on explicit backlog upsert"
+  ],
+  "evidence_sha256": {
+    "approval-review-diagnosis-20261018.json": "9fd96ba7d19fc0b7976f89a76b28b0cfc6d120ce435fcedabc7b54c6202d82f8",
+    "prophet-backlog-restart-backlog-race.log": "2675e514e6a5db491d5e48006edb9c4bc5faa8f120851c0509e9bb91357b506f",
+    "prophet-backlog-restart-controlplane-unit.log": "033be36d8ebb2b9b35c8015ef9baca45d8b0dd7939ac8eec4c59b0d337871b82",
+    "prophet-backlog-restart-coverage.out": "e14833b0e8e98f6f704ac09cdc38d8092ce14617ed5649615cf3d083f4692606",
+    "prophet-backlog-restart-dogfood-20261018/controller-lifecycle.json": "883c48d02f4751a8090e800ed93100ba1edfc4ec39081ee2a577fabe513fd27b",
+    "prophet-backlog-restart-dogfood-20261018/crash-before.json": "3f9ca15b4789e55bcd6983fe9f1a98e5940a47c9de61046f0b78b7ce135a5425",
+    "prophet-backlog-restart-dogfood-20261018/crash-provider-starts.json": "aa755c7604086676fcf7daa72f2c5de58b3ccb6b3df912017d307827f220ffb0",
+    "prophet-backlog-restart-dogfood-20261018/crash-recovered.json": "5dc874eff021b1ba6ae7e3c5af4f38389bcb33606e7a83c95caf3f10e3b5eb3e",
+    "prophet-backlog-restart-dogfood-20261018/cron-schedules.json": "f5e4bccb70f69edfc610bbcf603b480870a67cefabcc125a9e9f1e26c157cc26",
+    "prophet-backlog-restart-dogfood-20261018/drive-restart-checkpoint.json": "f991ea782a7a8628319c34e5c3273af794ffb032da7395cf6ca50c2eafa3718c",
+    "prophet-backlog-restart-dogfood-20261018/drive-restart.json": "ce82d57124c07421b82ac526d363dff4e113c3f5a2942db7d9cb1d8a935a9844",
+    "prophet-backlog-restart-dogfood-20261018/final-evidence.json": "65c8d24ca7bac9bb312014496c84858d032e7887cbac963582a066f8419a0353",
+    "prophet-backlog-restart-dogfood-20261018/lease-audit.json": "5d9bb39cd165578616ead8a94095f1fe773d26afb6f74c29213ad7cf35dca975",
+    "prophet-backlog-restart-dogfood-20261018/pane-audit-final.json": "fe448000d4a8473af60f983fa7c96d1ad6d454dd9b28833fd34341b973b05f52",
+    "prophet-backlog-restart-dogfood-20261018/pane-audit.json": "f8d8537cef808b87920a9611376d374a6a22cf545851cd6408e7b32184cd1596",
+    "prophet-backlog-restart-dogfood-20261018/prophet-sessions.json": "13a85e3cdcbf9ae848c9bcaa8e0a71784e8f153f67d83b43863de11b96994f85",
+    "prophet-backlog-restart-dogfood-20261018/provider-health.json": "1271ba276ef3ea91ed1886e1e0103839f81248140eb140c429c994f4b297a7ea",
+    "prophet-backlog-restart-dogfood-20261018/provider-log.json": "022cea02d57e6d493b124717a830f5403f7571779d4250b3cec875374e9d7b0b",
+    "prophet-backlog-restart-dogfood-20261018/provider-loop.json": "5ff941c5194e08316000d61904ade2bfe553dd701af194b0014b6680f592d8ac",
+    "prophet-backlog-restart-dogfood-20261018/provider-sessions.json": "77b4c51e77197765b54033dc696dc5f6d85c22f07171995dde63044c58d30142",
+    "prophet-backlog-restart-dogfood-20261018/provider-turns.json": "de3db0629f4f0fcb1304444ed5e987692564938bfda630224c98eceea73a7e99",
+    "prophet-backlog-restart-dogfood-20261018/resident-sessions.json": "88448ca45e529406ad0816c0e91c87714b180d1425060542b550f2397061a945",
+    "prophet-backlog-restart-dogfood-20261018/restart-checkpoint.json": "7788e68148d8c3fc2ed223fbbb03ad1ea6a3a6b59dcf2ea3f4f1b1bdb0787952",
+    "prophet-backlog-restart-dogfood-20261018/result.json": "426fdb194f01eea1d22e2bfe4845531edb22c7a9bd823bc97fb5cde342fc3205",
+    "prophet-backlog-restart-dogfood-20261018/sha256.json": "84c77958547938dd80d30301bbaface85bfd15efa2371ae412d4e5943a8d9631",
+    "prophet-backlog-restart-dogfood-20261018/source-hashes.json": "34699b7dd7367c1bcfe89cf1b20a32017243c99fff57169379ddaa5ddac10717",
+    "prophet-backlog-restart-dogfood.log": "988fb7d330f3d5e825527cb7d9ff4068daf059d2240039d54099dae2d7f2d5a3",
+    "prophet-backlog-restart-engine-execution-race.log": "f9a9d41d12bd10d7b91167a8ed8c933ee5663fd212052cd80867694891d9293a",
+    "prophet-backlog-restart-focused.json.gz": "ab9aeef73e407b450c5807de3be20eaa7398b113b91e053d6d780c9c243e9d1a",
+    "prophet-backlog-restart-formal/gomela-negative.csv": "ebeb3ab438d0e105ddddd0d132748a6d948bc7695fc14ca722d666281e2cfda4",
+    "prophet-backlog-restart-formal/gomela-positive.csv": "e78cbfa5c06c9f04dc3bd3f77fd922c276d1933b6d6e9f952dd70ebd30d396a5",
+    "prophet-backlog-restart-formal/logs-models.tar.gz": "b5677b66d087599a94aee1d593de1edb98eeb72e1541e4db84e0344c34c250ef",
+    "prophet-backlog-restart-formal/source-hashes.json": "7da03354036260c562277c0921b588c968e822e26630b6ed1488db5455b25b99",
+    "prophet-backlog-restart-formal/verification.log": "633a93e5fd7ece53c5cfdbf5b5f6728f62013ec54563057713175a93e837b5c2",
+    "prophet-backlog-restart-native-initial.log": "7a26755289f0e0c161f7cf002807b67ba3a844a75c778011bb29d4e00a8beb2b",
+    "prophet-backlog-restart-postcommit-tree-fix-attempt-diagnostic.log": "7e768edc32c13fd3f3623ef7b111e6f702839980919ca3887a3bb0a8c5587ef3",
+    "prophet-backlog-restart-postcommit-tree-fix-first-failure.log": "009335e4a0c1b4e459b18e8e703d3e0a81143b6708ec26e42b08bd05e5682bc1",
+    "prophet-backlog-restart-postcommit-tree-fix-test-budget-diagnostic.log": "7a4798b33f35ca263468bd9bc58d0225231c1dcfd816bacbf52966a8431b5a11",
+    "prophet-backlog-restart-postcommit-tree-fix.log": "20298ffbaa33f277581263a181472915ce1e53c414c45354da3955c107127181",
+    "prophet-backlog-restart-prophet-race.log": "80146713c3d9582813ee11586fadae764aaeb98d5a53aa24c04965ebde2b2106",
+    "prophet-backlog-restart-pure.log": "fab7d7777346ddbeed70bee5e24561e1d876a59ec652f8884901ea2fdbd8dbf9",
+    "prophet-backlog-restart-source-hashes.json": "1c9f10d67ed09ddd99889a6f43c1f308a8a00cf554c1f0b95dec7946504d7d3b",
+    "prophet-backlog-restart-suite.json.gz": "f40381f9ebb187ee5cfd89abd00c78d53d858a29de7840a5cc0d586602d26a1b",
+    "prophet-backlog-restart-suite.log": "1f470c3f779584ccafebbdc6c7a00477575cc27bfd30f193261d9c4b58057e43"
+  },
+  "verification_retries": [
+    {
+      "date": "2026-10-18",
+      "requested": "Retry native tests and real-provider dogfood, fix failures, update record after all pass",
+      "native_launch_attempts": 2,
+      "outcome": "Both automatic permission approval reviews exceeded their deadline before execution. The second attempt was the single retry allowed by the first timeout.",
+      "native_tests_executed": false,
+      "dogfood_executed": false,
+      "read_only_subagent_review": "Reviewed SQL schema compatibility, Prophet authorization/context/lifecycle, backlog recovery, post-commit restart and dogfood assertions; no concrete blocking bug found. No source changes.",
+      "approval_settings_changed": false
+    },
+    {
+      "date": "2026-10-18",
+      "permissions": "User selected full access; no assistant change to approval settings or service",
+      "initial_native_batch": "Failed post-commit fixture tree restoration; all other selected packages passed",
+      "focused_followups": "Exposed scenario attempt/test budgets, corrected fixture, then passed",
+      "full_native_suite": "passed",
+      "real_provider_dogfood": "passed"
+    }
+  ],
+  "approval_review_diagnosis": "approval-review-diagnosis-20261018.json",
+  "fixes": [
+    {
+      "file": "daemon/postcommit_restart_test.go",
+      "type": "fixture only",
+      "details": [
+        "Restore tampered worktree file from HEAD explicitly; broker commits deliberately leave shared index unchanged. Assert restored tree equals durable checkpoint.",
+        "Authorize attempt limit 40 through existing task-control RPC and install test-run budget 16 for repeated workflow plus changed-base verification. Production defaults and safety guards unchanged."
+      ],
+      "focused_native_race_seconds": 94.924
+    }
+  ]
+}

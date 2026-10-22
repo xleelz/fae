@@ -1,0 +1,24 @@
+package negative
+
+// Lost durable acknowledgment must prevent the restart handshake completing.
+func DrainMissingAcknowledgment() {
+ results := make(chan int, 2)
+ persist := make(chan int)
+ ack := make(chan int)
+ restart := make(chan int)
+ go lostDrainWorker(results)
+ go lostDrainWorker(results)
+ go lostDrainWriter(persist, ack)
+ go lostDrainCollector(results, persist, ack, restart)
+ <-restart
+}
+func lostDrainWorker(results chan int) {results <- 1}
+func lostDrainWriter(persist, ack chan int) {
+ <-persist; ack <- 1
+ <-persist
+}
+func lostDrainCollector(results, persist, ack, restart chan int) {
+ <-results; persist <- 1; <-ack
+ <-results; persist <- 1; <-ack
+ close(restart)
+}

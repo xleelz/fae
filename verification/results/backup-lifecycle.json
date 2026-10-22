@@ -1,0 +1,480 @@
+{
+  "date": "2026-10-20",
+  "status": "passed",
+  "implemented": [
+    "Operator backup retention previews and digest-bound apply with newest minimum, historical job snapshot coverage, conservative replication-source pins and ownership/content/identity refusal checks",
+    "Configurable HTTP/TLS backup replication with bounded deterministic disk-spooled tar, durable source pin and attempted intent before one upload, query-only uncertain recovery and full remote content verification",
+    "CLI/API runtime authorization, weighted replication host admission, serialized backup lifecycle, two-minute bounded requests and explicit operator boundary"
+  ],
+  "requirements": [
+    "FAE-CP-013 backup lifecycle extension requested by user",
+    "FAE-HOST-020 disk-backed bounded scratch",
+    "FAE-MODE-002 preserved workflow Local-mode boundary",
+    "FAE-VER-011 real-provider dogfood"
+  ],
+  "verification": {
+    "native_suite": {
+      "status": "passed",
+      "race_cases": 1293,
+      "packages": 26,
+      "statement_coverage_percent": 73.5,
+      "daemon_package_seconds": 1019.58,
+      "vet": "passed",
+      "scratch_census": "passed"
+    },
+    "gobra": {
+      "production_guards": 50,
+      "rejected_mutations": 50
+    },
+    "gomela": {
+      "positive_models": 51,
+      "firing_negative_controls": 49
+    },
+    "hash_manifests_verified": {
+      "backup-lifecycle-source-hashes.json": 461,
+      "backup-lifecycle-formal/source-hashes.json": 148,
+      "backup-lifecycle-dogfood-20261020/source-hashes.json": 458,
+      "backup-lifecycle-dogfood-20261020/sha256.json": 31
+    },
+    "real_provider_dogfood": {
+      "model": "gpt-6-astra",
+      "herdr_version": "herdr 0.9.5",
+      "provider_version": "codex-cli 0.163.0-alpha.10.2",
+      "adapter": "herdr",
+      "scratch": "/private/tmp/fhd-3vtdgtmi",
+      "status": "passed",
+      "task_ids": [
+        "cron-7d533ed758e7c6b84e828429-0",
+        "provider-beta"
+      ],
+      "target_configs": {
+        "revision_1": {
+          "id": "dogfood-target",
+          "revision": 1,
+          "hash": "1b4e55ce436e97eba03e24b8664f1ae8cadb44a31250f0432d72e6e87d2b6274",
+          "retired": false
+        },
+        "revision_2": {
+          "id": "dogfood-target",
+          "revision": 2,
+          "hash": "14796d6e44c1ba06ad738bda1a8e2021f9bb64dc1dda65ed8d635b1bd6130e1f",
+          "retired": false
+        },
+        "pinned_tasks": [
+          "cron-7d533ed758e7c6b84e828429-0",
+          "provider-beta"
+        ]
+      },
+      "fleet_provisioning": {
+        "performed": 1,
+        "lost_ack_recovered_after_restart": true,
+        "duplicate_mutations": 0,
+        "baseline_after_receipt": true,
+        "idempotent_prepare": true
+      },
+      "dynamic_provisioning": {
+        "adapter_revision": {
+          "id": "dogfood-adapter",
+          "revision": 1,
+          "hash": "ef175b73e93d16d5a15bd9ef1de1a80c51cb760ed3f1eebf927807e99b21c82d"
+        },
+        "later_revision": {
+          "id": "dogfood-adapter",
+          "revision": 2,
+          "hash": "8993ce5ec675f5506bad98eabb6698194a8c82e63a4b90c0b0d892482f3ba70c"
+        },
+        "workspace": "/private/tmp/fhd-3vtdgtmi/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+        "ready": true,
+        "idempotent_prepare": true
+      },
+      "crash_recovery": {
+        "signal": "SIGKILL",
+        "started_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "uncertain_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+        ],
+        "resolutions": [
+          {
+            "action": "redispatch",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+            "id": "cron-7d533ed758e7c6b84e828429-0",
+            "version": 5
+          }
+        ],
+        "automatic_replay": false
+      },
+      "adapter_retirement": {
+        "first_tombstone_preserved": true,
+        "new_bindings_refused": [
+          "write",
+          "target"
+        ],
+        "bound_task": "provider-beta",
+        "bound_task_completed_after_restart": true
+      },
+      "independent_drive": {
+        "before": {
+          "BinaryHash": "ae97b39a154c2ad632834fff7e3c9120fa860e9b9428d7fa839ecac5d6371f5f",
+          "ProcessBirth": "1792541362.748353",
+          "Workspace": "/private/tmp/fhd-3vtdgtmi/repo",
+          "Holds": null,
+          "PID": 43005,
+          "DoltPID": 43032,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 1,
+          "DriveCause": "",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-21T00:09:24.727764Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "91bc89816a37180d7a3e07838794ccd7485877b62be65f6aacae34773dd370b6",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "stopped": {
+          "BinaryHash": "ae97b39a154c2ad632834fff7e3c9120fa860e9b9428d7fa839ecac5d6371f5f",
+          "ProcessBirth": "1792541362.748353",
+          "Workspace": "/private/tmp/fhd-3vtdgtmi/repo",
+          "Holds": null,
+          "PID": 43005,
+          "DoltPID": 43032,
+          "OldPID": 0,
+          "DriveAlive": false,
+          "DriveGeneration": 1,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-21T00:09:24.727764Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "91bc89816a37180d7a3e07838794ccd7485877b62be65f6aacae34773dd370b6",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "resumed": {
+          "BinaryHash": "ae97b39a154c2ad632834fff7e3c9120fa860e9b9428d7fa839ecac5d6371f5f",
+          "ProcessBirth": "1792541362.748353",
+          "Workspace": "/private/tmp/fhd-3vtdgtmi/repo",
+          "Holds": null,
+          "PID": 43005,
+          "DoltPID": 43032,
+          "OldPID": 0,
+          "DriveAlive": true,
+          "DriveGeneration": 2,
+          "DriveCause": "operator-stop",
+          "DriveRounds": 4,
+          "LastTransition": "2026-10-21T00:09:24.727764Z",
+          "InFlight": 2,
+          "Maintenance": null,
+          "EnvironmentHash": "91bc89816a37180d7a3e07838794ccd7485877b62be65f6aacae34773dd370b6",
+          "Consistent": true,
+          "Unsafe": null,
+          "QA": null,
+          "Overlap": null
+        },
+        "retained_dispatches": {
+          "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+        },
+        "daemon_and_plane_unchanged": true,
+        "retained_provider_sessions": [
+          "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+        ],
+        "provider_start_evidence": [
+          {
+            "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+            "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+            "events": [
+              {
+                "type": "thread.started",
+                "thread_id": "01a15bca-92dd-7590-8ab7-682a714a51ee"
+              },
+              {
+                "type": "turn.started"
+              }
+            ]
+          }
+        ],
+        "deferred_before_execution": []
+      },
+      "dynamic_limits": {
+        "during_active_turns": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "after_restart": {
+          "dynamic": {
+            "effective_pane_limit": 16,
+            "heavy_capacity": 1,
+            "host_thresholds": {
+              "Soft": 6442450944,
+              "Hard": 2147483648,
+              "HardNoSwap": 4294967296,
+              "PerPane": 751619276,
+              "IO": 10,
+              "MemoryPressure": 5,
+              "Load": 3.5,
+              "PaneLimit": 60
+            },
+            "pane_limit": 16,
+            "tasks_in_flight": 1
+          },
+          "fixed": {
+            "instance_root": "/private/tmp/fhd-3vtdgtmi/i/dogfood",
+            "socket_path": "/private/tmp/fhd-3vtdgtmi/i/dogfood/run/rpc.sock"
+          }
+        },
+        "raised": {
+          "effective_pane_limit": 24,
+          "heavy_capacity": 2,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 24,
+          "tasks_in_flight": 2
+        }
+      },
+      "restart_checkpoint": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "state": "intake-gate",
+          "version": 7,
+          "artifacts": 1
+        },
+        "provider-beta": {
+          "state": "intake-gate",
+          "version": 4,
+          "artifacts": 1
+        }
+      },
+      "controller_lifecycle": {
+        "roll": {
+          "accepted": true,
+          "binary_sha256": "ae97b39a154c2ad632834fff7e3c9120fa860e9b9428d7fa839ecac5d6371f5f",
+          "drive_rounds": 1,
+          "new_pid": 48731,
+          "old_pid": 43005,
+          "pid": 48731
+        },
+        "old_pid": 43005,
+        "maintenance_marker_cleared": true
+      },
+      "provider_loop": {
+        "iterations": 5,
+        "state": "completed",
+        "session_id": "loop-dogfood-loop",
+        "provider_thread_id": "01a15bcd-7859-72a0-8316-c037f8243bc5"
+      },
+      "cron_schedules": {
+        "completed": 1,
+        "admitted": 1,
+        "duplicate_occurrences": 0
+      },
+      "normal_targets": {
+        "local_task": "cron-7d533ed758e7c6b84e828429-0",
+        "live_task": "provider-beta",
+        "live_effects": 1,
+        "normal_revision": {
+          "id": "dogfood-normal",
+          "revision": 1,
+          "hash": "48d6e0e88954ff25e4de8d4eb9767a2f952e8ffaa253ceccdaa9d6608bec21e5",
+          "retired": false
+        },
+        "adapter": "disposable localhost fixture"
+      },
+      "prophet_sessions": {
+        "answered": 2,
+        "scopes": [
+          "task",
+          "global"
+        ],
+        "actions_enacted": 0,
+        "durable_health_observations": 2
+      },
+      "retirement": {
+        "transferred": {
+          "dependent_effect": "transferred",
+          "dependents": [
+            "retire-dependent"
+          ],
+          "held_dependents": [],
+          "id": "retire-old",
+          "reason_class": "superseded-by",
+          "reference": "retire-successor",
+          "state": "Retired",
+          "version": 3
+        },
+        "held": {
+          "dependent_effect": "held",
+          "held_dependents": [
+            "retire-dependent"
+          ]
+        },
+        "hidden_by_default": true,
+        "dependent_withheld": true
+      },
+      "census_cleanup": {
+        "applied": [
+          "retire-successor"
+        ],
+        "removed": [
+          "retire-old",
+          "retire-successor"
+        ],
+        "verified_backup": true,
+        "archives_verified": 2
+      },
+      "lease_audit": {
+        "capacity": 2,
+        "granted": 71,
+        "released": 70,
+        "recovered": 1,
+        "final_holders": 0
+      },
+      "pane_audit": {
+        "before_shutdown_reservations": 9,
+        "final_reservations": 0
+      },
+      "stall_recoveries": {
+        "cron-7d533ed758e7c6b84e828429-0": 0,
+        "provider-beta": 0
+      },
+      "tasks": {
+        "cron-7d533ed758e7c6b84e828429-0": {
+          "artifact_records": 22,
+          "version": 55
+        },
+        "provider-beta": {
+          "artifact_records": 36,
+          "version": 85
+        }
+      },
+      "integration_sha": "7aaebdcffa562279a388829a0392254b77173d5d",
+      "base_sha": "10ab9d9f223762b935c062bd16f75bd759e36406",
+      "backup_policy": {
+        "lost_ack_recovered_after_restart": true,
+        "uploads": 1,
+        "remote_content_verified": true,
+        "remote_restore_fsck": true,
+        "idempotent_repeat": true,
+        "replication_pin_invalidated_preview": true,
+        "removed": 2,
+        "retained": 1
+      },
+      "crashed_completed_uncollected": [],
+      "resident_sessions": {
+        "audited_turns": 19,
+        "reused_panes": 4
+      },
+      "real_completed_turns": 36,
+      "persistent_sessions": {
+        "audited_turns": 18,
+        "resumed_turns": 9,
+        "resumed_after_restart": 2,
+        "cross_task_threads": 0,
+        "mixed_mode_isolation": true,
+        "task_bound_resumed_turns": 6
+      },
+      "scratch_cleanup": {
+        "completed": true,
+        "root_absent": true,
+        "backup_retained": true,
+        "backup_files_verified": 2078,
+        "archives_verified": 4,
+        "idempotent_repeat": true
+      }
+    }
+  },
+  "review_findings_fixed": [
+    "Retention conservatively preserves every historical job snapshot tuple and all replication sources, not merely newest backups or current jobs",
+    "Preview digest includes exact manifest bytes, filesystem identity and replication pin set; candidate identity rechecked before deletion",
+    "Restricted operator message verbs checked before replication; refusal test proves zero uploads and no attempted marker, avoiding a false pass from a later transport failure",
+    "Replication verifies private source/spool ownership and uses weighted host admission before archive or network work"
+  ],
+  "diagnostics": [
+    "Combined preflight demonstrated new replication pins invalidate older retention previews; harness now tests refusal then refreshes preview",
+    "Python runtime lacks tar extractall filter argument; harness explicitly validates every member is a regular relative path without parent traversal before extraction"
+  ],
+  "limits": [
+    "Only explicit operator plane-backup retention is implemented; externally retained scratch archives and Git archive refs are never pruned. No automatic retention schedule or remote service retention policy is installed.",
+    "Historical snapshot coverage and monotonic replication-source pins may retain more than keep. No unpin API exists.",
+    "Interrupted partial directory deletion fails closed and needs operator investigation. Same-user malicious filesystem races are outside the ownership contract.",
+    "A crash after durable attempt but before upload remains uncertain; absence of remote object never authorizes automatic reupload. SIGKILL may leave a private archive spool requiring operator inspection/removal.",
+    "Remote protocol is configurable HTTPS or literal-loopback HTTP; no vendor or credential manager was selected. Native and dogfood network effects use disposable localhost fixtures.",
+    "Receipt plus full archive checksum establishes equality with locally restore-tested bytes, not future remote availability or remote storage durability. Dogfood additionally restores the downloaded archive and runs Dolt fsck.",
+    "Formal proofs cover production predicates and bounded lifecycle models, not complete HTTP, filesystem, Dolt, Git or provider internals."
+  ],
+  "evidence_sha256": {
+    "backup-lifecycle-cli.log": "acdef163d5a7d863870ed1b1f2e100680e79e95192e7cd4b212c4430f9f1ab85",
+    "backup-lifecycle-coverage.out": "b2aeca3245a08403284fd5974f545c3ce668d4d0ad9351829158f05c55947076",
+    "backup-lifecycle-dogfood.log": "71b873d86d10e1ca631807f7383a99e4334d3f0bc8d9846cd369e65ff5cbb65c",
+    "backup-lifecycle-preflight.log": "408d23adeda9361911036ade6cef4eb2c6d1da70682a7d5e29bd993a2bc03178",
+    "backup-lifecycle-preflight.py": "85aba2ed551b54e73fd47dcde2e75110eb475819f4d7f509c42e8dba932d7ce5",
+    "backup-lifecycle-replication-focused.log": "4998ecd643b6f5ad8fc3cd723855f49872e5cad76487b79e06e8b3907b486a21",
+    "backup-lifecycle-retention-focused.log": "c81ddaeb43906d3caf2336c9b6d184afddb953b577c69b78b0bb052c64e4b6d8",
+    "backup-lifecycle-source-hashes.json": "273a7b2db985bea40b0a87120433814030e721ab9e37a1ee1dc2681ed8a3ec89",
+    "backup-lifecycle-suite.json.gz": "6b294517a0c3ed60153b677f24e4f39dfb5356d439023cd958edc2ca1aaa6c81",
+    "backup-lifecycle-suite.log": "3f69b99bc5287e466f50273ffa90297ca957447b4de1f128ef6fe4f89577569a",
+    "backup-lifecycle-dogfood-20261020/adapter-retirement.json": "fbc38083192557a696540b3ba664e49042485d01cf1cf2067557a7a8ecba548f",
+    "backup-lifecycle-dogfood-20261020/backup-policy.json": "966914c68c4556d62a9dade089fc5d956f3a7047bfe0423cad5445237b26d067",
+    "backup-lifecycle-dogfood-20261020/census-cleanup.json": "c1a9c6fb7eb51b7316202f1d50f9609d3c9c91ab46e0ee9a7a458c81b8fc3718",
+    "backup-lifecycle-dogfood-20261020/controller-lifecycle.json": "b02d61e712b6e88bd7fd946a2c1e0bea4dfd9737e031e569c2d878ba6150665c",
+    "backup-lifecycle-dogfood-20261020/crash-before.json": "7d77e8c31d23b069cf0bfeeeef5d53c8757223d4dc85713759c442a21ad5cb60",
+    "backup-lifecycle-dogfood-20261020/crash-provider-starts.json": "49293596dfdafec0f15a15b921331cc856dfa094845513466e5f2a14bb1e29c6",
+    "backup-lifecycle-dogfood-20261020/crash-recovered.json": "0765a555513f408310a89b9888677dd0c680e928e98a72fa0e461d6c37b1817b",
+    "backup-lifecycle-dogfood-20261020/cron-schedules.json": "8d06f36d34d1ac5174a34fb771aa187742729fc0ef56f40680ffdb6affed7607",
+    "backup-lifecycle-dogfood-20261020/drive-restart-checkpoint.json": "2146d70b04a1950f137d615178f103b064e92a28d7655a4d61079bbd565e6f9a",
+    "backup-lifecycle-dogfood-20261020/drive-restart.json": "cbd367dfbe29945c9b65e72208e6bf17d8ee79628a69e6b043fa54351b090d4f",
+    "backup-lifecycle-dogfood-20261020/dynamic-provisioning.json": "d7341b15f9fd35e4c85ea4edc32b9edc48a98c540ddcd97bdd5f2160d5b4e2fb",
+    "backup-lifecycle-dogfood-20261020/final-evidence.json": "a31dfed132b688c74e357bf8dd48ce5399e551fb858785c9bc4ea358e504c009",
+    "backup-lifecycle-dogfood-20261020/fleet-provisioning.json": "7a7d244345e73c15662c881717eba4fcd9b456efb9c02ea7e84598f21699a426",
+    "backup-lifecycle-dogfood-20261020/lease-audit.json": "8790b39d14cecd3016b1393be271468593dbc306966fd4c1a6e74b3841934de5",
+    "backup-lifecycle-dogfood-20261020/normal-targets.json": "7d0900e3fbf63274e4eb4662122e808e62b3ccef9134ed5ae6810a5570808ad0",
+    "backup-lifecycle-dogfood-20261020/pane-audit-final.json": "5b4d5860d6bf66799cf70388ae97900cdd76c7f3e54c3c3f990b77802258e720",
+    "backup-lifecycle-dogfood-20261020/pane-audit.json": "be305a461e2ad9490b76bd26cd1813c19c6c818545da85e4f3d457665e82f519",
+    "backup-lifecycle-dogfood-20261020/prophet-sessions.json": "d78f976b82bf0b9362b2665160477d251a56fceb41dafdfd94448bee8f8d9a89",
+    "backup-lifecycle-dogfood-20261020/provider-health.json": "4a6a5968006f6ee2e4b80f153a30606c36ec9f63cc9be38dcdb9adc7f3b14a39",
+    "backup-lifecycle-dogfood-20261020/provider-log.json": "438c696dffd5983050af26de8b98accfdb79dec4a1dde6fa3bf9331f67a2e01a",
+    "backup-lifecycle-dogfood-20261020/provider-loop.json": "e08ba6f875d1d45479dce04b3e945adde2b7d6ed82e2fae0e166db0d824f5213",
+    "backup-lifecycle-dogfood-20261020/provider-sessions.json": "0a3b3a0fd7476496f38412f5e22a06fc64e7202a87557402d8bad132eea75d23",
+    "backup-lifecycle-dogfood-20261020/provider-turns.json": "b6bee84ed80c908fbc102e227c17759bee8af84c53d906198356e37f565ededf",
+    "backup-lifecycle-dogfood-20261020/replica-fsck.log": "5a6a9659de99c88d14cb020d8e1da4eb1905d5d9d21d770104b3e4fc9d3eeffc",
+    "backup-lifecycle-dogfood-20261020/resident-sessions.json": "fda82a4c66b33f4ff3ecf5ee7c7e173ef03dd71d18ed8216e19524a2265b7c06",
+    "backup-lifecycle-dogfood-20261020/restart-checkpoint.json": "e559efcd82b6fa4c3e78464fdd975a8cb84ca2ccfd12dae408f1686862f07098",
+    "backup-lifecycle-dogfood-20261020/result.json": "8be8b0f354beb40544c3364e44ad02ad4de00714432de67e512f3f77c4062366",
+    "backup-lifecycle-dogfood-20261020/retirement.json": "cdc00a28b30595e98cb23a406beff0e468300eab566c7ed31d615a9369ef7b72",
+    "backup-lifecycle-dogfood-20261020/scratch-cleanup.json": "b0408a69fea830c847d85812c2d2e9a8b2a7181f05ff5410fae60b5e500f6b21",
+    "backup-lifecycle-dogfood-20261020/sha256.json": "be5eaebdb48abbb56c4947a04d4ffc0b1f5db5399915df1cb0d53d7d6b649266",
+    "backup-lifecycle-dogfood-20261020/source-hashes.json": "6d28310b02e7224a2b66268d8c7be6f00caa3fc77fefbe8bcf039fdefe5ad37d",
+    "backup-lifecycle-dogfood-20261020/target-configs.json": "e2ced3f982366125adb68905c3faa352139497169c8c097475bf5d0279d7d743",
+    "backup-lifecycle-formal/gomela-negative.csv": "b04ef26bed6a6d31081e0ac9cab8e2d5105971973aa33b7e8d8c328617f5e6a5",
+    "backup-lifecycle-formal/gomela-positive.csv": "5c63066446d070b8262ea8d3ea41d43aed77c13bc036651f22581ce217f94443",
+    "backup-lifecycle-formal/logs-models.tar.gz": "d3843fdf9eed246d2c206e0be6ffaabb63f5cba464a075173f3a1910bc8b8ee1",
+    "backup-lifecycle-formal/source-hashes.json": "8bc5b2dbc099705fa2ec328bae25340ab444ce83ac25f8a3e9aebb88ff4cefed",
+    "backup-lifecycle-formal/verify.log": "6f242860ae6ae4c92294bec365ffe07c09d0a5695f29af206d1a3fcf73f9d7a8"
+  }
+}

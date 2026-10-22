@@ -1,0 +1,13 @@
+package completion
+
+func ReviewMergeAfterIndependentGates() {
+ checks := make(chan int)
+ comments := make(chan int)
+ published := make(chan int)
+ merged := make(chan int)
+ go func(){ checks<-1 }()
+ go func(){ comments<-1 }()
+ go func(){ <-checks; published<-1 }()
+ go func(){ <-published; <-comments; merged<-1 }()
+ <-merged
+}

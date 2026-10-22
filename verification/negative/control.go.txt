@@ -1,0 +1,11 @@
+package completion
+func ControlHoldDropsCompletion() {
+ frozen:=make(chan int)
+ held:=make(chan int)
+ completion:=make(chan int)
+ collected:=make(chan int)
+ go func(){ frozen<-1; completion<-1 }()
+ go func(){ <-frozen; held<-1 }()
+ go func(){ <-held; collected<-1 }()
+ <-collected
+}

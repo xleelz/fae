@@ -1,0 +1,10 @@
+package completion
+
+func DynamicHostMissingRetirement(){
+ permit:=make(chan int)
+ retired:=make(chan int)
+ done:=make(chan int)
+ go func(){<-retired;permit<-1}()
+ go func(){<-permit;done<-1}()
+ <-done
+}

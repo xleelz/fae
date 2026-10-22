@@ -1,0 +1,6 @@
+Test-count positive and refusal controls passed
+662 test cases passed
+total:									(statements)				75.4%
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+AssertionError: test scratch residue: ['fae-command-owner-2205422788']

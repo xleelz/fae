@@ -1,0 +1,8 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+(c) Copyright ETH Zurich 2012 - 2026
+01:21:49.566 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/controller - controller [01:21:49]
+01:21:49.747 [thread-5] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <controller/deployment_guard.go:4:44> Unexpected reserved word critical.
+ensures ok == (acknowledged || (expired && !critical && !topNearLimit && !queryFailed))
+                                            ^^^^^^^^
+
+01:21:49.821 [thread-16] ERROR viper.gobra.Gobra - Gobra found 1 error.

@@ -1,0 +1,89 @@
+{
+  "before": {
+    "BinaryHash": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+    "ProcessBirth": "1792563630.600082",
+    "Workspace": "/private/tmp/fhd-j806u6e8/repo",
+    "Holds": null,
+    "PID": 63257,
+    "DoltPID": 63270,
+    "OldPID": 0,
+    "DriveAlive": true,
+    "DriveGeneration": 1,
+    "DriveCause": "",
+    "DriveRounds": 4,
+    "LastTransition": "2026-10-21T06:20:32.166594Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "88dfb2830d30de87fa4a7e0b9bda0c79fd97a6a2c1569c78cb92e1d20bb5ded3",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "stopped": {
+    "BinaryHash": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+    "ProcessBirth": "1792563630.600082",
+    "Workspace": "/private/tmp/fhd-j806u6e8/repo",
+    "Holds": null,
+    "PID": 63257,
+    "DoltPID": 63270,
+    "OldPID": 0,
+    "DriveAlive": false,
+    "DriveGeneration": 1,
+    "DriveCause": "operator-stop",
+    "DriveRounds": 4,
+    "LastTransition": "2026-10-21T06:20:32.166594Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "88dfb2830d30de87fa4a7e0b9bda0c79fd97a6a2c1569c78cb92e1d20bb5ded3",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "resumed": {
+    "BinaryHash": "cf3ad2285c8d6433c993d22377f44bebd98874a92d017001981736233964feb9",
+    "ProcessBirth": "1792563630.600082",
+    "Workspace": "/private/tmp/fhd-j806u6e8/repo",
+    "Holds": null,
+    "PID": 63257,
+    "DoltPID": 63270,
+    "OldPID": 0,
+    "DriveAlive": true,
+    "DriveGeneration": 2,
+    "DriveCause": "operator-stop",
+    "DriveRounds": 4,
+    "LastTransition": "2026-10-21T06:20:32.166594Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "88dfb2830d30de87fa4a7e0b9bda0c79fd97a6a2c1569c78cb92e1d20bb5ded3",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "retained_dispatches": {
+    "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+    "provider-beta": "provider-beta/cc798fd3f7a94d7c9e65361df248e629a87d75561f2807c8c78d45de3fe994d9/1"
+  },
+  "daemon_and_plane_unchanged": true,
+  "retained_provider_sessions": [
+    "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+  ],
+  "provider_start_evidence": [
+    {
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+      "events": [
+        {
+          "type": "thread.started",
+          "thread_id": "01a15d1e-59dc-73b1-96d3-9f43a0e08a32"
+        },
+        {
+          "type": "turn.started"
+        }
+      ]
+    }
+  ],
+  "deferred_before_execution": []
+}

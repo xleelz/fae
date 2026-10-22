@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+(c) Copyright ETH Zurich 2012 - 2026
+17:16:41.352 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - daemon [17:16:41]
+17:16:43.542 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/restart-negative.go:4:9> Postcondition might not hold. 
+Assertion result == (headKnown && treeKnown) might not hold.
+17:16:43.557 [thread-14] ERROR viper.gobra.Gobra - Gobra found 1 error.

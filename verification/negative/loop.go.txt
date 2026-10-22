@@ -1,0 +1,2 @@
+package completion
+func LoopMissingCheckpoint(){checkpoint:=make(chan int);completed:=make(chan int);go func(){<-checkpoint;completed<-1}();<-completed}

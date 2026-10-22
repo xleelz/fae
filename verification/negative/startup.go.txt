@@ -1,0 +1,8 @@
+package completion
+func StartupMissingProof() {
+ proof:=make(chan int)
+ retired:=make(chan int)
+ go func(){retired<-1}()
+ <-proof
+ <-retired
+}

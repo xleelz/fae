@@ -1,0 +1,11 @@
+SIGKILL during actual provider turn; retired uncertain dispatches explicitly resolved
+{"model": "gpt-6-astra", "herdr_version": "herdr 0.9.5", "provider_version": "codex-cli 0.163.0-alpha.10.2", "adapter": "herdr", "scratch": "/private/tmp/fhd-d_ynkaly", "status": "failed", "task_ids": ["cron-7d533ed758e7c6b84e828429-0", "cron-1c405e1c25c7422088d7a718-0"], "target_configs": {"revision_1": {"id": "dogfood-target", "revision": 1, "hash": "c06b42de4ee4baa59afcd7efc921d18ff28291a4d6ac92084027ece859d24c09", "retired": false}, "revision_2": {"id": "dogfood-target", "revision": 2, "hash": "a4e3e51accf1eab0c200c28021ad7e5ac098efaffbe794e3db044247f4be2fef", "retired": false}, "pinned_tasks": []}, "crash_recovery": {"signal": "SIGKILL", "started_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"], "uncertain_sessions": ["cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"], "resolutions": [{"action": "redispatch", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1", "id": "cron-7d533ed758e7c6b84e828429-0", "version": 5}], "automatic_replay": false}, "error": "invalid cron specification: json: unknown field \"commit_external\"\n"}
+Traceback (most recent call last):
+  File "/Users/lbethay/workplace/fae/scripts/dogfood.py", line 321, in <module>
+    admit(beta_id,prompts[beta_id])
+  File "/Users/lbethay/workplace/fae/scripts/dogfood.py", line 211, in admit
+    call('schedule','create','--kind','cron','--spec',str(path),'--authorizing-message','authorization')
+  File "/Users/lbethay/workplace/fae/scripts/dogfood.py", line 57, in call
+    if r.returncode:raise RuntimeError(r.stderr)
+RuntimeError: invalid cron specification: json: unknown field "commit_external"
+

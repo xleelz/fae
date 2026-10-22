@@ -1,0 +1,35 @@
+yacc -v -d 		 spin.y
+spin.y: warning: 6 reduce/reduce conflicts [-Wconflicts-rr]
+spin.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+cc -O2 -DNXT -Wall -pedantic  -c y?tab.c
+rm -f y?tab.c
+mv y?tab.o spin.o
+cc -O2 -DNXT -Wall -pedantic   -c -o spinlex.o spinlex.c
+cc -O2 -DNXT -Wall -pedantic   -c -o sym.o sym.c
+cc -O2 -DNXT -Wall -pedantic   -c -o vars.o vars.c
+cc -O2 -DNXT -Wall -pedantic   -c -o main.o main.c
+cc -O2 -DNXT -Wall -pedantic   -c -o msc_tcl.o msc_tcl.c
+cc -O2 -DNXT -Wall -pedantic   -c -o mesg.o mesg.c
+cc -O2 -DNXT -Wall -pedantic   -c -o flow.o flow.c
+cc -O2 -DNXT -Wall -pedantic   -c -o sched.o sched.c
+cc -O2 -DNXT -Wall -pedantic   -c -o run.o run.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen1.o pangen1.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen2.o pangen2.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen3.o pangen3.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen4.o pangen4.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen5.o pangen5.c
+cc -O2 -DNXT -Wall -pedantic   -c -o guided.o guided.c
+cc -O2 -DNXT -Wall -pedantic   -c -o dstep.o dstep.c
+cc -O2 -DNXT -Wall -pedantic   -c -o structs.o structs.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen6.o pangen6.c
+cc -O2 -DNXT -Wall -pedantic   -c -o pangen7.o pangen7.c
+cc -O2 -DNXT -Wall -pedantic   -c -o reprosrc.o reprosrc.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_parse.o tl_parse.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_lex.o tl_lex.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_main.o tl_main.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_trans.o tl_trans.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_buchi.o tl_buchi.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_mem.o tl_mem.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_rewrt.o tl_rewrt.c
+cc -O2 -DNXT -Wall -pedantic   -c -o tl_cache.o tl_cache.c
+cc -O2 -DNXT -Wall -pedantic -o spin spin.o spinlex.o sym.o vars.o main.o msc_tcl.o mesg.o flow.o sched.o run.o pangen1.o pangen2.o pangen3.o pangen4.o pangen5.o guided.o dstep.o structs.o pangen6.o pangen7.o reprosrc.o tl_parse.o tl_lex.o tl_main.o tl_trans.o tl_buchi.o tl_mem.o tl_rewrt.o tl_cache.o 

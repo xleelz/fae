@@ -1,0 +1,345 @@
+{
+  "date": "2026-10-18",
+  "status": "passed",
+  "implemented": [
+    "Gated isolated builds, durable protected overlap holds, integration fast-forward/CAS and startup executable identity pinning",
+    "Independent drive generations, exact lost-ack checkpoint reconciliation, durable rearm budgets and revocable watchdog grants",
+    "Pinned daemon external adapters, Normal live/dry-run disposition and query-only uncertain-effect adoption"
+  ],
+  "unit_and_integration": {
+    "test_cases": 681,
+    "packages": 26,
+    "statement_coverage_percent": 75.6,
+    "race": true,
+    "vet": true,
+    "scratch_census": true,
+    "command": "FAE_TEST_DOLT_BINARY=/tmp/dolt-darwin-arm64/bin/dolt bash scripts/test.sh",
+    "initial_run": "662 cases and vet/race passed, but scratch census found an empty command-owner directory after cancellation before registration. Fixed cleanup without removing unresolved records. Both 20ms and early-cancellation regressions passed 20 race repetitions with dedicated census; complete final suite passed. Original stream/log retained."
+  },
+  "gobra": {
+    "production_predicates": 27,
+    "rejected_mutations": 27,
+    "initial_run": "New guard used reserved parameter name critical; renamed criticalTask and reran complete verification successfully. Initial parser log retained."
+  },
+  "gomela": {
+    "positive_models": 28,
+    "firing_negative_controls": 26
+  },
+  "real_provider_dogfood": {
+    "evidence_directory": "deployment-drive-external-dogfood-20261018-r2",
+    "model": "gpt-6-astra",
+    "herdr_version": "herdr 0.9.5",
+    "provider_version": "codex-cli 0.163.0-alpha.10.2",
+    "adapter": "herdr",
+    "scratch": "/private/tmp/fhd-w1dstvd7",
+    "status": "passed",
+    "task_ids": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "cron-1c405e1c25c7422088d7a718-0"
+    ],
+    "crash_recovery": {
+      "signal": "SIGKILL",
+      "started_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "uncertain_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0"
+      ],
+      "resolutions": [
+        {
+          "action": "redispatch",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+          "id": "cron-7d533ed758e7c6b84e828429-0",
+          "version": 5
+        }
+      ],
+      "automatic_replay": false
+    },
+    "independent_drive": {
+      "before": {
+        "BinaryHash": "8288eb11516739140884bb5a75b5a9817bcfbc5666479ea531a3caaf9cb28aac",
+        "ProcessBirth": "1792313581.184888",
+        "Workspace": "/private/tmp/fhd-w1dstvd7/repo",
+        "Holds": null,
+        "PID": 64917,
+        "DoltPID": 64920,
+        "OldPID": 0,
+        "DriveAlive": true,
+        "DriveGeneration": 1,
+        "DriveCause": "",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-18T08:53:06.865898Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "e59e84e0f0b29ab9d3fdee1fccc8c7be9308feeea9d0dafec28dbb26e6a95783",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "stopped": {
+        "BinaryHash": "8288eb11516739140884bb5a75b5a9817bcfbc5666479ea531a3caaf9cb28aac",
+        "ProcessBirth": "1792313581.184888",
+        "Workspace": "/private/tmp/fhd-w1dstvd7/repo",
+        "Holds": null,
+        "PID": 64917,
+        "DoltPID": 64920,
+        "OldPID": 0,
+        "DriveAlive": false,
+        "DriveGeneration": 1,
+        "DriveCause": "operator-stop",
+        "DriveRounds": 5,
+        "LastTransition": "2026-10-18T08:53:06.865898Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "e59e84e0f0b29ab9d3fdee1fccc8c7be9308feeea9d0dafec28dbb26e6a95783",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "resumed": {
+        "BinaryHash": "8288eb11516739140884bb5a75b5a9817bcfbc5666479ea531a3caaf9cb28aac",
+        "ProcessBirth": "1792313581.184888",
+        "Workspace": "/private/tmp/fhd-w1dstvd7/repo",
+        "Holds": null,
+        "PID": 64917,
+        "DoltPID": 64920,
+        "OldPID": 0,
+        "DriveAlive": true,
+        "DriveGeneration": 2,
+        "DriveCause": "operator-stop",
+        "DriveRounds": 6,
+        "LastTransition": "2026-10-18T08:53:07.363377Z",
+        "InFlight": 2,
+        "Maintenance": null,
+        "EnvironmentHash": "e59e84e0f0b29ab9d3fdee1fccc8c7be9308feeea9d0dafec28dbb26e6a95783",
+        "Consistent": true,
+        "Unsafe": null,
+        "QA": null,
+        "Overlap": null
+      },
+      "retained_dispatches": {
+        "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+        "cron-1c405e1c25c7422088d7a718-0": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1"
+      },
+      "daemon_and_plane_unchanged": true,
+      "retained_provider_sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0"
+      ],
+      "provider_start_evidence": [
+        {
+          "session_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2/session/0",
+          "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/2",
+          "events": [
+            {
+              "type": "thread.started",
+              "thread_id": "01a14e36-e46d-7e71-b86b-4e0cfcec53db"
+            },
+            {
+              "type": "turn.started"
+            }
+          ]
+        }
+      ],
+      "deferred_before_execution": [
+        {
+          "session_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1/session/0",
+          "events": [
+            {
+              "attempt": 1,
+              "cause": "inputs-resolved",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "dispatch",
+              "stage": "intake"
+            },
+            {
+              "attempt": 1,
+              "cause": "startup-not-executed: role=spec dispatch=cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1 handoff=: session already active",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "execution-diagnostic",
+              "stage": "intake"
+            },
+            {
+              "attempt": 0,
+              "cause": "infrastructure-deferred",
+              "dispatch_id": "cron-1c405e1c25c7422088d7a718-0/1b24703a2663d1e03b31792a01b3ad483edc7e049f82637cd8e9427ed10d8057/1",
+              "kind": "park",
+              "stage": "intake"
+            }
+          ]
+        }
+      ]
+    },
+    "dynamic_limits": {
+      "during_active_turns": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "after_restart": {
+        "dynamic": {
+          "effective_pane_limit": 16,
+          "heavy_capacity": 1,
+          "host_thresholds": {
+            "Soft": 6442450944,
+            "Hard": 2147483648,
+            "HardNoSwap": 4294967296,
+            "PerPane": 751619276,
+            "IO": 10,
+            "MemoryPressure": 5,
+            "Load": 3.5,
+            "PaneLimit": 60
+          },
+          "pane_limit": 16,
+          "tasks_in_flight": 1
+        },
+        "fixed": {
+          "instance_root": "/private/tmp/fhd-w1dstvd7/i/dogfood",
+          "socket_path": "/private/tmp/fhd-w1dstvd7/i/dogfood/run/rpc.sock"
+        }
+      },
+      "raised": {
+        "effective_pane_limit": 24,
+        "heavy_capacity": 2,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 24,
+        "tasks_in_flight": 2
+      }
+    },
+    "restart_checkpoint": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "state": "intake-gate",
+        "version": 7,
+        "artifacts": 1
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "state": "intake-gate",
+        "version": 6,
+        "artifacts": 1
+      }
+    },
+    "controller_lifecycle": {
+      "roll": {
+        "accepted": true,
+        "binary_sha256": "8288eb11516739140884bb5a75b5a9817bcfbc5666479ea531a3caaf9cb28aac",
+        "drive_rounds": 1,
+        "new_pid": 66495,
+        "old_pid": 64917,
+        "pid": 66495
+      },
+      "old_pid": 64917,
+      "maintenance_marker_cleared": true
+    },
+    "provider_loop": {
+      "iterations": 5,
+      "state": "completed",
+      "session_id": "loop-dogfood-loop",
+      "provider_thread_id": "01a14e39-9d50-7450-b0b1-4dfa260866dd"
+    },
+    "cron_schedules": {
+      "completed": 2,
+      "admitted": 2,
+      "duplicate_occurrences": 0
+    },
+    "lease_audit": {
+      "capacity": 2,
+      "granted": 63,
+      "released": 62,
+      "recovered": 1,
+      "final_holders": 0
+    },
+    "pane_audit": {
+      "before_shutdown_reservations": 6,
+      "final_reservations": 0
+    },
+    "stall_recoveries": {
+      "cron-7d533ed758e7c6b84e828429-0": 0,
+      "cron-1c405e1c25c7422088d7a718-0": 0
+    },
+    "tasks": {
+      "cron-7d533ed758e7c6b84e828429-0": {
+        "artifact_records": 22,
+        "version": 55
+      },
+      "cron-1c405e1c25c7422088d7a718-0": {
+        "artifact_records": 32,
+        "version": 78
+      }
+    },
+    "integration_sha": "681c079c163d88324edfda7b78daedc277e1df9e",
+    "base_sha": "d1ee262f4f3ddac9bc189a14d93cc4a3c60ff88a",
+    "crashed_completed_uncollected": [],
+    "resident_sessions": {
+      "audited_turns": 19,
+      "reused_panes": 7
+    },
+    "real_completed_turns": 34,
+    "persistent_sessions": {
+      "audited_turns": 18,
+      "resumed_turns": 12,
+      "resumed_after_restart": 2,
+      "cross_task_threads": 3,
+      "task_bound_resumed_turns": 6
+    }
+  },
+  "initial_dogfood": {
+    "evidence_directory": "deployment-drive-external-dogfood-20261018",
+    "status": "failed harness assertion after both tasks Done",
+    "cause": "Harness required provenance for an unstarted frozen dispatch. Exact history proved startup-not-executed plus infrastructure-deferred; no provider launch existed. Corrected harness requires actual turn.started for retained sessions and exact once start/completion/provenance, while deferred sessions require explicit nonexecution proof and zero starts. Recorded-fixture regression rejects duplicate completion and missing nonexecution proof. Complete fresh rerun passed; no production changes for this correction."
+  },
+  "verification_scope": "Gobra proves selected production predicates; Gomela/SPIN checks bounded protocol models. Native SIGKILL tests and authenticated provider dogfood are separate evidence, not whole-system proofs.",
+  "limitations": [
+    "Changed-source deployment requires source history in the bound workspace. Gated-tip changes during compilation cause refusal and require retry. The toy-repository dogfood exercises same-binary roll; changed-build policies use native fixtures.",
+    "External recovery is a pinned HTTP adapter foundation tested against an isolated service. Vendor schema discovery, full review workspace/build/publish/merge lifecycle and complete ticket outbox orchestration remain follow-up work. No real ticket/review service was mutated.",
+    "General operator authorization now enforces configured age and operator/blob integrity; incompatible-verb consumption policy remains follow-up work.",
+    "Local-effect integration adoption still requires exact intended target SHA; complex merge/conflict recovery remains conservative."
+  ],
+  "hash_verification": {
+    "final_dogfood_sources_and_binaries": true,
+    "formal_sources": true,
+    "both_dogfood_manifests": true,
+    "suite_production_and_test_sources": true,
+    "suite_harness_note": "Suite source snapshot retains the earlier dogfood harness hash. Only scripts/dogfood.py changed afterward, with dedicated recorded-fixture checks and full real-provider rerun; final dogfood source manifest matches current harness."
+  },
+  "evidence_sha256": {
+    "deployment-drive-external-coverage.out.gz": "42e86c29c7cf304491ec47b45f8e1c8fb96f1abaa411f30e05b01452906a16ea",
+    "deployment-drive-external-dogfood-20261018/sha256.json": "0ee177a0e67f34800368863697c78e061522ea63a13e48f2676dd7436c841a7b",
+    "deployment-drive-external-dogfood-20261018-r2/sha256.json": "71b2ec650c8d90766833832c39a32242259a210ff4d77d67d9c4cb9eab6dd241",
+    "deployment-drive-external-dogfood.log.gz": "647b8d20f6cf9fd078034c95b5e258e5313b53e46546b01ec2d634b61a82d5bc",
+    "deployment-drive-external-first-dogfood.log.gz": "e1cb3b0ce9d964317e4de4f5ed3382ea612481bbd9fc7b1c6ca6cc2965419e3b",
+    "deployment-drive-external-formal/gomela-negative.csv": "5338f49e8ef7a1c2dc3cb3b6cd7fb6dd972f7a82c5bad0ac1f2ba4c0603df5f9",
+    "deployment-drive-external-formal/gomela-positive.csv": "48e493ecf53f92205a3e207377cf4b9e7ae06e483399b438da6a9a869306ce15",
+    "deployment-drive-external-formal/initial-reserved-word-error.log": "a2bb6907edbdd8321715d16c3dd903cd99d9f1b38e51ea0a5d80e713c68bc916",
+    "deployment-drive-external-formal/logs-models.tar.gz": "534e3aad5c97eed58b46611a6367010acc574bc49abe18c6495ceeac431e30c8",
+    "deployment-drive-external-formal/source-hashes.json": "657627c5d61005f2448181608da1bd7a967703f60802a95277a5c27208a285d1",
+    "deployment-drive-external-formal/verification.log": "a98913bc49c8f120357b45dd227aa89d01ee62bcbcef40acd8f74607be0c77be",
+    "deployment-drive-external-harness-regression.json": "bad24c4de9554ee090cd4fab390d7ae4157b357649a6628244923497dc0a5520",
+    "deployment-drive-external-prefinal-coverage.out.gz": "b5cc19318e9cd7c98b11c9d20000d19627a66d5edff51a75604e291d096b81ee",
+    "deployment-drive-external-prefinal-suite.log": "0263bb86fe903a577552d0ddc6161b0dbc8ea326d3f52b0f1d915d0ce8dcd475",
+    "deployment-drive-external-prefinal-test.json.gz": "7a11684e252cc4244776b447e3241d64f0d8aae699e18a7cdd7bb4019fe852be",
+    "deployment-drive-external-source-hashes.json": "7663d6d20305e2104b1717beaa5df74d3e4d4d4e3ec930c36f2f90d7539bc800",
+    "deployment-drive-external-suite.log": "a0bceb9076e91337b77ce35cdb5ca707055e1aef43dbfb9a6882c1b7460faf55",
+    "deployment-drive-external-test.json.gz": "63287c1a4917cb46c49a24c27f6ae60846c3df485ca34a81894b3b4178588f4f"
+  }
+}

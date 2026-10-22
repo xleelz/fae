@@ -1,0 +1,10 @@
+package completion
+
+func RetireDropsTransferAcknowledgement() {
+ edges:=make(chan int)
+ ack:=make(chan int)
+ retired:=make(chan int)
+ go func(){ edges<-1; retired<-1 }()
+ go func(){ <-edges; ack<-1 }()
+ <-retired
+}
