@@ -15,6 +15,18 @@ import (
 	"time"
 )
 
+// Unix socket names are limited by sockaddr_un, independently of the filesystem
+// path limit. A broker's long TMPDIR plus t.TempDir's test name can exceed it.
+func proxyTestSocket(t *testing.T) string {
+	t.Helper()
+	dir, err := os.MkdirTemp("/var/tmp", "fae-proxy-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
+	return filepath.Join(dir, "lease.sock")
+}
+
 func TestNamespaceLeaseProxyRunsOneAccountedCommand(t *testing.T) {
 	f := roleShims(t, RoleShims{Build: true, Test: true, Format: true, Local: true})
 	policyPath := filepath.Join(f.shims, ".policy.json")
@@ -22,7 +34,7 @@ func TestNamespaceLeaseProxyRunsOneAccountedCommand(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	policy.LeaseProxy = filepath.Join(filepath.Dir(f.shims), "lease.sock")
+	policy.LeaseProxy = proxyTestSocket(t)
 	if err = os.Chmod(policyPath, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +70,7 @@ func proxyFixture(t *testing.T, grant RoleShims, script string) (roleFixture, *L
 	if err = os.WriteFile(p.Tools["go"], []byte(script), 0700); err != nil {
 		t.Fatal(err)
 	}
-	p.LeaseProxy = filepath.Join(filepath.Dir(f.shims), "lease.sock")
+	p.LeaseProxy = proxyTestSocket(t)
 	raw, _ := json.Marshal(p)
 	if err = os.Chmod(path, 0600); err != nil {
 		t.Fatal(err)

@@ -39,19 +39,19 @@ func TestRustPolicyScopesAndClamps(t *testing.T) {
 	}
 }
 func TestRustfmtLeafNative(t *testing.T) {
-	if _, e := exec.LookPath("rustfmt"); e != nil {
-		t.Skip(e)
-	}
+	formatter, env := nativeToolForTest(t, "rustfmt", "FAE_TEST_RUSTFMT_BINARY")
 	p := rustPolicy(t)
 	f := filepath.Join(p.Worktree, "leaf.rs")
 	if e := os.WriteFile(f, []byte("fn main(){println!(\"ok\");}\n"), 0600); e != nil {
 		t.Fatal(e)
 	}
-	a, e := p.prepareRust([]string{"rustfmt", "--edition", "2021", f})
+	a, e := p.prepareRust([]string{formatter, "--edition", "2021", f})
 	if e != nil {
 		t.Fatal(e)
 	}
-	if b, e := exec.Command(a[0], a[1:]...).CombinedOutput(); e != nil {
+	cmd := exec.Command(a[0], a[1:]...)
+	cmd.Env = env
+	if b, e := cmd.CombinedOutput(); e != nil {
 		t.Fatalf("%s: %v", b, e)
 	}
 	if e = os.WriteFile(f, []byte("mod external;\n"), 0600); e != nil {

@@ -31,6 +31,7 @@ func newAccountedGitRun(t *testing.T) accountedGitRun {
 	if err != nil {
 		t.Skip("git not on PATH")
 	}
+	git = fixtureNativeGit(t, git)
 	r := accountedGitRun{git: git, op: filepath.Join(root, "op"), worktree: filepath.Join(root, "trees", "a"), other: filepath.Join(root, "trees", "b"), scratch: filepath.Join(root, "scratch")}
 	r.repo = filepath.Join(r.scratch, "repo")
 	// The broker's environment: no user or system git configuration.
@@ -53,6 +54,30 @@ func newAccountedGitRun(t *testing.T) accountedGitRun {
 		t.Fatal(err)
 	}
 	return r
+}
+
+// These tests exercise the nested policy itself, including Git's diagnostics
+// after a repository is deliberately corrupted between locate and execution.
+// Resolve the real tool from an outer Fae wrapper so that an outer policy does
+// not intercept the control operation before the policy under test sees it.
+func fixtureNativeGit(t *testing.T, git string) string {
+	t.Helper()
+	for range 16 {
+		if !accountedGitWrapped(git) {
+			return git
+		}
+		policy, err := ReadRoleShims(filepath.Join(filepath.Dir(git), ".policy.json"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		next := policy.Tools["git"]
+		if !filepath.IsAbs(next) || next == git {
+			t.Fatal("outer Git wrapper does not identify its underlying tool")
+		}
+		git = next
+	}
+	t.Fatal("too many nested Git wrappers in fixture")
+	return ""
 }
 
 // run runs the real git, failing the test unless it succeeds.

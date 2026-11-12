@@ -101,15 +101,9 @@ func TestNodeTestsClampWorkersAndRejectRuntimeInjection(t *testing.T) {
 	}
 }
 func TestTypeScriptRealCompilerTypecheckAndScopedEmit(t *testing.T) {
-	compiler := os.Getenv("FAE_TEST_TSC_BINARY")
-	if compiler == "" {
-		compiler, _ = exec.LookPath("tsc")
-	}
-	if compiler == "" {
-		t.Skip("installed TypeScript compiler required; no package downloads")
-	}
+	compiler, nativeEnv := nativeToolForTest(t, "tsc", "FAE_TEST_TSC_BINARY")
 	p, config := tsPolicyFixture(t)
-	env, err := TypeScriptEnvironment([]string{compiler, "-p", config}, os.Environ(), p.Worktree)
+	env, err := TypeScriptEnvironment([]string{compiler, "-p", config}, nativeEnv, p.Worktree)
 	if err != nil {
 		t.Fatal(err)
 	}
