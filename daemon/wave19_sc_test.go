@@ -411,6 +411,7 @@ func TestSecretRedactionIncludesContentPolicyAndDenyPaths(t *testing.T) {
 }
 
 func TestLocalGitPushFastForwardContentScanAndIdempotence(t *testing.T) {
+	nativeGitPushFixture(t)
 	ctx := context.Background()
 	remoteBare := t.TempDir()
 	ws := t.TempDir()

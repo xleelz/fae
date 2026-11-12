@@ -11,6 +11,7 @@ import (
 )
 
 func TestRustSelectedNative(t *testing.T) {
+	nativeAdapterFixture(t)
 	if _, e := exec.LookPath("cargo"); e != nil {
 		t.Skip(e)
 	}
@@ -60,6 +61,7 @@ func TestRustEvidenceRefusesNoExecution(t *testing.T) {
 }
 
 func TestRustBrokerNativeSelected(t *testing.T) {
+	nativeAdapterFixture(t)
 	if _, e := exec.LookPath("cargo"); e != nil {
 		t.Skip(e)
 	}
