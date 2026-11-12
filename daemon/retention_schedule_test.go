@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"os"
-	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/xleelz/fae/controlplane"
+	"github.com/xleelz/fae/hostguard"
 )
 
 func scheduleGrant(t *testing.T, d *Daemon, id string) {
@@ -53,11 +55,11 @@ func TestRetentionScheduleNativeLifecycleAndRestart(t *testing.T) {
 		}
 	}()
 	scheduleGrant(t, d, "schedule-grant")
-	first, e := d.backupPlane(ctx)
+	first, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
-	latest, e := d.backupPlane(ctx)
+	latest, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -74,15 +76,11 @@ func TestRetentionScheduleNativeLifecycleAndRestart(t *testing.T) {
 	d.mu.Lock()
 	d.draining = false
 	d.mu.Unlock()
-	if e = os.WriteFile(filepath.Join(d.layout.Root, "maintenance"), nil, 0600); e != nil {
-		t.Fatal(e)
-	}
+	beginMaintenance(t, d)
 	if e = d.tickRetentionSchedule(ctx, s.NextAt); e != nil {
 		t.Fatal(e)
 	}
-	if e = os.Remove(filepath.Join(d.layout.Root, "maintenance")); e != nil {
-		t.Fatal(e)
-	}
+	endMaintenance(t, d)
 	current, e := d.readRetentionSchedule(ctx)
 	if e != nil || current.RunCount != 0 {
 		t.Fatal(current, e)
@@ -109,7 +107,7 @@ func TestRetentionScheduleNativeLifecycleAndRestart(t *testing.T) {
 	}
 	s = scheduleCall(t, d, RetentionScheduleParams{Action: "resume", AuthorizingMessage: "schedule-grant"})
 	due := s.NextAt.Add(72 * time.Hour)
-	if e = d.tickRetentionSchedule(ctx, due); e != nil {
+	if e = tickAdmitted(t, "retention", func() error { return d.tickRetentionSchedule(ctx, due) }); e != nil {
 		t.Fatal(e)
 	}
 	s = scheduleCall(t, d, RetentionScheduleParams{Action: "status"})
@@ -235,11 +233,17 @@ func TestRetentionScheduleNativeBackground(t *testing.T) {
 	old := retainedFixtureBackup(t, d, "old", 1)
 	retainedFixtureBackup(t, d, "new", 2)
 	scheduleCall(t, d, RetentionScheduleParams{Action: "configure", Keep: 1, IntervalSeconds: 1, AuthorizingMessage: "background"})
-	deadline := time.Now().Add(10 * time.Second)
-	for time.Now().Before(deadline) {
+	// Runs deferred by host admission are withdrawn and retried each tick; the
+	// hang guard extends while the last attempt was deferred.
+	guard := newHangGuard(10 * time.Second)
+	for {
 		s, e := d.readRetentionSchedule(ctx)
 		if e != nil {
 			t.Fatal(e)
+		}
+		_, deferred := deferredRefusal(errors.New(s.LastError))
+		if !guard.observe(deferred) {
+			break
 		}
 		if s.RunCount > 0 && !s.Running {
 			if s.LastError != "" || s.LastRemoved != 1 {
@@ -253,4 +257,42 @@ func TestRetentionScheduleNativeBackground(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 	}
 	t.Fatal("background schedule did not execute")
+}
+
+// A scheduled retention run deferred by host admission is withdrawn, like a
+// park: it consumes no run and no interval, removes nothing, records the
+// refusal, and a later tick runs it.
+func TestRetentionScheduleDeferredAdmissionConsumesNoRun(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	d, e := Start(ctx, cfg)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer stop(t, d)
+	scheduleGrant(t, d, "deferred-retention")
+	old := retainedFixtureBackup(t, d, "old", 1)
+	retainedFixtureBackup(t, d, "new", 2)
+	s := scheduleCall(t, d, RetentionScheduleParams{Action: "configure", Keep: 1, IntervalSeconds: 3600, AuthorizingMessage: "deferred-retention"})
+	d.live.guard.observe = func(context.Context) (hostguard.Sample, error) { return hostSample(20, 0.5), nil }
+	if reason, deferred := deferredRefusal(d.tickRetentionSchedule(ctx, s.NextAt)); !deferred || reason != "IOPressure" {
+		t.Fatal("pressure did not defer the run", reason)
+	}
+	after := scheduleCall(t, d, RetentionScheduleParams{Action: "status"})
+	if after.State != "active" || after.Running || after.RunCount != 0 || !after.NextAt.Equal(s.NextAt) || !strings.Contains(after.LastError, "host admission: IOPressure") {
+		t.Fatal("deferred run consumed", after)
+	}
+	if _, e = os.Stat(old.Path); e != nil {
+		t.Fatal("deferred run removed a backup", e)
+	}
+	d.live.guard.observe = func(context.Context) (hostguard.Sample, error) { return hostSample(1, 0.5), nil }
+	if e = d.tickRetentionSchedule(ctx, s.NextAt); e != nil {
+		t.Fatal(e)
+	}
+	after = scheduleCall(t, d, RetentionScheduleParams{Action: "status"})
+	if after.RunCount != 1 || after.LastError != "" || after.LastRemoved != 1 || !after.NextAt.After(s.NextAt) {
+		t.Fatal("deferred run not retried", after)
+	}
+	if _, e = os.Stat(old.Path); !os.IsNotExist(e) {
+		t.Fatal("retried run kept the old backup", e)
+	}
 }

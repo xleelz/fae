@@ -1,0 +1,76 @@
+{
+  "result": {
+    "paused_across_restart": true,
+    "automatic_creation_verified": true,
+    "automatic_replication_verified": true,
+    "pending_destination_change_refused": true,
+    "pending_survived_restart": true,
+    "duplicate_uploads": 0,
+    "scheduled_uploads": 2,
+    "final_creation_state": "paused",
+    "final_replication_state": "paused"
+  },
+  "created": {
+    "state": "active",
+    "interval_seconds": 1,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-28T07:08:42.131101774Z",
+    "running": false,
+    "run_count": 1,
+    "last_started": "2026-10-28T07:08:09.985222273Z",
+    "last_finished": "2026-10-28T07:08:41.131101774Z",
+    "last_backup": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-204933697",
+    "last_attempt_path": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-204933697"
+  },
+  "uncertain": {
+    "state": "active",
+    "interval_seconds": 5,
+    "endpoint": "http://127.0.0.1:37787",
+    "max_bytes": 268435456,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-28T07:08:51.647581522Z",
+    "running": false,
+    "run_count": 1,
+    "pending": {
+      "backup": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-951542286",
+      "endpoint": "http://127.0.0.1:37787",
+      "max_bytes": 268435456,
+      "manifest_digest": "ae793cccd743b53a0f7755cd43fe319958b6bd52237c7f92cc14bc097f0489e1"
+    },
+    "last_started": "2026-10-28T07:08:46.238127135Z",
+    "last_finished": "2026-10-28T07:08:46.647581522Z",
+    "last_error": "replication uncertain; explicit retry queries remote proof: remote backup status 503"
+  },
+  "recovered": {
+    "state": "paused",
+    "interval_seconds": 5,
+    "endpoint": "http://127.0.0.1:37787",
+    "max_bytes": 268435456,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-28T07:08:51.647581522Z",
+    "running": false,
+    "run_count": 1,
+    "pending": {
+      "backup": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-951542286",
+      "endpoint": "http://127.0.0.1:37787",
+      "max_bytes": 268435456,
+      "manifest_digest": "ae793cccd743b53a0f7755cd43fe319958b6bd52237c7f92cc14bc097f0489e1"
+    },
+    "last_started": "2026-10-28T07:08:46.238127135Z",
+    "last_finished": "2026-10-28T07:08:46.647581522Z",
+    "last_error": "replication uncertain; explicit retry queries remote proof: remote backup status 503"
+  },
+  "replicated": {
+    "state": "active",
+    "interval_seconds": 5,
+    "endpoint": "http://127.0.0.1:37787",
+    "max_bytes": 268435456,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-28T07:09:38.274785773Z",
+    "running": false,
+    "run_count": 4,
+    "last_started": "2026-10-28T07:09:33.063964153Z",
+    "last_finished": "2026-10-28T07:09:33.274785773Z",
+    "last_backup": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-204933697"
+  }
+}

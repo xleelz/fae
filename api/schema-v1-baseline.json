@@ -1,0 +1,979 @@
+{
+  "AdapterGet": {
+    "properties": [
+      "id",
+      "revision"
+    ],
+    "required": [
+      "id"
+    ]
+  },
+  "AdapterList": {
+    "properties": [],
+    "required": []
+  },
+  "AdapterPut": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "id"
+    ],
+    "required": [
+      "authorizing_message",
+      "document",
+      "id"
+    ]
+  },
+  "AdapterRetire": {
+    "properties": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ],
+    "required": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ]
+  },
+  "Admit": {
+    "properties": [
+      "authorizing_message",
+      "carry_from",
+      "commit_external",
+      "content",
+      "critical",
+      "destination",
+      "dry_run",
+      "id",
+      "mode",
+      "priority",
+      "push_namespace",
+      "revision",
+      "run_id",
+      "target_config",
+      "target_hash",
+      "target_revision",
+      "task_class",
+      "ticket_room",
+      "title",
+      "tree",
+      "workflow_id"
+    ],
+    "required": []
+  },
+  "AlertAcknowledge": {
+    "properties": [
+      "authorizing_message",
+      "id"
+    ],
+    "required": []
+  },
+  "Alerts": {
+    "properties": [
+      "after",
+      "limit",
+      "unacknowledged"
+    ],
+    "required": []
+  },
+  "AnalyzeSession": {
+    "properties": [
+      "task"
+    ],
+    "required": []
+  },
+  "AttachDesignDoc": {
+    "properties": [
+      "authorizing_message",
+      "item",
+      "reference",
+      "task"
+    ],
+    "required": []
+  },
+  "BacklogAdmit": {
+    "properties": [
+      "authorizing_message",
+      "edges",
+      "items"
+    ],
+    "required": []
+  },
+  "BacklogEdge": {
+    "properties": [
+      "accept_in_flight",
+      "authorizing_message",
+      "from",
+      "kind",
+      "remove",
+      "to"
+    ],
+    "required": []
+  },
+  "BacklogShow": {
+    "properties": [
+      "include_retired",
+      "state"
+    ],
+    "required": []
+  },
+  "BackupQuota": {
+    "properties": [
+      "action",
+      "authorizing_message",
+      "max_backups",
+      "max_bytes"
+    ],
+    "required": [
+      "action"
+    ]
+  },
+  "BackupReplicate": {
+    "properties": [
+      "authorizing_message",
+      "backup",
+      "endpoint",
+      "max_bytes"
+    ],
+    "required": [
+      "authorizing_message",
+      "backup",
+      "endpoint"
+    ]
+  },
+  "BackupReplicationSchedule": {
+    "properties": [
+      "action",
+      "authorizing_message",
+      "endpoint",
+      "interval_seconds",
+      "max_bytes"
+    ],
+    "required": [
+      "action"
+    ]
+  },
+  "BackupReplicationUnpin": {
+    "properties": [
+      "apply",
+      "authorizing_message",
+      "backup",
+      "plan_digest"
+    ],
+    "required": [
+      "backup"
+    ]
+  },
+  "BackupRetention": {
+    "properties": [
+      "apply",
+      "authorizing_message",
+      "dry_run",
+      "keep",
+      "plan_digest"
+    ],
+    "required": [
+      "keep"
+    ]
+  },
+  "BackupRetentionSchedule": {
+    "properties": [
+      "action",
+      "authorizing_message",
+      "interval_seconds",
+      "keep"
+    ],
+    "required": [
+      "action"
+    ]
+  },
+  "BackupSchedule": {
+    "properties": [
+      "action",
+      "authorizing_message",
+      "interval_seconds"
+    ],
+    "required": [
+      "action"
+    ]
+  },
+  "Block": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Board": {
+    "properties": [
+      "after",
+      "in_flight",
+      "include_retired",
+      "limit",
+      "min_priority",
+      "mode",
+      "molecule",
+      "run_id",
+      "states",
+      "target",
+      "workflow"
+    ],
+    "required": []
+  },
+  "Cancel": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Census": {
+    "properties": [
+      "include_blocked",
+      "proposals"
+    ],
+    "required": []
+  },
+  "CensusApply": {
+    "properties": [
+      "artifact",
+      "authorizing_message",
+      "row_id"
+    ],
+    "required": [
+      "artifact",
+      "authorizing_message",
+      "row_id"
+    ]
+  },
+  "CleanupRetired": {
+    "properties": [
+      "apply",
+      "authorizing_message",
+      "backup",
+      "dry_run",
+      "pace_ms"
+    ],
+    "required": []
+  },
+  "Controller": {
+    "properties": [
+      "ack_overlap",
+      "action",
+      "authorizing_message",
+      "binary",
+      "cause",
+      "gated_ref",
+      "grant_message",
+      "marker",
+      "note",
+      "overlap_wait",
+      "when_clear"
+    ],
+    "required": []
+  },
+  "Decide": {
+    "properties": [
+      "authorizing_message",
+      "decision",
+      "id",
+      "option",
+      "rationale"
+    ],
+    "required": []
+  },
+  "Defer": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Drain": {
+    "properties": [
+      "authorizing_message"
+    ],
+    "required": []
+  },
+  "Escalate": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Events": {
+    "properties": [
+      "after",
+      "include_retired",
+      "limit"
+    ],
+    "required": []
+  },
+  "GatesSelfTest": {
+    "properties": [],
+    "required": []
+  },
+  "History": {
+    "properties": [
+      "after",
+      "id",
+      "include_retired",
+      "limit",
+      "records",
+      "summary"
+    ],
+    "required": []
+  },
+  "HostMetrics": {
+    "properties": [],
+    "required": []
+  },
+  "Inbox": {
+    "properties": [
+      "kinds",
+      "limit",
+      "per_thread",
+      "task"
+    ],
+    "required": []
+  },
+  "Land": {
+    "properties": [
+      "authorizing_message",
+      "flakes",
+      "frozen",
+      "salvage",
+      "source_ref",
+      "target",
+      "tasks"
+    ],
+    "required": []
+  },
+  "LandStatus": {
+    "properties": [
+      "id"
+    ],
+    "required": []
+  },
+  "Leases": {
+    "properties": [],
+    "required": []
+  },
+  "Message": {
+    "properties": [
+      "id",
+      "relayed",
+      "reply_to",
+      "source",
+      "task",
+      "text"
+    ],
+    "required": []
+  },
+  "Metrics": {
+    "properties": [
+      "window_seconds"
+    ],
+    "required": []
+  },
+  "Migrate": {
+    "properties": [
+      "authorizing_message",
+      "id",
+      "revision",
+      "stage"
+    ],
+    "required": []
+  },
+  "Panes": {
+    "properties": [],
+    "required": []
+  },
+  "PlaneBackup": {
+    "properties": [
+      "apply",
+      "authorizing_message",
+      "backup",
+      "dry_run",
+      "pace_ms"
+    ],
+    "required": [
+      "authorizing_message"
+    ]
+  },
+  "ProphetChat": {
+    "properties": [
+      "action_task",
+      "after",
+      "direct",
+      "limit",
+      "task",
+      "text"
+    ],
+    "required": []
+  },
+  "ProphetChatRead": {
+    "properties": [
+      "action_task",
+      "after",
+      "direct",
+      "limit",
+      "task",
+      "text"
+    ],
+    "required": []
+  },
+  "ProphetSession": {
+    "properties": [
+      "action_task",
+      "after",
+      "direct",
+      "limit",
+      "task",
+      "text"
+    ],
+    "required": []
+  },
+  "ProvenanceChain": {
+    "properties": [
+      "commit",
+      "limit"
+    ],
+    "required": []
+  },
+  "ProviderHealth": {
+    "properties": [
+      "window_seconds"
+    ],
+    "required": []
+  },
+  "ProviderObservations": {
+    "properties": [
+      "after",
+      "limit"
+    ],
+    "required": []
+  },
+  "QuarantineInspect": {
+    "properties": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ],
+    "required": []
+  },
+  "QuarantineRelease": {
+    "properties": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ],
+    "required": []
+  },
+  "QuarantineRetire": {
+    "properties": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ],
+    "required": []
+  },
+  "Reclaim": {
+    "properties": [
+      "authorizing_message",
+      "dry_run",
+      "host_wide"
+    ],
+    "required": []
+  },
+  "ReconcileDone": {
+    "properties": [
+      "authorizing_message",
+      "dry_run"
+    ],
+    "required": []
+  },
+  "Reprioritize": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "ResolveUncertain": {
+    "properties": [
+      "action",
+      "authorizing_message",
+      "dispatch_id",
+      "id",
+      "result"
+    ],
+    "required": []
+  },
+  "RestartWithInformation": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Resume": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "ResumeRun": {
+    "properties": [
+      "authorizing_message",
+      "run_id",
+      "task"
+    ],
+    "required": []
+  },
+  "ResumeWithContext": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Retire": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "ReviewTargetHealth": {
+    "properties": [
+      "task"
+    ],
+    "required": []
+  },
+  "ReviewWorkspacePlan": {
+    "properties": [
+      "adapter",
+      "authorizing_message",
+      "run_id",
+      "task"
+    ],
+    "required": [
+      "task"
+    ]
+  },
+  "ReviewWorkspacePrepare": {
+    "properties": [
+      "adapter",
+      "authorizing_message",
+      "run_id",
+      "task"
+    ],
+    "required": [
+      "adapter",
+      "authorizing_message",
+      "task"
+    ]
+  },
+  "RuntimeConfig": {
+    "properties": [
+      "authorizing_message",
+      "heavy_capacity",
+      "host_thresholds",
+      "pane_limit",
+      "tasks_in_flight"
+    ],
+    "required": []
+  },
+  "Schedule": {
+    "properties": [
+      "action",
+      "authorizing_message",
+      "cron",
+      "id",
+      "spec"
+    ],
+    "required": []
+  },
+  "ScratchArchiveCleanup": {
+    "properties": [
+      "apply",
+      "authorizing_message",
+      "plan_digest",
+      "scratch_instance",
+      "source",
+      "survivor"
+    ],
+    "required": []
+  },
+  "ScratchCleanupAuthorize": {
+    "properties": [
+      "apply",
+      "authorizing_message",
+      "backup",
+      "dry_run",
+      "pace_ms"
+    ],
+    "required": [
+      "authorizing_message"
+    ]
+  },
+  "SetAttemptLimit": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "Show": {
+    "properties": [
+      "include_retired",
+      "run_id",
+      "task"
+    ],
+    "required": []
+  },
+  "Shutdown": {
+    "properties": [
+      "authorizing_message"
+    ],
+    "required": []
+  },
+  "Status": {
+    "properties": [
+      "include_retired",
+      "tasks"
+    ],
+    "required": []
+  },
+  "TargetConfigDiff": {
+    "properties": [
+      "from",
+      "id",
+      "to"
+    ],
+    "required": []
+  },
+  "TargetConfigGet": {
+    "properties": [
+      "id",
+      "revision"
+    ],
+    "required": [
+      "id"
+    ]
+  },
+  "TargetConfigList": {
+    "properties": [],
+    "required": []
+  },
+  "TargetConfigPut": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "id"
+    ],
+    "required": [
+      "authorizing_message",
+      "document",
+      "id"
+    ]
+  },
+  "TargetConfigRetire": {
+    "properties": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ],
+    "required": [
+      "authorizing_message",
+      "id",
+      "reason"
+    ]
+  },
+  "TargetConfigSimulate": {
+    "properties": [
+      "changed",
+      "commands",
+      "document",
+      "id",
+      "revision"
+    ],
+    "required": []
+  },
+  "TargetConfigValidate": {
+    "properties": [
+      "document"
+    ],
+    "required": []
+  },
+  "TaskHistory": {
+    "properties": [
+      "after",
+      "id",
+      "include_retired",
+      "limit",
+      "records",
+      "summary"
+    ],
+    "required": []
+  },
+  "Topology": {
+    "properties": [
+      "after",
+      "limit",
+      "workflow_id"
+    ],
+    "required": []
+  },
+  "UIToken": {
+    "properties": [],
+    "required": []
+  },
+  "Undefer": {
+    "properties": [
+      "attempt_limit",
+      "authorizing_message",
+      "census_digest",
+      "census_evidence",
+      "context",
+      "expected_digest",
+      "expected_version",
+      "id",
+      "information",
+      "priority",
+      "reason",
+      "until"
+    ],
+    "required": [
+      "authorizing_message",
+      "id"
+    ]
+  },
+  "WorkflowDiff": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "from",
+      "id",
+      "reason",
+      "revision",
+      "scenario",
+      "task",
+      "to"
+    ],
+    "required": []
+  },
+  "WorkflowInstall": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "id",
+      "name"
+    ],
+    "required": []
+  },
+  "WorkflowList": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "from",
+      "id",
+      "reason",
+      "revision",
+      "scenario",
+      "task",
+      "to"
+    ],
+    "required": []
+  },
+  "WorkflowRetire": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "from",
+      "id",
+      "reason",
+      "revision",
+      "scenario",
+      "task",
+      "to"
+    ],
+    "required": []
+  },
+  "WorkflowSimulate": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "from",
+      "id",
+      "reason",
+      "revision",
+      "scenario",
+      "task",
+      "to"
+    ],
+    "required": []
+  },
+  "WorkflowValidate": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "from",
+      "id",
+      "reason",
+      "revision",
+      "scenario",
+      "task",
+      "to"
+    ],
+    "required": []
+  },
+  "Workflows": {
+    "properties": [
+      "authorizing_message",
+      "document",
+      "from",
+      "id",
+      "reason",
+      "revision",
+      "scenario",
+      "task",
+      "to"
+    ],
+    "required": []
+  }
+}

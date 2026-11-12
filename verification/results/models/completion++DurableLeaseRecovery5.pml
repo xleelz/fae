@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -55,13 +55,13 @@ proctype DurableLeaseRecovery5(chan child) {
 	run receiver(child_recoveryLease171)->
 	run recoveryWaiter18(capacity_ch,done_ch,child_recoveryWaiter182)->
 	run receiver(child_recoveryWaiter182)->
-	death_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:13:2 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:13:2 */->
+	death_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:13:2 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:13:2 */->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:14:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:14:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:14:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:14:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:14:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:14:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -75,13 +75,13 @@ proctype recoveryWatch16(Chandef death_ch;Chandef retired_ch;chan child) {
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:16:44 */
-	:: death_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:16:44 */->
-	:: death_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:16:44 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:16:44 */
+	:: death_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:16:44 */->
+	:: death_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:16:44 */ -> 
 		death_ch.rcving!false
 	fi->
-	retired_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:16:52 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:16:52 */->
+	retired_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:16:52 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:16:52 */->
 	stop_process: skip->
 	child!0
 }
@@ -93,19 +93,19 @@ proctype recoveryLease17(Chandef retired_ch;Chandef capacity_ch;chan child) {
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:17:47 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:17:47 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:17:47 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:17:47 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:17:47 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:17:47 */ -> 
 		retired_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:17:57 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:17:57 */
 	:: capacity_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:17:57 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:17:57 */
 	:: capacity_ch.sync!false -> 
 		capacity_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:17:57 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:17:57 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -118,13 +118,13 @@ proctype recoveryWaiter18(Chandef capacity_ch;Chandef done_ch;chan child) {
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:18:45 */
-	:: capacity_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:18:45 */->
-	:: capacity_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:18:45 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:18:45 */
+	:: capacity_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:18:45 */->
+	:: capacity_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:18:45 */ -> 
 		capacity_ch.rcving!false
 	fi->
-	done_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:18:56 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/recovery.go:18:56 */->
+	done_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:18:56 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/recovery.go:18:56 */->
 	stop_process: skip->
 	child!0
 }

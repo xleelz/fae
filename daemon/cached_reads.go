@@ -17,12 +17,12 @@ func (d *Daemon) cachedRead(r api.Request) (any, bool, error) {
 	if !permission.Read {
 		return nil, false, nil
 	}
-	value := d.status.Load()
+	value := d.cachedStatus(true)
 	if value == nil {
 		return nil, true, &api.RPCError{Code: "snapshot-stale", Message: "snapshot unavailable"}
 	}
 	snapshot := value.(statusSnapshot)
-	if time.Since(snapshot.Updated) > 10*time.Second {
+	if time.Since(snapshot.Updated) > snapshotStaleness {
 		return nil, true, &api.RPCError{Code: "snapshot-stale", Message: "snapshot exceeds 10 seconds"}
 	}
 	if r.Method == "Schedule" {

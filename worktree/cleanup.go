@@ -202,3 +202,32 @@ func (m *Manager) Cleanup(ctx context.Context, p CleanupPlan, verify func(contex
 	}
 	return nil
 }
+
+// Integrated reports whether commit sha is reachable from ref in the managed
+// repository (git merge-base --is-ancestor): whether a Done task's landing
+// is in the integration ref, so its own worktree and branch hold nothing the
+// ref lacks once an archive keeps the branch tip.
+func (m *Manager) Integrated(ctx context.Context, sha, ref string) (bool, error) {
+	if sha == "" || strings.HasPrefix(sha, "-") || !strings.HasPrefix(ref, "refs/") {
+		return false, errors.New("commit and full ref required")
+	}
+	if _, err := git(ctx, m.Repository, "rev-parse", "--verify", "--quiet", ref+"^{commit}"); err != nil {
+		return false, fmt.Errorf("integration ref %s: %w", ref, err)
+	}
+	cmd := exec.CommandContext(ctx, "git", "-C", m.Repository, "merge-base", "--is-ancestor", sha, ref)
+	for _, v := range os.Environ() {
+		if !strings.HasPrefix(v, "GIT_") {
+			cmd.Env = append(cmd.Env, v)
+		}
+	}
+	cmd.Env = append(cmd.Env, "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=/dev/null", "GIT_TERMINAL_PROMPT=0")
+	out, err := cmd.CombinedOutput()
+	var exit *exec.ExitError
+	if errors.As(err, &exit) && exit.ExitCode() == 1 {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("git merge-base: %w: %s", err, out)
+	}
+	return true, nil
+}

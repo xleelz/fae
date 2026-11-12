@@ -79,7 +79,12 @@ func (d *Daemon) handleReads(ctx context.Context, r api.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !permission.Read || r.Method == "Status" || r.Method == "Board" {
+	if !permission.Read && r.Key != "" && r.Method != "Admit" {
+		return d.keyedMutation(ctx, principal, r)
+	}
+	// Cached reads answer from their snapshots; any plane read they need runs
+	// in this pool or in their keeper (READS.md).
+	if !permission.Read || r.Method == "Status" || r.Method == "Board" || r.Method == "Topology" {
 		return d.handleDirect(ctx, r)
 	}
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

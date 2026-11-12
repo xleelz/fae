@@ -1,0 +1,32 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1d1f23;
+  --muted: #5d636e;
+  --line: #d9dce1;
+  --accent: #2357b8;
+  --warn: #9a5b00;
+  --bad: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #15171a; --fg: #e6e8eb; --muted: #9aa1ab; --line: #30343a; --accent: #8ab4ff; --warn: #e0a64a; --bad: #ff8a80; }
+}
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 system-ui, sans-serif; }
+header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+header { border-bottom: 1px solid var(--line); }
+h1 { font-size: 20px; margin: 16px 0 4px; }
+h2 { font-size: 16px; margin: 24px 0 8px; }
+h3 { font-size: 14px; margin: 16px 0 6px; color: var(--muted); }
+.muted { color: var(--muted); }
+.warn { color: var(--warn); }
+.bad { color: var(--bad); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; overflow-wrap: anywhere; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td { overflow-wrap: anywhere; }
+tbody tr.link { cursor: pointer; }
+tbody tr.link:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+button, input { font: inherit; }
+form label { margin-right: 12px; }
+section { overflow-x: auto; }

@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "offline-evidence-example",
   "start": "test",
   "roles": {},
@@ -52,10 +52,13 @@
         ]
       },
       "failure": "stop",
-      "test_stage": "test"
+      "test_stage": "test",
+      "name": "check"
     },
     "stop": {
-      "primitive": "Escalate"
+      "primitive": "Escalate",
+      "kind": "HumanDecisionRequired",
+      "reason": "Example check failed"
     },
     "test": {
       "primitive": "HostCommand",
@@ -66,7 +69,8 @@
       ],
       "weight": 1,
       "timeout_seconds": 30,
-      "test_run": true
+      "test_run": true,
+      "output": "Run"
     }
   },
   "edges": [
@@ -87,5 +91,14 @@
     "attempts": 20,
     "test_runs": 8,
     "scope_widens": 3
+  },
+  "target_requirements": {
+    "commands": [
+      [
+        "go",
+        "test",
+        "./..."
+      ]
+    ]
   }
 }

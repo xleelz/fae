@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go#L2
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go#L2
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -42,25 +42,25 @@ proctype ExternalMissingQueryProof2(chan child) {
 	run sync_monitor(performed_ch)->
 	run sync_monitor(receipt_ch)->
 	run sync_monitor(adopted_ch)->
-	run AnonymousExternalMissingQueryProof43(performed_ch,receipt_ch,adopted_ch,intent_ch,child_AnonymousExternalMissingQueryProof430)->
+	run AnonymousExternalMissingQueryProof43(intent_ch,performed_ch,receipt_ch,adopted_ch,child_AnonymousExternalMissingQueryProof430)->
 	run receiver(child_AnonymousExternalMissingQueryProof430)->
-	run AnonymousExternalMissingQueryProof53(performed_ch,receipt_ch,adopted_ch,intent_ch,child_AnonymousExternalMissingQueryProof531)->
+	run AnonymousExternalMissingQueryProof53(receipt_ch,adopted_ch,intent_ch,performed_ch,child_AnonymousExternalMissingQueryProof531)->
 	run receiver(child_AnonymousExternalMissingQueryProof531)->
 	run AnonymousExternalMissingQueryProof63(intent_ch,performed_ch,receipt_ch,adopted_ch,child_AnonymousExternalMissingQueryProof632)->
 	run receiver(child_AnonymousExternalMissingQueryProof632)->
-	run AnonymousExternalMissingQueryProof73(receipt_ch,adopted_ch,intent_ch,performed_ch,child_AnonymousExternalMissingQueryProof733)->
+	run AnonymousExternalMissingQueryProof73(adopted_ch,intent_ch,performed_ch,receipt_ch,child_AnonymousExternalMissingQueryProof733)->
 	run receiver(child_AnonymousExternalMissingQueryProof733)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:8:2 */
-	:: adopted_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:8:2 */->
-	:: adopted_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:8:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:8:2 */
+	:: adopted_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:8:2 */->
+	:: adopted_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:8:2 */ -> 
 		adopted_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalMissingQueryProof43(Chandef performed_ch;Chandef receipt_ch;Chandef adopted_ch;Chandef intent_ch;chan child) {
+proctype AnonymousExternalMissingQueryProof43(Chandef intent_ch;Chandef performed_ch;Chandef receipt_ch;Chandef adopted_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -68,17 +68,17 @@ proctype AnonymousExternalMissingQueryProof43(Chandef performed_ch;Chandef recei
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:4:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:4:12 */
 	:: intent_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:4:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:4:12 */
 	:: intent_ch.sync!false -> 
 		intent_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:4:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:4:12 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalMissingQueryProof53(Chandef performed_ch;Chandef receipt_ch;Chandef adopted_ch;Chandef intent_ch;chan child) {
+proctype AnonymousExternalMissingQueryProof53(Chandef receipt_ch;Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -86,19 +86,19 @@ proctype AnonymousExternalMissingQueryProof53(Chandef performed_ch;Chandef recei
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:5:12 */
-	:: intent_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:5:12 */->
-	:: intent_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:5:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:5:12 */
+	:: intent_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:5:12 */->
+	:: intent_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:5:12 */ -> 
 		intent_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:5:21 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:5:21 */
 	:: performed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:5:21 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:5:21 */
 	:: performed_ch.sync!false -> 
 		performed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:5:21 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:5:21 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -111,15 +111,15 @@ proctype AnonymousExternalMissingQueryProof63(Chandef intent_ch;Chandef performe
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:6:12 */
-	:: performed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:6:12 */->
-	:: performed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:6:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:6:12 */
+	:: performed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:6:12 */->
+	:: performed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:6:12 */ -> 
 		performed_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalMissingQueryProof73(Chandef receipt_ch;Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;chan child) {
+proctype AnonymousExternalMissingQueryProof73(Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;Chandef receipt_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -127,19 +127,19 @@ proctype AnonymousExternalMissingQueryProof73(Chandef receipt_ch;Chandef adopted
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:7:12 */
-	:: receipt_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:7:12 */->
-	:: receipt_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:7:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:7:12 */
+	:: receipt_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:7:12 */->
+	:: receipt_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:7:12 */ -> 
 		receipt_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:7:22 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:7:22 */
 	:: adopted_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:7:22 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:7:22 */
 	:: adopted_ch.sync!false -> 
 		adopted_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/external.go:7:22 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/external.go:7:22 */
 	fi->
 	stop_process: skip->
 	child!0

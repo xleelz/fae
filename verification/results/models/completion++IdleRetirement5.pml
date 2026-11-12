@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -44,18 +44,18 @@ proctype IdleRetirement5(chan child) {
 	run receiver(child_idleRetirer151)->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:11:2 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:11:2 */
 	:: retire_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:11:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:11:2 */
 	:: retire_ch.sync!false -> 
 		retire_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:11:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:11:2 */
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:12:2 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:12:2 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:12:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:12:2 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:12:2 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:12:2 */ -> 
 		retired_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -69,12 +69,12 @@ proctype idleHandoffWriter14(Chandef saved_ch;chan child) {
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:14:53 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:14:53 */
 	:: saved_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:14:53 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:14:53 */
 	:: saved_ch.sync!false -> 
 		saved_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:14:53 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:14:53 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -87,26 +87,26 @@ proctype idleRetirer15(Chandef saved_ch;Chandef retire_ch;Chandef retired_ch;cha
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:53 */
-	:: saved_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:53 */->
-	:: saved_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:53 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:53 */
+	:: saved_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:53 */->
+	:: saved_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:53 */ -> 
 		saved_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:62 */
-	:: retire_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:62 */->
-	:: retire_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:62 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:62 */
+	:: retire_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:62 */->
+	:: retire_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:62 */ -> 
 		retire_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:72 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:72 */
 	:: retired_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:72 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:72 */
 	:: retired_ch.sync!false -> 
 		retired_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/idle.go:15:72 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/idle.go:15:72 */
 	fi->
 	stop_process: skip->
 	child!0

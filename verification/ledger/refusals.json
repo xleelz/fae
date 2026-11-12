@@ -1,0 +1,709 @@
+[
+  {
+    "id": "check:hook-denials",
+    "kind": "native-check",
+    "category": "hook-denial",
+    "check": {
+      "source": "commandshim/hook.go",
+      "markers": [
+        "\"a brace expansion too large to check could name a shimmed tool by path\"",
+        "reset",
+        "\"a sourced file can reset PATH, which bypasses the role command shims; call the tool by name without sourcing\"",
+        "base + \" by path \" + t.raw + \" bypasses the role command shim; call \" + base + \" by name\"",
+        "t.raw + \" runs \" + tool + \" \" + sub + \" without the \" + tool + \" shim; call \" + tool + \" \" + sub + \" instead\"",
+        "\"Go toolchain internal \" + t.raw + \" by path bypasses the go shim; call go by name\"",
+        "t.raw + \" runs a Go toolchain without the go shim and its clamp; call go by name\"",
+        "t.raw + \" -m pytest runs pytest without the pytest shim; call pytest by name\"",
+        "t.raw + \" runs pytest under another name without the pytest shim; call pytest by name\"",
+        "\"rustup run puts a Rust toolchain's cargo, rustc and rustfmt ahead of their role command shims; call the tool by name\"",
+        "\"systemd-run runs its command under the service manager with the manager's PATH, outside the session's process tree and the role command shims\"",
+        "\"interpreter build and test tools require a scoped HostCommand stage\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-011"
+    ],
+    "production": {
+      "path": "commandshim/hook.go",
+      "function": "BypassesShim"
+    },
+    "positive": {
+      "tests": [
+        "TestPreToolHookDeniesAbsolutePathBypass",
+        "TestPreToolHookDocumentedPassesStillPass",
+        "TestPreToolHookDeniesShimmedToolsUnderAnotherName",
+        "TestHeavyOpHookBinaryBlocksWhenItsDecisionCannotBeDelivered"
+      ],
+      "note": "a shimmed tool called by name, text that only mentions a tool, and the documented passes (other process managers, environment runners, interpreters, unshimmed compilers) get no decision; the fae heavy-op hook verb prints the decision and exits 0"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestPreToolHookDenialCorpus",
+        "TestPreToolHookDeniesAbsolutePathBypass",
+        "TestPreToolHookDeniesShimmedToolsUnderAnotherName",
+        "TestPreToolHookDeniesPytestUnderItsOtherNames"
+      ],
+      "note": "every denial BypassesShim returns fires on a command line with its own reason: a shimmed tool by path, a PATH reset in any listed form, sourcing, a git or cargo dashed subcommand, a Go toolchain internal by path, go1.N or gotip, python -m pytest, pytest's other names, rustup run, systemd-run and a brace expansion too large to check"
+    },
+    "native": {
+      "tests": [
+        "TestHeavyOpShimPolicyAndHookCLI",
+        "TestHeavyOpHookFailsClosedWithoutHomeOrOutput",
+        "TestHeavyOpHookBinaryBlocksWhenItsDecisionCannotBeDelivered"
+      ],
+      "path": "fae heavy-op hook -> commandshim.BypassesShim pre-tool hook CLI execution and fail-closed decision delivery"
+    },
+    "status": "native-evidenced",
+    "limits": "A lexical check over shell words, not a sandbox; commandshim/README.md lists what passes."
+  },
+  {
+    "id": "check:bridge-refusal-classes",
+    "kind": "native-check",
+    "category": "bridge-refusal-class",
+    "check": {
+      "source": "runtime/direct.go",
+      "markers": [
+        "RefusedBeforeProvider",
+        "RefusedBinding",
+        "RefusedOutput",
+        "ProviderNotStarted",
+        "ProviderFailed"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-082",
+      "FAE-WF-034",
+      "FAE-RT-004",
+      "FAE-RT-009",
+      "FAE-RT-010"
+    ],
+    "production": {
+      "path": "runtime/direct.go",
+      "function": "bridgeRefusalClassKnown"
+    },
+    "positive": {
+      "tests": [
+        "TestBridgeRefusalTypedAcrossAdapters",
+        "TestBridgeRefusalClassing",
+        "TestBindingRefusalFailsOverToTheNextRoute",
+        "TestCodexBridgeRefusesBindingsItCannotRun",
+        "TestDaemonBindingRefusalFailsOverToTheNextRoute",
+        "TestEveryRouteRefusedParksWithTheRefusals",
+        "TestBindingRefusalGivesTheNextRouteFreshStarts",
+        "TestBridgeTypesAProviderThatNeverAcknowledgedThePrompt",
+        "TestProviderNeverAcknowledgedRetriesThroughDirect",
+        "TestBridgeTypesAProviderThatFailedWithoutAnAnswer",
+        "TestProviderFailedWithoutAnswerThroughDirect",
+        "TestLaterReviewerNeverAcknowledgedThroughDirect",
+        "TestProphetChargesAProviderThatNeverAcknowledged"
+      ],
+      "note": "a bridge's typed refusal reaches the executor as its class under the direct adapter, a Herdr pane and a resident worker; a refused answer is malformed output charged to the binding, a refusal before the provider is refused before launch and charges nothing, not even the attempt, and a refused binding fails the turn over to the role's next route with no attempt, rotation or health charged; when every route is refused the task parks (all-routes-unavailable) and resumes in a new route generation or on Resume; a provider that never acknowledged the prompt is a start failure, retried and then failed over, in the workflow (a later review session's included) and in Prophet; a provider that failed without an answer, the bridge having written nothing, is malformed output charged to the binding"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestBridgeRefusalTypedAcrossAdapters",
+        "TestBridgeRefusalClassing",
+        "TestBindingRefusalEnvelope",
+        "TestCodexBridgeRefusesBindingsItCannotRun",
+        "TestLaterReviewerRefusalIsRefundedAndFailoverStaysCharged",
+        "TestLaterReviewerStartFailureEnvelope",
+        "TestLaterReviewerStartFailureIsTypedNotUncertain",
+        "TestProviderFailedNeedsObservationAndRestrictedProfile"
+      ],
+      "note": "a record without the refusal status, the status without a valid record, another turn's record, a record beside a handoff, an unknown class and a symlinked record stay process-failed; a binding refusal outside a live agent turn, naming a binding no session ran or with output is refused; the Codex bridge refuses bindings it cannot run; a later reviewer's refusal or start failure is refunded, while its provider failover stays charged; a later session's start failure needs reviews that ran and an unchanged tree; a provider that failed without an answer stays uncertain with a moved tree, unproven retirement, a failed observation or a profile beyond edits, and a Claude Code session that announced a tool or MCP server stays untyped"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonBindingRefusalFailsOverToTheNextRoute",
+        "TestDaemonProviderThatNeverAcknowledgesRetriesThenFailsOver",
+        "TestDaemonLaterReviewerThatNeverAcknowledgesRerunsEveryReviewer",
+        "TestDaemonProviderFailedWithoutAnswerRetriesTheStage"
+      ],
+      "path": "Start(live, the production Claude bridge over a scripted CLI) -> Admit RPC -> drive dispatch -> bridge refuses the Codex first route (binding-refused) -> executor -> engine route selection takes the second route -> Done with no stage failure or health charge; with every route refused the task parks, Resume retries both routes in place and a daemon restart takes it to Done; a provider that never acknowledges is relaunched three times, parks ProviderUnavailable and fails over, and for a later reviewer each start reruns every reviewer and the failing reviewer's binding is the one charged; a provider that fails after acknowledging retries the stage as MalformedOutput, then escalates SameGate"
+    },
+    "status": "native-evidenced",
+    "limits": "The census enumerates the classes the runtime accepts, not each bridge's reasons for refusing. Through the daemon the binding, not-started and provider-failed classes are shown; the output and before-provider classes are shown by the runtime and execution tests. Prophet's start bound is shown by routeProphet with a scripted launcher, not through the daemon."
+  },
+  {
+    "id": "check:red-reason",
+    "kind": "native-check",
+    "category": "refusal-family",
+    "check": {
+      "corpus": [
+        "TestLiveDerivedRedRefusesVacuousReason",
+        "TestLiveDerivedRedReasonAcceptsRealMessages",
+        "TestRedFragmentIgnoresGoTestFraming"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-073"
+    ],
+    "production": {
+      "path": "daemon/live_scope.go",
+      "function": "liveRedIdentity"
+    },
+    "positive": {
+      "tests": [
+        "TestLiveDerivedRedReasonAcceptsRealMessages",
+        "TestLiveFrozenRedReasonIsNotRejudged",
+        "TestOutputProtocolStatesRedReasonRule",
+        "TestDaemonLiveDerivedScopeLifecycle",
+        "TestLiveHungRedRunIsATypedFailure",
+        "TestBrokerHungTestFailsWithGoTestTimeout",
+        "TestRedFailureTextExcludesGoroutineDump",
+        "TestRedFailureTextReadsPastAStackTheTestContinues",
+        "TestLiveRedTraceWordsAreTheProtocols"
+      ],
+      "note": "a derived RED's expected_failure that quotes the failure's own message or values (expected error included) is accepted; a RED frozen before the rule is not judged again; the bridges' output protocol states the rule the check applies, with exactly the words it refuses; a RED that hangs fails by go test's own timeout and its pinned reason matches; the matched text leaves out goroutine stacks, and the test's own message after a stack it printed still matches"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestLiveDerivedRedRefusesVacuousReason",
+        "TestRedFragmentIgnoresGoTestFraming",
+        "TestDaemonLiveDerivedBrokenRedReportRetriedAtTestFirst",
+        "TestLiveRedReasonRuleProbeFragments",
+        "TestLiveRedReportWithSubtestsRefusedAtTurnCompletion",
+        "TestBrokerTestCutOffFromOutsideIsNotExecuted"
+      ],
+      "note": "a fragment made only of the test's name or file, a file:line position or any end of one, go test's framing, a panic's generic trace or bare labels is refused; the broker never matches a fragment against go test's framing lines, nor against what a test cut off by anything but go test's own timeout printed; a malformed RedReport, or one whose test calls t.Run, is refused when its test-first turn completes and test-first is retried"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveDerivedScopeLifecycle",
+        "TestDaemonLiveDerivedBrokenRedReportRetriedAtTestFirst"
+      ],
+      "path": "Start(live, derived scope) -> drive -> test-first turn completes -> executor CheckOutput -> checkRedReport -> liveRedIdentity with the reason rule; the lifecycle's real reason is accepted, and the retry test's RedReport naming no test file is refused and test-first retried"
+    },
+    "status": "native-evidenced",
+    "limits": "Not source-enumerated: the census does not see a refusal added to daemon/live_scope.go. Through the daemon the vacuous-reason refusal itself is shown only by the unit test; the daemon tests reach liveRedIdentity's accept path and its file refusal."
+  },
+  {
+    "id": "check:scope-widen",
+    "kind": "native-check",
+    "category": "refusal-family",
+    "check": {
+      "corpus": [
+        "TestScopeWidenRefusesNestedGitMetadata",
+        "TestRequestRejectionExhaustionAndMalformed",
+        "TestDeclaredFilesRefuseNestedGitMetadata"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-078"
+    ],
+    "production": {
+      "path": "engine/requests.go",
+      "function": "routeRequest"
+    },
+    "positive": {
+      "tests": [
+        "TestScopeWidenApprovedCarriedThroughRestart",
+        "TestLiveFrozenRedSurvivesWidenOfListedTestFile",
+        "TestDaemonApprovedWidenSurvivesRestart",
+        "TestApprovedWidenFileTheBridgeCannotLoadIsListedNotRefused",
+        "TestUnavailableApprovedFileIsNotEditable",
+        "TestMalformedRequestInAnEditTurnRecordsItsEdits",
+        "TestUnloadableApprovedRedFileIsListedNotRefused",
+        "TestStoredRefusedWidenIsDroppedAndTheTaskContinues",
+        "TestLiveResolverLeavesOutRefusedApprovedPaths"
+      ],
+      "note": "an approved widen is judged, counted once and carried into every later dispatch across a restart; a widen approved after the RED froze keeps the frozen RED file while the widened file joins the scope; an approved file the bridge cannot load, the RED test file included, is listed as unavailable, not loaded or editable, instead of refusing the turn; a malformed request in an edit turn records the turn's edits; a stored approved path a widen may no longer add is dropped with a scope-dropped event and the task continues on the rest of its scope"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestScopeWidenRefusesNestedGitMetadata",
+        "TestRequestRejectionExhaustionAndMalformed",
+        "TestDeclaredFilesRefuseNestedGitMetadata",
+        "TestBridgeScopeRefusesNestedGitMetadata",
+        "TestLiveInstanceFilesRefuseNestedGitMetadata",
+        "TestBridgeRefusesUnsafeApprovedScope",
+        "TestScopeWidenRefusesProtectedPaths"
+      ],
+      "note": "a rejected request and one past its cap escalate and a malformed one is refused; a widen naming a path in .git at any depth, or a protected path, is malformed and never reaches the judge, and the .git rule refuses such a path from every other source of a task's files and in the bridges' pinned scope"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonApprovedWidenSurvivesRestart"
+      ],
+      "path": "Start -> Admit RPC -> drive dispatches the requesting turn -> engine routeRequest -> judge approves -> daemon restart -> the next dispatch's brief scope holds the widened files with the cap counter unchanged"
+    },
+    "status": "native-evidenced",
+    "limits": "Not source-enumerated: the census does not see a refusal added to the request routing or the path rule. Through the daemon only the approved path is shown; rejection, the cap and the .git refusals are shown by engine, daemon-package and provider unit tests."
+  },
+  {
+    "id": "check:nested-git-refusals",
+    "kind": "native-check",
+    "category": "nested-git-refusal",
+    "check": {
+      "source": "commandshim/accounted_git.go",
+      "markers": [
+        "\"nested git option \" + accountedGitQuote(a) + \" is not one the nested-command policy knows\"",
+        "\"nested git \" + sub + \": an engine run makes no external effect outside the daemon's effect grants, so pushes and remote changes are refused\"",
+        "\"nested git \" + sub + \" \" + what + \"; nested calls make no external effect and start no program git runs past the wrappers\"",
+        "\"nested git \" + accountedGitQuote(sub) + \" is not a git command the nested-command policy knows: git aliases and git-* programs run past the wrappers\"",
+        "\"nested git --exec-path=DIR runs git's helper programs from DIR\"",
+        "\"nested git \" + sub + \" \" + what + \": a program git starts runs the real git, past the wrappers, so nested calls start none\"",
+        "\"nested git maintenance \" + what + \" schedules jobs on the host or writes the user's git configuration, outside the run\"",
+        "\"nested git \" + sub + \" names \" + accountedGitQuote(url) + \", a repository off this host: nested calls reach only local repositories (paths and file:// URLs)\"",
+        "\"nested git: cannot tell which repository the call uses (\" + accountedGitQuote(first) + \"), so it is refused\"",
+        "\"nested git \" + c.sub + \" names \" + path + \", inside the run's own repository's git directory, which nested calls never change\"",
+        "\"nested git \" + c.sub + \" would create or reinitialize a repository at \" + x + \", outside the run's directories and the temporary ones, or in the run's own repository\"",
+        "\"nested git init would reinitialize the repository at \" + r.common + \", which nested calls may only read\"",
+        "\"nested git config would write \" + x + \", outside the run's directories and the temporary ones, or in the run's own repository\"",
+        "\"nested git -c \" + accountedGitQuote(kv[0]) + \" on the repository at \" + where + \": nested calls inject no configuration into a repository they may only read\"",
+        "\"nested git with \" + name + \" set on the repository at \" + where + \": nested calls inject no configuration into a repository they may only read\"",
+        "\"nested git \" + c.sub + \" \" + what + \", and the repository at \" + where + \" is the run's own or outside its directories: nested calls may only read it\"",
+        "\"nested git -c \" + accountedGitQuote(kv[0]) + \" \" + what + \"; nested calls choose none, on any repository\"",
+        "\"nested git clone --config \" + accountedGitQuote(key) + \" \" + what + \"; nested calls choose none, on any repository\"",
+        "\"nested git with GIT_CONFIG_PARAMETERS set: nested calls set configuration with -c, --config-env or GIT_CONFIG_COUNT, which the nested-command policy reads\"",
+        "\"nested git with GIT_CONFIG_COUNT set to \" + accountedGitQuote(count) + \", not a count of settings the nested-command policy reads\"",
+        "\"nested git with \" + key + \" set \" + what + \"; nested calls choose none, on any repository\"",
+        "\"nested git with \" + name + \" set names a program for git to run; nested calls choose none, on any repository\"",
+        "\"nested git \" + c.sub + \" --strategy \" + accountedGitQuote(s) + \" runs git-merge-\" + s + \" from PATH, a program git does not have; nested calls use git's own strategies\"",
+        "\"nested git with \" + name + \" set traces to a socket; nested calls trace only to standard error or to a file they may write\"",
+        "\"nested git with \" + name + \" set writes its trace to \" + x + \", outside the run's directories and the temporary ones, or in the run's own repository\"",
+        "\"nested git \" + sub + \" \" + what",
+        "\"nested git: the repository at \" + r.common + \" keeps its references at \" + x + \" (extensions.refStorage), outside the run's directories and the temporary ones or in the run's own repository\"",
+        "\"nested git: the repository at \" + w.repo + \" has more than \" + strconv.Itoa(accountedGitWalkLimit) + \" files besides its objects to check for links out of it, so the call is refused\"",
+        "\"nested git: the path \" + p + \" cannot be followed at \" + next + \" (\" + err.Error() + \"): a symbolic link leading nowhere, a loop, or a file where a directory is needed, so where git would write cannot be told\"",
+        "\"nested git: cannot read extensions.refStorage of the repository at \" + r.common + \" (\" + accountedGitFirstLine(err) + \"), so where it keeps its references cannot be told and the call is refused\"",
+        "\"nested git format-patch: cannot read format.outputDirectory (\" + accountedGitFirstLine(err) + \"), so where its patches would go cannot be told and the call is refused\"",
+        "\"nested git: the repository at \" + w.repo + \" links \" + p + \" to \" + x + \", outside the run's directories and the temporary ones or in the run's own repository, and git writes through such a link\"",
+        "\"nested git format-patch would write its patches to \" + x + \" (format.outputDirectory), outside the run's directories and the temporary ones, or in the run's own repository\"",
+        "\"nested git with \" + name + \" naming \" + accountedGitQuote(f) + \", a relative path git reads from whatever directory it is in; nested calls name their configuration file by an absolute path\"",
+        "\"nested git with \" + name + \" naming \" + accountedGitQuote(f) + \", which git cannot read as configuration, so it is refused\"",
+        "\"nested git with \" + name + \" naming \" + accountedGitQuote(f) + \", whose \" + accountedGitQuote(key) + \" \" + what + \"; nested calls choose none, on any repository\"",
+        "\"nested git worktree \" + c.args[0] + \" would change the worktree at \" + x + \", outside the run's directories and the temporary ones, or one of the run's own repository\"",
+        "\"nested git \" + c.sub + \" would write \" + x + \", outside the run's directories and the temporary ones, or in the run's own repository\"",
+        "\"nested git with \" + name + \" set: git may read it as a program to run, a file to write or a place to keep references, and the nested-command policy lets a call set only the GIT_* variables it knows; nested calls leave it unset\"",
+        "\"nested git config renames a section, which can turn its settings into ones that name a program for git to run; nested calls rename none\"",
+        "\"nested git config \" + accountedGitQuote(c.key) + \" \" + what + \"; nested calls write no such setting, on any repository\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-014",
+      "FAE-MODE-002",
+      "FAE-EXT-001",
+      "FAE-VCS-002",
+      "FAE-VCS-010"
+    ],
+    "production": {
+      "path": "commandshim/accounted_git.go",
+      "function": "prepareAccountedGit"
+    },
+    "positive": {
+      "tests": [
+        "TestAccountedGitProtectsTheRunsRepository",
+        "TestAccountedGitReachesOnlyLocalRepositories",
+        "TestBrokerAccountedGitCannotChangeTheOperatorsRepository",
+        "TestLiveAccountModeNestedGitCannotChangeTheWorkspace",
+        "TestAccountedGitRunsOnTheRepositoryItChecked"
+      ],
+      "note": "in account mode a nested git call reads the run's own repository and a test's own repository in the run's scratch is changed as called; a local fetch runs; through the broker and the live daemon the test's own repository is committed and branched"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestAccountedGitProtectsTheRunsRepository",
+        "TestAccountedGitProtectsRepositoriesOutsideTheRun",
+        "TestAccountedGitLoadsNoHomeConfiguration",
+        "TestAccountedGitReachesOnlyLocalRepositories",
+        "TestBrokerAccountedGitRunsNoProgramTheCallChose",
+        "TestAccountedGitRunsNoProgramAnEnvironmentVariableNames",
+        "TestAccountedGitTracesNowhereAConfigurationFileNames",
+        "TestAccountedGitWritesPatchesOnlyWhereTheCallMay",
+        "TestAccountedGitRefusesRepositoriesLinkedIntoTheOperators",
+        "TestAccountedGitRunsNoHook",
+        "TestAccountedGitCallCannotSwitchAHookBackOn",
+        "TestAccountedGitWorktreeRepairRewritesNoOtherTasksWorktree",
+        "TestAccountedGitChecksPathsWhereTheSystemTakesThem"
+      ],
+      "note": "TestAccountedGitProtectsTheRunsRepository ends with an in-test census: it reads accounted_git.go, enumerates every refuse(...) with the census pattern and fails unless one refusal's reason holds each one's literal text; the others refuse writes to repositories outside the run, configuration and programs the call chose, and repositories off this host"
+    },
+    "native": {
+      "tests": [
+        "TestLiveAccountModeNestedGitCannotChangeTheWorkspace"
+      ],
+      "path": "Start(live, nested_commands account, the built fae broker) -> Admit RPC -> drive dispatch -> engine HostCommand -> effects broker go test -> the test's own git -> the git wrapper -> fae heavy-op run --shim-policy -> commandshim PrepareAccounted -> prepareAccountedGit refuses a workspace branch, an integration ref and a remote (77, 78) -> Done with the workspace unchanged and the refused call recorded"
+    },
+    "status": "native-evidenced",
+    "limits": "The census enumerates the policy's refusals, not what it fails to refuse. Wave 11 closed re-audit 9's routes (a program named by GIT_TEST_FSMONITOR or another unknown GIT_* variable, trace2 and format.outputDirectory targets, links inside a test repository's .git, hooks written by a nested git config) and pins the exec to the repository it checked; a concurrent process can still swap paths or files between the check and git's start, and programs a test repository's own configuration names (filters, diff drivers) still run. Through the daemon only the branch, ref and remote refusals are shown."
+  },
+  {
+    "id": "check:derived-scope-refusals",
+    "kind": "native-check",
+    "category": "derived-scope-refusal",
+    "check": {
+      "source": "daemon/live_scope.go",
+      "markers": [
+        "\"the task declares no files: declare them at admission (--declared-file) or in its Spec\"",
+        "\"Spec declared_files: %v\", err",
+        "\"%s path %q is unsafe or duplicate\", source, name",
+        "\"the task has no RedReport naming its RED identity\"",
+        "\"RedReport test_id %q is not a Go test name\", id",
+        "\"RedReport test_id %q is not a literal test identifier\", id",
+        "\"RedReport names no expected_failure\"",
+        "\"RedReport expected_failure %q names no failure reason: nothing in it goes beyond the test's name or part of it, the RED file's name or a file:line position or part of one, go test's framing, a panic's generic text, the words go test and the Go runtime print around any failure (the bare labels got, want, expected and actual among them), or numbers alone; quote the failure's own message or values, a panic's message or the timeout\", expected",
+        "\"RedReport declared_files: %v\", err",
+        "\"RedReport declared_files path %q is unsafe or duplicate\", name",
+        "\"RedReport declares %d in-scope *_test.go files %v; the RED file must be exactly one\", len(tests), tests",
+        "\"%s%v\", liveRedReportRefused, strings.TrimPrefix(refusal.Error(), \"task scope refused: \")",
+        "\"Spec declared_files names protected paths %s: a model-chosen task scope never holds CI configuration, a file that makes the operator's tools run programs or a credential-like file, so the task's change turns are refused; restart it with information so its spec declares its files without them; a task that must change such a file needs its files declared by the operator at admission (fae run --declared-file)\", strings.Join(protected, \", \")"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-073",
+      "FAE-WF-078"
+    ],
+    "production": {
+      "path": "daemon/live_scope.go",
+      "function": "resolveLiveTaskScope"
+    },
+    "positive": {
+      "tests": [
+        "TestLiveDerivedScopeFiles",
+        "TestLiveDerivedRedIdentity",
+        "TestLiveDerivedRedReasonAcceptsRealMessages",
+        "TestDaemonLiveDerivedScopeLifecycle"
+      ],
+      "note": "a derived scope takes its files from the admission, else the latest Spec, plus approved widens, and its RED identity from the latest usable RedReport; a real failure reason is accepted"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestLiveScopeRefusalCensus",
+        "TestLiveDerivedScopeFiles",
+        "TestLiveDerivedRedIdentity",
+        "TestLiveDerivedLanguageRedRefusesNonliteralIdentifier",
+        "TestLiveDerivedRedRefusesVacuousReason",
+        "TestLiveDerivedScopeRefusesProtectedSpecPaths"
+      ],
+      "note": "TestLiveScopeRefusalCensus fires every liveScopeRefusal(...) site (no files, a Spec declaring a protected path, an unreadable or unsafe declared file, no RedReport, a bad test id, no or a vacuous expected failure, no single in-scope test file, a turn's RedReport refused at completion) and ends with an in-test census of live_scope.go that fails unless each site's literal text was refused"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveDerivedScopeLifecycle",
+        "TestDaemonLiveDerivedBrokenRedReportRetriedAtTestFirst"
+      ],
+      "path": "Start(live, derived scope) -> Admit RPC -> drive dispatch -> liveExecutor resolve -> resolveLiveTaskScope (accept path) to Done; a test-first turn whose RedReport names no test file -> executor CheckOutput -> checkRedReport -> liveScopeRefusal, and test-first is retried"
+    },
+    "status": "native-evidenced",
+    "limits": "Through the daemon only the accept path and the refusal of a turn's RedReport are shown; the other refusals are shown by the unit tests. check:red-reason maps the reason rule's tests as a refusal family."
+  },
+  {
+    "id": "check:nested-git-local-refusals",
+    "kind": "native-check",
+    "category": "nested-git-refusal",
+    "check": {
+      "source": "commandshim/accounted_git.go",
+      "markers": [
+        "\"git \" + sub + \": a Local task makes no external effect, so pushes and remote changes are refused\"",
+        "\"git config \" + cfg.key + \", written to \" + x + \", changes a remote; a Local task makes no external effect, so pushes and remote changes are refused\"",
+        "\"git config \" + cfg.key + \" on the repository at \" + where + \" changes a remote; a Local task makes no external effect, so pushes and remote changes are refused\""
+      ]
+    },
+    "requirements": [
+      "FAE-MODE-002",
+      "FAE-VCS-010"
+    ],
+    "production": {
+      "path": "commandshim/accounted_git.go",
+      "function": "prepareAccountedGit"
+    },
+    "positive": {
+      "tests": [
+        "TestAccountedGitProtectsTheRunsRepository"
+      ],
+      "note": "a Local task's nested git reads the run's repository and changes a test's own repository's remote as called"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestAccountedGitProtectsTheRunsRepository"
+      ],
+      "note": "TestAccountedGitProtectsTheRunsRepository's in-test census reads accounted_git.go and enumerates every &LocalRefusal{...} with the census pattern beside every refuse(...): a push or remote command, a remote written to a configuration file outside the run, and a remote change on the run's own repository each exit 78"
+    },
+    "native": {
+      "tests": [
+        "TestLiveAccountModeNestedGitCannotChangeTheWorkspace"
+      ],
+      "path": "Start(live, nested_commands account, the built fae broker) -> Admit RPC (Local) -> drive dispatch -> engine HostCommand -> effects broker go test -> the test's own git config remote.origin.url -> the git wrapper -> fae heavy-op run --shim-policy -> commandshim PrepareAccounted -> readOnly's Local refusal (78) -> Done with the workspace's remotes unchanged"
+    },
+    "status": "native-evidenced",
+    "limits": "Only the remote change on the run's own repository is shown through the daemon; a push and a remote written to a named file are shown by the unit test."
+  },
+  {
+    "id": "check:red-subtest-refusal",
+    "kind": "native-check",
+    "category": "derived-scope-refusal",
+    "check": {
+      "source": "daemon/live_red_subtests.go",
+      "markers": [
+        "\"RedReport test %s calls t.Run: a RED is one top-level test function without subtests, since the RED gate needs exactly one executed test and each subtest counts as one\", id"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-036",
+      "FAE-WF-073"
+    ],
+    "production": {
+      "path": "daemon/live_red_subtests.go",
+      "function": "liveRedSubtestRefusal"
+    },
+    "positive": {
+      "tests": [
+        "TestLiveRedReportWithSubtestsRefusedAtTurnCompletion",
+        "TestLiveRedStartsSubtests"
+      ],
+      "note": "a RED test function without subtests is accepted when its test-first turn completes"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestLiveScopeRefusalCensus",
+        "TestLiveRedReportWithSubtestsRefusedAtTurnCompletion"
+      ],
+      "note": "TestLiveScopeRefusalCensus fires the refusal on a RED test that calls t.Run and ends with an in-test census of live_red_subtests.go; TestLiveRedReportWithSubtestsRefusedAtTurnCompletion refuses such a RedReport at turn completion and restores the RED file"
+    },
+    "native": {
+      "tests": [
+        "TestLiveScopeBridgeFixture"
+      ],
+      "path": "Start(live) -> test-first turn completion -> checkRedReport -> liveRedSubtestRefusal"
+    },
+    "status": "native-evidenced",
+    "limits": "Only subtests started with Run on the test's own *testing.T parameter in its body are seen; the RED gate still fails a RED that starts them another way."
+  },
+  {
+    "id": "check:red-turn-change-refusals",
+    "kind": "native-check",
+    "category": "derived-scope-refusal",
+    "check": {
+      "source": "daemon/live_scope.go",
+      "markers": [
+        "\"RED turn changed %d files; a first RED changes exactly one in-scope test file\", len(names)",
+        "\"RED turn changed a non-test file, %q: a first RED changes one in-scope test file\", names[0]",
+        "\"RED turn changed a non-test file, %q: a RED turn changes only its RED file %q\", name, s.TestFile"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-073"
+    ],
+    "production": {
+      "path": "daemon/live_scope.go",
+      "function": "liveRedTurnChange"
+    },
+    "positive": {
+      "tests": [
+        "TestLiveDerivedTestFirstCheckChange"
+      ],
+      "note": "a first RED turn changing one in-scope test file, and a RED turn changing only its RED file, pass"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestLiveScopeRefusalCensus",
+        "TestLiveDerivedTestFirstCheckChange"
+      ],
+      "note": "TestLiveScopeRefusalCensus fires each liveRedTurnChange refusal (two files, a non-test file, a file other than the RED file) and ends with an in-test census of the function's returned errors; TestLiveDerivedTestFirstCheckChange refuses them through checkChange"
+    },
+    "native": {
+      "tests": [
+        "TestLiveRedRecoveryBridgeFixture",
+        "TestDaemonPlantedCommitRefusedAtRED"
+      ],
+      "path": "Start(live) -> test-first turn change validation -> checkChange -> liveRedTurnChange"
+    },
+    "status": "native-evidenced",
+    "limits": "The rule names *_test.go files, a Go assumption the derived scope already makes."
+  },
+  {
+    "id": "check:route-refusals",
+    "kind": "native-check",
+    "category": "refusal-family",
+    "check": {
+      "corpus": [
+        "TestBindingRefusalFailsOverToTheNextRoute",
+        "TestEveryRouteRefusedParksWithTheRefusals",
+        "TestBindingRefusalEnvelope",
+        "TestRefusedAndUnhealthyRoutesPark"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-010",
+      "FAE-WF-082",
+      "FAE-RT-004"
+    ],
+    "production": {
+      "path": "engine/route_refusal.go",
+      "function": "completeBindingRefused"
+    },
+    "positive": {
+      "tests": [
+        "TestBindingRefusalFailsOverToTheNextRoute",
+        "TestBindingRefusalGivesTheNextRouteFreshStarts",
+        "TestDaemonBindingRefusalFailsOverToTheNextRoute"
+      ],
+      "note": "a binding the bridge refused is skipped in its route generation and the turn moves to the role's next route with no attempt, visit or rotation charged, and with its own start bound"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestBindingRefusalEnvelope",
+        "TestEveryRouteRefusedParksWithTheRefusals",
+        "TestLaterReviewerRefusalIsRefundedAndFailoverStaysCharged",
+        "TestRefusedAndUnhealthyRoutesPark"
+      ],
+      "note": "a refusal outside a live agent turn, naming a binding no session ran, or with output is refused; with every route refused, or refused and unhealthy, the task parks all-routes-unavailable naming the refusals; a later reviewer's refusal is refunded like a first session's"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonBindingRefusalFailsOverToTheNextRoute"
+      ],
+      "path": "Start(live, the production Claude bridge over a scripted CLI) -> Admit RPC -> drive dispatch -> bridge refuses the first route -> executor -> engine completeBindingRefused records the refusal -> route selection takes the second route -> Done; with every route refused the task parks and Resume retries in place"
+    },
+    "status": "native-evidenced",
+    "limits": "Not source-enumerated: the census does not see a refusal added to engine/route_refusal.go. check:bridge-refusal-classes enumerates the classes the runtime accepts."
+  },
+  {
+    "id": "check:secret-redaction",
+    "kind": "native-check",
+    "category": "redaction-family",
+    "check": {
+      "corpus": [
+        "TestSecretValuesRedactEveryForm",
+        "TestSecretValuesRedactEscapedForms",
+        "TestFailureSecretsFindEverySecretInEveryForm",
+        "TestShapedProviderCredentialsAreRedacted"
+      ]
+    },
+    "requirements": [
+      "FAE-SEC-003",
+      "FAE-SEC-009"
+    ],
+    "production": {
+      "path": "daemon/secret_redaction.go",
+      "function": "credentialSecrets"
+    },
+    "positive": {
+      "tests": [
+        "TestFailureSecretsKeepNamesThatCarryNoSecret",
+        "TestFailureSecretsCoverTheDaemonEnvironment"
+      ],
+      "note": "values that carry no secret (a short value, a name that is not credential-named, an agent socket or X authority path) stay readable in excerpts and landing output"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestSecretValuesRedactEveryForm",
+        "TestFailureSecretsFindEverySecretInEveryForm",
+        "TestShapedProviderCredentialsAreRedacted",
+        "TestSecretValuesCopyRedactedAcrossReads",
+        "TestUnreadableSecretsWithholdExcerptsAndNestedCalls",
+        "TestRedactLandingOutputWithholdsWhenSecretsUnreadable",
+        "TestSecretRedactionIncludesContentPolicyAndDenyPaths"
+      ],
+      "note": "a configured secret is replaced in each form the redactor names (raw, hex, base64 and their escapes), also when a stream's reads split it, provider-shaped credentials are replaced whatever their source, and an excerpt, a nested-call record or landing output is withheld when the secrets cannot be read"
+    },
+    "native": {
+      "tests": [
+        "TestLiveLandingLeavesNoPlantedSecret",
+        "TestSecretRedactionIncludesContentPolicyAndDenyPaths"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive -> a RED run prints planted secrets -> failureSecrets redacts the stored excerpt -> Land RPC -> redactLandingOutput keeps only redacted gate output; a scan of the plane and the instance files finds no planted secret"
+    },
+    "status": "native-evidenced",
+    "limits": "Not source-enumerated: the census does not see a form added to, or missing from, the redactor. Re-audit 9 found forms it misses (a secret split across lines, xxd, hexdump, od, base32, HTML entities, a Codex refresh token, an OpenAI key without its marker)."
+  },
+  {
+    "id": "check:bridge-edits-not-applied",
+    "kind": "native-check",
+    "category": "bridge-refusal-class",
+    "check": {
+      "source": "runtime/direct.go",
+      "markers": [
+        "EditsNotApplied"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-016",
+      "FAE-ROB-012",
+      "FAE-VCS-003"
+    ],
+    "production": {
+      "path": "provider/edits_apply.go",
+      "function": "applyEdits"
+    },
+    "positive": {
+      "tests": [
+        "TestBridgeEditBatchAppliesEveryEditAndKeepsModes",
+        "TestEditsNotAppliedClassing",
+        "TestBridgeEditBatchFailureIsATypedRetryThroughDirect"
+      ],
+      "note": "an accepted batch writes every edit, keeps each edited file's mode and writes the handoff last; a turn whose edits were not applied and whose worktree is restored is ValidationFailed, and its provider, which answered, is observed ok"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestBridgeEditBatchWhoseThirdWriteFailsLeavesTheTreeUnchanged",
+        "TestBridgeEditRollbackRestoresRenamedFiles",
+        "TestBridgeEditBatchCheckedBeforeAnyWrite",
+        "TestBridgeEditBatchFailureIsATypedRetryThroughDirect"
+      ],
+      "note": "a third write that fails, a failed rename after earlier renames and a failed handoff write each leave every edited file's content and mode, no new file or directory, no staged file and no handoff; a target that is a directory, not writable, under a file, or needed as both a file and a directory is refused before any write; a moved tree after the refusal is rejected-change and unproven retirement stays uncertain"
+    },
+    "native": {
+      "tests": [
+        "TestBridgeEditBatchWhoseThirdWriteFailsLeavesTheTreeUnchanged",
+        "TestBridgeEditBatchAppliesEveryEditAndKeepsModes"
+      ],
+      "path": "runtime.Direct -> provider bridge applyEdits -> EditsNotApplied refusal classing and worktree rollback"
+    },
+    "status": "native-evidenced",
+    "limits": "Shown through the executor, the direct adapter and the production bridge. A crash of the bridge between renames is not covered: it leaves the renamed edits and the staged .fae-edit-* files in the worktree, as documented."
+  },
+  {
+    "id": "check:protected-paths",
+    "kind": "native-check",
+    "category": "refusal-family",
+    "check": {
+      "corpus": [
+        "TestProtectedPathCorpus",
+        "TestScopeWidenRefusesProtectedPaths",
+        "TestLiveDerivedScopeRefusesProtectedSpecPaths"
+      ]
+    },
+    "requirements": [
+      "FAE-SEC-005",
+      "FAE-SEC-008",
+      "FAE-RT-016"
+    ],
+    "production": {
+      "path": "workflow/protected_path.go",
+      "function": "ProtectedPath"
+    },
+    "positive": {
+      "tests": [
+        "TestProtectedPathCorpus",
+        "TestLiveDerivedScopeRefusesProtectedSpecPaths",
+        "TestReadGuardFilteringToolsReadRootsAndShellView"
+      ],
+      "note": "ordinary paths, dot files such as .gitignore, .env.example, nested copies of root-only names and key fixtures under testdata are not protected; the operator's admission declared files are kept; a new Spec without the path clears the refusal"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestProtectedPathCorpus",
+        "TestScopeWidenRefusesProtectedPaths",
+        "TestLiveDerivedScopeRefusesProtectedSpecPaths",
+        "TestStoredRefusedWidenIsDroppedAndTheTaskContinues",
+        "TestReadGuardFilteringToolsReadRootsAndShellView"
+      ],
+      "note": "CI and forge configuration, files that make the operator's tools run programs and credential-like files are protected; a widen naming one is malformed; a Spec declaring one leaves it out of the scope and refuses every change turn and commit naming it; a stored approved one is dropped with an event"
+    },
+    "native": {
+      "tests": [
+        "TestProtectedPathCorpus",
+        "TestBridgeRefusesUnsafeApprovedScope",
+        "TestBridgeScopeRefusesNestedGitMetadata",
+        "TestTargetConfigReadRootsContentPolicyIdentityAndPushValidation",
+        "TestReadRootVerificationMutationRefusalAndHostCommandBinding",
+        "TestExecutorEnforcesReadRootReverificationStageInputReadsAndProvenance"
+      ],
+      "path": "workflow.ProtectedPath -> daemon/live_scope and provider bridge scope validation refusing protected and unsafe paths"
+    },
+    "status": "native-evidenced",
+    "limits": "Not source-enumerated: the corpus tests the rule's lists, not every file name a repository may use. The rule holds model-chosen paths (a Spec, a widen); the operator's admission declared files and pinned scopes are not judged by it."
+  }
+]

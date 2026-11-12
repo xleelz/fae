@@ -2,134 +2,63 @@ package workflow
 
 import (
 	"fmt"
+
 	"github.com/xleelz/fae/domain"
 )
 
-// ScriptStep describes a recorded result, never a command to execute.
-// Next selects one declared graph edge; gate routing is interpreted by the
-// simulator and cannot be overridden by a script.
+// ScriptStep describes a recorded result, never a command to execute. Only
+// dispatching stages consume steps; gates, branches and loops are evaluated.
+// Next may only select a Merge or Integrate stage's reverify route, modelling
+// a changed integration base or a moved target.
 type ScriptStep struct {
 	Next     string     `json:"next,omitempty"`
 	Evidence []Evidence `json:"evidence,omitempty"`
+	// Decision is the option an operator takes at a HumanDecision stage;
+	// a visit without one leaves the simulation awaiting the decision.
+	Decision string         `json:"decision,omitempty"`
+	Items    []ItemDecision `json:"items,omitempty"`
 }
 type Script map[string][]ScriptStep
 type Transition struct {
 	From domain.State `json:"from"`
 	To   domain.State `json:"to"`
 }
+
+// SimulationActivity is one virtual session, measured from simulation start.
+type SimulationActivity struct {
+	Dispatch  string  `json:"dispatch"`
+	Task      string  `json:"task"`
+	Stage     string  `json:"stage"`
+	Branch    string  `json:"branch,omitempty"`
+	Role      string  `json:"role"`
+	StartMS   float64 `json:"start_ms"`
+	FinishMS  float64 `json:"finish_ms"`
+	Cancelled bool    `json:"cancelled,omitempty"`
+}
 type Simulation struct {
-	State       domain.State `json:"state"`
-	Path        []string     `json:"path"`
-	Transitions []Transition `json:"transitions"`
-	Evidence    []Evidence   `json:"evidence"`
-	Gates       []GateResult `json:"gates"`
-	Reason      string       `json:"reason,omitempty"`
+	Timeline     []SimulationActivity `json:"timeline,omitempty"`
+	DurationMS   float64              `json:"duration_ms,omitempty"`
+	PeakSessions int                  `json:"peak_sessions,omitempty"`
+	Footprint    *Footprint           `json:"footprint,omitempty"`
+	Tree         []SimulationTask     `json:"tree,omitempty"`
+	Refusals     []SimulationRefusal  `json:"refusals,omitempty"`
+	State        domain.State         `json:"state"`
+	Path         []string             `json:"path"`
+	Transitions  []Transition         `json:"transitions"`
+	Evidence     []Evidence           `json:"evidence"`
+	Gates        []GateResult         `json:"gates"`
+	Reason       string               `json:"reason,omitempty"`
+	// Records are the content-addressed gate, branch-arm, aggregate and shape
+	// evaluations, as the engine records them (FAE-WF-063).
+	Records []GateRecord `json:"records,omitempty"`
 }
 
-// Simulate is intentionally an offline replay interpreter: it performs no I/O,
-// trusts only supplied provenance-validated records, and refuses unsupported
-// runtime primitives. Attempts and loop caps guarantee finite execution.
-func Simulate(d Document, task string, script Script) (Simulation, error) {
-	result := Simulation{State: domain.Pending}
-	if issues := Validate(d); len(issues) > 0 {
-		return result, fmt.Errorf("invalid workflow: %v", issues)
-	}
-	counts := map[string]int{}
-	attempts := 0
-	move := func(to domain.State) error {
-		if !CanTransition(d, result.State, to) {
-			return fmt.Errorf("illegal transition %s -> %s", result.State, to)
-		}
-		result.Transitions = append(result.Transitions, Transition{result.State, to})
-		result.State = to
-		result.Path = append(result.Path, string(to))
-		return nil
-	}
-	if err := move(domain.State(d.Start)); err != nil {
-		return result, err
-	}
-	for !result.State.Terminal() && result.State != domain.Escalated {
-		id := string(result.State)
-		stage, ok := d.Stages[id]
-		if !ok {
-			return result, fmt.Errorf("no executor for %s", id)
-		}
-		if missing := CheckInputs(stage, task, result.Evidence); len(missing) > 0 {
-			result.Reason = fmt.Sprintf("MissingInput: %v", missing)
-			return result, nil
-		}
-		if attempts >= d.Limits.Attempts {
-			result.Reason = "AttemptCap"
-			_ = move(domain.Escalated)
-			break
-		}
-		attempts++
-		if stage.Primitive == Loop && counts[id] >= stage.MaxIterations {
-			result.Reason = "LoopCap"
-			_ = move(domain.Escalated)
-			break
-		}
-		records := script[id]
-		index := counts[id]
-		counts[id]++
-		next := ""
-		if stage.Primitive == Escalate {
-			result.Reason = "HumanDecisionRequired"
-			_ = move(domain.Escalated)
-			break
-		}
-		if stage.Primitive == ExternalEffect || stage.Primitive == VcsCommit || stage.Primitive == Integrate {
-			return result, fmt.Errorf("commit, integration and external effects require runtime evidence enforcement and cannot execute in offline simulator")
-		}
-		if stage.Primitive == Gate {
-			inputs := []Evidence{}
-			for _, a := range result.Evidence {
-				if a.TaskID == task && a.Provenance {
-					inputs = append(inputs, a)
-				}
-			}
-			gate := Eval(*stage.Expr, inputs)
-			result.Gates = append(result.Gates, gate)
-			if !gate.Passed {
-				next = stage.Failure
-			} else {
-				for _, edge := range d.Edges {
-					if edge.From == id && edge.To != stage.Failure {
-						if next != "" {
-							return result, fmt.Errorf("ambiguous gate success route")
-						}
-						next = edge.To
-					}
-				}
-			}
-		} else {
-			if index >= len(records) {
-				return result, fmt.Errorf("missing script result for %s visit %d", id, index+1)
-			}
-			record := records[index]
-			next = record.Next
-			for _, a := range record.Evidence {
-				if a.ID == "" || a.TaskID != task || a.Stage != id || !a.Provenance {
-					return result, fmt.Errorf("invalid scripted evidence provenance for %s", id)
-				}
-				result.Evidence = append(result.Evidence, a)
-			}
-			if next == "" {
-				for _, edge := range d.Edges {
-					if edge.From == id {
-						if next != "" {
-							return result, fmt.Errorf("script must select route for %s", id)
-						}
-						next = edge.To
-					}
-				}
-			}
-		}
-		if err := move(domain.State(next)); err != nil {
-			return result, err
-		}
-	}
-	return result, nil
+// SimulationOptions selects the simulated disposition. Normal admits
+// ExternalEffect stages (their results are scripted, never performed).
+// engine.Simulate runs the durable engine itself over a Script (FAE-WF-091),
+// so a simulated path is the engine's path.
+type SimulationOptions struct {
+	Normal bool `json:"normal,omitempty"`
 }
 
 // CheckProtectedEvidence binds the runtime safety checks to the exact tree,
@@ -174,4 +103,12 @@ func CheckProtectedEvidence(tree string, runs, reviews, changes []Evidence) erro
 		}
 	}
 	return fmt.Errorf("no independent approved review for tree")
+}
+
+// ItemDecision identifies exactly one member of a HumanDecision's pinned list.
+type ItemDecision struct {
+	Index     *int   `json:"index,omitempty"`
+	ID        string `json:"id,omitempty"`
+	Option    string `json:"option"`
+	Rationale string `json:"rationale,omitempty"`
 }

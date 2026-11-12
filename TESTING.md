@@ -21,6 +21,7 @@ real Codex provider bridge; see [IMPLEMENTATION.md](IMPLEMENTATION.md) for missi
   stream, graceful restart, malformed-task isolation and owned-child crash recovery.
 - Built CLI smoke: 22 scripted artifact records, 61 events, Done state preserved
   across daemon restart at version 52; idempotent admission returns version 1.
+  (Historical: the script later broke and was fixed in the wave-1 round below.)
 - CLI example: validation succeeds; replay follows `Pending -> test -> check ->
   Done`; cross-task evidence is refused.
 - Dolt integration: private server, migration replay, chunked >1 MiB blob,
@@ -103,11 +104,16 @@ FAE_TEST_DOLT_BINARY=/absolute/path/to/dolt ./scripts/test.sh
 ./scripts/verify.sh
 go build -o bin/fae ./cmd/fae
 FAE_TEST_DOLT_BINARY=/absolute/path/to/dolt python3 scripts/smoke-cli.py
-# Optional authenticated provider run; uses the configured Codex account:
+# Optional authenticated provider run; uses the configured Codex account
+# (the harness defaults to Claude; see LIVE.md):
 go build -o bin/fae-codex-bridge ./cmd/fae-codex-bridge
-python3 scripts/dogfood.py --model gpt-6-astra --dolt /absolute/path/to/dolt \
+python3 scripts/dogfood.py --provider codex --model gpt-6-astra --dolt /absolute/path/to/dolt \
   --evidence-dir verification/results/new-dogfood-run
 ```
+
+Unix-socket tests need a short scratch path (see the wave-1 round below). Live
+daemon tests admit against real host pressure and wait through deferrals; see the
+wave-2 round below.
 
 Dolt is optional for the ordinary unit suite, but its isolated integration test
 must be explicitly enabled to reproduce the SQL acceptance evidence. The test
@@ -203,7 +209,9 @@ partial multi-review uncertainty, and durable three-attempt exhaustion with fres
 IDs and no task/stage budget charge. A single-route Dolt restart regression proves
 nonexecution does not penalize provider health and retains each diagnostic.
 Launched failures remain uncertain. The timeout bounds transport readiness, not a
-generic provider prompt-acknowledgment protocol.
+generic provider prompt-acknowledgment protocol. *(Wave 10: a provider that exits on
+its own before writing any output, or whose binary can't start, is now a start
+failure; see the wave-10 round.)*
 
 Final acceptance for this increment passed with **530 cases and 77.8% statement
 coverage**, vet, race detection and scratch census. Gobra verified 18 production
@@ -693,3 +701,596 @@ The real-provider harness persists paused schedules across restart, resumes crea
 1,352 race-enabled test cases across 26 packages passed, with 73.6% statement coverage, vet and scratch census. Gobra verified 56 production predicates and rejected 56 mutations; Gomela/SPIN passed 57 positive models and observed 55 firing negative controls. Native coverage includes multiple replica endpoints, lost acknowledgments, corrupted remote proof, pending schedules, stale previews, restart, restricted authority, absent/substituted local sources, count limits, export overruns, partial/orphan usage, and bounded spool cleanup.
 
 Dogfood adds `--backup-storage` (implies backup schedules and retention automation) to the established full command. It exercises real-provider turns and mid-run restart, then unpin/quota operations against disposable local replica services. [Source hashes and evidence](verification/results/backup-storage.json).
+
+## Wave-1 integration round — 2026-10-22
+
+Running the suite:
+
+- Unix-socket paths are limited to about 104 bytes on Darwin and 108 on Linux.
+  `scripts/test.sh` sets `TMPDIR` to `$PWD/.cache/t.XXXXXX`, which fits only from a
+  short checkout path; from a long worktree path the `cmd/fae` and `daemon` socket
+  tests fail. Run from a short checkout, or give a direct `go test` a short
+  disk-backed `TMPDIR` (not RAM-backed `/tmp`) and remove it afterwards.
+- (Superseded in wave 2: tests now wait through deferred host admission.) Live
+  daemon tests whose host commands pass the real FAE-HOST-010 I/O gate needed a
+  quiet host: full I/O PSI avg10 below 5 on two readings 30 s apart. On a loaded
+  host they parked with `IOPressure` and missed their deadlines.
+- `scripts/smoke-cli.py` was failing before this round: its plain-text
+  authorization was consumed by the task class, so the later runtime-class
+  shutdowns were refused. It now records a structured message authorizing both
+  classes, also checks `show` and `template workflow-list`, and passes.
+
+New tests by stream:
+
+- Security: `TestSecretFileOwnerOnlyOutsideRepository`,
+  `TestLaunchEnvironmentSealedOutsideMarker`, `TestMutationsRefusedTypedUnderMaintenanceMarker`,
+  `TestResidentWorkerRefusesUnauthenticatedRequest`, `TestStartServerProbesEndpointWithoutBinding`,
+  `TestBuildGatedTakesHostHeavyLease`; Herdr census fixtures now include client-role processes.
+- Workflow: `TestDefaultContentRunsLiveWithoutPatches`, `TestDefaultFloorMutationCorpus`,
+  `TestOracleFindingRouting`, `TestSimulateDefaultScenario`, `TestGoUnitShapeNarrowsToPinnedTest`,
+  `TestFormatDebtCountsChangedItemsOnly`, `TestParseNamesEveryErrorPath`.
+- Scheduler/host: `TestLiveAdmissionAgentSessionsTakeNoHeavyLease`,
+  `TestLiveAdmissionHardLimitRaisesAlert`, `TestLiveAdmissionDeadForeignHeavyOwnerReclaimed`,
+  `TestRolePoolRevisionCapsMoleculesAndWaits`, `TestTasksInFlightDefaultUnbounded`,
+  `TestDriveRecordsWithheldReasons`, `TestBrokerScratchOnDiskAndRemoved`.
+- CLI governance: `TestCLIConformanceEveryCommand` (exit codes of every verb),
+  `TestCLIHelpJSONAndPerCommandHelp`, `TestCLINativeServeDetachesWithStartLine`,
+  `TestServeLimitFlagsOverrideLiveConfiguration`, `TestRunLevelResumeShowAndAdmissionResult`,
+  `TestWorkflowGovernanceNativeRevisionsRetirementAndReads`, `TestDiffClassifiesEveryCategory`.
+- Operator CLI: `TestMessageThreadsRelayAndInboxNative`, `TestMessageMigrationV7InterruptedReplay`,
+  `TestAttachDesignDocContainmentAuditAndNextBrief`, `TestReclaimHostWideHeavyOpLedgerLive`,
+  `TestAnalyzeSessionMatchesRecordedTimingsAndLabels`, `TestMigrateVerbPositiveRefusalsAndAudit`,
+  `TestHeavyOpRefusalsAreDistinctAndLeaveNoLease`, `TestDoctorReportsMissingAgentCLIWithRemedy`.
+- Controller: `TestGateSelfTestProvesEveryGateCanFail`, `TestGateRunHeldLeaseTimesOutWithDistinctCode`,
+  `TestLandZeroMatchFilterHoldsAndKeepsTarget`, `TestLandBatchStopsAtFirstHold`,
+  `TestGatedProofIsTheOnlyDeployableGatedTip`, `TestRollRefusesGatedReferenceWithoutLandingProof`,
+  `TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires`.
+- Observability: `TestAlertsRaiseDedupeListAndAcknowledge`, `TestAlertMirrorLoadsTornFile`,
+  `TestObservabilityNative`, `TestSupervisionLogRotatesPrivately`,
+  `TestSupervisionLogStalledStderrNeverBlocks`, `TestCensusFixtureChainRaisesLeakIncludingSetsid`.
+- Robustness: `TestDriveSurvivesRandomPerTaskFaults`,
+  `TestGracefulShutdownFinishesCommitAndReplaysWithoutCharge`,
+  `TestPlannedReplayChargesNothingAndCrashCharges`, `TestStuckCommitStageRaisesOneAlert`,
+  `TestEscalationKindsAreTypedAtEverySite`, `TestProviderFailoverRotatesOncePerTurn`,
+  `TestProviderUnavailableBoundsRouteExhaustion`.
+
+Final verification for this round:
+
+- `FAE_TEST_DOLT_BINARY=/usr/local/bin/dolt ./scripts/test.sh` on the integrated tree (Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5): **1,717 race-enabled test cases passed** across 27 packages, 76.8% statement coverage, with `go vet`, the ledger census and the temporary-directory census. The daemon package takes about 26 minutes; the package timeout is now 45 minutes.
+- `scripts/verify.sh`: Gobra 59 production guards and Gomela 57 positive / 55 negative bounded models passed; every firing control was rejected.
+- These counts were taken with host PSI and load reported as quiet. Since 2026-10-23 the daemon tests use **real host pressure by default**; `FAE_TEST_QUIET_HOST_PRESSURE=1` (also passed through by `scripts/test.sh`) opts into quiet readings for development runs on a shared, loaded host. Memory and swap are always real.
+- Real-provider acceptance: **passed on Claude Code** (`claude-opus-5-5`, Claude Code 2.1.308, Herdr 0.9.5, Dolt 2.5.1) with every feature flag in the command below. The run used the **shipped default workflow unpatched**; `dogfood.py` only filters routes to its own bridge's provider. Results:
+  - Both code-bearing tasks reached Done (35 and 23 artifact records) and landed at `ebc09c6`.
+  - A SIGKILL during a live provider turn ended in explicit redispatch.
+  - Drained restart, independent drive stop/rearm and a guarded roll all worked.
+  - Both Prophet scopes ran, and the 5-iteration provider loop kept one context.
+  - Resident Herdr panes: 19 audited turns, 4 reused panes. Persistent contexts: 18 audited, 9 resumed, 2 after restart, no cross-task threads.
+  - Cron, target, retirement, census, cleanup, fleet, backup policy, schedules, storage and automatic retention checks passed.
+  - Host leases: capacity 2, 34 granted, 34 released, 0 final holders; 0 final pane reservations.
+  - Evidence: `verification/results/claude-wave1-dogfood-20261022/` (37 files, with source and evidence hashes).
+
+  Two earlier attempts failed on script timing that the new HOST-010 I/O gate exposed, not on daemon behaviour. Their evidence is kept as `*-before-deferred-retry` and `*-before-gate-wait`. `dogfood.py` now retries deferred host-admission refusals (bounded, recorded in `result.json`) and allows 150 s for gated backup, replication and retention runs.
+
+## Wave-2 integration round — 2026-10-23
+
+Running the suite:
+
+- Daemon live tests admit against **real host pressure** by default.
+  `FAE_TEST_QUIET_HOST_PRESSURE=1` (passed through by `scripts/test.sh`) reports
+  PSI and load as quiet for development runs only; memory and swap stay real.
+  The helpers in `daemon/pressure_helpers_test.go` keep pressure from failing
+  work: `call` retries deferred host-admission refusals (`callOnce` makes one
+  attempt, for refusal-expecting assertions); `admitted`/`admittedErr`,
+  `executeAdmitted`, `backupAdmitted` and `tickAdmitted` retry an operation
+  while `deferredRefusal` classifies its refusal as deferred (`IOPressure`,
+  `IOPressureHold`, `HostPressure`, `HostPressureHold`, `PaneLimit`,
+  `MemoryReservation`); `awaitJob`, `awaitThroughDeferred` and `awaitState` wait
+  under a progress-aware `hangGuard` that does not count time spent in a
+  `deferredPark`, but fail on a charge, an escalation or a non-deferred refusal;
+  `startSubprocess` runs crash helpers. Deferral is bounded by
+  `pressureAllowance` (5 minutes per operation or wait). Fixtures reap their
+  processes, sweep orphaned fixture planes (`sweepOrphanPlanes`) and discard a
+  root whose derived Dolt port is in use (`planeRoot`). New daemon tests should
+  use these helpers. Stale fixture directories in `/var/tmp` are not swept.
+- `scripts/test.sh` runs the ledger checks and `go vet`, then every other package
+  (45-minute timeout), then `./daemon` alone (60-minute timeout) so other
+  packages' race-instrumented builds do not raise the pressure its live tests
+  admit against, and merges the coverage. The daemon package takes about 42
+  minutes and the whole suite about 50.
+- `TestCrashMatrixEveryDurableBoundary` (51 durable boundaries of the scripted
+  default pipeline, each by SIGKILL and by graceful stop, in a bounded pool of
+  daemon processes under `/var/tmp`) takes about 80 s, or about 4.3 minutes with
+  `-race`.
+- `TestListenerCensusWithAndWithoutUI` (`cmd/fae/ui_census_test.go`) builds only
+  on Linux (it reads `/proc`) and skips unless `FAE_TEST_DOLT_BINARY` is set.
+- The FAE-WF-094 parity corpus `engine/testdata/parity` holds 33 recorded runs of
+  the shipped default; `TestDefaultWorkflowParityCorpus` replays them. After an
+  intended engine or default-content change, re-record with
+  `go test ./engine -run TestDefaultWorkflowParityCorpus -update-parity` and
+  review the diff. Changing `defaults.Shipped()` also needs `defaults.Generation`
+  bumped and the new generation's hash appended to
+  `defaults/testdata/shipped-generation.json`; a recorded generation is never
+  re-recorded (`TestShippedGenerationPinsContent`).
+
+New tests by stream:
+
+- Data model: `TestMoleculeBindingAtAdmission`, `TestCheckpointRecordsAtomicChainAndImmutability`,
+  `TestMigration8BackfillInterruptedReplay`, `TestTopologyScopedOverLargePlane`,
+  `TestRecordsHistoryChainAndTopology`, `TestRunningMoleculeLimits`.
+- Primitives: `TestHumanDecisionParksDecidesAndRoutes`, `TestDecideVerbEndToEnd`,
+  `TestDecisionCommitsWithCheckpointOnce`, `TestFanOutJoinRules`,
+  `TestFanOutDaemonRestartInsideBranch`, `TestSubWorkflowDaemonEndToEnd`, `TestGateRecordsReplayIdentically`.
+- Normal content and ledger: `TestShippedDefaultNormalReviewLifecycle`, `TestShippedDefaultLocalAndDryRun`,
+  `TestDefaultWorkflowUpgradeOnStoredPlane`, `TestCLIWorkflowDefaultShippedAndLocal`,
+  `TestDefaultWorkflowParityCorpus`, `TestValidatorRuleCensus`, `TestShimRefusalCensus`, `TestHostGateReasonCensus`.
+- Target policy: `TestTargetSchemaFourPolicy`, `TestBindCommandKeepsMetacharactersLiteral`,
+  `TestLiveCommitRefusedWithoutRequiredTests`, `TestLiveNoRedDiffClassifierAtCommit`,
+  `TestLiveRedReworkVerifiedAgainstBase`, `TestDaemonApprovedWidenSurvivesRestart`,
+  `TestDaemonCarryForwardReadmission`, `TestTAPParserRefusesIncompleteStreams`.
+- Observability and runtime: `TestRoleShimRunsHeavyCommandsUnderTheLease`, `TestRoleShimNestedInvocationIsRefused`,
+  `TestIdleDaemonMakesNoSQLRoundTrips`, `TestParkAndEscalationLogLinesPairWithEvents`,
+  `TestReaperReapsAdoptedOrphansWithoutStealingStatuses`, `TestBrokerForkStormStaysWithinProcessLimit`,
+  `TestScratchArchiveCleanupThroughDaemon`, `TestSessionAdapterConformance`.
+- UI: `TestListenerCensusWithAndWithoutUI`, `TestUIChildLifecycle`, `TestUIRestartExhaustionRaisesOneAlert`,
+  `TestUITokenRequiredOnEveryRequest`, `TestUIReadOnlyByDefault`, `TestUIRefusesNonLoopbackBindAtStart`.
+- Recovery: `TestCrashMatrixEveryDurableBoundary`, `TestQuarantineOperatorVerbs`,
+  `TestStartQuarantinesExecutorKindMismatch`, `TestDriveIsolatesHousekeepingStepFaults`,
+  `TestAdoptInterruptedEffectChargesNothing`, `TestDaemonLivePlannedStopParksUnprovenRetirement`.
+- Pressure suite: `TestPressureHelpersClassifyRetryAndReap`, `TestSweepOrphanPlanesKillsOnlyUnusedRoots`,
+  `TestBackupScheduleDeferredAdmissionConsumesNoRun`, `TestRetentionScheduleDeferredAdmissionConsumesNoRun`,
+  `TestReplicationScheduleDeferredUploadConsumesNoRun`.
+
+Final verification for this round:
+
+- `scripts/test.sh` on the integrated tree with **real host pressure** (no quiet
+  variable): **2,049 race-enabled test cases passed across 28 packages** (final run on the main tree, after the post-dogfood schedule fixes), 78.4%
+  statement coverage, with `go vet`, the ledger census and the temporary-directory
+  census. The first integrated real-pressure run had 2 failures, both cross-stream
+  fixture issues (a fixture root inside the checkout, and the decision test
+  counting gate decisions the data model now records), fixed before the final run.
+- `scripts/verify.sh`: Gobra 64 production guards (five new: gate pass, landing
+  floor, advance target, deploy gated, default upgrade) and Gomela 57 positive /
+  55 negative bounded models passed; every firing control was rejected. Not yet in
+  `verify.sh`: `ui.MayListen`, `ui.MayServeRequest`, `ui.MayWrite`,
+  `daemon.MayRestartUIChild`, `CanReleaseIntoMolecule`, `CanCommitWithoutRed`,
+  `CanCommitTree` and `CanAutoAdoptEffect` (pure, with truth-table tests).
+- Ledger census: 101 of 284 requirement IDs map to at least one check.
+- Real-provider acceptance: **passed on Claude Code** (`claude-opus-5-5`, Claude Code 2.1.308, Herdr 0.9.5, Dolt 2.5.1) with every feature flag in the command below. Results:
+  - Both code-bearing tasks reached Done (32 and 23 artifact records) and landed at `cb5af39`.
+  - A SIGKILL during a live provider turn ended in explicit redispatch.
+  - Drained restart, independent drive stop/rearm and a guarded roll all worked.
+  - Both Prophet scopes ran, and the 5-iteration provider loop kept one context.
+  - Resident Herdr panes: 19 audited turns, 4 reused panes. Persistent contexts: 18 audited, 9 resumed, 2 after restart, no cross-task threads.
+  - Cron, target, Normal effect, retirement, census, scratch cleanup and scratch-archive cleanup (through a serving helper instance), fleet, backup policy, backup schedules (2 scheduled uploads, 0 duplicates), storage and automatic retention checks passed.
+  - Host leases: capacity 2, 30 granted, 30 released, 0 final holders; 0 final pane reservations.
+  - Evidence: `verification/results/claude-wave2-dogfood-20261023/` (37 files, with source and evidence hashes).
+
+  Four earlier attempts failed late in the backup and cleanup sections. Each is kept as `claude-wave2-dogfood-20261023-before-*`. Two of them exposed **real daemon defects** in the new deadline-driven schedules, both fixed with tests:
+  - A schedule control (pause, configure, resume, unpin) was refused for as long as a run was in progress, so a short-interval schedule could not be paused. Controls now take priority: no new run starts while one waits, and the control waits up to 4 s for the current run (`daemon/schedule_control.go`).
+  - A schedule's next run was due one interval after the run *started*, so runs longer than the interval followed each other back to back. That produced 15 backups instead of one and starved the replication check. The interval now also runs from completion, and `TestBackupScheduleIntervalRunsFromCompletion` fails without the fix.
+
+  The other two were script updates: retrying a "retry control after current run" refusal, and running scratch-archive cleanup through a serving instance per CLI-001.
+
+## Wave-3 integration round — 2026-10-24
+
+Running the suite:
+
+- `scripts/test.sh` now gives `./daemon` 90 minutes; with `-race` it takes
+  about 67 minutes alone, after the other packages (about 12 minutes, the
+  engine's generated corpus being the longest). After the race suites it runs
+  the full 10,000-case generated workflow corpus without the race detector, a
+  **hostile-environment** run (`scripts/test-hygiene.py hostile`: every `FAE_*`
+  variable the sources name planted with a wrong value) of every non-daemon
+  package and a daemon subset, then a census that `$TMPDIR`, the `/var/tmp` and
+  `/tmp` fixture roots created during the run, and processes carrying the run's
+  TMPDIR are all gone (FAE-VER-006). The whole script takes about 80 minutes.
+- `FAE_TEST_HERDR_BINARY` injects Herdr into the daemon tests (else `herdr-core` on
+  PATH; they skip without it). Allowed beside `FAE_TEST_DOLT_BINARY` and
+  `FAE_TEST_QUIET_HOST_PRESSURE`; test-helper protocol variables are not in the
+  `FAE_` namespace.
+- `scripts/test.sh` keeps TMPDIR inside the checkout, where delegated secret
+  files are refused (FAE-SEC-003): tests that write credentials use a scratch
+  root outside it (`outsideCheckout`, `shortHome`). Unix socket paths must fit
+  108 bytes under any TMPDIR; use the short `/var/tmp` helpers for sockets.
+- Before a full run, check `pgrep -af 'herdr-core serve'` for anything but the
+  operator's server: a leaked test server whose socket was deleted makes the
+  host-wide Herdr census fail closed (FAE-SCH-012), so every multiplexer
+  admission on the host defers. Run the full suite alone; concurrent full
+  `./daemon` runs under real pressure fail on deferral.
+- The parity corpus holds 42 runs covering 19 of the 20 Appendix B kinds
+  (CoordinatorVeto documented unreachable); `TestSimulatorAgreesWithParityCorpus`
+  replays 26 of them through the engine-driven simulator. The per-method RPC
+  schema regenerates with `go test ./daemon -run TestRPCSchema -update-rpc-schema`.
+- CI (`.github/workflows/test.yml`) installs Dolt 2.5.1 and `herdr-core` 0.1.18 pinned by
+  SHA-256 and fails if any test skipped for a missing Dolt, Herdr or lsof
+  (`count-tests.py --forbid-skip`). It has not yet run on GitHub.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt
+2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh`: **2,288 race-enabled test cases passed** across 30 packages,
+  78.4% statement coverage, with `go vet`, the ledger census, the hostile runs
+  and the residue census. The first integrated run had 12 failures (nine
+  cross-stream test assumptions, a nil-store panic, and two latent defects:
+  a failed `Start` left its RPC socket listening, and crash-matrix instances
+  could collide on hashed Dolt ports); the second run's only failure was a
+  socket path over the Unix limit under the hostile TMPDIR, fixed and its
+  remaining steps re-run.
+- `scripts/verify.sh`: **Gobra 72 production guards and Gomela 57 positive /
+  55 negative bounded models passed; every firing control was rejected.**
+- Ledger: 151 entries, **126 of 284** requirements with a mapped check; 3
+  entries with unknown native evidence.
+- Real-provider acceptance: **passed on Claude Code** (`claude-opus-5-5`, Claude
+  Code 2.1.309, Herdr 0.9.5, Dolt 2.5.1) with every feature flag. Both
+  code-bearing tasks reached Done (22 and 23 artifact records); SIGKILL during a
+  live turn ended in explicit redispatch; drained restart, drive stop/rearm, a
+  guarded roll through the authenticated launcher, both Prophet scopes and the
+  5-iteration provider loop worked; persistent contexts 17 audited, 8 resumed,
+  2 after restart, no cross-task threads; resident sessions 18 audited turns,
+  1 reused pane (task-bound transports now retire at collection, FAE-RT-011);
+  host leases 25 granted, 25 released, 0 final holders, 0 final pane
+  reservations; Normal, census, cleanup, fleet, backup, schedule and retention
+  checks passed. Evidence: `verification/results/claude-wave3-dogfood-20261024/`.
+  The first attempt failed installing the dogfood's Normal workflow (schema 2
+  requires the ExternalEffect role's effect grant); kept as
+  `claude-wave3-dogfood-20261024-before-effect-grant`.
+
+## Wave-4 integration round — 2026-10-24
+
+Wave 4 fixed the regressions found by the post-wave-3 re-audit. Each fix has a
+test that fails on the wave-3 tree:
+
+- Terminal reads: `TestRestartLeavesTerminalReadsUnchanged` (24 Board, Status,
+  edge and resume read results compared across a restart), `TestTaskPaneFloorsSkipFinishedTasks`,
+  `TestTerminalJobsAfterPagesByIndex` (controlplane; `TestTerminalRowsAfterPagesByIndex` since wave 5).
+- Engine and default: `TestAttemptCapResumeStartsNewPassToDone`,
+  `TestResumeRefusesEveryOtherEscalationKind`, `TestAttemptCapResumeRestartsRequestCapsKeepsScope`
+  (the first and third replaced in wave 5, which reversed the new-pass reset),
+  `TestDefaultWorkflowGenerationTwoUpgradesOnStart` (Dolt). `TestShippedGenerationPinsContent`
+  now checks every generation's recorded hash.
+- Forks and admission: `TestAdmitDoesNotWaitForTheReleaseRefork`, `TestReleaseReforkRechecksTheTask`,
+  `TestAdmitExistingTaskRefusedBeforeFork`, `TestDaemonCarryForwardForksFromTheMovedTip`,
+  `TestReforkTreeMoveHoldsNoManagerLock` (worktree), `TestLiveCarryForwardOntoAMovedTip` (engine).
+- Runtime and idle: `TestResidentSlowLaunchDoesNotSerialiseOtherTasks`,
+  `TestResidentConcurrentSameIdentityStartsOnce`, `TestResidentCloseDuringLaunchRetiresTransport`
+  (runtime), `TestIdleDaemonSnapshotsAndCensusesOnlyOnDemand`, `TestAdmitDoesNotWaitForIdleMaintenance`,
+  `TestIdleMaintenanceRecordsReconciledSlot`. `TestIdleDaemonMakesNoSQLRoundTrips` asserts the
+  ARC-002 rate (50 ms per 30 s); `FAE_TEST_IDLE_FULL=1` runs the full 10-minute window with
+  the 1 s bound (needs `-timeout 15m`).
+- CLI and payloads: `TestConformanceProofsRefuseCheapCitations`, `TestExplicitHelpExitsZeroAndUsageErrorsTwo`,
+  `TestRemediesNameOnlyFlagsServeAccepts`, `TestNamedFileContentIsAValidationFailure`,
+  `TestServeInlineLimitFlag`, `TestWatchdogHeartbeatTimestampedAndJSONUnderJSON`,
+  `TestWatchdogStoppedMidTickExitsCleanly`, `TestLeasePoolPayloadSpillsPastConfiguredLimit`,
+  `TestMigration10SpillsOversizedPoolsAndBoundsColumn`, `TestInlineLimitConfiguresThePlane`.
+  `TestCLIConformanceEveryCommand` now requires every lifecycle row to account for each exit
+  code 0–3 with an existing test, and validates JSON on offline and lifecycle rows.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt
+2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh`: **2,336 race-enabled test cases passed** across 30 packages,
+  78.8% statement coverage, with `go vet`, the ledger census, the hostile runs
+  and the residue census, on the first integrated run. The daemon package took
+  68 minutes.
+- `scripts/verify.sh`: **Gobra 72 production guards and Gomela 57 positive /
+  55 negative bounded models passed; every firing control was rejected.**
+- Ledger: 151 entries, **126 of 284** requirements with a mapped check; 3
+  entries with unknown native evidence.
+- Real-provider acceptance: **passed on Claude Code on the first attempt** (`claude-opus-5-5`, Claude Code 2.1.309, Herdr 0.9.5, Dolt 2.5.1) with every feature flag. Both code-bearing tasks reached Done (22 and 23 artifact records; 31 real completed turns); SIGKILL during a live turn ended in explicit redispatch; drained restart, drive stop/rearm, a guarded roll through the authenticated launcher, both Prophet scopes and the 5-iteration provider loop worked; persistent contexts 17 audited, 8 resumed, 2 after restart, no cross-task threads; resident sessions 18 audited turns, 1 reused pane; host leases 25 granted, 25 released, 0 final holders, 0 final pane reservations; Normal (1 live effect), cron, target, retirement, census, scratch and scratch-archive cleanup, fleet, dynamic provisioning, adapter retirement, backup policy, schedules (2 scheduled uploads, 0 duplicates), storage and retention checks passed. Evidence: `verification/results/claude-wave4-dogfood-20261024/`.
+
+## Wave-5 integration round — 2026-10-25
+
+Wave 5 fixed the findings of the post-wave-4 re-audit, keeping per-task limits by
+operator ruling. Each fix has a test that fails on the wave-4 tree:
+
+- Per-task limits and carried tasks (engine unless noted): `TestAttemptCapResumeRegrantsAttemptsOnlyToDone`,
+  `TestAttemptCapResumeAndRestartCarryEveryCounter`, `TestAttemptCapRegrantNeverRefundsSpentBudgets`
+  (the re-audit's probe scenarios: refund at attempt 36, lower then raise, repeated
+  and restarted re-grants), `TestTestRunCapPrecedesAttemptCapAtOneBoundary`,
+  `TestAttemptCapResumeKeepsALoopAtItsCap`, `TestScopeWidenCapHoldsAcrossAttemptCapResume`,
+  `TestCarriedPendingTaskControls`, `TestOperatorCheckpointRefusesAnInvalidTask` and
+  `TestDaemonEscalatedCarriedTaskRetiresWithoutQuarantine` (daemon, Dolt). Stall retries:
+  `TestStallRetryBoundIsPerStalledTurn`, `TestStallRetryBoundRestartsAfterAFailedTurn`.
+  `TestShippedGenerationPinsContent` pins every shipped generation's hash in the test.
+- Reads after restart: `TestFinishedReadsAfterRestartReadOnlyMatchingRows` (301 finished
+  tasks), `TestStatusTaskRowsRefusedByCountUnread`, `TestStatusTaskRowsHoldNoChildLock`,
+  `TestTopologyServedFromCachedSnapshot` (daemon); `TestTerminalRowsAfterPagesByIndex`,
+  `TestMigration11BackfillsFinishedBoardColumns`, `TestStoredRowFromColumnsMatchesSnapshot`
+  (controlplane).
+- Writer lock: `TestAdmitDoesNotWaitForAnExistingTaskRead`, `TestResumeRunDoesNotHoldTheWriterLockAcrossItsReads`,
+  `TestBacklogEdgeDoesNotHoldTheWriterLockAcrossItsReads`, `TestAdmitDoesNotWaitForTheReleaseDependencyRead`,
+  `TestDriveRecordsWithheldReasonsForReleaseAndEarlyRounds`, `TestReleaseReforkChangeIsWithheld`.
+- CLI, hook and shims: `TestConformanceProofObservesTheRunAndCode` and `TestConformanceProofsRefuseCheapCitations`
+  (each cited proof declares `proves(t, row, code)` and must exit that code),
+  `TestMaintenanceStopAndStartCLIExitZero`, `TestHeavyOpHookFailsClosedWithoutHomeOrOutput`,
+  `TestBacklogAcceptInFlightOnlyOnEdgeAdd`; `TestPreToolHookDeniesAbsolutePathBypass` now
+  covers in-word quoting and escapes, and `TestRoleShimRefusalsExit77WithoutALease` covers
+  `git -C dir push` (78).
+- Runtime and idle: `TestResidentSharedRoleTurnsRunConcurrently`, `TestResidentUnprovenTurnRetirementFreesIdentity`,
+  `TestIdleRetirementDoesNotBlockOtherSessions` (runtime); `TestDaemonResidentRoleCapConcurrency`
+  (Herdr), `TestIdleMaintenanceCountsTurnStartedDuringCensus`, `TestIdleMaintenanceRefusalsRecordedAndPaired`,
+  `TestIdleUnchangedTreeCensusesOwnTreeEveryMinute`.
+
+Integration: the four idle-maintenance tests now stop the drive before running their own
+rounds (the drive's startup round, against the real census, interleaved once the round
+retook the writer lock), and `TestStartAcceptsOnlyLaunchedPinnedProcess` allows 5 s for its
+race-built child to start (it timed out at 200 ms under the full suite's load).
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt
+2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh`: **2,372 race-enabled test cases passed** across 30 packages,
+  78.9% statement coverage, with `go vet`, the ledger census, the hostile runs
+  and the residue census, on the second integrated run (the first had the two
+  failures above). The daemon package took 71 minutes.
+- `scripts/verify.sh`: **Gobra 72 production guards and Gomela 57 positive /
+  55 negative bounded models passed; every firing control was rejected.**
+- Ledger: 151 entries, **126 of 284** requirements with a mapped check; 3
+  entries with unknown native evidence.
+- Real-provider acceptance: **passed on Claude Code on the first attempt** (`claude-opus-5-5`, Claude Code 2.1.309, Herdr 0.9.5, Dolt 2.5.1) with every feature flag. Both code-bearing tasks reached Done (22 and 23 artifact records; 31 real completed turns); SIGKILL during a live turn ended in explicit redispatch; drained restart, drive stop/rearm, a guarded roll through the authenticated launcher, both Prophet scopes and the 5-iteration provider loop worked; persistent contexts 17 audited, 8 resumed, 2 after restart, no cross-task threads; resident sessions 18 audited turns, 1 reused pane; host leases 25 granted, 25 released, 0 final holders, 0 final pane reservations; Normal (1 live effect), cron, target, retirement, census, scratch and scratch-archive cleanup, fleet, dynamic provisioning, adapter retirement, backup policy, schedules (2 scheduled uploads, 0 duplicates), storage and retention checks passed. Evidence: `verification/results/claude-wave5-dogfood-20261025/`.
+
+## Wave-6 integration round — 2026-10-26
+
+Wave 6 fixed the findings of the post-wave-5 re-audit. Each fix has a test that fails on the
+wave-5 tree:
+
+- Engine budgets: `TestStallExhaustedRestartGetsFreshRetries`, `TestAttemptCapMidStallResumeGetsFreshRetries`,
+  `TestHeldStallRetryEndsTheTurn` (RT-005: any state change, and a held collection, end the
+  stall bound); `TestCarriedBudgetEscalationsNameTheirCounts`, `TestCarriedBudgetsNameUsedAndLimit`,
+  `TestResumeReplyStatesCarriedBudgets` (OPS-010); `TestUncertainResolutionRefusesAnInvalidRowBeforeSaving`.
+  Parity corpus cases 04, 19, 32 and 41 were re-recorded for their escalation detail only.
+- Writer lock: `TestAdmitRereadsAnIdentityWhoseAdmissionOutcomeIsUnknown` (WF-005),
+  `TestResumeRunReadsTheBacklogAndLatestRunBeforeTheWriterLock`, `TestBacklogEdgeReadsKnownTasksBeforeTheWriterLock`
+  (ROB-021), `TestKeyedMutationsWaitOnlyForTheirOwnKey`, `TestKeyedRequestTurnsExcludeOnlyTheSameKey` (ROB-020).
+- Pool reads and Prophet: `TestPoolReadsDoNotWaitForTheWriterLock` (Census and ReviewTargetHealth),
+  `TestGlobalProphetScopedPastAThousandTasks` (CP-009), `TestProphetSessionStartDoesNotHoldTheWriterLock`,
+  `TestProphetRouteObservationTakesNoWriterLock`.
+- Runtime, idle and withheld reasons: `TestResidentFailedSlotReconciliationSetsSlotAside`,
+  `TestStatusReportsUnretiredTransports`, `TestIdleRefusalCauseChangeRecordsPreviousCount`,
+  `TestMidRoundUnsettledCheckpointWithholdsRemainingTasks`, `TestResidentPaneRefusalWithheldByCause`,
+  `TestPlaneUnconfirmedRoundIsWithheld`.
+- CLI, hook and shims: `TestPreToolHookDeniesLiteralPathResets` (HOST-011 literal bypasses),
+  `TestHeavyOpHookBinaryBlocksWhenItsDecisionCannotBeDelivered`, `TestConfigurableFlagsFallBackOnlyOnEmptyOrOutOfRange`,
+  `TestServeConfiguredValuesFallBackToDefaults`, `TestControllerVerbsTakeOnlyTheirOwnFlags`,
+  `TestBacklogMissingOperandsAreUsageErrors`, `TestHelpAndExplicitHomeNeedNoHomeVariable`,
+  `TestSkippedProofFailsWithDolt` (with its helper `TestProofSkipHelper`).
+
+Integration fixes, both in tests:
+- `TestDriveSurvivesRandomPerTaskFaults` and `TestAdmitDoesNotWaitForTheRound` filter their
+  fault hooks on the `save` point. Admit's new `admit-acknowledgement` point fires for the same
+  task id, so the old hooks injected their drive-save fault into Admit.
+- `TestShutdownLeavesNoInventoryProcessAndNoZombie` (processowner, unchanged by wave 6) waits
+  with the bounded `awaitNoDefunct`, as its sibling test does. Its single immediate check saw a
+  child still being collected under the full suite's load.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt
+2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh`: **2,404 race-enabled test cases passed** across 30 packages,
+  79.2% statement coverage, with `go vet`, the ledger census, the hostile runs
+  and the residue census, on the third integrated run (the first two had the
+  failures above). The daemon package took 72 minutes, and the script 88.
+- `scripts/verify.sh`: **Gobra 72 production guards and Gomela 57 positive /
+  55 negative bounded models passed; every firing control was rejected.**
+- Ledger: 151 entries, **126 of 284** requirements with a mapped check; 3
+  entries with unknown native evidence.
+- Real-provider acceptance: **passed on Claude Code on the first attempt** (`claude-opus-5-5`, Claude Code 2.1.310, Herdr 0.9.5, Dolt 2.5.1) with every feature flag, in 7 minutes 50 seconds. Both code-bearing tasks reached Done (22 and 23 artifact records; 31 real completed turns); SIGKILL during a live turn ended in explicit redispatch; drained restart, drive stop/rearm, a guarded roll through the authenticated launcher, both Prophet scopes and the 5-iteration provider loop worked; persistent contexts 17 audited, 8 resumed, 2 after restart, no cross-task threads; resident sessions 18 audited turns, 1 reused pane; host leases 25 granted, 25 released, 0 final holders, 0 final pane reservations; Normal (1 live effect), cron, target, retirement, census, scratch and scratch-archive cleanup, fleet, dynamic provisioning, adapter retirement, backup policy, schedules (2 scheduled uploads, 0 duplicates), storage and retention checks passed. Evidence: `verification/results/claude-wave6-dogfood-20261026/`.
+
+## Wave-7 integration round — 2026-10-26 (self-hosting)
+
+Wave 7 made the shipped default workflow able to develop Fae itself. Each behaviour change has a test that fails on the wave-6 tree:
+
+- **Task scope:** `TestLiveDerivedScopeConfigAccepted`, `TestLiveDerivedScopeFiles`, `TestLiveDerivedRedIdentity`, `TestLiveDerivedTestFirstCheckChange`, `TestLiveCommitMessagePerTask`, `TestTaskScopeBlockOnEveryAgentTurn` (execution), `TestDeclaredFileSubmissionFlag` (cmd/fae), and `TestDaemonLiveDerivedScopeLifecycle` (Dolt). The lifecycle test takes a default-workflow task to Done on an instance with no pinned files.
+- **Engine feedback:** `TestFailureExcerptRecordedRuns` (real Go 1.27 fixtures in `effects/testdata/excerpt/`), `TestFailureExcerptPanicAndTrace`, `TestFailureExcerptRequiredChecks`, `TestFailureExcerptTruncation`, `TestEngineFeedbackBlock`, `TestEngineFeedbackBounds`, `TestEngineFeedbackSkipsPassingRuns`, `TestEngineFeedbackMissingAndStaleRecords` (Dolt), and `TestLiveEngineFeedbackReachesReworkTurn` (Dolt). The last runs the default workflow through a compile error and a gofmt failure to Done.
+- **Bridge:** `TestBriefTaskScopeIsTheUnpinnedScope`, `TestPinnedScopeWinsOverBriefTaskScope`, `TestBriefTaskScopeTestFileMismatchRefused` (with a reading-turn subcase added at integration), `TestBriefTaskScopeUnsafeOrInconsistentRefused`, `TestTaskFilesTotalBound`, `TestRedAndImplementEditRules`, `TestRepositoryListing{Block,Caps,GitFailureRefused,SkipsRoleCommandShims}`, `TestProviderLoopRepositoryListing`, `TestReplacementEdits{Applied,Refused}`, `TestProviderSchemaEditShape`, `TestClaudeSchemaForShippedArtifacts`, and `TestBridgeTakesScopeFromBriefSubprocess` (both bridges).
+- **Nested commands and output bound:** `TestBrokerAccountsNestedCommands`, `TestBrokerAccountedToolMissingFromPath`, `TestBrokerAccountingResistsArgvInjection`, `TestBrokerMaxOutputBound`, `TestAccountingWrapperRecordsExactCallsAndExecs`, `TestAccountingCountsConcurrentCallsAndBoundsSummaries`, `TestAccountingMissingToolAndUnrecordableCall`, `TestCheckLiveConfigNamesNestedModeAndOutputBound`, and `TestLiveAccountModeRecordsNestedCommandsDurably` (Dolt). `TestBrokerNestedHeavyCommandRefused` is unchanged.
+- **Integration fixes:** `TestLongCommandRecordStaysReadable`, `TestLegacyLongCommandRecordIsReadable` and `TestRecordCommandKeepsShortVectors` (processowner). `residentProcessGone` backs four resident tests. `TestEndpointUnrecordedOwnServerRefusedWithRemedy` now sets `DOLT_DISABLE_EVENT_FLUSH=1`, as every other Dolt fixture does.
+- **Written by Fae:** `TestWatchdogBoundsRefusesNonFiniteThreshold` (controller, renamed `TestWatchdogBoundsFallsBackOnNonFiniteThreshold` in wave 8) came from the acceptance task's landed commit.
+- **Harness:** `python3 scripts/self-host.py --self-test` (23 cases), now run by `scripts/test.sh`.
+
+The **Fae-on-Fae acceptance** (`scripts/self-host.py acceptance`, real Claude) took the task in `verification/results/claude-wave7-selfhost-20261026/task.json` to Done on its first attempt in 879 s. Every stage of the shipped default workflow ran (12 provider turns, 4 engine test runs). Whole-suite QA took 285 s before the merge and 313 s after it. The commit landed on the clone's `fae/integration`. The first attempt found the ownership-record and resident zombie defects described in HANDOFF.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed on the second run: 2,512 race-enabled test cases across 30 packages, 79.5% coverage, 91 minutes, with the self-host self-test, the corpus, the hostile-environment runs and the residue census. The first run failed only `TestEndpointUnrecordedOwnServerRefusedWithRemedy` (the Dolt metrics race above). The second run included Fae's own Watchdog commit.
+- `scripts/verify.sh` passed: Gobra 72 production guards, Gomela 57 positive and 55 negative bounded models; every firing control was rejected.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the first attempt in 7 minutes 43 seconds, with both code-bearing tasks Done and 0 final lease holders. Evidence: `verification/results/claude-wave7-dogfood-20261026/`.
+
+## Wave-8 integration round — 2026-10-26/27 (re-audit 6 fixes)
+
+Wave 8 fixed re-audit 6's findings. Each behaviour change has a test that fails on the wave-7 tree.
+
+- **Bridge refusals (WF-034, RT-004/-009):**
+  - provider: `TestBridgeRefusesProviderOutputWithRecord`, `TestBridgeRefusesBeforeProviderWithRecord`, `TestBridgeUntypedFailuresKeepExitOne`, `TestClaudeUnusableResultIsRefusedOutput`;
+  - runtime: `TestBridgeRefusalTypedAcrossAdapters` (Herdr for the pane and resident cases), `TestRecordBridgeRefusalBounds`, `TestMultiplexerBeforeStartFailureDefers`;
+  - execution: `TestBridgeRefusalClassing`, `TestProviderBridgeRefusalsThroughDirect`, `TestOneShotPaneBindFailureDefersWithoutCharge`;
+  - both bridges: `TestBridgeRefusalExitStatusSubprocess`;
+  - daemon: `TestDaemonBridgeRefusalsRetryWithoutParking` (Dolt), and a new case in `TestProphetRouteFailoverSafety`.
+- **RED and scope:**
+  - Dolt: `TestDaemonLiveDerivedBrokenRedReportRetriedAtTestFirst`, `TestDaemonLiveDerivedBrokenRedReportRecoversAfterRestart`, `TestDaemonLandDerivedScopeTask`, `TestSubWorkflowDaemonEndToEnd` (extended);
+  - git: `TestLiveRedReportCheckedAtTurnCompletion`, `TestLiveDerivedTestFirstLaunchesOverBrokenRedReport`;
+  - pure: `TestLiveDerivedRedRefusesVacuousReason`, `TestDeclaredFilesRefuseNestedGitMetadata`, `TestDeclaredPathSafe`, `TestSubWorkflowChildFilesAreParentScope`, `TestRedFragmentIgnoresGoTestFraming`, `TestCheckOutputRefusalIsTypedLikeCheckChange`.
+- **Nested commands and hook:**
+  - `TestAccountedNestedCallsPassTheShimPolicy` (10 accepted, 23 refused);
+  - `TestBrokerAccountedNestedCallsAreClampedAndConfined`;
+  - `TestNestedCommandRecordsAreKeyedPerRun` (Dolt);
+  - `TestPreToolHookDeniesDashedSubcommandsToolchainInternalsAndSystemdRun`;
+  - extended: `TestLiveAccountModeRecordsNestedCommandsDurably` (Dolt; a nested `git push` exits 78).
+- **Counters and slots:**
+  - `TestTurnBoundsRestartAfterAFailedTurn`, `TestTurnBoundsRestartAfterEscalation`;
+  - `TestResidentClosedUnretiredSlotSkipped` and `TestResidentPaneReservationErrorDefers` (Herdr);
+  - `TestResidentReconciliationDeferralWithheldByCause`;
+  - `TestResidentSessionsReportReconciliationDeferrals` (Dolt, Herdr).
+- **CLI values:**
+  - `TestGateRunMemoryFloorNeverDropsBelowTheLandingFloor`, `TestLandingFloorBytesIsBounded`;
+  - `TestConfiguredValuesFallBackOnEveryVerb`, `TestEmptyInstanceOrHomeKeepsItsDefault`, `TestServeEmptyAdapterModeOrBindKeepsItsDefault`;
+  - `TestOfflineCommandsNeedNoHomeVariable`, `TestBrokerAndHookHelpStateTheirOwnExitCodes`.
+- **Reads and redaction:**
+  - `TestEdgeEditReadsScopedOverLargePlane` and `TestBacklogEdgeEditScopedPastTheGraphBound` (Dolt);
+  - `TestTicketOutboxStats`, `TestTicketStatsReadsNoEmissionPayload` (Dolt);
+  - `TestEngineFeedbackExcerptRedactsKnownSecrets` (Dolt), `TestSecretValuesRedactEveryForm`.
+- **Written by Fae:** `TestHeavyAdmissionPressureWaitRecordsAvg60AndDirection` (controller) came from the self-host acceptance task's landed commit.
+- **Process registry:** `TestRegistryScanNeverReadsAnUnwrittenRecord` (processowner). Four scanners read the registry while records are registered and removed; without the fix a scan read a record still empty (`EOF`) in 6 of 6 runs.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed: **2,646 race-enabled test cases across 30 packages**, 79.5% statement coverage, with `go vet`, the ledger census, the self-host harness self-test (23 cases), the full 10,000-case generated corpus, the hostile-environment runs and the residue census. The daemon package took 78 minutes under `-race`, and the script 94. Two earlier runs failed:
+  - The first failed on two new tests, `TestMultiplexerBeforeStartFailureDefers` and `TestOneShotPaneBindFailureDefersWithoutCharge`. Under test.sh's repository `TMPDIR`, their Herdr socket path exceeded its bound, so the launch was refused before `BeforeStart` ran. They now use a short `/var/tmp` root, as `muxFixture` does.
+  - The third, after Fae's commit was taken back, failed on `TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires`. Its second task parked UncertainDispatch at reviews with the cause `EOF`, from the process-record race above.
+- `scripts/verify.sh` passed in 11 minutes: Gobra 72 production guards and Gomela 57 positive / 55 negative bounded models; every firing control was rejected. The ledger census has 152 entries (the new `check:shim-accounted-nested`) and maps 126 of 284 requirements.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the final tree in 7 minutes 40 seconds, with both code-bearing tasks Done and 0 final lease holders. Evidence: `verification/results/claude-wave8-dogfood-20261027/`.
+- The Fae-on-Fae acceptance (`scripts/self-host.py acceptance`) took FAE-HOST-005 to Done in 1,100 s through the shipped default workflow; QA's whole suite passed through account mode. Evidence: `verification/results/claude-wave8-selfhost-20261027/`.
+
+## Wave-9 integration round — 2026-10-28 (re-audit 7 fixes)
+
+Wave 9 fixed re-audit 7's findings. Each behaviour change has a test that fails on the wave-8 tree.
+
+- **A Go test's own go and gofmt (HOST-014/-015/-012):**
+  - effects: `TestBrokerRefusesGoAndGofmtStartedByARealGoTest`, `TestBrokerAccountsGoAndGofmtStartedByARealGoTest`, `TestBrokerAccountedGoKeepsTheRunsGoRoot`, `TestBrokerAccountedScopeTakesAnOnDiskVarTmp`. The parent is a real `go test` run by the broker, not `/bin/sh`;
+  - commandshim: `TestAccountedGoFlagsAreAnAllowlist` (30 refused, 5 admitted), `TestAccountedGoRunsWithTheRunsGoEnvironment`, `TestRoleShimGoTestStartsTheSessionsWrapper`, `TestGoRootMirrorsTheRunsToolchain`, `TestRealGoUnderAGoRootMirror`, `TestAccountedGoEnvUnderTheRunsMirror`, `TestAccountedTempTakesAnOnDiskVarTmp`.
+  - These need a Go toolchain and skip without one.
+- **Nested git (MODE-002, EXT-001, VCS-002/-010):**
+  - `TestAccountedGitProtectsTheRunsRepository` (48 refused and 24 allowed calls on real repositories, plus a census that every refusal fires) and `TestAccountedGitProtectsRepositoriesOutsideTheRun`;
+  - `TestBrokerAccountedGitCannotChangeTheOperatorsRepository` (effects, through the real broker and wrappers);
+  - `TestLiveAccountModeNestedGitCannotChangeTheWorkspace` (Dolt; a real daemon and a Local task).
+- **Process registry (HOST-021, ROB-016):** `TestStartRoleRecordIsNeverReadPartway`, `TestLinkedRetirementSkipsARecordRetiredMidScan`, `TestRetirementScansIgnoreAnotherSessionsMalformedRecord`, `TestRecoverSweepsOnlyCrashedPublishersPendingRecords`, `TestPublishWithoutHardLinksRenamesWithoutReplacing`.
+- **Controller readings (HOST-005):** `TestHeavyAdmissionEveryRecordedReadingCarriesAvg60AndDirection`; `TestHeavyAdmissionPressureWaitRecordsAvg60AndDirection` now checks the values and the lift line.
+- **RED rule and widens (WF-043, WF-073, WF-078):**
+  - pure or git: `TestScopeWidenRefusesNestedGitMetadata` (engine), `TestLiveInstanceFilesRefuseNestedGitMetadata`, `TestBridgeScopeRefusesNestedGitMetadata`, `TestLiveFrozenRedSurvivesWidenOfListedTestFile`, `TestLiveDerivedRedReasonAcceptsRealMessages`, `TestLiveFrozenRedReasonIsNotRejudged`, `TestOutputProtocolStatesRedReasonRule`;
+  - updated: `TestLiveDerivedRedRefusesVacuousReason`, and a panic-frame case in `TestRedFragmentIgnoresGoTestFraming`.
+- **Route failover (RT-010, WF-082):**
+  - engine: `TestBindingRefusalFailsOverToTheNextRoute`, `TestEveryRouteRefusedEscalatesWithTheRefusals` (replaced in wave 10 by `TestEveryRouteRefusedParksWithTheRefusals`), `TestRefusedAndUnhealthyRoutesPark`, `TestBindingRefusalEnvelope`, `TestTurnBoundsRestartAfterUncertainRedispatch`;
+  - provider: `TestCodexBridgeRefusesBindingsItCannotRun`, and a `minimal` case in `TestClaudePreflightRefusesBeforeLaunch`;
+  - daemon: `TestDaemonBindingRefusalFailsOverToTheNextRoute` (Dolt; the production Claude bridge over a scripted CLI);
+  - new cases in `TestBridgeRefusalClassing`, `TestProviderBridgeRefusalsThroughDirect`, `TestBridgeRefusalTypedAcrossAdapters`, `TestProphetRouteFailoverSafety`, `TestValidatorRuleCorpus` and `TestNoRedRouteValidation`.
+- **Redaction (SEC-003):**
+  - pure: `TestSecretValuesRedactEscapedForms`, `TestFailureSecretsCoverTheDaemonEnvironment`, `TestSecretValuesCopyRedactedAcrossReads`, `TestSecretValuesRedactCutTail`, `TestRedactLandingOutputWithholdsWhenSecretsUnreadable`, `TestUIRedactWriterKeepsAnEncodedSecretAcrossAFlood`, `TestLandKeepsOnlyRedactedGateOutput` (controller);
+  - Dolt: `TestNestedCommandRecordsRedactSecrets`, `TestUnreadableSecretsWithholdExcerptsAndNestedCalls`, `TestInstanceRootInsideRepositoryRefused`, and `TestLiveLandingLeavesNoPlantedSecret`, which plants secrets a live task's test prints in several forms, then scans every plane table, its Dolt history and every instance file after the RED run and the landing.
+- **CLI and hook:** `TestProviderHealthWindowFallsBackToItsDefault`, `TestWatchdogNonpositivePeriodIsAUsageError`, `TestOfflineWorkflowFormsAcceptEitherCommonFlagForm`, `TestPreToolHookDeniesShimmedToolsUnderAnotherName`, `TestPreToolHookDocumentedPassesStillPass`; `TestBrokerAndHookHelpStateTheirOwnExitCodes` is updated.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed on the second run: **2,734 race-enabled test cases across 30 packages**, 80.0% statement coverage, with `go vet`, the ledger census, the self-host harness self-test (23 cases), the full 10,000-case generated corpus, the hostile-environment runs and the residue census. The daemon package took 83 minutes under `-race`, and the script 98. The first run failed only on `TestAccountedGitProtectsTheRunsRepository` and `TestBrokerAccountsGoAndGofmtStartedByARealGoTest`, which depended on the script's environment: its repository `TMPDIR` (git found the checkout) and its coverage-built broker (a `GOCOVERDIR` warning after the refusal). Both are fixed in the tests.
+- `scripts/verify.sh` passed in 11 minutes: Gobra 72 production guards and Gomela 57 positive / 55 negative bounded models; every firing control was rejected. The ledger census has 153 entries (the new `check:shim-accounted-go`) and maps 127 of 284 requirements.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the first attempt in 7 minutes 58 seconds, with both code-bearing tasks Done and 0 final lease holders. Evidence: `verification/results/claude-wave9-dogfood-20261028/`.
+
+## Wave-10 integration round — 2026-10-28/29 (re-audit 8 fixes)
+
+Wave 10 fixed re-audit 8's findings. Each behaviour change has a test that fails on the wave-9 tree.
+
+- **RED evidence (WF-073, WF-036, WF-043):**
+  - effects: `TestBrokerHungTestFailsWithGoTestTimeout`, `TestBrokerTestBinaryEndedWithoutTestResult`, `TestBrokerDeadlineKillIsTimedOutFailure`, `TestRedFailureTextExcludesGoroutineDump`, `TestParseTestsTestsWithoutOwnResult`, `TestBrokerGoTestAlarmPlacement`;
+  - daemon: `TestLiveRedReasonRuleProbeFragments`, and `TestLiveHungRedRunIsATypedFailure` (Dolt; a live RED run of a hung test is a typed failure, not an UncertainDispatch park);
+  - updated: `TestLiveDerivedRedRefusesVacuousReason`, `TestLiveDerivedRedReasonAcceptsRealMessages`, `TestOutputProtocolStatesRedReasonRule`, `TestLiteralAllowlistTimeoutAndOverflow`.
+- **Routes (RT-010, RT-004, WF-033):**
+  - engine: `TestEveryRouteRefusedParksWithTheRefusals` (it replaces `TestEveryRouteRefusedEscalatesWithTheRefusals`), `TestBindingRefusalGivesTheNextRouteFreshStarts`, `TestLaterReviewerRefusalKeepsTheAttemptThatRan`;
+  - provider and execution: `TestBridgeTypesAProviderThatNeverAcknowledgedThePrompt`, `TestProviderNeverAcknowledgedRetriesThroughDirect`, and new cases in `TestBridgeRefusalClassing`, `TestBridgeRefusalExitStatusSubprocess` (both bridges), `TestProphetRouteFailoverSafety` and `TestWithheldReasonClassification`;
+  - daemon (Dolt): `TestDaemonBindingRefusalFailsOverToTheNextRoute`, rewritten: with both routes refused the task parks with both refusals named, a later round leaves the park, Resume tries both routes again, and the restart that starts a new route generation takes it to Done; `TestDaemonProviderThatNeverAcknowledgesRetriesThenFailsOver`; `TestObservabilityNative`.
+- **Nested git (MODE-002, EXT-001, GEN-010):**
+  - commandshim: `TestAccountedGitLoadsNoHomeConfiguration`, `TestAccountedGitReachesOnlyLocalRepositories`, `TestLocalDenialWrappersGivePushTheLocalCode`; `TestAccountedGitProtectsTheRunsRepository` now makes 75 refused and 29 allowed calls;
+  - effects: `TestBrokerAccountedGitRunsNoProgramTheCallChose`, `TestBrokerRefuseModeGivesLocalPushItsCode`.
+- **Nested go (HOST-014/-015/-020):**
+  - commandshim: `TestAccountedGoEnvironmentIsAnAllowlist`, `TestAccountedGoClampsCPUTestBinaryFlagsAndPatterns`, `TestGoRootGapNamesAGoOutsideAnyGoRoot`, `TestSealedGoRootIsReadOnlyAndRemovable`;
+  - effects: `TestBrokerSealsTheRunsGoRootMirror`, `TestBrokerReportsAGoOutsideAnyGoRoot`, `TestBrokerAccountedGoRefusesEnvironmentAndTestBinaryFlags`; runtime: `TestRoleSessionGoRootMirrorIsRemovedWithTheSession`; cmd/fae: `TestDoctorWarnsOfAGoOutsideAnyGoRoot`;
+  - daemon: `TestStartSweepRemovesASealedGoRootMirror`; and, with Dolt, `TestLiveStartLogsAGoOutsideAnyGoRoot` and `TestLiveAccountModeRefusesNestedGoOutsideThePolicy`, in which a live account-mode task reaches Done only if each of its test's nested go calls outside the policy is refused with 77, and every call is in the run's durable record.
+- **Redaction and landing (SEC-003, CTL-030):**
+  - daemon: `TestFailureSecretsFindEverySecretInEveryForm`, `TestShapedProviderCredentialsAreRedacted`, `TestFailureSecretsKeepNamesThatCarryNoSecret`, `TestSecretValuesCopyRedactedKeepsABase64CoresEdges`;
+  - controller: `TestGoTestCountsKeepAFailureUnderOneName`, `TestLandRedactionCannotMergeAFailingPackageIntoAPass`, `TestGateSelfTestProvesEveryGateCanFail`; `TestLandKeepsOnlyRedactedGateOutput` now expects an infrastructure hold.
+- **Startup, workflow writes and widens (CP-003, WF-093, WF-078):**
+  - processowner: `TestRecoverClearsEmptyRecordsAnEarlierProcessLeft`, `TestRecoverRefusesAnUnreadableRecordNamingIt`; daemon: `TestStartClearsAnEmptyProcessRecordAndNamesAnUnreadableOne` (Dolt);
+  - workflow and daemon: `TestStoredClaudeMinimalRevisionParsesAndWritesRefuseIt`, `TestWorkflowWriteRefusesClaudeMinimalThatAStoredRevisionPasses`, `TestStoredClaudeMinimalRevisionAdmitsAndInstallRefusesIt` (Dolt), and write-only rules in `TestValidatorRuleCorpus`;
+  - engine and provider: `TestMalformedRequestInAnEditTurnRecordsItsEdits`, `TestApprovedWidenFileTheBridgeCannotLoadIsListedNotRefused`, `TestUnavailableApprovedFileIsNotEditable`, `TestBridgeRefusesUnsafeApprovedScope`.
+- **Smaller gaps:** `TestHeavyAdmissionRecordsAHoldShorterThanASlice`, `TestHeavyOpRecordsTheReadingsItWaitsOn`, `TestLandingAdmissionAuditsEachLineWithItsOutcome` (Dolt), `TestPreToolHookDeniesPytestUnderItsOtherNames`, `TestOfflineWorkflowFormsParseTheCommonFlagSet`, `TestProviderHealthRPCFallsBackOnAnOutOfRangeWindow` (Dolt), `TestWatchdogPeriodBelowTheFloorIsAUsageError`, `TestLandNonpositivePollNamesTheFlag`.
+- **Ledger:** the refusal families `check:hook-denials`, `check:bridge-refusal-classes`, `check:red-reason` and `check:scope-widen` (`verification/ledger/refusals.json`), and the census entries `check:validator-requests` and `check:local-denials`.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed on the second run: **2,832 race-enabled test cases across 30 packages** (1 skipped), 80.2% statement coverage, with `go vet`, the ledger census, the self-host harness self-test (23 cases), the full 10,000-case generated corpus, the hostile-environment runs and the residue census. The daemon package took 85 minutes under `-race`, and the script 101. The first run failed only on `TestAccountedGoEnvironmentIsAnAllowlist` and `TestAccountedGoClampsCPUTestBinaryFlagsAndPatterns`: under the script the go wrapper is a coverage-built test binary, which prints a `GOCOVERDIR` warning after a refusal, so their one-line refusal check saw two lines. The check now ignores that warning.
+- `scripts/verify.sh` passed in 11 minutes: Gobra 72 production guards and Gomela 57 positive / 55 negative bounded models; every firing control was rejected. The ledger census has 159 entries and maps 130 of 284 requirements; 5 entries have unknown native evidence.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the first attempt in 7 minutes 35 seconds, with both code-bearing tasks Done and 0 final lease holders. Evidence: `verification/results/claude-wave10-dogfood-20261029/`.
+
+## Wave-11 integration round — 2026-10-29 (re-audit 9 fixes)
+
+Wave 11 fixed re-audit 9's findings. Each behaviour change has a test that fails on the wave-10 tree.
+
+- **RED evidence (WF-036, WF-073):**
+  - effects: `TestBrokerTestCutOffFromOutsideIsNotExecuted`, `TestRedFailureTextReadsPastAStackTheTestContinues`, `TestBrokerOutputOverBoundIsEvidence`, `TestGoTestAlarmNamed`; rewritten: `TestParseTestsTestsWithoutOwnResult`, `TestBrokerTestBinaryEndedWithoutTestResult`, `TestBrokerDeadlineKillIsTimedOutFailure`, `TestBrokerMaxOutputBound`, `TestLiteralAllowlistTimeoutAndOverflow`;
+  - daemon: `TestLiveRedStartsSubtests`, `TestLiveRedTraceWordsAreTheProtocols`, `TestLiveRedReportWithSubtestsRefusedAtTurnCompletion`, and with Dolt `TestLiveRedRunCutOffFromOutsideIsATypedFailure` (a SIGKILLed test binary and a `TestMain` exit) and `TestLiveRedRunOverTheOutputBoundIsEvidence`; extended: `TestLiveRedReasonRuleProbeFragments`, `TestLiveDerivedRedRefusesVacuousReason`, `TestOutputProtocolStatesRedReasonRule`.
+- **Nested git (MODE-002, EXT-001, VCS-002/-010):** commandshim `TestAccountedGitRunsNoProgramAnEnvironmentVariableNames`, `TestAccountedGitTracesNowhereAConfigurationFileNames`, `TestAccountedGitWritesPatchesOnlyWhereTheCallMay`, `TestAccountedGitRefusesRepositoriesLinkedIntoTheOperators`, `TestAccountedGitRunsNoHook`, `TestAccountedGitRunsOnTheRepositoryItChecked`; `TestAccountedGitProtectsTheRunsRepository` gains about 20 refusal cases and expects pinned argv.
+- **Routes (RT-009, RT-010):** engine `TestRefusedParkReasonReadsBackAsComputed`, `TestRouteExhaustionClockRunsUntilARouteRuns`, `TestResumeNeedsARefusalOfTheCurrentRouteGeneration`, `TestProviderFailoverGivesTheNextRouteFreshStarts`; daemon (Dolt) `TestDaemonRouteExhaustionAlertRestartsOnResume`, `TestDaemonRouteExhaustionAlertUsesTheEngineBound`.
+- **Provider failures (RT-004, RT-009, WF-034):**
+  - engine: `TestLaterReviewerStartFailureRerunsEveryReviewerWithinTheStartBound`, `TestLaterReviewerStartFailureEnvelope`;
+  - execution: `TestLaterReviewerStartFailureIsTypedNotUncertain`, `TestProviderFailedNeedsObservationAndRestrictedProfile`, `TestProviderFailedWithARateLimitFailsOver`, `TestProviderFailedWithoutAnswerThroughDirect`, `TestLaterReviewerNeverAcknowledgedThroughDirect`;
+  - provider: `TestBridgeTypesAProviderThatFailedWithoutAnAnswer`; daemon: `TestProphetChargesAProviderThatNeverAcknowledged`, and with Dolt `TestDaemonLaterReviewerThatNeverAcknowledgesRerunsEveryReviewer`, `TestDaemonProviderFailedWithoutAnswerRetriesTheStage`.
+- **Host and startup (HOST-020, HOST-015, HOST-014, HOST-005, OBS-001):**
+  - scratchfs: `TestRemoveAllRemovesReadOnlyTreesWithoutFollowingLinks`, `TestQuarantineMovesATreeAside`; effects: `TestBrokerRemovesAScratchTreeATestMadeReadOnly`, `TestBrokerReportsAScratchItCannotRemove`, `TestBrokerNestedCgoBuildRunsTheRunsCompiler`; controller: `TestLandRemovesTheGateTempATestMadeReadOnly`;
+  - daemon: `TestStartSweepRemovesReadOnlyScratch`, `TestStartSweepQuarantinesScratchItCannotRemove`, and with Dolt `TestLiveRestartOverReadOnlyScratchStarts`, `TestLiveStartQuarantinesScratchItCannotRemove`, `TestScratchCleanupRemovesAReadOnlyTree`;
+  - commandshim: `TestEnginePathRunThatSelectsEveryTestIsAWholeSuite`, `TestNestedRunThatSelectsEveryTestIsAWholeSuite`, `TestGoTestRunSelectsEveryTest`, `TestAccountedGoPinsTheProgramsGoFindsByName`, `TestHeavyOpControllerClassWaitsPastTheRoleBound`, `TestHeavyOpLinesCarryTimeInstanceAndComponent`, `TestHeavyOpLinesNameTheInstance`; cmd/fae: `TestGateRunRemovesAReadOnlyScratch`, `TestGateRunLinesCarryTimeInstanceAndComponent`.
+- **Redaction and landing (SEC-003, CTL-030):**
+  - daemon: `TestFailureSecretsFindASecretWrappedAcrossLines`, `TestFailureSecretsFindGoByteViewsBase32AndHTMLReferences`, `TestFailureSecretsFindHexDumps`, `TestSecretValuesCopyRedactedKeepsAWrappedValueAndADumpWhole`, `TestFailureSecretsFindTokenFieldsAndUnmarkedKeys`;
+  - secretshape: `TestSpansFindTokenFieldValues`, `TestSpansFindAnOpenAIKeyWithoutItsMarker`, `TestSpansFindATokenWrappedAcrossLines`, `TestWriterRedactsAcrossWrites`, `TestCredentialVariableAndEnvironmentValues`; provider: `TestProviderRawLogsKeepNoCredential`;
+  - controller: `TestSuiteGateListedFlakeExplainsAnExitOnlyByACleanRun`, `TestLandSuiteListedFlakeBesideATestMainExitHolds`; `TestLandRedactionCannotMergeAFailingPackageIntoAPass` now expects an infrastructure hold.
+- **Dead ends, edits and startup (WF-078, ROB-012/-014/-016, VCS-003, CP-006, WF-093, SEC-005):**
+  - engine: `TestStoredRefusedWidenIsDroppedAndTheTaskContinues`, `TestScopeWidenRefusesProtectedPaths`; workflow: `TestProtectedPathCorpus`; effects: `TestSnapshotFilesAreLiteralNotPathspecs`;
+  - provider: `TestUnloadableApprovedRedFileIsListedNotRefused`, `TestBridgeEditBatchWhoseThirdWriteFailsLeavesTheTreeUnchanged`, `TestBridgeEditBatchAppliesEveryEditAndKeepsModes`, `TestBridgeEditRollbackRestoresRenamedFiles`, `TestBridgeEditBatchCheckedBeforeAnyWrite`; execution: `TestEditsNotAppliedClassing`, `TestBridgeEditBatchFailureIsATypedRetryThroughDirect`;
+  - processowner: `TestRecoverClearingReportsEachRemovedRecord`, `TestRecoverKeepsAnEmptyRecordWithinTheFileClockSlack`;
+  - daemon: `TestLiveResolverLeavesOutRefusedApprovedPaths`, `TestLiveDerivedScopeRefusesProtectedSpecPaths`, and with Dolt `TestStartLogsAndAuditsEachEmptyProcessRecordItRemoves`, `TestStartReportsAStoredRevisionItCannotLoad`, `TestStartupRevisionCheckNamesPinnedTasks`, `TestStartChecksPlaneConsistencyBeforeLoadingTasks`, `TestStartRefusesAPlaneWhoseEventClockIsBehind`.
+- **CLI and census:** cmd/fae `TestWorkflowPutListsEveryWriteIssue`, `TestLandPollBelowTheFloorIsAUsageError`, `TestWorkflowScenarioRoundTripsThroughSimulate`; controller `TestWatchdogRunRefusesAPeriodBelowTheFloor`; daemon `TestRehearsalScenarioInfersItsTaskFromScopedKeys`, `TestReadsDocumentsEveryWithheldReason`, `TestLiveScopeRefusalCensus`.
+- **Ledger:** the enumerated census entries `check:nested-git-refusals` and `check:derived-scope-refusals` (an in-test census must fire every rule), and `check:route-refusals`, `check:secret-redaction`, `check:bridge-edits-not-applied` and `check:protected-paths`.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed on the first run: **2,976 race-enabled test cases across 30 packages** (1 skipped), 80.6% statement coverage, with `go vet`, the ledger census, the self-host harness self-test (23 cases), the full 10,000-case generated corpus, the hostile-environment runs and the residue census. The daemon package took 88 minutes under `-race`, and the script 105. Before it, a package-by-package run outside the script failed only `TestListenerCensusWithAndWithoutUI` (cmd/fae): another package's Dolt took the port its daemon had picked. It passes alone and passed in the script.
+- `scripts/verify.sh` passed in 11 minutes: Gobra 72 production guards and Gomela 57 positive / 55 negative bounded models; every firing control was rejected. No guard or model changed. The ledger census has 165 entries and maps 134 of 284 requirements; 7 entries have unknown native evidence.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the first attempt in 8 minutes 35 seconds, with both code-bearing tasks Done, 31 real completed turns and 0 final lease holders. Evidence: `verification/results/claude-wave11-dogfood-20261029/` (its 1,029 source hashes match this tree).
+
+## Wave-12 integration round — 2026-10-30 (RT-004 ruling, re-audit 10 fixes, live task editing, TUI)
+
+Wave 12 applied the operator's RT-004 ruling, fixed re-audit 10's findings and added live task editing and a terminal UI. Each behaviour change has a test that fails on the wave-11 tree; the new features' tests fail there trivially.
+
+- **Never-executed runs (RT-004, WF-074, HOST-006):**
+  - engine: `TestRefusedBeforeLaunchChargesNoAttemptOrTestRun`, `TestRefusedBeforeLaunchOfAnAgentTurnOrLaterReviewer`, `TestAgentStartBoundIsPerBinding`, `TestLaterSessionAdmissionDeferralChargesNothing`, `TestNeverExecutedPathsStillTerminate`; renamed `TestLaterReviewerRefusalIsRefundedAndFailoverStaysCharged`; updated `TestLaterReviewerStartFailureRerunsEveryReviewerWithinTheStartBound`, `TestRouteExhaustionClockRunsUntilARouteRuns`;
+  - execution: `TestRefusedBeforeLaunchTypesEveryFailureBeforeTheFirstLaunch`, `TestLaterSessionAdmissionDeferralIsATypedDeferral`;
+  - daemon: `TestLiveTestRunRefusedBeforeStartChargesNothing`; with Dolt, `TestDaemonLaterReviewerThatNeverAcknowledgesRerunsEveryReviewer` now expects one attempt and `TestDaemonBridgeRefusalsRetryWithoutParking` the `RefusedBeforeLaunch:` class.
+- **Bridges and loops (RT-004, RT-009):** provider `TestBridgeTypesAProviderThatNeverAcknowledgedThePrompt` (six new cases), `TestBridgeStartBoundStopsOnlyAnUnacknowledgedProvider`; both bridges' `TestBridgeRefusalExitStatusSubprocess` ("provider silent past the start bound"); daemon (Dolt) `TestLoopTurnsRecordProviderHealth`.
+- **Literal paths and nested git (SEC-005, MODE-002, EXT-001, VCS-002/-010, VER-001):** effects `TestIntegrateTakesTaskFileNamesLiterally`, `TestReconcileTakesTaskFileNamesLiterally`, `TestConflictResolutionTakesTaskFileNamesLiterally`; controller `TestLandGitTakesTaskFileNamesLiterally`; commandshim `TestAccountedGitCallCannotSwitchAHookBackOn`, `TestAccountedGitWorktreeRepairRewritesNoOtherTasksWorktree`, `TestAccountedGitChecksPathsWhereTheSystemTakesThem`; the census self-test controls and `TestLiveScopeRefusalCensus`'s new rules.
+- **Landing and redaction (CTL-030, SEC-003):** controller `TestSuiteGateRerunMustRunWhatTheSuiteRanButItsFlakes`, `TestLandSuiteFlakeNamesakeInAFailedPackageHolds` and three new refusing `gates self-test` inputs; daemon `TestCopyRedactedJoinsGoTestJSONEventsCutWithoutANewline` (a real `go test -json` stream), `TestSecretEventJoinNeedsTheSameTestAndPackage`, `TestFailureSecretsFindRuneViewsOctalBinaryBase32HexAndUTF16`; secretshape `TestSpansReadATestsGoTestJSONEventsAsOneText`, `TestJoinedEventsMapSpansBack`, `TestEventViewLimitBoundsASpanInTheText`, `TestSpansFindKebabAlignedAndBearerTokens`, `TestSpansFindATokenAcrossAnEscapedLineBreak`.
+- **Startup, host and cleanup (WF-093, CP-006, HOST-020, HOST-015):**
+  - daemon (Dolt): `TestStartRefusesAStoredRevisionItCannotLoad` (replaces `TestStartReportsAStoredRevisionItCannotLoad`), `TestStartChecksEveryStoredRevisionPastTheListingBound`, `TestStartNamesADamagedEventClockBeforeWritingAnEvent`, `TestQuarantineReleaseRepairsRowsTheStartFoundDiverged`, `TestCheckConsistencyFindsEveryDivergedTask`, `TestStartSweepsTheScratchOfAKilledGateRun`, `TestStartReportsAndAlertsWhatScratchQuarantineHolds`, `TestCleanupDoneRemovesAnIntegratedTasksWorktreeAndBranch`; without Dolt `TestGateRunScratchOwnerRecordAndHolder`, `TestLeakCensusLeavesARunningCommandsDefunctProcessesToIt`;
+  - workflow `TestLoadAcceptsWhatOnlyLaterRulesRefuse`; `TestDefaultWorkflowUpgradeOnStoredPlane` now asserts that the old default's revision is listed under `startup_checks.revisions.invalid`, not refused (integration fix);
+  - scratchfs `TestRemoveAllUsesTheDirectoryItCheckedWhenTheTopIsSwapped`, `TestRemoveAllRemovesAnUnlistableTopDirectory`; commandshim `TestGoTestNameProbesAreTestFunctionNames` and the extended whole-suite tests; processowner `TestAnalyzeLeavesRunningCommandsDefunctProcessesToThem`; worktree `TestIntegratedReportsALandingInTheRef`.
+- **Live task editing (new):** daemon (Dolt) `TestTaskCreateJoinsTheLiveGraphAndIsDispatched`, `TestTaskUpdateAppliesFromTheNextStage`, `TestTaskDeleteWithdrawsRetiresAndRepoints`, `TestTaskDeleteCollectsTheTurnInFlightThenRetires`, `TestTaskDeleteSurvivesARestart`, `TestTaskVerbsReplayUnderAnIdempotenceKey`, `TestBacklogUpsertAndEdgeEditAreRecordedEdits`; without Dolt `TestEditTaskRules`, `TestTaskTraceAndCurrentStage`; cmd/fae `TestTaskVerbsSendTheFieldsTheirFlagsName`.
+- **Terminal UI (new):** cmd/fae-tui `TestFaeTUIExitCodes` (integration); `tui` (35 model tests: views, navigation, write gating, forms, unreachable daemon, every screen fits), `tui/client` (15: framing against a real `api.Server`, paging bounds, TaskGet decoding and fallback), `tui/dag` (5: layering, determinism, termination); with Dolt, `TestReadsAgainstARealDaemon` and `TestWritesAgainstARealDaemon` (create, edit, edge, delete through the real RPCs); `TestCoreBinaryExcludesTheOperatorUI` now also keeps the TUI and its modules out of `fae`.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed on the third run: **3,140 race-enabled test cases across 36 packages** (1 skipped), 80.8% statement coverage, with `go vet`, the ledger census, the self-host harness self-test (23 cases), the full 10,000-case generated corpus, the hostile-environment runs and the residue census. The daemon package took 87 minutes under `-race`, and the script 104.
+  - **Run 1** passed the daemon package's 90-minute timeout (now 150). Before that, two tests failed:
+    - `TestDefaultWorkflowUpgradeOnStoredPlane`: the new WF-093 refusal used the admission rule, so the old default's `main` brief keys refused the start. Now only a revision `workflow.Load` can't read does.
+    - `TestStartNamesADamagedEventClockBeforeWritingAnEvent`: a planted empty process record dated an hour before now isn't older than a test process that has run for more than an hour. It is now dated an hour before the package started.
+  - **Run 2** passed every Go test, then `count-tests.py` refused `cmd/fae-tui`, which had no test; `TestFaeTUIExitCodes` is its test now.
+- `scripts/verify.sh` passed in 11 minutes: Gobra 72 production guards and Gomela 57 positive / 55 negative bounded models; every firing control was rejected. No guard or model changed. The ledger census has 168 entries and maps 134 of 284 requirements; 9 entries have unknown native evidence.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the first attempt in 8 minutes 15 seconds, with both code-bearing tasks Done, 31 real completed turns and 0 final lease holders. Evidence: `verification/results/claude-wave12-dogfood-20261030/` (its 1,080 source hashes match this tree).
+
+## Wave-13 integration round — 2026-10-31 (re-audit 11 fixes)
+
+Wave 13 fixed re-audit 11's findings. Each behaviour change has a test that fails on the wave-12 tree.
+
+- **Nested git (MODE-002, EXT-001, VCS-002/-010, VER-001):** commandshim `TestAccountedGitChecksPathsAsGitCreatesThem` (end to end through the account-mode wrapper: the missing-directory-before-a-link vectors and a dangling link, with the operator's `.git` unchanged, and the good cases), `TestAccountedGitResolveAsGitCreates` (18-row resolver table), `TestAccountedGitProtectsTheRunsRepository` (a dangling `--output`, and the two configuration-read refusals now censused), `TestRoleShimRefusalCorpus` and `TestRoleShimRefusalCensus` (role.go's Local refusal).
+- **Bounds and refunds (RT-004, WF-074, HOST-006, OBS-006):**
+  - engine: `TestNeverExecutedPathsStillTerminate` (four new subtests: a later session's deferrals, a binding another task heals, for the first and a later session), `TestCommitRefusedBeforeAnyWriteIsRefunded`;
+  - execution: `TestRuntimeLaunchRefusalIsRefusedBeforeLaunchAndChargesNoProvider`, `TestFailedLaunchBoundaryIsRefusedBeforeLaunch`, `TestLaterSessionWaitsForAdmissionInsteadOfRerunningEarlierReviewers`, the extended `TestDeferredAdmissionBeforeLaunchOnly`;
+  - daemon: `TestRefusedBeforeLaunchFailureEventHasAPairedLine`; with Dolt, `TestDaemonTestRunRefusedBeforeExecChargesNothing` and `TestDaemonLaterSessionDeferralWaitsForTheHostThenParksCounted` (the first daemon-level test of a later session's deferral); `TestLiveHostCommandShimPolicyRefusals` now expects each shim refusal recorded, nothing charged and a SameGate escalation.
+- **WF-093 and topology (WF-093, OPS-011):** daemon (Dolt) `TestStartRefusesAnUnrunnableRevisionWithAnActiveTask` (refusal text; nothing written by a refused or a flagged start; the flag quarantines; status, alerts and events; release refused; migrate to a valid revision runs to Done; quarantine retire; the flag a no-op afterwards), `TestTopologyRendersAMoleculeOnAnUnrunnableRevision`, `TestTopologyListsRetiredTasksOnlyWhenAsked`; `TestDefaultWorkflowUpgradeOnStoredPlane` now shows the refusal for an active old-default task and the flagged start's upgrade and migration; workflow `TestLoadAcceptsWhatOnlyLaterRulesRefuse` (two classes); cmd/fae `TestServeQuarantineUnrunnableRevisionsFlagIsOneShot`, `TestTopologyIncludeRetiredCLI`.
+- **Landing and redaction (CTL-030, CTL-001, SEC-003):** controller `TestTestFilterReadsAsGoTestRun`, `TestExactTestFilterAndSplitFollowGoTestRun`, `TestLandFilterIsARegularExpression`, `TestLandFormatGateExaminesATypeChange`; daemon `TestRollOverlapListsARenamedFilesBothNames`, `TestFailureSecretsFindAFormCutInsideAnEscapeUnit` (streams cut as test2json cuts them, at every offset), `TestSecretRedactionKeepsTheDaemonsOwnSources` (false-positive guard).
+- **Live task verbs (CLI-002 and the operator's edit decision):** daemon (Dolt) `TestTaskDeleteRetiresUnderTheTasksInFlightCap`, `TestTaskDeleteFailureIsShownAndEditsKeepTheNewest`, extended `TestTaskCreateJoinsTheLiveGraphAndIsDispatched` (priorities 5 and 0 refused, absent is 10), `TestTaskUpdateAppliesFromTheNextStage` (a structured edit during a turn), `TestTaskDeleteWithdrawsRetiresAndRepoints` (re-pointed edge events), `TestTaskDeleteCollectsTheTurnInFlightThenRetires`, `TestTaskDeleteSurvivesARestart`; without Dolt `TestEditTaskRules`, `TestLogAfterCommitWritesNoLineForAFailedCommit`; cmd/fae `TestTaskVerbsSendTheFieldsTheirFlagsName`.
+- **Terminal UI:** tui `TestAPendingDeleteIsReadFromTheStoredFieldNotTheReasonText`, `TestAStaleVersionRefusalOffersToReloadTheTask`, `TestCreateFormMakesANormalModeTask`, `TestTaskViewSaysWhenOlderEditsAreNotShown`, `TestPollsReadOnlyWhatTheViewShows`, `TestPollingBacksOffWhenNothingChanges`, `TestEveryScreenFitsTheTerminal` (down to 20×6); integration `TestUpdateSendsAScopeChangeOfATurnInFlight` (replaces `TestUpdateKeepsTheScopeOfATurnInFlight`) and `TestMoleculesViewNamesAMoleculeWhoseRevisionCannotRun`; tui/client `TestDecodePendingDeleteReadsTheContractObject`, `TestBoardRowCarriesThePendingDeleteFlag`, `TestStaleVersionAndModeComplete`; with Dolt, `TestWritesAgainstARealDaemon` now makes an edit between the form's fill and its submit and expects the stale refusal and reload.
+- **Host and cleanup (HOST-022, CP-009, CP-006):** processowner `TestAnalyzeCountsARunningCommandsDefunctProcessesAfterTheGrace`, `TestCensusRaisesALeaderHoldingUnreapedChildrenAfterTheGrace` (real processes, Linux); daemon `TestLeakCensusLeavesARunningCommandsDefunctProcessesToIt` (extended past the grace); with Dolt, `TestCleanupDonePagesItsCandidatesAndSkipsWhatItCleaned` (2,000 planted rows whose snapshots can't be read), `TestCleanupNativeBackupRetiredAndRestart` (a cleaned task is passed over), `TestPlaneRecoveryIsRecordedBeforeTheCheckAndAFailedCheckStillRevalidates`.
+
+Final verification for this round (integrated tree, Ubuntu 24.04, Go 1.27.2, Dolt 2.5.1, Herdr 0.9.5, real host pressure):
+
+- `scripts/test.sh` passed on the third run: **3,189 race-enabled test cases across 36 packages** (1 skipped), 81.1% statement coverage, with `go vet`, the ledger census, the self-host harness self-test (23 cases), the full 10,000-case generated corpus, the hostile-environment runs and the residue census. The daemon package took 88 minutes under `-race`, and the script 106.
+  - **Run 1** failed `TestLiveHostCommandShimPolicyRefusals`, which still expected a shim-refused host command to park UncertainDispatch; it now expects each refusal recorded, nothing charged and a SameGate escalation.
+  - **Run 2** failed `TestDaemonTestRunRefusedBeforeExecChargesNothing`, which counted a host-pressure deferral park as a failure (fixed in both refusal tests), and `TestTopologyScopedOverLargePlane`, whose derived Dolt port (6767) another program on the host held. The derived test port is an older fixture flaw, not fixed.
+- `scripts/verify.sh` passed in 11 minutes: Gobra 72 production guards and Gomela 57 positive / 55 negative bounded models; every firing control was rejected. No guard or model changed. The ledger census has 168 entries and maps 134 of 284 requirements; 9 entries have unknown native evidence.
+- The real-provider dogfood (`scripts/dogfood.py`, every feature flag, Claude Code 2.1.310) passed on the first attempt in 8 minutes 13 seconds, with both code-bearing tasks Done, 31 real completed turns and 0 final lease holders. Evidence: `verification/results/claude-wave13-dogfood-20261031/` (its 1,089 source hashes match this tree).

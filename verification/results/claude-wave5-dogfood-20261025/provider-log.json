@@ -1,0 +1,158 @@
+[
+  {
+    "sequence": 71,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+    "created": "2026-10-25T19:47:49.939555Z"
+  },
+  {
+    "sequence": 75,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/1/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/1/session/0",
+    "created": "2026-10-25T19:47:50.927817Z"
+  },
+  {
+    "sequence": 103,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/2/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/2/session/0",
+    "created": "2026-10-25T19:48:02.708524Z"
+  },
+  {
+    "sequence": 110,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/0",
+    "created": "2026-10-25T19:48:03.679774Z"
+  },
+  {
+    "sequence": 117,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/3/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/3/session/0",
+    "created": "2026-10-25T19:48:11.59054Z"
+  },
+  {
+    "sequence": 122,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/0",
+    "created": "2026-10-25T19:48:14.342199Z"
+  },
+  {
+    "sequence": 127,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/3/session/1",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/3/session/1",
+    "created": "2026-10-25T19:48:19.87069Z"
+  },
+  {
+    "sequence": 135,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/1",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/1",
+    "created": "2026-10-25T19:48:26.805565Z"
+  },
+  {
+    "sequence": 143,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/4/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/4/session/0",
+    "created": "2026-10-25T19:48:30.023813Z"
+  },
+  {
+    "sequence": 152,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/5/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/5/session/0",
+    "created": "2026-10-25T19:48:35.231805Z"
+  },
+  {
+    "sequence": 158,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+    "created": "2026-10-25T19:48:38.935757Z"
+  },
+  {
+    "sequence": 181,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6/session/0",
+    "created": "2026-10-25T19:48:44.036429Z"
+  },
+  {
+    "sequence": 187,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/8/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/8/session/0",
+    "created": "2026-10-25T19:48:47.288823Z"
+  },
+  {
+    "sequence": 228,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+    "created": "2026-10-25T19:48:56.050102Z"
+  },
+  {
+    "sequence": 238,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/0",
+    "created": "2026-10-25T19:49:00.840905Z"
+  },
+  {
+    "sequence": 260,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/1",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/1",
+    "created": "2026-10-25T19:49:05.512765Z"
+  },
+  {
+    "sequence": 265,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/0",
+    "created": "2026-10-25T19:49:06.904443Z"
+  },
+  {
+    "sequence": 270,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/2",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/2",
+    "created": "2026-10-25T19:49:08.82898Z"
+  },
+  {
+    "sequence": 275,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/3",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/12/session/3",
+    "created": "2026-10-25T19:49:12.350188Z"
+  },
+  {
+    "sequence": 283,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/1",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/1",
+    "created": "2026-10-25T19:49:15.477999Z"
+  },
+  {
+    "sequence": 288,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/2",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/2",
+    "created": "2026-10-25T19:49:18.89926Z"
+  },
+  {
+    "sequence": 293,
+    "session": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/13/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/13/session/0",
+    "created": "2026-10-25T19:49:23.251072Z"
+  },
+  {
+    "sequence": 297,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/3",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/3",
+    "created": "2026-10-25T19:49:23.861522Z"
+  },
+  {
+    "sequence": 320,
+    "session": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/0",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/0",
+    "created": "2026-10-25T19:49:36.172393Z"
+  },
+  {
+    "sequence": 421,
+    "session": "prophet-028388b32eeadff8a383f1bbd1f7581a",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session prophet-028388b32eeadff8a383f1bbd1f7581a",
+    "created": "2026-10-25T19:50:31.537004Z"
+  },
+  {
+    "sequence": 427,
+    "session": "prophet-cf4c2ffeaec787d6f673c3e3bd5e6f2b",
+    "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session prophet-cf4c2ffeaec787d6f673c3e3bd5e6f2b",
+    "created": "2026-10-25T19:50:38.530241Z"
+  }
+]

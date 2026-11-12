@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go#L4
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go#L4
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -47,9 +47,9 @@ proctype CleanupWaitsForBackupAndArchive4(chan child) {
 	run receiver(child_AnonymousCleanupWaitsForBackupAndArchive1052)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:11:2 */
-	:: removed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:11:2 */->
-	:: removed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:11:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:11:2 */
+	:: removed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:11:2 */->
+	:: removed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:11:2 */ -> 
 		removed_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -63,12 +63,12 @@ proctype AnonymousCleanupWaitsForBackupAndArchive85(Chandef backup_ch;Chandef ar
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:8:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:8:14 */
 	:: backup_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:8:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:8:14 */
 	:: backup_ch.sync!false -> 
 		backup_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:8:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:8:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -81,12 +81,12 @@ proctype AnonymousCleanupWaitsForBackupAndArchive95(Chandef backup_ch;Chandef ar
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:9:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:9:14 */
 	:: archive_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:9:14 */
 	:: archive_ch.sync!false -> 
 		archive_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:9:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -99,26 +99,26 @@ proctype AnonymousCleanupWaitsForBackupAndArchive105(Chandef backup_ch;Chandef a
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:14 */
-	:: backup_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:14 */->
-	:: backup_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:14 */
+	:: backup_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:14 */->
+	:: backup_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:14 */ -> 
 		backup_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:24 */
-	:: archive_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:24 */->
-	:: archive_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:24 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:24 */
+	:: archive_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:24 */->
+	:: archive_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:24 */ -> 
 		archive_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:35 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:35 */
 	:: removed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:35 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:35 */
 	:: removed_ch.sync!false -> 
 		removed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/cleanup.go:10:35 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/cleanup.go:10:35 */
 	fi->
 	stop_process: skip->
 	child!0

@@ -23,3 +23,6 @@ func Unsandboxed(pid int) (bool, error) {
 	}
 	return result == 0, nil
 }
+
+// sandboxCondition names the inherited macOS sandbox of pid.
+func sandboxCondition(int) string { return "macOS App Sandbox profile" }

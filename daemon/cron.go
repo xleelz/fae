@@ -75,7 +75,7 @@ func (d *Daemon) cronSchedule(ctx context.Context, p ScheduleParams, a controlpl
 		if e != nil {
 			return nil, e
 		}
-		doc, e := workflow.Parse(raw)
+		doc, e := d.parseWorkflow(raw)
 		if e != nil {
 			return nil, e
 		}

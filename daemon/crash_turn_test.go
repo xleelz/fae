@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/domain"
 	"github.com/xleelz/fae/engine"
 	"os"
-	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
 
 func TestCrashTurnHelper(t *testing.T) {
-	path := os.Getenv("FAE_CRASH_TURN_CONFIG")
+	path := os.Getenv("CRASH_TURN_CONFIG")
 	if path == "" {
 		return
 	}
@@ -33,11 +34,17 @@ func TestCrashTurnHelper(t *testing.T) {
 	if _, err = call(t, d, "Admit", AdmitParams{ID: "crash-work", AuthorizingMessage: "message"}, "crash-work"); err != nil {
 		t.Fatal(err)
 	}
-	deadline := time.Now().Add(30 * time.Second)
-	for time.Now().Before(deadline) {
+	// The turn may park infrastructure-deferred on real host pressure first;
+	// the drive retries it, and the hang guard extends while it waits.
+	guard := newHangGuard(30 * time.Second)
+	for {
 		s, e := d.store.GetJob(context.Background(), "crash-work")
 		var env envelope
-		if e == nil && json.Unmarshal(s.Payload, &env) == nil && env.Job.InFlight != nil {
+		decoded := e == nil && json.Unmarshal(s.Payload, &env) == nil
+		if !guard.observe(decoded && deferredPark(env)) {
+			break
+		}
+		if decoded && env.Job.InFlight != nil {
 			proofs, e := d.live.guard.journal.Entries()
 			if e == nil {
 				for _, p := range proofs {
@@ -72,42 +79,21 @@ func TestCrashDuringLiveTurnExplicitResolution(t *testing.T) {
 			if err := os.WriteFile(path, b, 0600); err != nil {
 				t.Fatal(err)
 			}
-			exe, _ := os.Executable()
-			cmd := exec.Command(exe, "-test.run=^TestCrashTurnHelper$")
-			cmd.Env = append(os.Environ(), "FAE_CRASH_TURN_CONFIG="+path)
-			log, err := os.Create(path + ".log")
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer log.Close()
-			cmd.Stdout = log
-			cmd.Stderr = log
-			if err = cmd.Start(); err != nil {
-				t.Fatal(err)
-			}
-			defer func() { cmd.Process.Kill(); cmd.Wait() }()
-			deadline := time.Now().Add(40 * time.Second)
-			var before envelope
-			for {
+			helper := startSubprocess(t, "TestCrashTurnHelper", path+".log", "CRASH_TURN_CONFIG="+path)
+			var err error
+			helper.await(t, 40*time.Second+pressureAllowance, func() bool {
 				b, err = os.ReadFile(path + ".ready")
-				if err == nil {
-					if err = json.Unmarshal(b, &before); err != nil {
-						t.Fatal(err)
-					}
-					break
-				}
-				if time.Now().After(deadline) {
-					out, _ := os.ReadFile(path + ".log")
-					t.Fatalf("helper: %s", out)
-				}
-				time.Sleep(25 * time.Millisecond)
-			}
-			if err = cmd.Process.Kill(); err != nil {
+				return err == nil
+			})
+			var before envelope
+			if err = json.Unmarshal(b, &before); err != nil {
 				t.Fatal(err)
 			}
-			cmd.Wait()
+			helper.kill()
 			var d *Daemon
-			deadline = time.Now().Add(8 * time.Second)
+			// The killed helper's process watchdog stops its Dolt asynchronously;
+			// a loaded host can take a while, so this restart guard is generous.
+			deadline := time.Now().Add(30 * time.Second)
 			for {
 				d, err = Start(ctx, cfg)
 				if err == nil {
@@ -192,7 +178,7 @@ func TestCrashDuringLiveTurnExplicitResolution(t *testing.T) {
 			if action == "accept" && len(after.Job.Provenance) != 1 {
 				t.Fatal("accept missing artifact")
 			}
-			if action == "escalate" && after.Job.Reason != "UncertainDispatchEscalated" {
+			if action == "escalate" && (after.Job.EscalationKind != domain.OperatorEscalate || !strings.HasPrefix(after.Job.Reason, "OperatorEscalate: UncertainDispatch ")) {
 				t.Fatal("not escalated")
 			}
 		})

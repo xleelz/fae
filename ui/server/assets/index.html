@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Fae instance</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="app.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<header>
+  <h1>Fae <span id="instance"></span></h1>
+  <p id="banner" class="muted">Loading status…</p>
+</header>
+<main>
+  <section id="status-section">
+    <h2>Status</h2>
+    <dl id="status"></dl>
+    <h3>Tasks by state</h3>
+    <dl id="counts"></dl>
+  </section>
+  <section id="board-section">
+    <h2>Board</h2>
+    <table>
+      <thead><tr><th>Task</th><th>State</th><th>Priority</th><th>Workflow</th><th>Mode</th><th>In flight</th><th>Reason</th></tr></thead>
+      <tbody id="board"></tbody>
+    </table>
+    <button id="board-more" type="button" hidden>More</button>
+  </section>
+  <section id="history-section" hidden>
+    <h2>History <span id="history-task"></span></h2>
+    <table>
+      <thead><tr><th>Seq</th><th>Time</th><th>Kind</th><th>Detail</th></tr></thead>
+      <tbody id="history"></tbody>
+    </table>
+    <h3>Artifacts</h3>
+    <table>
+      <thead><tr><th>Artifact</th><th>Stage</th><th>Role</th><th>Produced</th></tr></thead>
+      <tbody id="artifacts"></tbody>
+    </table>
+    <button id="history-more" type="button" hidden>More</button>
+  </section>
+  <section id="alerts-section">
+    <h2>Alerts</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Severity</th><th>Source</th><th>Task</th><th>Raised</th><th>Acknowledged</th><th>Detail</th></tr></thead>
+      <tbody id="alerts"></tbody>
+    </table>
+    <form id="ack" hidden>
+      <label>Alert <input id="ack-id" type="number" min="1" required></label>
+      <label>Authorizing message <input id="ack-message" required></label>
+      <button type="submit">Acknowledge</button>
+      <span id="ack-result" class="muted"></span>
+    </form>
+  </section>
+</main>
+</body>
+</html>

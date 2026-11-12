@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,11 +30,11 @@ proctype ExternalQueryBeforeAdoption5(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousExternalQueryBeforeAdoption1594 = [1] of {int}->
-	chan child_AnonymousExternalQueryBeforeAdoption1463 = [1] of {int}->
+	chan child_AnonymousExternalQueryBeforeAdoption1564 = [1] of {int}->
+	chan child_AnonymousExternalQueryBeforeAdoption14103 = [1] of {int}->
 	chan child_AnonymousExternalQueryBeforeAdoption1372 = [1] of {int}->
-	chan child_AnonymousExternalQueryBeforeAdoption12101 = [1] of {int}->
-	chan child_AnonymousExternalQueryBeforeAdoption1160 = [1] of {int}->
+	chan child_AnonymousExternalQueryBeforeAdoption1291 = [1] of {int}->
+	chan child_AnonymousExternalQueryBeforeAdoption11100 = [1] of {int}->
 	Chandef adopted_ch->
 	Chandef receipt_ch->
 	Chandef query_ch->
@@ -45,27 +45,27 @@ proctype ExternalQueryBeforeAdoption5(chan child) {
 	run sync_monitor(query_ch)->
 	run sync_monitor(receipt_ch)->
 	run sync_monitor(adopted_ch)->
-	run AnonymousExternalQueryBeforeAdoption116(intent_ch,performed_ch,query_ch,receipt_ch,adopted_ch,child_AnonymousExternalQueryBeforeAdoption1160)->
-	run receiver(child_AnonymousExternalQueryBeforeAdoption1160)->
-	run AnonymousExternalQueryBeforeAdoption1210(adopted_ch,intent_ch,performed_ch,query_ch,receipt_ch,child_AnonymousExternalQueryBeforeAdoption12101)->
-	run receiver(child_AnonymousExternalQueryBeforeAdoption12101)->
+	run AnonymousExternalQueryBeforeAdoption1110(adopted_ch,intent_ch,performed_ch,query_ch,receipt_ch,child_AnonymousExternalQueryBeforeAdoption11100)->
+	run receiver(child_AnonymousExternalQueryBeforeAdoption11100)->
+	run AnonymousExternalQueryBeforeAdoption129(receipt_ch,adopted_ch,intent_ch,performed_ch,query_ch,child_AnonymousExternalQueryBeforeAdoption1291)->
+	run receiver(child_AnonymousExternalQueryBeforeAdoption1291)->
 	run AnonymousExternalQueryBeforeAdoption137(performed_ch,query_ch,receipt_ch,adopted_ch,intent_ch,child_AnonymousExternalQueryBeforeAdoption1372)->
 	run receiver(child_AnonymousExternalQueryBeforeAdoption1372)->
-	run AnonymousExternalQueryBeforeAdoption146(intent_ch,performed_ch,query_ch,receipt_ch,adopted_ch,child_AnonymousExternalQueryBeforeAdoption1463)->
-	run receiver(child_AnonymousExternalQueryBeforeAdoption1463)->
-	run AnonymousExternalQueryBeforeAdoption159(receipt_ch,adopted_ch,intent_ch,performed_ch,query_ch,child_AnonymousExternalQueryBeforeAdoption1594)->
-	run receiver(child_AnonymousExternalQueryBeforeAdoption1594)->
+	run AnonymousExternalQueryBeforeAdoption1410(adopted_ch,intent_ch,performed_ch,query_ch,receipt_ch,child_AnonymousExternalQueryBeforeAdoption14103)->
+	run receiver(child_AnonymousExternalQueryBeforeAdoption14103)->
+	run AnonymousExternalQueryBeforeAdoption156(intent_ch,performed_ch,query_ch,receipt_ch,adopted_ch,child_AnonymousExternalQueryBeforeAdoption1564)->
+	run receiver(child_AnonymousExternalQueryBeforeAdoption1564)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:16:2 */
-	:: adopted_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:16:2 */->
-	:: adopted_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:16:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:16:2 */
+	:: adopted_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:16:2 */->
+	:: adopted_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:16:2 */ -> 
 		adopted_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalQueryBeforeAdoption116(Chandef intent_ch;Chandef performed_ch;Chandef query_ch;Chandef receipt_ch;Chandef adopted_ch;chan child) {
+proctype AnonymousExternalQueryBeforeAdoption1110(Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;Chandef query_ch;Chandef receipt_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -73,17 +73,17 @@ proctype AnonymousExternalQueryBeforeAdoption116(Chandef intent_ch;Chandef perfo
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:11:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:11:14 */
 	:: intent_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:11:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:11:14 */
 	:: intent_ch.sync!false -> 
 		intent_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:11:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:11:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalQueryBeforeAdoption1210(Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;Chandef query_ch;Chandef receipt_ch;chan child) {
+proctype AnonymousExternalQueryBeforeAdoption129(Chandef receipt_ch;Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;Chandef query_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -91,19 +91,19 @@ proctype AnonymousExternalQueryBeforeAdoption1210(Chandef adopted_ch;Chandef int
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:12:14 */
-	:: intent_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:12:14 */->
-	:: intent_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:12:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:12:14 */
+	:: intent_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:12:14 */->
+	:: intent_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:12:14 */ -> 
 		intent_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:12:24 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:12:24 */
 	:: performed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:12:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:12:24 */
 	:: performed_ch.sync!false -> 
 		performed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:12:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:12:24 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -116,24 +116,24 @@ proctype AnonymousExternalQueryBeforeAdoption137(Chandef performed_ch;Chandef qu
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:13:14 */
-	:: performed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:13:14 */->
-	:: performed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:13:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:13:14 */
+	:: performed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:13:14 */->
+	:: performed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:13:14 */ -> 
 		performed_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:13:27 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:13:27 */
 	:: query_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:13:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:13:27 */
 	:: query_ch.sync!false -> 
 		query_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:13:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:13:27 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalQueryBeforeAdoption146(Chandef intent_ch;Chandef performed_ch;Chandef query_ch;Chandef receipt_ch;Chandef adopted_ch;chan child) {
+proctype AnonymousExternalQueryBeforeAdoption1410(Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;Chandef query_ch;Chandef receipt_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -141,24 +141,24 @@ proctype AnonymousExternalQueryBeforeAdoption146(Chandef intent_ch;Chandef perfo
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:14:14 */
-	:: query_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:14:14 */->
-	:: query_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:14:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:14:14 */
+	:: query_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:14:14 */->
+	:: query_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:14:14 */ -> 
 		query_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:14:23 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:14:23 */
 	:: receipt_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:14:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:14:23 */
 	:: receipt_ch.sync!false -> 
 		receipt_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:14:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:14:23 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousExternalQueryBeforeAdoption159(Chandef receipt_ch;Chandef adopted_ch;Chandef intent_ch;Chandef performed_ch;Chandef query_ch;chan child) {
+proctype AnonymousExternalQueryBeforeAdoption156(Chandef intent_ch;Chandef performed_ch;Chandef query_ch;Chandef receipt_ch;Chandef adopted_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -166,19 +166,19 @@ proctype AnonymousExternalQueryBeforeAdoption159(Chandef receipt_ch;Chandef adop
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:15:14 */
-	:: receipt_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:15:14 */->
-	:: receipt_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:15:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:15:14 */
+	:: receipt_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:15:14 */->
+	:: receipt_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:15:14 */ -> 
 		receipt_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:15:25 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:15:25 */
 	:: adopted_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:15:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:15:25 */
 	:: adopted_ch.sync!false -> 
 		adopted_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/external.go:15:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/external.go:15:25 */
 	fi->
 	stop_process: skip->
 	child!0

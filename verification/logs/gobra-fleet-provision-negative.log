@@ -1,6 +1,6 @@
-Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
 (c) Copyright ETH Zurich 2012 - 2026
-17:17:44.869 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - daemon [17:17:44]
-17:17:47.845 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/fleet-provision-negative.go:4:9> Postcondition might not hold. 
+18:42:15.401 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - daemon [18:42:15]
+18:42:18.313 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/fleet-provision-negative.go:4:9> Postcondition might not hold. 
 Assertion result == (attemptRecorded && receiptMatched && baselineGreen) might not hold.
-17:17:47.863 [thread-3] ERROR viper.gobra.Gobra - Gobra found 1 error.
+18:42:18.351 [thread-3] ERROR viper.gobra.Gobra - Gobra found 1 error.

@@ -31,11 +31,21 @@ func loopRead(t *testing.T, d *Daemon, id string) loops.Schedule {
 }
 func loopWait(t *testing.T, d *Daemon, id, state string) loops.Schedule {
 	t.Helper()
-	until := time.Now().Add(20 * time.Second)
-	for time.Now().Before(until) {
+	// A live loop deferred by host admission retries after 5 s without
+	// consuming an iteration; the hang guard extends while it is deferred.
+	guard := newHangGuard(20 * time.Second)
+	iterations := int64(-1)
+	for {
 		s := loopRead(t, d, id)
 		if s.State == state {
 			return s
+		}
+		if s.Iterations != iterations {
+			iterations = s.Iterations
+			guard.progressed()
+		}
+		if _, deferred := deferredRefusal(errors.New(s.Error)); !guard.observe(deferred) {
+			break
 		}
 		time.Sleep(20 * time.Millisecond)
 	}
@@ -163,6 +173,22 @@ func TestLoopExpiryPauseResume(t *testing.T) {
 	s := loopWait(t, d, "expiry", "expired")
 	if s.InFlight {
 		t.Fatal(s)
+	}
+	// FAE-CLI-002: expires_in_seconds is counted from the daemon clock; a
+	// loop states at most one of it and an explicit expires_at.
+	before := time.Now().UTC()
+	clocked := loops.Spec{ID: "daemon-clock", Kind: "loop", Role: "oracle", Prompt: "once", IntervalSeconds: 60}
+	reply, e := call(t, d, "Schedule", ScheduleParams{Action: "create", Spec: &clocked, ExpiresInSeconds: 3600, AuthorizingMessage: "message"}, "")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var created loops.Schedule
+	if e = json.Unmarshal(reply.Result, &created); e != nil || created.Spec.ExpiresAt.Before(before.Add(time.Hour)) || created.Spec.ExpiresAt.After(time.Now().UTC().Add(time.Hour)) {
+		t.Fatal("daemon-clock expiry", created.Spec.ExpiresAt, e)
+	}
+	both := loops.Spec{ID: "both", Kind: "loop", Role: "oracle", Prompt: "once", IntervalSeconds: 60, ExpiresAt: time.Now().Add(time.Hour)}
+	if _, e = call(t, d, "Schedule", ScheduleParams{Action: "create", Spec: &both, ExpiresInSeconds: 60, AuthorizingMessage: "message"}, ""); e == nil || !strings.Contains(e.Error(), "at most one") {
+		t.Fatal("ambiguous loop expiry accepted", e)
 	}
 }
 

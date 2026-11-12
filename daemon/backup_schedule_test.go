@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -59,13 +61,14 @@ func TestBackupScheduleNativeLifecycleRestart(t *testing.T) {
 	d.mu.Lock()
 	d.draining = false
 	d.mu.Unlock()
-	if e = os.WriteFile(filepath.Join(d.layout.Root, "maintenance"), nil, 0600); e != nil {
-		t.Fatal(e)
-	}
+	beginMaintenance(t, d)
 	if e = d.tickBackupSchedule(ctx, s.NextAt); e != nil {
 		t.Fatal(e)
 	}
-	os.Remove(filepath.Join(d.layout.Root, "maintenance"))
+	if held, _ := d.maintenanceHeld(); !held {
+		t.Fatal("controller maintenance marker not observed")
+	}
+	endMaintenance(t, d)
 	s = backupScheduleCall(t, d, BackupScheduleParams{Action: "pause", AuthorizingMessage: "creation"})
 	if e = d.tickBackupSchedule(ctx, s.NextAt); e != nil {
 		t.Fatal(e)
@@ -86,22 +89,32 @@ func TestBackupScheduleNativeLifecycleRestart(t *testing.T) {
 	}
 	s = backupScheduleCall(t, d, BackupScheduleParams{Action: "resume", AuthorizingMessage: "creation"})
 	due := s.NextAt.Add(48 * time.Hour)
-	var wg sync.WaitGroup
-	errs := make(chan error, 2)
-	for i := 0; i < 2; i++ {
-		wg.Add(1)
-		go func() { defer wg.Done(); errs <- d.tickBackupSchedule(ctx, due) }()
-	}
-	wg.Wait()
-	close(errs)
-	for e := range errs {
-		if e != nil {
-			t.Fatal(e)
+	// A run deferred by host admission is withdrawn, so the concurrent pair is
+	// retried until one tick runs; exactly one run is still asserted below.
+	if e = tickAdmitted(t, "concurrent backup", func() error {
+		var wg sync.WaitGroup
+		errs := make(chan error, 2)
+		for i := 0; i < 2; i++ {
+			wg.Add(1)
+			go func() { defer wg.Done(); errs <- d.tickBackupSchedule(ctx, due) }()
 		}
+		wg.Wait()
+		close(errs)
+		var all []error
+		for e := range errs {
+			all = append(all, e)
+		}
+		return errors.Join(all...)
+	}); e != nil {
+		t.Fatal(e)
 	}
 	s = backupScheduleCall(t, d, BackupScheduleParams{Action: "status"})
 	if s.RunCount != 1 || s.Running || s.LastBackup == "" || s.LastError != "" || !s.NextAt.After(due) {
 		t.Fatal(s)
+	}
+	// The interval also runs from completion: no back-to-back runs.
+	if s.NextAt.Before(s.LastFinished.Add(time.Duration(s.IntervalSeconds) * time.Second)) {
+		t.Fatal("next run due before an interval after completion", s.NextAt, s.LastFinished)
 	}
 	if _, e = d.readBackup(ctx, s.LastBackup); e != nil {
 		t.Fatal(e)
@@ -174,7 +187,7 @@ func TestBackupScheduleNativeAuthorityFailureAndBusy(t *testing.T) {
 	// Failure after allocating a backup directory blocks further creation.
 	oldBinary := d.config.DoltBinary
 	d.config.DoltBinary = "/missing-backup-verifier"
-	e = d.tickBackupSchedule(ctx, s.NextAt)
+	e = tickAdmitted(t, "backup", func() error { return d.tickBackupSchedule(ctx, s.NextAt) })
 	d.config.DoltBinary = oldBinary
 	if e == nil {
 		t.Fatal("verification failure ignored")
@@ -215,11 +228,17 @@ func TestBackupScheduleNativeBackground(t *testing.T) {
 	defer stop(t, d)
 	scheduleGrant(t, d, "background-backup")
 	backupScheduleCall(t, d, BackupScheduleParams{Action: "configure", IntervalSeconds: 1, AuthorizingMessage: "background-backup"})
-	deadline := time.Now().Add(15 * time.Second)
-	for time.Now().Before(deadline) {
+	// Runs deferred by host admission are withdrawn and retried each tick; the
+	// hang guard extends while the last attempt was deferred.
+	guard := newHangGuard(15 * time.Second)
+	for {
 		s, e := d.readBackupSchedule(ctx)
 		if e != nil {
 			t.Fatal(e)
+		}
+		_, deferred := deferredRefusal(errors.New(s.LastError))
+		if !guard.observe(deferred) {
+			break
 		}
 		if s.RunCount > 0 && !s.Running {
 			if s.LastError != "" || s.LastBackup == "" {
@@ -283,4 +302,66 @@ func TestBackupScheduleNativeAuthorityExpiresDuringHostAdmission(t *testing.T) {
 		t.Fatal("backup allocated after grant expired", files, e)
 	}
 	assertHostCounts(t, d.live.guard, 0, 0)
+}
+
+// A scheduled run deferred by host admission is withdrawn, like a park: it
+// consumes no run and no interval, allocates no backup, records the refusal,
+// and a later tick runs it.
+func TestBackupScheduleDeferredAdmissionConsumesNoRun(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	d, e := Start(ctx, cfg)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer stop(t, d)
+	scheduleGrant(t, d, "deferred-backup")
+	s := backupScheduleCall(t, d, BackupScheduleParams{Action: "configure", IntervalSeconds: 3600, AuthorizingMessage: "deferred-backup"})
+	d.live.guard.observe = func(context.Context) (hostguard.Sample, error) { return hostSample(20, 0.5), nil }
+	if reason, deferred := deferredRefusal(d.tickBackupSchedule(ctx, s.NextAt)); !deferred || reason != "IOPressure" {
+		t.Fatal("pressure did not defer the run", reason)
+	}
+	after := backupScheduleCall(t, d, BackupScheduleParams{Action: "status"})
+	if after.State != "active" || after.Running || after.RunCount != 0 || !after.NextAt.Equal(s.NextAt) || !strings.Contains(after.LastError, "host admission: IOPressure") || after.LastAttemptPath != "" {
+		t.Fatal("deferred run consumed", after)
+	}
+	if files, e := os.ReadDir(filepath.Join(d.layout.Root, "backup")); e != nil || len(files) != 0 {
+		t.Fatal("deferred run allocated a backup", files, e)
+	}
+	d.live.guard.observe = func(context.Context) (hostguard.Sample, error) { return hostSample(1, 0.5), nil }
+	if e = d.tickBackupSchedule(ctx, s.NextAt); e != nil {
+		t.Fatal(e)
+	}
+	after = backupScheduleCall(t, d, BackupScheduleParams{Action: "status"})
+	if after.RunCount != 1 || after.LastError != "" || after.LastBackup == "" || !after.NextAt.After(s.NextAt) {
+		t.Fatal("deferred run not retried", after)
+	}
+}
+
+// A schedule whose runs outlast a short interval still waits a full interval
+// after each completion, so its runs never follow each other back to back and
+// a control or status read always finds it idle between runs.
+func TestBackupScheduleIntervalRunsFromCompletion(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	d, e := Start(ctx, cfg)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer stop(t, d)
+	scheduleGrant(t, d, "creation")
+	backupScheduleCall(t, d, BackupScheduleParams{Action: "configure", IntervalSeconds: 1, AuthorizingMessage: "creation"})
+	deadline := time.Now().Add(2 * time.Minute)
+	for {
+		s := backupScheduleCall(t, d, BackupScheduleParams{Action: "status"})
+		if s.RunCount >= 1 && !s.Running {
+			if s.NextAt.Before(s.LastFinished.Add(time.Second)) {
+				t.Fatal("next run due before an interval after completion", s.NextAt, s.LastFinished)
+			}
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("no completed scheduled run", s)
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	backupScheduleCall(t, d, BackupScheduleParams{Action: "pause", AuthorizingMessage: "creation"})
 }

@@ -8,6 +8,9 @@ import (
 // AdoptEffect is exclusively for a trusted daemon receipt after revalidating
 // physical postconditions and retirement. Operator result JSON must not call it.
 func AdoptEffect(input Job, dispatchID string, r Result) (Job, []Event, error) {
+	return adoptEffect(input, dispatchID, r, Event{Kind: "external-effect-adopted", Cause: "audited trusted receipt with remeasured postconditions"})
+}
+func adoptEffect(input Job, dispatchID string, r Result, record Event) (Job, []Event, error) {
 	if !input.Parked || input.Reason != "UncertainDispatch" || input.InFlight == nil || input.InFlight.ID != dispatchID {
 		return input, nil, errors.New("not current uncertain effect")
 	}
@@ -31,6 +34,7 @@ func AdoptEffect(input Job, dispatchID string, r Result) (Job, []Event, error) {
 		return input, nil, errors.New("recorded effect schema invalid")
 	}
 	j.ResolvedDispatches = append(j.ResolvedDispatches, d)
-	event(&j, Event{Kind: "external-effect-adopted", Stage: d.Stage, DispatchID: d.ID, Attempt: d.Attempt, Cause: "audited trusted receipt with remeasured postconditions"}, &events)
+	record.Stage, record.DispatchID, record.Attempt = d.Stage, d.ID, d.Attempt
+	event(&j, record, &events)
 	return j, events, Validate(j)
 }

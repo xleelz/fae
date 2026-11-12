@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -31,26 +31,26 @@ proctype AdapterEffectWithoutPin3(chan child) {
 	bool state = true->
 	int num_msgs->
 	chan child_AnonymousAdapterEffectWithoutPin741 = [1] of {int}->
-	chan child_AnonymousAdapterEffectWithoutPin640 = [1] of {int}->
+	chan child_AnonymousAdapterEffectWithoutPin650 = [1] of {int}->
 	Chandef executed_ch->
 	Chandef validated_ch->
 	run sync_monitor(validated_ch)->
 	run sync_monitor(executed_ch)->
-	run AnonymousAdapterEffectWithoutPin64(validated_ch,executed_ch,child_AnonymousAdapterEffectWithoutPin640)->
-	run receiver(child_AnonymousAdapterEffectWithoutPin640)->
+	run AnonymousAdapterEffectWithoutPin65(executed_ch,validated_ch,child_AnonymousAdapterEffectWithoutPin650)->
+	run receiver(child_AnonymousAdapterEffectWithoutPin650)->
 	run AnonymousAdapterEffectWithoutPin74(validated_ch,executed_ch,child_AnonymousAdapterEffectWithoutPin741)->
 	run receiver(child_AnonymousAdapterEffectWithoutPin741)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:8:2 */
-	:: executed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:8:2 */->
-	:: executed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:8:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:8:2 */
+	:: executed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:8:2 */->
+	:: executed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:8:2 */ -> 
 		executed_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousAdapterEffectWithoutPin64(Chandef validated_ch;Chandef executed_ch;chan child) {
+proctype AnonymousAdapterEffectWithoutPin65(Chandef executed_ch;Chandef validated_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -58,12 +58,12 @@ proctype AnonymousAdapterEffectWithoutPin64(Chandef validated_ch;Chandef execute
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:6:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:6:14 */
 	:: validated_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:6:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:6:14 */
 	:: validated_ch.sync!false -> 
 		validated_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:6:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:6:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -76,12 +76,12 @@ proctype AnonymousAdapterEffectWithoutPin74(Chandef validated_ch;Chandef execute
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:7:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:7:14 */
 	:: executed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:7:14 */
 	:: executed_ch.sync!false -> 
 		executed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter.go:7:14 */
 	fi->
 	stop_process: skip->
 	child!0

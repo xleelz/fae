@@ -164,7 +164,7 @@ func TestReviewRemediationUsesLatestReviewerBatch(t *testing.T) {
 	}
 	script := defaults.HappyScript()
 	good := script["spec-review"][0]
-	bad := engine.ScriptStep{Reviews: []json.RawMessage{json.RawMessage(`{"approved":true,"findings":[]}`), json.RawMessage(`{"approved":false,"findings":["fix spec"]}`)}}
+	bad := engine.ScriptStep{Reviews: []json.RawMessage{json.RawMessage(`{"approved":true,"findings":[]}`), json.RawMessage(`{"approved":false,"findings":[{"finding":"fix spec","severity":"blocking"}]}`)}}
 	script["spec-review"] = []engine.ScriptStep{bad, good}
 	for stage, steps := range script {
 		if stage == "spec-review" {

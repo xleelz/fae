@@ -1,0 +1,162 @@
+{
+  "turns": [
+    {
+      "dispatch_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/5",
+      "pane_pid": 439813,
+      "resident_id": "resident-94c4682dd0e0a8ed5cff1510",
+      "server_pid": 439763,
+      "session_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/5/session/0",
+      "task_bound": true
+    },
+    {
+      "dispatch_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/13",
+      "pane_pid": 458261,
+      "resident_id": "resident-1d00cda64e80ab7100250084",
+      "server_pid": 458223,
+      "session_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/13/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-3-attempt-3",
+      "pane_pid": 473397,
+      "resident_id": "resident-58189cd67c1f0ab6175f1c4a",
+      "server_pid": 473362,
+      "session_id": "loop-dogfood-loop-3-attempt-3",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6",
+      "pane_pid": 439584,
+      "resident_id": "resident-f65cceba274b815e330d5cf2",
+      "server_pid": 439547,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6/session/0",
+      "task_bound": true
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9",
+      "pane_pid": 446723,
+      "resident_id": "resident-f65cceba274b815e330d5cf2",
+      "server_pid": 446686,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+      "task_bound": true
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-4-attempt-4",
+      "pane_pid": 473397,
+      "resident_id": "resident-58189cd67c1f0ab6175f1c4a",
+      "server_pid": 473362,
+      "session_id": "loop-dogfood-loop-4-attempt-4",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-2-attempt-2",
+      "pane_pid": 473397,
+      "resident_id": "resident-58189cd67c1f0ab6175f1c4a",
+      "server_pid": 473362,
+      "session_id": "loop-dogfood-loop-2-attempt-2",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/8",
+      "pane_pid": 446954,
+      "resident_id": "resident-94c4682dd0e0a8ed5cff1510",
+      "server_pid": 446909,
+      "session_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/8/session/0",
+      "task_bound": true
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-1-attempt-1",
+      "pane_pid": 473397,
+      "resident_id": "resident-58189cd67c1f0ab6175f1c4a",
+      "server_pid": 473362,
+      "session_id": "loop-dogfood-loop-1-attempt-1",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1",
+      "pane_pid": 430775,
+      "resident_id": "resident-cdb695c3f07ccd47f0b2f719",
+      "server_pid": 430727,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/2",
+      "pane_pid": 433281,
+      "resident_id": "resident-3d08d280c28fc45f93f48213",
+      "server_pid": 433225,
+      "session_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/2/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3",
+      "pane_pid": 433159,
+      "resident_id": "resident-cdb695c3f07ccd47f0b2f719",
+      "server_pid": 433121,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14",
+      "pane_pid": 456349,
+      "resident_id": "resident-7a743faeccab4c2ec063ebb5",
+      "server_pid": 456314,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-5-attempt-5",
+      "pane_pid": 473397,
+      "resident_id": "resident-58189cd67c1f0ab6175f1c4a",
+      "server_pid": 473362,
+      "session_id": "loop-dogfood-loop-5-attempt-5",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5",
+      "pane_pid": 437350,
+      "resident_id": "resident-20131562e74acf00ef37186f",
+      "server_pid": 437281,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/4",
+      "pane_pid": 437121,
+      "resident_id": "resident-0d83e787ef413befef1b5e11",
+      "server_pid": 437084,
+      "session_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/4/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2",
+      "pane_pid": 431333,
+      "resident_id": "resident-cdb695c3f07ccd47f0b2f719",
+      "server_pid": 431272,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+      "task_bound": false
+    },
+    {
+      "dispatch_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/1",
+      "pane_pid": 431498,
+      "resident_id": "resident-3d08d280c28fc45f93f48213",
+      "server_pid": 431426,
+      "session_id": "provider-beta/d32040e115880926d9fc70a5e0a5d59d99a26421934c3a2ff404e3fdc229bc9a/1/session/0",
+      "task_bound": false
+    }
+  ],
+  "reused": [
+    {
+      "resident_id": "resident-58189cd67c1f0ab6175f1c4a",
+      "server_pid": 473362,
+      "pane_pid": 473397,
+      "sessions": [
+        "loop-dogfood-loop-3-attempt-3",
+        "loop-dogfood-loop-4-attempt-4",
+        "loop-dogfood-loop-2-attempt-2",
+        "loop-dogfood-loop-1-attempt-1",
+        "loop-dogfood-loop-5-attempt-5"
+      ]
+    }
+  ]
+}

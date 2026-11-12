@@ -158,8 +158,11 @@ func TestRetirementNativeAtomicTransferCycleHoldAndReads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if d.jobs["old"].State != "Retired" || d.jobs["next"].State != "Retired" {
-		t.Fatal("retirement not durable")
+	// Retired tasks are read from the plane, not materialised (FAE-CP-009).
+	for _, id := range []string{"old", "next"} {
+		if j, err := d.store.GetJob(ctx, id); err != nil || j.State != "Retired" {
+			t.Fatal("retirement not durable", id, err)
+		}
 	}
 }
 
@@ -180,7 +183,7 @@ func TestRetirementContainedRequiresOwnResolvingReceipt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	j.Base = foreign
+	j.Base, j.Disposition = foreign, domain.Disposition{Mode: domain.Local}
 	executor := engine.NewScripted(defaults.HappyScript())
 	committed := false
 	for n := 0; n < 200; n++ {
@@ -238,11 +241,11 @@ func TestRetirementContainedRequiresOwnResolvingReceipt(t *testing.T) {
 func TestRetirementBoardAndStatusOptIn(t *testing.T) {
 	d := &Daemon{}
 	d.status.Store(statusSnapshot{Tasks: []BoardItem{{JobIdentity: JobIdentity{ID: "a", State: "Retired"}}, {JobIdentity: JobIdentity{ID: "b", State: "Pending"}}}, Counts: map[string]int{"Retired": 1, "Pending": 1}, Updated: time.Now()})
-	hidden, err := d.board(json.RawMessage(`{"limit":1}`))
+	hidden, err := d.board(context.Background(), json.RawMessage(`{"limit":1}`))
 	if err != nil || len(hidden.Items) != 1 || hidden.Items[0].ID != "b" {
 		t.Fatal(hidden, err)
 	}
-	all, err := d.board(json.RawMessage(`{"include_retired":true,"limit":1}`))
+	all, err := d.board(context.Background(), json.RawMessage(`{"include_retired":true,"limit":1}`))
 	if err != nil || len(all.Items) != 1 || all.Items[0].ID != "a" || all.NextCursor != "a" {
 		t.Fatal(all, err)
 	}
@@ -255,7 +258,7 @@ func TestRetirementBoardAndStatusOptIn(t *testing.T) {
 		t.Fatal(normal, full)
 	}
 	// Opt-in must not mutate the atomically shared snapshot for subsequent reads.
-	again, err := d.board(json.RawMessage(`{}`))
+	again, err := d.board(context.Background(), json.RawMessage(`{}`))
 	if err != nil || len(again.Items) != 1 {
 		t.Fatal(again, err)
 	}

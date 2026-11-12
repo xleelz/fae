@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-8b59ffd12ef834f8da1e5579612e6691",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-23T08:38:49.179414102Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-8b59ffd12ef834f8da1e5579612e6691",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-8b59ffd12ef834f8da1e5579612e6691-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "My context shows one task: cron-7d533ed758e7c6b84e828429-0 (workflow \"default\"). Its state is Done.\n\nThe history is 97 entries long and ends with integration-gate going to Done on attempt 9. The task changed alpha() in package sample to return 42 instead of 0, and added the test TestAlpha in alpha_test.go. The recorded artifacts show:\n- **intake:** accepted.\n- **Spec and plan:** both spec reviews approved with only non-blocking findings, and a plan was produced.\n- **test-first:** a RedReport for TestAlpha, expected failure \"got 0 want 42\".\n- **run-red:** exit_code 1, expected_failure true. The red-gate passed and the RED test was frozen (identity 29a6944b\u2026).\n- **implement:** changed only alpha.go, from return 0 to return 42.\n- **First checks on tree a40bc70:** run-tests exit_code 0, compare-red unchanged=true, format new_debt 0. All four reviewers approved, then the oracle approved, then qa passed.\n- **merge:** clean and patch_identical. The tree was reconciled to d90c8e8, so tests, compare, format, all four reviews, oracle and qa were rerun on d90c8e8. All passed.\n- **post-merge-qa:** exit_code 0.\n- **commit and integrate:** commit f53ac2240a15938a6dfb0843adb2604057897d32 covering alpha.go and alpha_test.go, then integrate with landed=true at the same sha.\n\nTwo things in the history are worth noting:\n- Attempt 1 of intake hit a crash-recovery event (execution outcome unknown) and was redispatched.\n- The qa and post-merge-qa runs on d90c8e8 report executed_count 2 with matched_count 1. Earlier runs reported 1 and 1.\n\nThis prophet dispatch is prophet-8b59ffd12ef834f8da1e5579612e6691. It has no operator messages and no task turns.",
+      "reply_to": "prophet-8b59ffd12ef834f8da1e5579612e6691",
+      "time": "2026-10-23T08:39:01.288450922Z",
+      "detail": {
+        "answer": {
+          "reply": "My context shows one task: cron-7d533ed758e7c6b84e828429-0 (workflow \"default\"). Its state is Done.\n\nThe history is 97 entries long and ends with integration-gate going to Done on attempt 9. The task changed alpha() in package sample to return 42 instead of 0, and added the test TestAlpha in alpha_test.go. The recorded artifacts show:\n- **intake:** accepted.\n- **Spec and plan:** both spec reviews approved with only non-blocking findings, and a plan was produced.\n- **test-first:** a RedReport for TestAlpha, expected failure \"got 0 want 42\".\n- **run-red:** exit_code 1, expected_failure true. The red-gate passed and the RED test was frozen (identity 29a6944b\u2026).\n- **implement:** changed only alpha.go, from return 0 to return 42.\n- **First checks on tree a40bc70:** run-tests exit_code 0, compare-red unchanged=true, format new_debt 0. All four reviewers approved, then the oracle approved, then qa passed.\n- **merge:** clean and patch_identical. The tree was reconciled to d90c8e8, so tests, compare, format, all four reviews, oracle and qa were rerun on d90c8e8. All passed.\n- **post-merge-qa:** exit_code 0.\n- **commit and integrate:** commit f53ac2240a15938a6dfb0843adb2604057897d32 covering alpha.go and alpha_test.go, then integrate with landed=true at the same sha.\n\nTwo things in the history are worth noting:\n- Attempt 1 of intake hit a crash-recovery event (execution outcome unknown) and was redispatched.\n- The qa and post-merge-qa runs on d90c8e8 report executed_count 2 with matched_count 1. Earlier runs reported 1 and 1.\n\nThis prophet dispatch is prophet-8b59ffd12ef834f8da1e5579612e6691. It has no operator messages and no task turns.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-2c65f9ff523a8d9a6c6e2491240258e4",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-23T08:39:01.64250371Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-2c65f9ff523a8d9a6c6e2491240258e4",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-2c65f9ff523a8d9a6c6e2491240258e4-reply",
+      "author": "prophet",
+      "text": "The supplied context shows two tasks, and both are in the Done state.\n\n1. cron-7d533ed758e7c6b84e828429-0 (workflow: default, revision 2): Done. Its job was to make alpha() return 42, with the test TestAlpha in alpha_test.go. It ran in Local mode and is no longer live. It has 97 history events.\n2. provider-beta (workflow: default, revision 3): Done. Its job was to make beta() return 7, with the test TestBeta in beta_test.go. It ran in Normal mode, is still live, and its destination is main (push namespace fae/dogfood, ticket room local-fixture). It has 67 history events.\n\nHealth totals: 2 tasks, both Done, none active. Nothing is running or held back, and the ticket outbox is empty with no failures. The drive loop is alive at generation 1 after 123 rounds. The plane shows one alert, at error severity, from the controller: cause operator-stop, error <nil>, generation 1, at 2026-10-23T08:35:23Z. Two molecules are listed: 8055ed3f\u202667546 at revision 3 and 5b8543fa\u2026db65 at revision 2.",
+      "reply_to": "prophet-2c65f9ff523a8d9a6c6e2491240258e4",
+      "time": "2026-10-23T08:39:08.566141799Z",
+      "detail": {
+        "answer": {
+          "reply": "The supplied context shows two tasks, and both are in the Done state.\n\n1. cron-7d533ed758e7c6b84e828429-0 (workflow: default, revision 2): Done. Its job was to make alpha() return 42, with the test TestAlpha in alpha_test.go. It ran in Local mode and is no longer live. It has 97 history events.\n2. provider-beta (workflow: default, revision 3): Done. Its job was to make beta() return 7, with the test TestBeta in beta_test.go. It ran in Normal mode, is still live, and its destination is main (push namespace fae/dogfood, ticket room local-fixture). It has 67 history events.\n\nHealth totals: 2 tasks, both Done, none active. Nothing is running or held back, and the ticket outbox is empty with no failures. The drive loop is alive at generation 1 after 123 rounds. The plane shows one alert, at error severity, from the controller: cause operator-stop, error <nil>, generation 1, at 2026-10-23T08:35:23Z. Two molecules are listed: 8055ed3f\u202667546 at revision 3 and 5b8543fa\u2026db65 at revision 2.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

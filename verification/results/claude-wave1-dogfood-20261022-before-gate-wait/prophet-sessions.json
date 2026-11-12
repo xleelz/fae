@@ -1,0 +1,78 @@
+[
+  {
+    "scope": "cron-7d533ed758e7c6b84e828429-0",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-7257ef4c302706b2cd27ace858f6fe74",
+        "task": "cron-7d533ed758e7c6b84e828429-0",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-22T19:30:05.944391348Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-7257ef4c302706b2cd27ace858f6fe74",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-7257ef4c302706b2cd27ace858f6fe74-reply",
+      "task": "cron-7d533ed758e7c6b84e828429-0",
+      "author": "prophet",
+      "text": "My context shows one task: **cron-7d533ed758e7c6b84e828429-0**. Its state is **Done**. Its workflow is `default` and its disposition is Local, not live.\n\nThe task changes `alpha()` in `alpha.go` (package sample) to return 42 instead of 0. It adds one test, `TestAlpha`, in `alpha_test.go`. Only those two files were in scope.\n\n**How it got to Done:**\n- **Intake (attempts 1\u20132):** The first intake dispatch had a crash with an unknown outcome. It was resolved and dispatched again, and the item was accepted.\n- **Spec:** The spec was written. Both spec reviews approved it with only non-blocking findings, and the spec gate passed.\n- **Plan and test-first:** The plan was produced. The RED test was written, and the RED run failed as expected (exit 1, 1 test matched and run, expected_failure=true). The red gate passed and the test was frozen with identity `29a6944b\u2026`.\n- **Implement (tree a40bc70c):** The only code change was in `alpha.go`, `return 0` \u2192 `return 42`. The GREEN run passed (exit 0), and the frozen test was confirmed unchanged. The format check found no new problems (new_debt=0). All four reviews (correctness, quality, security, architecture) passed their gate, the oracle verdict sent it to QA, and QA passed. After a clean merge and passing post-merge QA, commit `93eeccb5\u2026` was made.\n- **First integration attempt:** It did not land because the integration base had moved from `a8d427cd\u2026` to `94efd7c3\u2026`, so the change needed reconciling.\n- **Re-verification (tree d90c8e8d, attempts 3\u201312):** The reconcile was clean and the patch was identical. The tests, frozen-test check, format check, all four reviews, oracle verdict, QA, merge and post-merge QA were all run again, and the gate after each step passed. Commit `8a997d3bc51b0ce7b070900ccb54df3fcc898a56` was made.\n- **Integrate (attempt 13):** The commit landed with sha `8a997d3b\u2026`, which matches the commit. The integration gate passed, so the task moved to Done.\n\n**Things worth knowing:**\n- On tree d90c8e8d, QA and post-merge QA ran 2 tests but matched only 1 (`TestAlpha`). The second test probably came from another task's change brought in when the base moved, but the records don't say which.\n- Commit `93eeccb5\u2026` from the first try never landed. The commit that landed is `8a997d3b\u2026`.\n- A follow-up remains open, and everyone who looked at it marked it non-blocking: the failure message `\"got 0 want 42\"` is fixed text and doesn't show the actual value. The operator specified it and the spec accepts it as a risk.\n\nThe dispatch ID `prophet-7257ef4c302706b2cd27ace858f6fe74` identifies this summary request; it is not a task.",
+      "reply_to": "prophet-7257ef4c302706b2cd27ace858f6fe74",
+      "time": "2026-10-22T19:30:20.857755863Z",
+      "detail": {
+        "answer": {
+          "reply": "My context shows one task: **cron-7d533ed758e7c6b84e828429-0**. Its state is **Done**. Its workflow is `default` and its disposition is Local, not live.\n\nThe task changes `alpha()` in `alpha.go` (package sample) to return 42 instead of 0. It adds one test, `TestAlpha`, in `alpha_test.go`. Only those two files were in scope.\n\n**How it got to Done:**\n- **Intake (attempts 1\u20132):** The first intake dispatch had a crash with an unknown outcome. It was resolved and dispatched again, and the item was accepted.\n- **Spec:** The spec was written. Both spec reviews approved it with only non-blocking findings, and the spec gate passed.\n- **Plan and test-first:** The plan was produced. The RED test was written, and the RED run failed as expected (exit 1, 1 test matched and run, expected_failure=true). The red gate passed and the test was frozen with identity `29a6944b\u2026`.\n- **Implement (tree a40bc70c):** The only code change was in `alpha.go`, `return 0` \u2192 `return 42`. The GREEN run passed (exit 0), and the frozen test was confirmed unchanged. The format check found no new problems (new_debt=0). All four reviews (correctness, quality, security, architecture) passed their gate, the oracle verdict sent it to QA, and QA passed. After a clean merge and passing post-merge QA, commit `93eeccb5\u2026` was made.\n- **First integration attempt:** It did not land because the integration base had moved from `a8d427cd\u2026` to `94efd7c3\u2026`, so the change needed reconciling.\n- **Re-verification (tree d90c8e8d, attempts 3\u201312):** The reconcile was clean and the patch was identical. The tests, frozen-test check, format check, all four reviews, oracle verdict, QA, merge and post-merge QA were all run again, and the gate after each step passed. Commit `8a997d3bc51b0ce7b070900ccb54df3fcc898a56` was made.\n- **Integrate (attempt 13):** The commit landed with sha `8a997d3b\u2026`, which matches the commit. The integration gate passed, so the task moved to Done.\n\n**Things worth knowing:**\n- On tree d90c8e8d, QA and post-merge QA ran 2 tests but matched only 1 (`TestAlpha`). The second test probably came from another task's change brought in when the base moved, but the records don't say which.\n- Commit `93eeccb5\u2026` from the first try never landed. The commit that landed is `8a997d3b\u2026`.\n- A follow-up remains open, and everyone who looked at it marked it non-blocking: the failure message `\"got 0 want 42\"` is fixed text and doesn't show the actual value. The operator specified it and the spec accepts it as a risk.\n\nThe dispatch ID `prophet-7257ef4c302706b2cd27ace858f6fe74` identifies this summary request; it is not a task.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  },
+  {
+    "scope": "",
+    "submission": {
+      "entry": {
+        "sequence": 1,
+        "id": "prophet-9c48ea7a533944c07bcbcfb0cd1300ee",
+        "author": "operator",
+        "text": "Summarize the task IDs and current states visible in your supplied context. Include each visible task ID verbatim in your reply. Propose no actions; set action, task, information and context to empty strings and proposals to an empty array. Do not use tools.",
+        "time": "2026-10-22T19:30:20.939030111Z",
+        "detail": {
+          "action_task": "",
+          "direct": null
+        }
+      },
+      "id": "prophet-9c48ea7a533944c07bcbcfb0cd1300ee",
+      "queued": true
+    },
+    "reply": {
+      "sequence": 2,
+      "id": "prophet-9c48ea7a533944c07bcbcfb0cd1300ee-reply",
+      "author": "prophet",
+      "text": "There are 2 tasks in the supplied context, and both are Done (counts: Done=2, active=0).\n\n1. cron-7d533ed758e7c6b84e828429-0: state Done, revision 2, workflow default, mode Local, not live, 102 history events. Its goal is to make alpha() return 42, with a test named TestAlpha in alpha_test.go. Only alpha.go and alpha_test.go are in scope.\n\n2. provider-beta: state Done, revision 3, workflow default, mode Normal, live, destination main, push namespace fae/dogfood, ticket room local-fixture, 62 history events. Its goal is to make beta() return 7, with a test named TestBeta in beta_test.go. Only beta.go and beta_test.go are in scope.\n\nThe drive is alive (generation 1, 127 rounds). The ticket outbox is empty with no failures. The scheduler is holding back work because of limits: cap=2 and host_guard=6, with no specific tasks named. There is one controller alert of severity error at 2026-10-22T19:26:37Z. Its cause is operator-stop and its error field is <nil>, so it looks like a planned stop rather than a failure.",
+      "reply_to": "prophet-9c48ea7a533944c07bcbcfb0cd1300ee",
+      "time": "2026-10-22T19:30:27.169732818Z",
+      "detail": {
+        "answer": {
+          "reply": "There are 2 tasks in the supplied context, and both are Done (counts: Done=2, active=0).\n\n1. cron-7d533ed758e7c6b84e828429-0: state Done, revision 2, workflow default, mode Local, not live, 102 history events. Its goal is to make alpha() return 42, with a test named TestAlpha in alpha_test.go. Only alpha.go and alpha_test.go are in scope.\n\n2. provider-beta: state Done, revision 3, workflow default, mode Normal, live, destination main, push namespace fae/dogfood, ticket room local-fixture, 62 history events. Its goal is to make beta() return 7, with a test named TestBeta in beta_test.go. Only beta.go and beta_test.go are in scope.\n\nThe drive is alive (generation 1, 127 rounds). The ticket outbox is empty with no failures. The scheduler is holding back work because of limits: cap=2 and host_guard=6, with no specific tasks named. There is one controller alert of severity error at 2026-10-22T19:26:37Z. Its cause is operator-stop and its error field is <nil>, so it looks like a planned stop rather than a failure.",
+          "proposals": [],
+          "action": "",
+          "task": "",
+          "information": "",
+          "context": ""
+        },
+        "outcome": "answered"
+      }
+    }
+  }
+]

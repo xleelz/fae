@@ -42,18 +42,28 @@ func (s *Store) putBlob(ctx context.Context, tx *sql.Tx, content []byte) error {
 	return e
 }
 func (s *Store) GetBlob(ctx context.Context, ref BlobRef) ([]byte, error) {
+	return getBlob(ctx, s.db, ref)
+}
+
+// queryer is a connection or a transaction.
+type queryer interface {
+	QueryContext(context.Context, string, ...any) (*sql.Rows, error)
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
+
+func getBlob(ctx context.Context, q queryer, ref BlobRef) ([]byte, error) {
 	if ref.Size < 0 {
 		return nil, errors.New("invalid blob size")
 	}
 	var size int64
 	var chunks int
-	if e := s.db.QueryRowContext(ctx, `SELECT size,chunks FROM blobs WHERE digest=?`, ref.Digest).Scan(&size, &chunks); e != nil {
+	if e := q.QueryRowContext(ctx, `SELECT size,chunks FROM blobs WHERE digest=?`, ref.Digest).Scan(&size, &chunks); e != nil {
 		return nil, e
 	}
 	if size != ref.Size {
 		return nil, errors.New("blob reference size mismatch")
 	}
-	rows, e := s.db.QueryContext(ctx, `SELECT chunk_index,data FROM blob_chunks WHERE digest=? ORDER BY chunk_index`, ref.Digest)
+	rows, e := q.QueryContext(ctx, `SELECT chunk_index,data FROM blob_chunks WHERE digest=? ORDER BY chunk_index`, ref.Digest)
 	if e != nil {
 		return nil, e
 	}

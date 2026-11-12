@@ -12,7 +12,8 @@
           "provenance": true,
           "fields": {
             "executed_count": 3,
-            "exit_code": 0
+            "exit_code": 0,
+            "fresh_build": true
           }
         }
       ]

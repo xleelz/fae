@@ -1,0 +1,1626 @@
+[
+  {
+    "id": "gobra:cron",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "cron/admission.go"
+    },
+    "requirements": [
+      "FAE-CLI-022"
+    ],
+    "production": {
+      "path": "cron/admission.go",
+      "function": "CanAdmit",
+      "call_sites": [
+        {
+          "path": "cron/cron.go",
+          "function": "Due"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanAdmit",
+        "TestAnchoredDueAndExclusiveEnd",
+        "TestBoundedCatchUpAndPause"
+      ],
+      "note": "truth table; Schedule.Due admits anchored occurrences before the exclusive end"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return active && due && beforeEnd && pinned",
+        "weakened": "return active && due && pinned"
+      },
+      "refusal_tests": [
+        "TestCanAdmit",
+        "TestBoundedCatchUpAndPause"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCronLifecycleAndRoundBound",
+        "TestCronPinningCatchUpAndRestart"
+      ],
+      "path": "Start -> Schedule RPC create/pause/retire; d.dispatchCrons (called directly under d.mu) -> cron.Schedule.Due -> CanAdmit; paused/retired schedules admit nothing, ended schedule completes"
+    },
+    "status": "native-evidenced",
+    "limits": "Predicate over derived booleans; cron remains Local-only per TESTING.md. Requirement mapping is limited to the named predicate and cited tests; no complete requirement acceptance is claimed."
+  },
+  {
+    "id": "gobra:controller",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controller/guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-001",
+      "FAE-CTL-002",
+      "FAE-CTL-010"
+    ],
+    "production": {
+      "path": "controller/guard.go",
+      "function": "CanEnterMaintenance",
+      "call_sites": [
+        {
+          "path": "daemon/controller.go",
+          "function": "controllerAction"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanEnterMaintenance"
+      ],
+      "note": "exhaustive 32-case truth table"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return clearEffects && (!whenClear || clearQA) && (clearOverlap || acknowledged)",
+        "weakened": "return (!whenClear || clearQA) && (clearOverlap || acknowledged)"
+      },
+      "refusal_tests": [
+        "TestCanEnterMaintenance"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestControllerMaintenanceAuditedDrainRestart",
+        "TestControllerFinishesDrainAtQueuedEffectCheckpoint"
+      ],
+      "path": "Start -> call(Controller prepare) -> controllerAction -> controller.CanEnterMaintenance; accept path writes marker (refusal path via daemon not asserted natively)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native tests exercise the accept path; refusal inputs (unsafe effects, QA, overlap) are unit-only. Requirement mapping is limited to the named predicate and cited tests; no complete requirement acceptance is claimed."
+  },
+  {
+    "id": "gobra:deployment",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controller/deployment_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-001"
+    ],
+    "production": {
+      "path": "controller/deployment_guard.go",
+      "function": "MayReleaseOverlap",
+      "call_sites": [
+        {
+          "path": "daemon/deployment.go",
+          "function": "deploymentHolds"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestOverlapProtection",
+        "TestDeploymentDurableOverlapHolds"
+      ],
+      "note": "truth table; durable overlap hold released after bound or acknowledgment"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return acknowledged || (expired && !criticalTask && !topNearLimit && !queryFailed)",
+        "weakened": "return acknowledged || (expired && !topNearLimit && !queryFailed)"
+      },
+      "refusal_tests": [
+        "TestOverlapProtection",
+        "TestDeploymentDurableOverlapHolds"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDeploymentDurableOverlapHolds"
+      ],
+      "path": "Start -> d.deploymentHolds (called directly with real plane) -> controller.MayReleaseOverlap; critical, top-near-limit and query-failed holds retained"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test invokes deploymentHolds directly rather than through a full roll RPC."
+  },
+  {
+    "id": "gobra:external",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "external/adoption.go"
+    },
+    "requirements": [
+      "FAE-EXT-002",
+      "FAE-EXT-005",
+      "FAE-EXT-023",
+      "FAE-VCS-012"
+    ],
+    "production": {
+      "path": "external/adoption.go",
+      "function": "CanAdopt",
+      "call_sites": [
+        {
+          "path": "external/external.go",
+          "function": "Match"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestReceiptGuard",
+        "TestPrepareCommitAndIntegrateEnforceCommitIdentityAndContentPolicy"
+      ],
+      "note": "matching performed receipt adopted; truth table"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return identity && pins && named && performed",
+        "weakened": "return identity && pins && named"
+      },
+      "refusal_tests": [
+        "TestReceiptGuard",
+        "TestPrepareCommitAndIntegrateEnforceCommitIdentityAndContentPolicy"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestExternalSIGKILLQueryAdoption",
+        "TestExternalLiveDryRunAndExistingReceipt",
+        "TestLocalGitPushFastForwardContentScanAndIdempotence"
+      ],
+      "path": "Start -> call(ResolveUncertain) -> resolveUncertain -> recordedEffect -> reconcileExternal -> external.Match -> CanAdopt (and drive -> liveExecutor.executeExternal -> external.Match); exactly one POST asserted"
+    },
+    "status": "native-evidenced",
+    "limits": "HTTP fixture adapter only; no vendor conformance."
+  },
+  {
+    "id": "gobra:schema",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "external/schema_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-022"
+    ],
+    "production": {
+      "path": "external/schema_guard.go",
+      "function": "CanUseSchemaPin",
+      "call_sites": [
+        {
+          "path": "external/schema.go",
+          "function": "ValidatePins"
+        },
+        {
+          "path": "external/schema.go",
+          "function": "ValidateTemplatePins"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestSchemaPinGuard",
+        "TestDiscoveredPinValidation",
+        "TestTemplatePinsRequireConcreteRuntimeValidation",
+        "TestStartupExternalSchemaPins"
+      ],
+      "note": "declared pin keys validate against discovered schema"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return declared",
+        "weakened": "return true"
+      },
+      "refusal_tests": [
+        "TestSchemaPinGuard",
+        "TestDiscoveredPinValidation",
+        "TestTemplatePinsRequireConcreteRuntimeValidation",
+        "TestStartupExternalSchemaPins"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestAdapterNativeInstallRestartAndFailures"
+      ],
+      "path": "Start -> call(AdapterPut) -> adapterInstallRPC -> putAdapter -> ValidateExternalSchemas -> Discovery.DiscoverTemplate -> discover -> ValidatePins -> CanUseSchemaPin; unknown pin key install refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Fixture schema catalogs only."
+  },
+  {
+    "id": "gobra:review",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "external/review_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-011"
+    ],
+    "production": {
+      "path": "external/review_guard.go",
+      "function": "MayAdvanceReview",
+      "call_sites": [
+        {
+          "path": "external/review.go",
+          "function": "EvaluateReview"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestReviewDeclaredGates"
+      ],
+      "note": "no direct predicate test; EvaluateReview table covers green publish/merge and refusals"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return requiredPass && commentsClear && knownStatus",
+        "weakened": "return requiredPass && knownStatus"
+      },
+      "refusal_tests": [
+        "TestReviewDeclaredGates"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReviewWorkflowActualRemediationAndRevision",
+        "TestReviewLifecycleNativeRestartAndGates"
+      ],
+      "path": "Start -> drive -> liveExecutor.Execute -> executeReview -> external.EvaluateReview -> MayAdvanceReview (blocking comment holds merge until revision 2); lifecycle test calls executeReview directly on a started daemon (blocked merge refused)"
+    },
+    "status": "native-evidenced",
+    "limits": "Predicate has no direct truth-table test; evidence is through EvaluateReview."
+  },
+  {
+    "id": "gobra:ticket",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "external/ticket_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-021",
+      "FAE-EXT-005"
+    ],
+    "production": {
+      "path": "external/ticket_guard.go",
+      "function": "CanEmitTicket",
+      "call_sites": [
+        {
+          "path": "daemon/ticket.go",
+          "function": "emitTicket"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestTicketGuardTruthTable",
+        "TestTicketOutboxNativeRestart"
+      ],
+      "note": "truth table; ordered live outbox row emitted once"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !started && !emitted && ordered && live",
+        "weakened": "return !emitted && ordered && live"
+      },
+      "refusal_tests": [
+        "TestTicketGuardTruthTable",
+        "TestTicketOutboxNativeRestart"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTicketOutboxNativeRestart",
+        "TestDynamicAdapterTicketOutboxRecovery"
+      ],
+      "path": "testTicketOutboxNative: Start -> d.driveTaskTickets (direct) -> emitTicket -> external.CanEmitTicket; started row with absent query refuses replay, posts stay 1"
+    },
+    "status": "native-evidenced",
+    "limits": "Local HTTP fixture; live input is Disposition.AllowsExternalEffects (Normal and live)."
+  },
+  {
+    "id": "gobra:authority",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/authority_guard.go"
+    },
+    "requirements": [
+      "FAE-OPS-001",
+      "FAE-ARC-005"
+    ],
+    "production": {
+      "path": "daemon/authority_guard.go",
+      "function": "MayPerformAction",
+      "call_sites": [
+        {
+          "path": "daemon/authority.go",
+          "function": "authorizePrincipal"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestPermissionTableEveryActorAndAction"
+      ],
+      "note": "every actor x action through api server; truth table"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return authenticated && known && allowed",
+        "weakened": "return known && allowed"
+      },
+      "refusal_tests": [
+        "TestPermissionTableEveryActorAndAction"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestAuthorityNativeConsumptionAndDelegation"
+      ],
+      "path": "Start -> authenticated delegated RPC -> handleDirect -> authorizePrincipal -> MayPerformAction; workflow-role mutation refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Predicate assumes derived authenticated/known/allowed inputs. Requirement mapping is limited to the named predicate and cited tests; no complete requirement acceptance is claimed."
+  },
+  {
+    "id": "gobra:control",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "engine/control_guard.go"
+    },
+    "requirements": [
+      "FAE-OPS-010",
+      "FAE-WF-023"
+    ],
+    "production": {
+      "path": "engine/control_guard.go",
+      "function": "CanChangeTask",
+      "call_sites": [
+        {
+          "path": "engine/control.go",
+          "function": "ApplyControl"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestTaskDeferDeadlineAndPriorityGuard",
+        "TestTaskControlsLegalSourcesAndTerminalRefusals"
+      ],
+      "note": "truth table; legal controls apply"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !terminal && (!inFlight || allowsInFlight)",
+        "weakened": "return !inFlight || allowsInFlight"
+      },
+      "refusal_tests": [
+        "TestTaskDeferDeadlineAndPriorityGuard",
+        "TestTaskControlsLegalSourcesAndTerminalRefusals",
+        "TestTaskControlRefusals"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTaskControlsNativeAuditsRestartAndRefusals"
+      ],
+      "path": "Start -> call(task-control RPC) -> taskControl -> engine.ApplyControl -> CanChangeTask; terminal task controls refused"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:readstream",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/read_guard.go"
+    },
+    "requirements": [
+      "FAE-API-021",
+      "FAE-API-001",
+      "FAE-API-010",
+      "FAE-API-011",
+      "FAE-API-012",
+      "FAE-API-020"
+    ],
+    "production": {
+      "path": "daemon/read_guard.go",
+      "function": "CanResumeEvents",
+      "call_sites": [
+        {
+          "path": "daemon/event_window.go",
+          "function": "retainedEvents"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestResumeGuard"
+      ],
+      "note": "boundary table: after >= floor resumes"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return after >= floor",
+        "weakened": "return true"
+      },
+      "refusal_tests": [
+        "TestResumeGuard"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestEventWindowNativeResumeRestartAndSlowSubscriber"
+      ],
+      "path": "Start -> call(Events after=0) -> handleReads -> eventRead -> retainedEvents -> CanResumeEvents; event-gap returned below retained floor, resume at floor succeeds"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:prophet",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/prophet_guard.go"
+    },
+    "requirements": [
+      "FAE-OPS-030",
+      "FAE-OPS-031"
+    ],
+    "production": {
+      "path": "daemon/prophet_guard.go",
+      "function": "CanEnactProphet",
+      "call_sites": [
+        {
+          "path": "daemon/prophet.go",
+          "function": "prophetTurn"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestProphetGuardExhaustive"
+      ],
+      "note": "truth table"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return directed && supported",
+        "weakened": "return supported"
+      },
+      "refusal_tests": [
+        "TestProphetGuardExhaustive"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestProphetNativeScopedChatDirectionPagingRestart"
+      ],
+      "path": "Start -> call(ProphetChat) -> prophetRPC -> prophetTurn -> CanEnactProphet; undirected action refused, directed ResumeWithContext applied"
+    },
+    "status": "native-evidenced",
+    "limits": "Scripted Prophet provider in native test."
+  },
+  {
+    "id": "gobra:backlog",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/backlog_guard.go"
+    },
+    "requirements": [
+      "FAE-SCH-002"
+    ],
+    "production": {
+      "path": "daemon/backlog_guard.go",
+      "function": "CanReleaseDependent",
+      "call_sites": [
+        {
+          "path": "daemon/backlog.go",
+          "function": "blockedBacklog"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestBacklogReleaseGuardAndKinds"
+      ],
+      "note": "truth table; blockedBacklog holds blocking dependents until Done, relates edges never hold"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !blocking || prerequisiteDone",
+        "weakened": "return true"
+      },
+      "refusal_tests": [
+        "TestBacklogReleaseGuardAndKinds"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBacklogNativeDispatchWaitsForDone"
+      ],
+      "path": "Start -> call(BacklogAdmit) -> drive dispatch -> blockedBacklog -> CanReleaseDependent; dependent stays Pending across restart until prerequisite Done"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:restart",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/restart_guard.go"
+    },
+    "requirements": [
+      "FAE-OPS-010",
+      "FAE-VCS-003"
+    ],
+    "production": {
+      "path": "daemon/restart_guard.go",
+      "function": "CanRestartWorkspace",
+      "call_sites": [
+        {
+          "path": "daemon/task_controls.go",
+          "function": "checkControlWorkspace"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestRestartGuard"
+      ],
+      "note": "truth table"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return headKnown && treeKnown",
+        "weakened": "return headKnown"
+      },
+      "refusal_tests": [
+        "TestRestartGuard"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch"
+      ],
+      "path": "Start -> call(RestartWithInformation) -> taskControl -> liveExecutor.checkControlWorkspace -> CanRestartWorkspace; foreign HEAD and tampered tree refused, exact HEAD/tree accepted"
+    },
+    "status": "native-evidenced",
+    "limits": "HEAD/tree observations come from Git/broker; predicate proof assumes them."
+  },
+  {
+    "id": "gobra:retirement",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/retirement_guard.go"
+    },
+    "requirements": [
+      "FAE-OPS-011",
+      "FAE-OPS-012"
+    ],
+    "production": {
+      "path": "daemon/retirement_guard.go",
+      "function": "CanRetireContained",
+      "call_sites": [
+        {
+          "path": "daemon/retirement.go",
+          "function": "validateRetirement"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestRetirementReleaseAndContainmentGuard",
+        "TestRetirementContainedRequiresOwnResolvingReceipt"
+      ],
+      "note": "own commit or own landing SHA accepted as contained"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return resolves && owned",
+        "weakened": "return resolves"
+      },
+      "refusal_tests": [
+        "TestRetirementReleaseAndContainmentGuard",
+        "TestRetirementContainedRequiresOwnResolvingReceipt"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestRetirementNativeAtomicTransferCycleHoldAndReads"
+      ],
+      "path": "Start -> call(Retire) -> taskControl -> validateRetirement -> CanRetireContained; unresolved 'contained deadbeef' refused without mutation"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test asserts refusal only; accepted contained retirement is exercised by TestRetirementContainedRequiresOwnResolvingReceipt without a started daemon. Integration-subject fallback (FAE-OPS-012) absent per HANDOFF."
+  },
+  {
+    "id": "gobra:target",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/target_guard.go"
+    },
+    "requirements": [
+      "FAE-WF-035"
+    ],
+    "production": {
+      "path": "daemon/target_guard.go",
+      "function": "TargetCommandAuthorized",
+      "call_sites": [
+        {
+          "path": "daemon/target.go",
+          "function": "pinTarget"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestTargetSchemaAndExactCommandPolicy"
+      ],
+      "note": "truth table; exact allowed command vectors"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return bound && allowed",
+        "weakened": "return bound"
+      },
+      "refusal_tests": [
+        "TestTargetSchemaAndExactCommandPolicy"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTargetNativeGovernancePinningRetirement"
+      ],
+      "path": "Start -> call(Admit) -> admit -> pinTarget -> TargetCommandAuthorized; admission against restrictive revision refused, pinned revision unchanged"
+    },
+    "status": "native-evidenced",
+    "limits": "Covers allowlist of literal argv only; typed artifact binding for FAE-WF-035 is absent per HANDOFF."
+  },
+  {
+    "id": "gobra:prophet-route",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/prophet_route_guard.go"
+    },
+    "requirements": [
+      "FAE-RT-009",
+      "FAE-RT-010",
+      "FAE-OPS-032"
+    ],
+    "production": {
+      "path": "daemon/prophet_route_guard.go",
+      "function": "CanFailoverProphet",
+      "call_sites": [
+        {
+          "path": "daemon/prophet_routes.go",
+          "function": "routeProphet"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestProphetFailoverGuard",
+        "TestProphetRouteFailoverSafety"
+      ],
+      "note": "truth table; ordered failover after observation and retirement"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return observed && retired && withinBudget",
+        "weakened": "return retired && withinBudget"
+      },
+      "refusal_tests": [
+        "TestProphetFailoverGuard",
+        "TestProphetRouteFailoverSafety"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestProphetRoutesNativeDurableHealthRestart",
+        "TestProphetRoutesNativeLaunchIsolationAndHealth"
+      ],
+      "path": "Start; routeProphet called directly with d.store durable health/observation (and d.runProphet -> routeProphet) -> CanFailoverProphet"
+    },
+    "status": "native-evidenced",
+    "limits": "Native tests call routeProphet/runProphet directly, not via ProphetChat RPC."
+  },
+  {
+    "id": "gobra:normal-target",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/normal_target_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-002"
+    ],
+    "production": {
+      "path": "daemon/normal_target_guard.go",
+      "function": "NormalTargetAuthorized",
+      "call_sites": [
+        {
+          "path": "daemon/normal_target.go",
+          "function": "validateNormalTarget"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestNormalTargetExactPoliciesAndIsolation"
+      ],
+      "note": "exact installed adapter policy accepted; truth table"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return installed && matches",
+        "weakened": "return installed"
+      },
+      "refusal_tests": [
+        "TestNormalTargetExactPoliciesAndIsolation"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestNormalTargetNativePinningRestartAndDrift"
+      ],
+      "path": "Start -> call(TargetConfigPut); d.checkPinnedTarget (direct) -> pinTarget -> validateNormalTarget -> NormalTargetAuthorized; installed endpoint drift refused after restart"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:cron",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/cron.go",
+      "functions": [
+        "CronAdmissionBeforeCursor",
+        "cronCommit"
+      ]
+    },
+    "requirements": [
+      "FAE-CLI-022"
+    ],
+    "production": {
+      "path": "daemon/cron.go",
+      "function": "dispatchCrons"
+    },
+    "positive": {
+      "tests": [
+        "TestCronAdmissionCheckpointCrashGap"
+      ],
+      "note": "committed admission before cursor; replay after restart does not re-admit"
+    },
+    "firing": {
+      "negative_model": "verification/negative/cron.go.txt",
+      "functions": [
+        "CronMissingAdmission"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCronAdmissionCheckpointCrashGap"
+      ],
+      "path": "Start -> call(Schedule create) -> d.dispatchCrons (direct) admission; restart -> dispatchCrons; one audited admission"
+    },
+    "status": "native-evidenced",
+    "limits": "Bounded channel model; durable SQL ordering abstracted."
+  },
+  {
+    "id": "gomela:controller",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/controller.go",
+      "functions": [
+        "ControllerLifecycle",
+        "controllerWorker"
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-001",
+      "FAE-CTL-010"
+    ],
+    "production": {
+      "path": "daemon/controller.go",
+      "function": "controllerAction"
+    },
+    "positive": {
+      "tests": [
+        "TestControllerMaintenanceAuditedDrainRestart",
+        "TestMaintenanceWaitsForDrainAndExactDeath",
+        "TestStartAcceptsOnlyLaunchedPinnedProcess"
+      ],
+      "note": "marker before drain/stop; stop refused while active; acceptance of exact launched process before accept"
+    },
+    "firing": {
+      "negative_model": "verification/negative/controller_missing_acceptance.go.txt",
+      "functions": [
+        "ControllerMissingAcceptance",
+        "controllerMissingWorker"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestControllerMaintenanceAuditedDrainRestart"
+      ],
+      "path": "Start -> call(Controller prepare/stop/accept) -> controllerAction; stop refused with active work, forged/old-identity accept refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Launcher post-start acceptance is client-side (controller.Client.Start) and not driven through a native daemon test."
+  },
+  {
+    "id": "gomela:deployment",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/deployment.go",
+      "functions": [
+        "DeploymentAcceptance",
+        "deploymentWorker"
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-001",
+      "FAE-CTL-002"
+    ],
+    "production": {
+      "path": "controller/controller.go",
+      "function": "Roll"
+    },
+    "positive": {
+      "tests": [
+        "TestBuildGatedPinsCleanSource",
+        "TestDeploymentFastForward",
+        "TestStartAcceptsOnlyLaunchedPinnedProcess"
+      ],
+      "note": "gated clean-source build, fast-forward-only ref, pinned-process acceptance (Roll itself has no direct test)"
+    },
+    "firing": {
+      "negative_model": "verification/negative/deployment.go.txt",
+      "functions": [
+        "DeploymentMissingAcceptance",
+        "deploymentUnaccepted"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDeploymentPreflightFailureIsAuditedWithoutStopping",
+        "TestDeploymentRejectsReplacedStartupExecutable"
+      ],
+      "path": "Start -> controller.Client.Stop -> call(Controller prepare) -> controllerAction; failed preflight records marker without draining"
+    },
+    "status": "native-evidenced",
+    "limits": "No native test performs a complete roll with post-start acceptance; dogfood covers rolls."
+  },
+  {
+    "id": "gomela:external",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/external.go",
+      "functions": [
+        "ExternalQueryBeforeAdoption"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-005",
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "daemon/external.go",
+      "function": "reconcileExternal"
+    },
+    "positive": {
+      "tests": [
+        "TestExternalSIGKILLQueryAdoption",
+        "TestHTTPQueryAndNoRetry"
+      ],
+      "note": "crash after remote effect recovers by query-only adoption"
+    },
+    "firing": {
+      "negative_model": "verification/negative/external.go.txt",
+      "functions": [
+        "ExternalMissingQueryProof"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestExternalSIGKILLQueryAdoption"
+      ],
+      "path": "Start -> call(ResolveUncertain) -> resolveUncertain -> recordedEffect -> reconcileExternal (query only) -> external.Match; posts == 1"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:schema",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/schema.go",
+      "functions": [
+        "SchemaBeforeEffect"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-022"
+    ],
+    "production": {
+      "path": "external/external.go",
+      "function": "requestPath"
+    },
+    "positive": {
+      "tests": [
+        "TestTypedIntentPinsAndSchemaDrift"
+      ],
+      "note": "intent schema validated/rediscovered before request; drifted schema refused before network"
+    },
+    "firing": {
+      "negative_model": "verification/negative/schema.go.txt",
+      "functions": [
+        "MissingSchemaProof"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestExternalSIGKILLQueryAdoption"
+      ],
+      "path": "Start -> resolveUncertain -> reconcileExternal -> external.Query -> requestPath (ValidateIntentSchema + rediscovery before HTTP)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test asserts effect count, not schema-drift refusal; drift refusal is unit-only."
+  },
+  {
+    "id": "gomela:review",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/review.go",
+      "functions": [
+        "ReviewMergeAfterIndependentGates"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-011"
+    ],
+    "production": {
+      "path": "daemon/review_lifecycle.go",
+      "function": "executeReview"
+    },
+    "positive": {
+      "tests": [
+        "TestReviewWorkflowActualRemediationAndRevision",
+        "TestReviewLifecycleNativeRestartAndGates"
+      ],
+      "note": "publish/merge only after checks and addressed blocking comments"
+    },
+    "firing": {
+      "negative_model": "verification/negative/review.go.txt",
+      "functions": [
+        "ReviewMissingCommentProof"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReviewWorkflowActualRemediationAndRevision"
+      ],
+      "path": "Start -> drive -> liveExecutor.Execute -> executeReview; one create, one revision, one publish, one merge"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:ticket",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/ticket.go",
+      "functions": [
+        "TicketOutboxRecovery"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-021",
+      "FAE-EXT-005"
+    ],
+    "production": {
+      "path": "daemon/ticket.go",
+      "function": "emitTicket"
+    },
+    "positive": {
+      "tests": [
+        "TestTicketOutboxNativeRestart",
+        "TestDynamicAdapterTicketOutboxRecovery"
+      ],
+      "note": "Started checkpoint before mutation; restart queries, no replay"
+    },
+    "firing": {
+      "negative_model": "verification/negative/ticket.go.txt",
+      "functions": [
+        "TicketBlindReplay"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTicketOutboxNativeRestart",
+        "TestDynamicAdapterTicketOutboxRecovery"
+      ],
+      "path": "testTicketOutboxNative: Start -> d.driveTaskTickets -> emitTicket; restart and query-only recovery"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:authority",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/authority.go",
+      "functions": [
+        "AuthorityBeforeMutation"
+      ]
+    },
+    "requirements": [
+      "FAE-OPS-001",
+      "FAE-ARC-005"
+    ],
+    "production": {
+      "path": "daemon/rpc.go",
+      "function": "handleDirect"
+    },
+    "positive": {
+      "tests": [
+        "TestAuthorityNativeConsumptionAndDelegation",
+        "TestPermissionTableEveryActorAndAction"
+      ],
+      "note": "authentication and permission precede the mutating handler"
+    },
+    "firing": {
+      "negative_model": "verification/negative/authority.go.txt",
+      "functions": [
+        "AuthorityMissingPermission"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestAuthorityNativeConsumptionAndDelegation"
+      ],
+      "path": "Start -> authenticated RPC -> handleDirect -> authorizePrincipal then AuthorizeAction before handler"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:control",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/control.go",
+      "functions": [
+        "ControlHoldCollectsBeforeResume"
+      ]
+    },
+    "requirements": [
+      "FAE-OPS-010",
+      "FAE-ROB-040"
+    ],
+    "production": {
+      "path": "engine/control.go",
+      "function": "ApplyControl"
+    },
+    "positive": {
+      "tests": [
+        "TestTaskOperatorHoldCollectsAndRecoversInFlight",
+        "TestTaskContextIsAppendOnlyAndFrozenPerDispatch",
+        "TestTaskControlNativeInFlightHoldAndLaterContext"
+      ],
+      "note": "held in-flight completion collected; later context only reaches later briefs"
+    },
+    "firing": {
+      "negative_model": "verification/negative/control.go.txt",
+      "functions": [
+        "ControlHoldDropsCompletion"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTaskControlNativeInFlightHoldAndLaterContext"
+      ],
+      "path": "Start -> call(Escalate/ResumeWithContext) -> taskControl -> engine.ApplyControl; held turn outcome collected"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:readstream",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/readstream.go",
+      "functions": [
+        "IsolatedReadCompletion"
+      ]
+    },
+    "requirements": [
+      "FAE-API-022"
+    ],
+    "production": {
+      "path": "daemon/events.go",
+      "function": "produceEvents"
+    },
+    "positive": {
+      "tests": [
+        "TestEventWindowNativeResumeRestartAndSlowSubscriber"
+      ],
+      "note": "slow subscriber overflows to a gap while fast reader completes"
+    },
+    "firing": {
+      "negative_model": "verification/negative/readstream.go.txt",
+      "functions": [
+        "SlowSubscriberPinsPublisher"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestEventWindowNativeResumeRestartAndSlowSubscriber"
+      ],
+      "path": "Start -> authenticated event stream -> stream/produceEvents; overflow gap with independent fast read"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:prophet",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/prophet.go",
+      "functions": [
+        "ProphetDirectionBeforeAction"
+      ]
+    },
+    "requirements": [
+      "FAE-OPS-030",
+      "FAE-OPS-031"
+    ],
+    "production": {
+      "path": "daemon/prophet.go",
+      "function": "prophetTurn"
+    },
+    "positive": {
+      "tests": [
+        "TestProphetNativeScopedChatDirectionPagingRestart"
+      ],
+      "note": "operator direction precedes enacted action"
+    },
+    "firing": {
+      "negative_model": "verification/negative/prophet.go.txt",
+      "functions": [
+        "ProphetMissingDirection"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestProphetNativeScopedChatDirectionPagingRestart"
+      ],
+      "path": "Start -> call(ProphetChat) -> prophetRPC -> prophetTurn"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:backlog",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/backlog.go",
+      "functions": [
+        "BacklogCommitBeforeRelease"
+      ]
+    },
+    "requirements": [
+      "FAE-SCH-002",
+      "FAE-VCS-008"
+    ],
+    "production": {
+      "path": "daemon/drive.go",
+      "function": "dispatch"
+    },
+    "positive": {
+      "tests": [
+        "TestBacklogNativeDispatchWaitsForDone"
+      ],
+      "note": "dependent dispatched only after prerequisite reaches Done"
+    },
+    "firing": {
+      "negative_model": "verification/negative/backlog.go.txt",
+      "functions": [
+        "BacklogReleaseWithoutCommit"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBacklogNativeDispatchWaitsForDone"
+      ],
+      "path": "Start -> call(BacklogAdmit) -> drive dispatch -> blockedBacklog"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:restart",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/restart.go",
+      "functions": [
+        "RestartAfterCommitReceipt"
+      ]
+    },
+    "requirements": [
+      "FAE-VCS-004",
+      "FAE-OPS-010"
+    ],
+    "production": {
+      "path": "daemon/task_controls.go",
+      "function": "checkControlWorkspace"
+    },
+    "positive": {
+      "tests": [
+        "TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch"
+      ],
+      "note": "restart uses broker-proved execution HEAD; original base retained so own and upstream patches both land"
+    },
+    "firing": {
+      "negative_model": "verification/negative/restart.go.txt",
+      "functions": [
+        "RestartDropsOriginalBase"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch"
+      ],
+      "path": "Start -> call(RestartWithInformation) -> taskControl -> checkControlWorkspace; reconciliation keeps original base"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:retirement",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/retirement.go",
+      "functions": [
+        "RetireTransfersBeforePublish"
+      ]
+    },
+    "requirements": [
+      "FAE-OPS-011"
+    ],
+    "production": {
+      "path": "controlplane/retirement.go",
+      "function": "transferRetiredEdges"
+    },
+    "positive": {
+      "tests": [
+        "TestRetirementNativeAtomicTransferCycleHoldAndReads"
+      ],
+      "note": "superseded-by transfers blocking edges in the retirement transaction"
+    },
+    "firing": {
+      "negative_model": "verification/negative/retirement.go.txt",
+      "functions": [
+        "RetireDropsTransferAcknowledgement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestRetirementNativeAtomicTransferCycleHoldAndReads"
+      ],
+      "path": "Start -> call(Retire superseded-by) -> taskControl -> saveOperatorCheckpoint -> Store.SaveJob -> transferRetiredEdges"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:target",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/target.go",
+      "functions": [
+        "TargetPolicyBeforeCommand"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-035"
+    ],
+    "production": {
+      "path": "daemon/target.go",
+      "function": "checkPinnedTarget"
+    },
+    "positive": {
+      "tests": [
+        "TestTargetNativeGovernancePinningRetirement"
+      ],
+      "note": "pinned target revalidated before use; restrictive later revision does not alter pinned task"
+    },
+    "firing": {
+      "negative_model": "verification/negative/target.go.txt",
+      "functions": [
+        "TargetCommandWithoutPolicy"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestTargetNativeGovernancePinningRetirement"
+      ],
+      "path": "Start -> call(Admit) -> admit -> pinTarget; d.checkPinnedTarget (direct) -> pinTarget"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test does not execute a HostCommand under the pinned target; liveExecutor.resolve calls checkPinnedTarget before dispatch."
+  },
+  {
+    "id": "gomela:prophet_route",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/prophet_route.go",
+      "functions": [
+        "ProphetObservationAndRetirementBeforeFailover"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-009",
+      "FAE-RT-010",
+      "FAE-OPS-032"
+    ],
+    "production": {
+      "path": "daemon/prophet_routes.go",
+      "function": "routeProphet"
+    },
+    "positive": {
+      "tests": [
+        "TestProphetRouteFailoverSafety",
+        "TestProphetRoutesNativeDurableHealthRestart"
+      ],
+      "note": "failover only after durable observation and retirement; uncertain observation stops"
+    },
+    "firing": {
+      "negative_model": "verification/negative/prophet_route.go.txt",
+      "functions": [
+        "ProphetUnknownObservationRefusesFailover"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestProphetRoutesNativeDurableHealthRestart"
+      ],
+      "path": "Start; routeProphet called directly with d.store.ProviderHealth/ObserveProvider"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:normal_target",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/normal_target.go",
+      "functions": [
+        "NormalPolicyBeforeEffect"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-002"
+    ],
+    "production": {
+      "path": "daemon/external.go",
+      "function": "executeExternal"
+    },
+    "positive": {
+      "tests": [
+        "TestDynamicAdapterExternalExecution",
+        "TestNormalTargetNativePinningRestartAndDrift"
+      ],
+      "note": "pinned Normal target checked before external effect; installed drift refused"
+    },
+    "firing": {
+      "negative_model": "verification/negative/normal_target.go.txt",
+      "functions": [
+        "NormalEffectWithoutPolicy"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDynamicAdapterExternalExecution"
+      ],
+      "path": "Start -> d.live.Execute (direct) -> liveExecutor.executeExternal -> checkPinnedTarget before effect"
+    },
+    "status": "native-evidenced",
+    "limits": "Drift refusal is asserted via checkPinnedTarget, not through executeExternal."
+  },
+  {
+    "id": "gobra:gate-pass",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controller/gates_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-030",
+      "FAE-CTL-050",
+      "FAE-ROB-033"
+    ],
+    "production": {
+      "path": "controller/gates_guard.go",
+      "function": "GatePasses",
+      "call_sites": [
+        {
+          "path": "controller/gates.go",
+          "function": "verdict"
+        },
+        {
+          "path": "controller/gates.go",
+          "function": "LandingGate"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestGateGuardsExhaustive",
+        "TestGateSelfTestProvesEveryGateCanFail",
+        "TestHunkCompileFrozenQAAndLandingGates",
+        "TestLandCleanLandingRecordsEveryGateCount"
+      ],
+      "note": "exhaustive truth table; every built-in gate passes a counted input; a clean landing records positive counts"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return failures == 0 && (examined > 0 || !applicable)",
+        "weakened": "return failures == 0"
+      },
+      "refusal_tests": [
+        "TestGateGuardsExhaustive",
+        "TestGateSelfTestProvesEveryGateCanFail",
+        "TestLandZeroMatchFilterHoldsAndKeepsTarget"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires"
+      ],
+      "path": "Start -> RPC Land -> runLanding -> controller.LandBatch -> Land -> built-in gates -> verdict/LandingGate -> controller.GatePasses; accept path (refusals unit/self-test only)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native landing exercises the accept path; vacuous and failing inputs are unit and self-test only."
+  },
+  {
+    "id": "gobra:landing-floor",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controller/gates_guard.go"
+    },
+    "requirements": [
+      "FAE-HOST-007",
+      "FAE-CTL-030",
+      "FAE-CTL-051"
+    ],
+    "production": {
+      "path": "controller/gates_guard.go",
+      "function": "MeetsLandingFloor",
+      "call_sites": [
+        {
+          "path": "controller/gates.go",
+          "function": "MemoryGate"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestGateGuardsExhaustive",
+        "TestMemoryIOAndOverlapGates",
+        "TestHeavyAdmissionMemoryFloorIOGateAndControllerClass"
+      ],
+      "note": "floor boundary table; heavy admission waits on memory below the 12 GiB landing floor"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return known && floor > 0 && available >= floor",
+        "weakened": "return known && available >= floor"
+      },
+      "refusal_tests": [
+        "TestGateGuardsExhaustive",
+        "TestHeavyAdmissionMemoryFloorIOGateAndControllerClass"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires"
+      ],
+      "path": "Start -> RPC Land -> landingAdmission -> HeavyAdmission.Acquire -> controller.MemoryGate -> controller.MeetsLandingFloor; accept path with a stubbed high-memory sample"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is the accept path; the timed-out memory wait is shown on HeavyAdmission directly."
+  },
+  {
+    "id": "gobra:advance-target",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controller/gates_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-030",
+      "FAE-CTL-031",
+      "FAE-CTL-032"
+    ],
+    "production": {
+      "path": "controller/gates_guard.go",
+      "function": "CanAdvanceTarget",
+      "call_sites": [
+        {
+          "path": "controller/land.go",
+          "function": "Land"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestGateGuardsExhaustive",
+        "TestLandCleanLandingRecordsEveryGateCount"
+      ],
+      "note": "truth table; a clean landing advances the target by fast-forward"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return gatesPassed && exactTip && targetUnchanged && ownWork",
+        "weakened": "return gatesPassed && exactTip && ownWork"
+      },
+      "refusal_tests": [
+        "TestGateGuardsExhaustive",
+        "TestLandZeroMatchFilterHoldsAndKeepsTarget",
+        "TestLandSalvageTrailAndDroppedProductionHunk",
+        "TestLandBatchStopsAtFirstHold"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires"
+      ],
+      "path": "Start -> RPC Land -> runLanding -> controller.LandBatch -> Land -> controller.CanAdvanceTarget -> fastForward of the operator branch"
+    },
+    "status": "native-evidenced",
+    "limits": "A target moved concurrently between the gate run and the write is shown only by the truth table."
+  },
+  {
+    "id": "gobra:deploy-gated",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controller/gates_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-002",
+      "FAE-CTL-033"
+    ],
+    "production": {
+      "path": "controller/gates_guard.go",
+      "function": "MayDeployGated",
+      "call_sites": [
+        {
+          "path": "daemon/gates.go",
+          "function": "verifyGatedTip"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestGateGuardsExhaustive",
+        "TestGatedProofIsTheOnlyDeployableGatedTip"
+      ],
+      "note": "truth table; a recorded landing proof makes exactly its gated tip deployable"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return gatedNamespace && proofRecorded && proofTip",
+        "weakened": "return gatedNamespace && proofRecorded"
+      },
+      "refusal_tests": [
+        "TestGateGuardsExhaustive",
+        "TestGatedProofIsTheOnlyDeployableGatedTip",
+        "TestRollRefusesGatedReferenceWithoutLandingProof"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestRollRefusesGatedReferenceWithoutLandingProof",
+        "TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires"
+      ],
+      "path": "Start -> RPC Controller prepare -> rollOverlap -> verifyGatedTip -> controller.MayDeployGated refuses a hand-moved gated tip, then accepts it with a proof; the landing test calls verifyGatedTip directly after a real landing"
+    },
+    "status": "native-evidenced"
+  }
+]

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"syscall"
+	"unsafe"
 )
 
 func birth(pid int) (string, error) {
@@ -40,4 +42,20 @@ func exited(pid int) (bool, error) {
 		return false, fmt.Errorf("short proc stat")
 	}
 	return f[0] == "Z", nil
+}
+
+// awaitExit blocks until the direct child pid has exited, leaving it unreaped
+// (waitid WNOWAIT), so Wait need not poll its state (FAE-ARC-002).
+func awaitExit(pid int) error {
+	var info [128]byte // siginfo_t
+	for {
+		_, _, e := syscall.Syscall6(syscall.SYS_WAITID, 1 /* P_PID */, uintptr(pid), uintptr(unsafe.Pointer(&info[0])), syscall.WEXITED|syscall.WNOWAIT, 0, 0)
+		if e == syscall.EINTR {
+			continue
+		}
+		if e != 0 {
+			return e
+		}
+		return nil
+	}
 }

@@ -38,7 +38,7 @@ func setup(t *testing.T) (*Broker, worktree.Binding, string) {
 func gitTest(t *testing.T, dir string, args ...string) string {
 	t.Helper()
 	cmd := exec.Command("git", append([]string{"-C", dir}, args...)...)
-	cmd.Env = cleanEnv(nil)
+	cmd.Env = cleanEnv(nil, dir)
 	cmd.Env = append(cmd.Env, "GIT_AUTHOR_NAME=Tester", "GIT_AUTHOR_EMAIL=test@localhost", "GIT_COMMITTER_NAME=Tester", "GIT_COMMITTER_EMAIL=test@localhost")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -69,13 +69,9 @@ func TestRealGoTestEvidence(t *testing.T) {
 }
 func TestLiteralAllowlistTimeoutAndOverflow(t *testing.T) {
 	b, w, _ := setup(t)
-	ownerRoot, err := filepath.EvalSymlinks(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Setenv("TMPDIR", ownerRoot)
+	ownerRoot := filepath.Dir(w.Path)
 	defer func() {
-		residue, e := filepath.Glob(filepath.Join(ownerRoot, "fae-command-owner-*"))
+		residue, e := filepath.Glob(filepath.Join(ownerRoot, "command-*"))
 		if e != nil || len(residue) != 0 {
 			t.Error("host command ownership residue", residue, e)
 		}
@@ -93,14 +89,16 @@ func TestLiteralAllowlistTimeoutAndOverflow(t *testing.T) {
 	if _, err = b.Run(ctx, w, Command{Argv: []string{"echo", "bad"}, Timeout: time.Second}); err == nil {
 		t.Fatal("allowlist bypass")
 	}
+	// A command killed at its deadline is a timed-out failure, not an error.
 	start := time.Now()
-	if _, err = b.Run(ctx, w, Command{Argv: b.Allowed[1], Timeout: 20 * time.Millisecond}); err == nil || time.Since(start) > 2*time.Second {
-		t.Fatal("timeout", err)
+	if r, err = b.Run(ctx, w, Command{Argv: b.Allowed[1], Timeout: 500 * time.Millisecond}); err != nil || !r.TimedOut || r.ExitCode != -1 || time.Since(start) > 3*time.Second {
+		t.Fatal("timeout", r, err)
 	}
+	// Output past the bound is cut; the run is still evidence (Truncated).
 	b.MaxOutput = 2
 	r, err = b.Run(ctx, w, Command{Argv: argv, Timeout: time.Second})
-	if err == nil {
-		t.Fatalf("overflow accepted %+v", r)
+	if err != nil || !r.Truncated || r.Output != argv[2][:2] || r.ExitCode != 0 {
+		t.Fatalf("overflow %+v %v", r, err)
 	}
 }
 func TestExactCommitIntegrationAndCheckoutPreservation(t *testing.T) {
@@ -135,7 +133,7 @@ func TestExactCommitIntegrationAndCheckoutPreservation(t *testing.T) {
 		t.Fatal(landed, err)
 	}
 	again, err := b.Integrate(ctx, w, c, "refs/heads/fae/integration", base)
-	if err != nil || again.ContainedBy != c.SHA {
+	if err != nil || again.ContainedBy != c.SHA || again.Containment != ContainedAncestor {
 		t.Fatal(again, err)
 	}
 	if got := gitTest(t, repo, "rev-parse", "HEAD"); got != base {
@@ -266,20 +264,73 @@ func TestFreshCompileObservation(t *testing.T) {
 
 func TestCommandCancelledBeforeRegistrationRemovesEmptyRegistry(t *testing.T) {
 	b, w, _ := setup(t)
-	root, err := filepath.EvalSymlinks(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Setenv("TMPDIR", root)
+	root := filepath.Dir(w.Path)
 	b.Allowed = [][]string{{"sleep", "5"}}
 	// Timeout begins after worktree validation and tree capture. One nanosecond
 	// expires during shim installation, before StartLinked can register a process.
-	_, err = b.Run(context.Background(), w, Command{Argv: b.Allowed[0], Timeout: time.Nanosecond})
+	_, err := b.Run(context.Background(), w, Command{Argv: b.Allowed[0], Timeout: time.Nanosecond})
 	if err == nil {
 		t.Fatal("expired command launched")
 	}
-	residue, err := filepath.Glob(filepath.Join(root, "fae-command-owner-*"))
+	residue, err := filepath.Glob(filepath.Join(root, "command-*"))
 	if err != nil || len(residue) != 0 {
 		t.Fatal("cancelled launch leaked owner registry", residue, err)
 	}
+}
+
+// FAE-HOST-020: the system temporary directory is RAM-backed. A brokered
+// build or test gets a private scratch TMPDIR on disk beside its worktree,
+// removed on every exit path; ownership registries and index files stay on
+// disk too.
+func TestBrokerScratchOnDiskAndRemoved(t *testing.T) {
+	b, w, _ := setup(t)
+	ram, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("TMPDIR", ram)
+	parent := filepath.Dir(w.Path)
+	for _, exit := range []string{"0", "3"} {
+		argv := []string{"/bin/sh", "-c", `printf %s "$TMPDIR" && mkdir "$TMPDIR/scratch" && exit ` + exit}
+		b.Allowed = [][]string{argv}
+		r, err := b.Run(context.Background(), w, Command{Argv: argv, Timeout: 5 * time.Second})
+		if err != nil || r.ExitCode != map[string]int{"0": 0, "3": 3}[exit] {
+			t.Fatalf("%+v %v", r, err)
+		}
+		if filepath.Dir(r.Output) != parent || !strings.HasPrefix(filepath.Base(r.Output), "command-tmp-") {
+			t.Fatal("scratch not beside the worktree", r.Output)
+		}
+		if _, err = os.Stat(r.Output); !os.IsNotExist(err) {
+			t.Fatal("scratch survived exit", exit, err)
+		}
+	}
+	if _, err = b.Snapshot(context.Background(), w, []string{"x.go"}); err != nil {
+		t.Fatal(err)
+	}
+	if residue, err := os.ReadDir(ram); err != nil || len(residue) != 0 {
+		t.Fatal("system temporary directory used", residue, err)
+	}
+}
+
+// A HostCommand environment policy sets exactly its declared variables over
+// the sanitized base; daemon variables of the same kind are not inherited.
+func TestCommandEnvironmentPolicy(t *testing.T) {
+	b, w, _ := setup(t)
+	t.Setenv("GOFLAGS", "-daemon-leak")
+	b.Allowed = [][]string{{"env"}}
+	r, err := b.Run(context.Background(), w, Command{Argv: b.Allowed[0], Timeout: time.Second})
+	if err != nil || strings.Contains(r.Output, "GOFLAGS=") {
+		t.Fatal("undeclared variable inherited", err)
+	}
+	r, err = b.Run(context.Background(), w, Command{Argv: b.Allowed[0], Timeout: time.Second, Environment: []string{"CGO_ENABLED=0", "GOFLAGS=-mod=mod"}})
+	if err != nil || !strings.Contains(r.Output, "GOFLAGS=-mod=mod\n") || !strings.Contains(r.Output, "CGO_ENABLED=0\n") || strings.Contains(r.Output, "-daemon-leak") {
+		t.Fatal("declared environment not applied", r.Output, err)
+	}
+	t.Setenv("FAE_HOME", "inherited-daemon-home")
+	t.Setenv("FAE_INSTANCE", "inherited-daemon-instance")
+	r, err = b.Run(context.Background(), w, Command{Argv: b.Allowed[0], Timeout: time.Second, Environment: []string{"FAE_HOME=/isolated/test-home", "FAE_INSTANCE=test-fixture"}})
+	if err != nil || !strings.Contains(r.Output, "FAE_HOME=/isolated/test-home\n") || !strings.Contains(r.Output, "FAE_INSTANCE=test-fixture\n") || strings.Contains(r.Output, "inherited-daemon-") {
+		t.Fatal("explicit runtime selection did not override sanitized parent", r.Output, err)
+	}
+
 }

@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -46,12 +46,12 @@ proctype AdapterRetirementLeaksBoundary3(chan child) {
 	run sync_monitor(done_ch)->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:6:2 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:6:2 */
 	:: gate_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:6:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:6:2 */
 	:: gate_ch.sync!false -> 
 		gate_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:6:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:6:2 */
 	fi->
 	run AnonymousAdapterRetirementLeaksBoundary74(gate_ch,done_ch,child_AnonymousAdapterRetirementLeaksBoundary740)->
 	run receiver(child_AnonymousAdapterRetirementLeaksBoundary740)->
@@ -59,16 +59,16 @@ proctype AdapterRetirementLeaksBoundary3(chan child) {
 	run receiver(child_AnonymousAdapterRetirementLeaksBoundary841)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:9:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:9:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:9:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:9:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:9:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:9:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:10:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:10:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:10:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:10:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:10:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:10:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -82,19 +82,19 @@ proctype AnonymousAdapterRetirementLeaksBoundary74(Chandef gate_ch;Chandef done_
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:7:13 */
-	:: gate_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:7:13 */->
-	:: gate_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:7:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:7:13 */
+	:: gate_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:7:13 */->
+	:: gate_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:7:13 */ -> 
 		gate_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:7:21 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:7:21 */
 	:: done_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:7:21 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:7:21 */
 	:: done_ch.sync!false -> 
 		done_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:7:21 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:7:21 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -107,28 +107,28 @@ proctype AnonymousAdapterRetirementLeaksBoundary84(Chandef gate_ch;Chandef done_
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:13 */
-	:: gate_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:13 */->
-	:: gate_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:13 */
+	:: gate_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:13 */->
+	:: gate_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:13 */ -> 
 		gate_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:21 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:21 */
 	:: gate_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:21 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:21 */
 	:: gate_ch.sync!false -> 
 		gate_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:21 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:21 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:30 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:30 */
 	:: done_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:30 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:30 */
 	:: done_ch.sync!false -> 
 		done_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/adapter_retirement.go:8:30 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/adapter_retirement.go:8:30 */
 	fi->
 	stop_process: skip->
 	child!0

@@ -1,0 +1,18 @@
+
+Starting tree validation for 494 commit objects...
+============ Summary ============
+Refs found: 2 pointing to 2 unique starting commits
+Commit objects found: 495 (494 reachable from branches/tags/stashes, 1 unreachable)
+Chunks reachable from branches/tags/stashes: 9747 (unreachable: 820)
+Chunk type breakdown:
+  ADRM: 3
+  STRT: 4
+  RTVL: 495
+  DCMT: 495
+  CMCL: 808
+  DTBL: 2530
+  WRST: 2
+  DSCH: 36
+  TUPM: 3856
+  BLOB: 2338
+No problems found.

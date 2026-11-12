@@ -146,15 +146,16 @@ func TestCompletionIdentityRefusals(t *testing.T) {
 }
 func TestMalformedOutputRetriesAndEscalates(t *testing.T) {
 	script := defaults.HappyScript()
-	script["intake"] = []engine.ScriptStep{{Output: json.RawMessage(`{"accepted":"yes"}`)}, {Output: json.RawMessage(`{"accepted":true,"undeclared":1}`)}, {Output: json.RawMessage(`{"accepted":true,"accepted":false}`)}}
+	malformed := engine.ScriptStep{Output: json.RawMessage(`{"accepted":"yes"}`)}
+	script["intake"] = []engine.ScriptStep{{Output: json.RawMessage(`{"accepted":true,"undeclared":1}`)}, {Output: json.RawMessage(`{"accepted":true,"accepted":false}`)}, malformed, malformed, malformed, malformed}
 	j := drive(t, newJob(t), engine.NewScripted(script), true)
-	if j.State != domain.Escalated || j.Failures["intake"] != 3 || !strings.Contains(j.Reason, "MalformedOutput") {
-		t.Fatal(j.State, j.Reason, j.Failures)
+	if j.State != domain.Escalated || j.EscalationKind != domain.SameGate || j.Counts["intake"] != 6 || !strings.Contains(j.Reason, "MalformedOutput") {
+		t.Fatal(j.State, j.Reason, j.Counts)
 	}
 }
 func TestMissingInputParksWithoutDispatch(t *testing.T) {
 	j := newJob(t)
-	j.State = "implement"
+	j.State = "compare-red"
 	j, d, _, e := engine.Prepare(j)
 	if e != nil || d != nil || !j.Parked || !strings.Contains(j.Reason, "frozen") {
 		t.Fatal(j.Reason, e)
@@ -178,7 +179,7 @@ func TestUncertaintyAndExplicitRecovery(t *testing.T) {
 			t.Fatal(e)
 		}
 	}
-	if j.State != domain.Escalated || j.Reason != "DispatchRecoveryCap" {
+	if j.State != domain.Escalated || j.EscalationKind != domain.DispatchRecoveryExhausted || !strings.HasPrefix(j.Reason, "DispatchRecoveryExhausted: ") {
 		t.Fatal(j.State, j.Reason)
 	}
 }
@@ -307,7 +308,7 @@ func TestRedFailureRoutingAndOracleTargets(t *testing.T) {
 				fields["expected_failure"] = false
 				script["run-red"][0].Output, _ = json.Marshal(fields)
 			} else {
-				script["oracle"][0].Output = []byte(`{"decision":"` + which + `","valid_blocking":1,"rationale":"rework"}`)
+				script["oracle"][0].Output = []byte(`{"approved":false,"findings":[{"finding":"rework","valid":true,"severity":"blocking","target":"` + which + `","rationale":"rework"}],"rationale":"rework"}`)
 			}
 			j := drive(t, newJob(t), engine.NewScripted(script), true)
 			if which == "unknown" {
@@ -353,7 +354,7 @@ func TestGeneratedDurableWorkflowParity10000(t *testing.T) {
 	for iteration := 0; iteration < 10000; iteration++ {
 		size := 1 + rng.Intn(3)
 		want := rng.Intn(4) != 0
-		d := workflow.Document{SchemaVersion: 1, ID: fmt.Sprintf("generated-%d", iteration), Start: "s0", Limits: workflow.Limits{Attempts: 6, TestRuns: 2, ScopeWidens: 1}, Roles: map[string]workflow.Role{"worker": {Instructions: "Fixture", Briefs: map[string]string{"main": "fixture"}, Routes: []workflow.Binding{{Provider: "scripted", Model: "fixture"}}, Scope: "task-bound", Cap: 1, Outputs: []string{"Report"}}}, Artifacts: map[string]workflow.ArtifactType{"Report": {Version: 1, Schema: schema}}, Stages: map[string]workflow.Stage{}}
+		d := workflow.Document{SchemaVersion: 1, ID: fmt.Sprintf("generated-%d", iteration), Start: "s0", Limits: workflow.Limits{Attempts: 6, TestRuns: 2, ScopeWidens: 1}, Roles: map[string]workflow.Role{"worker": {Instructions: "Fixture", Briefs: map[string]string{"default": "fixture"}, Routes: []workflow.Binding{{Provider: "scripted", Model: "fixture"}}, Scope: "task-bound", Cap: 1, Outputs: []string{"Report"}}}, Artifacts: map[string]workflow.ArtifactType{"Report": {Version: 1, Schema: schema}}, Stages: map[string]workflow.Stage{}}
 		script := map[string][]engine.ScriptStep{}
 		for i := 0; i < size; i++ {
 			id := fmt.Sprintf("s%d", i)
@@ -481,5 +482,124 @@ func TestScriptedEvidenceKindPersistsAndCannotRelabel(t *testing.T) {
 	j.ExecutionKind = "live"
 	if engine.Validate(j) == nil {
 		t.Fatal("relabelled job accepted")
+	}
+}
+
+// FAE-WF-004, FAE-VCS-011, FAE-RT-004: an own-hunk-loss refusal before any write
+// escalates MergeOwnHunkLoss and refunds the pre-write attempt and stage visit
+// charges, matching ClassCommitRefusedBeforeWrite.
+func TestOwnHunkLossEscalationRefundsPreWriteAttempt(t *testing.T) {
+	for _, openAttempt := range []bool{false, true} {
+		j, err := engine.NewLive("own-hunk-refund", 1, defaults.Workflow(), "tree")
+		if err != nil {
+			t.Fatal(err)
+		}
+		script := engine.NewScripted(defaults.HappyScript())
+		var wantAttempts int
+		for i := 0; i < 150 && j.State != domain.Escalated && !j.State.Terminal(); i++ {
+			if j.State == "merge" && j.InFlight == nil && openAttempt {
+				j.NewAttempt = true
+			}
+			var d *engine.Dispatch
+			j, d, _, err = engine.Prepare(j)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if d == nil {
+				continue
+			}
+			r, err := script.Execute(context.Background(), *d)
+			if err != nil {
+				t.Fatal(err)
+			}
+			r.ExecutionKind = "live"
+			if d.Stage == "merge" {
+				if openAttempt && !d.AttemptCharged {
+					t.Fatal("expected merge dispatch to charge attempt when NewAttempt is true")
+				}
+				wantAttempts = j.Attempts
+				if d.AttemptCharged {
+					wantAttempts--
+				}
+				if j.Counts["merge"] != 1 {
+					t.Fatalf("before merge completion: merge_count=%d", j.Counts["merge"])
+				}
+				r.Class, r.Output, r.NewTree, r.NewBase, r.Detail = engine.ClassOwnHunkLoss, nil, "", "", "lost own hunk in answer.go"
+			}
+			j, _, err = engine.Complete(j, d.ID, r)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+		if j.State != domain.Escalated || j.EscalationKind != domain.MergeOwnHunkLoss || j.Attempts != wantAttempts || j.Counts["merge"] != 0 || j.InFlight != nil {
+			t.Fatalf("openAttempt=%v: state=%s kind=%s attempts=%d (want %d) merge_count=%d", openAttempt, j.State, j.EscalationKind, j.Attempts, wantAttempts, j.Counts["merge"])
+		}
+	}
+}
+
+// FAE-WF-032: while task A has a slow in-flight turn waiting for completion,
+// independent task B is admitted, dispatched, and collected through all of its
+// stages to Done without blocking on task A.
+func TestTaskBDispatchesAndCollectsDuringTaskASlowTurn(t *testing.T) {
+	doc := defaults.Workflow()
+	taskA, err := engine.New("task-a", 1, doc, "tree-a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	taskA, _, _, err = engine.Prepare(taskA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var dispatchA *engine.Dispatch
+	taskA, dispatchA, _, err = engine.Prepare(taskA)
+	if err != nil || dispatchA == nil || taskA.InFlight == nil {
+		t.Fatalf("task A dispatch not in flight: err=%v dispatch=%v", err, dispatchA)
+	}
+
+	slowTurnStarted := make(chan struct{})
+	releaseSlowTurn := make(chan struct{})
+	type slowCompletion struct {
+		result engine.Result
+		err    error
+	}
+	slowDone := make(chan slowCompletion, 1)
+	scriptA := engine.NewScripted(defaults.HappyScript())
+	go func(d engine.Dispatch) {
+		close(slowTurnStarted)
+		select {
+		case <-releaseSlowTurn:
+		case <-time.After(10 * time.Second):
+		}
+		r, e := scriptA.Execute(context.Background(), d)
+		slowDone <- slowCompletion{result: r, err: e}
+	}(*dispatchA)
+	<-slowTurnStarted
+
+	// While task A's first turn is still in flight and uncollected, admit,
+	// dispatch, and collect task B to completion.
+	taskB, err := engine.New("task-b", 1, doc, "tree-b")
+	if err != nil {
+		t.Fatal(err)
+	}
+	taskB = drive(t, taskB, engine.NewScripted(defaults.HappyScript()), false)
+	if taskB.State != domain.Done {
+		t.Fatalf("task B state=%s reason=%s", taskB.State, taskB.Reason)
+	}
+	if taskA.InFlight == nil || taskA.State != "intake" || len(taskA.Evidence) != 0 {
+		t.Fatalf("task A changed while task B ran: state=%s in_flight=%v evidence=%d", taskA.State, taskA.InFlight, len(taskA.Evidence))
+	}
+
+	close(releaseSlowTurn)
+	compA := <-slowDone
+	if compA.err != nil {
+		t.Fatal(compA.err)
+	}
+	taskA, _, err = engine.Complete(taskA, dispatchA.ID, compA.result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	taskA = drive(t, taskA, scriptA, false)
+	if taskA.State != domain.Done {
+		t.Fatalf("task A state=%s reason=%s", taskA.State, taskA.Reason)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"github.com/xleelz/fae/workspace"
 	"os"
@@ -38,7 +39,11 @@ func git(ctx context.Context, dir string, args ...string) (string, error) {
 	cmd.Env = append(cmd.Env, "GIT_TERMINAL_PROMPT=0", "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=/dev/null")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("git %s: %w: %s", args[0], err, out)
+		name := args[0]
+		if name == "-c" && len(args) > 2 {
+			name = args[2]
+		}
+		return "", fmt.Errorf("git %s: %w: %s", name, err, out)
 	}
 	return strings.TrimSpace(string(out)), nil
 }
@@ -81,13 +86,156 @@ func (m *Manager) Ensure(ctx context.Context, run, task, base string) (Binding, 
 	} else if !os.IsNotExist(err) {
 		return b, err
 	}
+	// A resumed task's branch is adopted with its commits, never re-created
+	// (FAE-VCS-001); only a task with no branch forks from base.
+	if _, err := git(ctx, m.Repository, "rev-parse", "--verify", "--quiet", "refs/heads/"+b.Branch+"^{commit}"); err == nil {
+		return b, m.adopt(ctx, b)
+	}
 	if _, err := git(ctx, m.Repository, "rev-parse", "--verify", base+"^{commit}"); err != nil {
 		return b, err
 	}
-	if _, err := git(ctx, m.Repository, "worktree", "add", "-b", b.Branch, b.Path, base); err != nil {
+	if _, err := git(ctx, m.Repository, "-c", "core.hooksPath=/dev/null", "worktree", "add", "-b", b.Branch, b.Path, base); err != nil {
 		return b, err
 	}
 	return b, m.verify(ctx, b)
+}
+
+// adopt checks out an existing task branch whose directory is gone. A stale
+// registration of this exact path is replaced; a branch checked out by any
+// other worktree, or a locked registration, is refused.
+func (m *Manager) adopt(ctx context.Context, b Binding) error {
+	list, err := git(ctx, m.Repository, "worktree", "list", "--porcelain")
+	if err != nil {
+		return err
+	}
+	registered := false
+	for _, entry := range strings.Split(list, "\n\n") {
+		path, branch, locked := "", "", false
+		for _, line := range strings.Split(entry, "\n") {
+			if strings.HasPrefix(line, "worktree ") {
+				path = strings.TrimPrefix(line, "worktree ")
+			}
+			if strings.HasPrefix(line, "branch ") {
+				branch = strings.TrimPrefix(line, "branch ")
+			}
+			locked = locked || line == "locked" || strings.HasPrefix(line, "locked ")
+		}
+		if path == b.Path {
+			if locked {
+				return fmt.Errorf("locked worktree registration refused")
+			}
+			registered = true
+		} else if branch == "refs/heads/"+b.Branch {
+			return fmt.Errorf("task branch checked out by another worktree")
+		}
+	}
+	args := []string{"-c", "core.hooksPath=/dev/null", "worktree", "add"}
+	if registered {
+		args = append(args, "--force")
+	}
+	if _, err = git(ctx, m.Repository, append(args, b.Path, b.Branch)...); err != nil {
+		return err
+	}
+	return m.verify(ctx, b)
+}
+
+// Refork moves a pristine task worktree from one commit to another: the
+// branch carries no own work, so its base is replaced, never merged. It is
+// idempotent across an interruption between the tree update and the ref CAS.
+// The tree update touches only the task's own index and files, so it runs
+// outside the manager lock and never holds up another task's worktree; the
+// ref CAS re-checks the worktree under the lock.
+func (m *Manager) Refork(ctx context.Context, run, task, from, to string) (Binding, error) {
+	b := m.Binding(run, task)
+	for _, id := range []string{from, to} {
+		if id == "" || strings.HasPrefix(id, "-") {
+			return b, fmt.Errorf("invalid refork commit")
+		}
+	}
+	update, done := false, false
+	err := m.locked(ctx, func() error {
+		if err := m.verify(ctx, b); err != nil {
+			return err
+		}
+		for _, id := range []string{from, to} {
+			if _, err := git(ctx, b.Path, "rev-parse", "--verify", id+"^{commit}"); err != nil {
+				return err
+			}
+		}
+		head, err := git(ctx, b.Path, "rev-parse", "HEAD")
+		if err != nil {
+			return err
+		}
+		if head != from && head != to {
+			return fmt.Errorf("task branch moved: HEAD is neither %s nor %s", from, to)
+		}
+		clean, err := at(ctx, b, head)
+		if err != nil {
+			return err
+		}
+		if head == to {
+			if !clean {
+				return fmt.Errorf("task worktree is not pristine")
+			}
+			done = true
+			return nil
+		}
+		if !clean {
+			// Only the interrupted state, index and files already at to, resumes.
+			if moved, err := at(ctx, b, to); err != nil || !moved {
+				return errors.Join(err, fmt.Errorf("task worktree is not pristine"))
+			}
+		}
+		update = clean
+		return nil
+	})
+	if err != nil || done {
+		return b, err
+	}
+	if update {
+		if _, err = git(ctx, b.Path, "read-tree", "-m", "-u", from, to); err != nil {
+			return b, err
+		}
+	}
+	return b, m.locked(ctx, func() error {
+		if err := m.verify(ctx, b); err != nil {
+			return err
+		}
+		head, err := git(ctx, b.Path, "rev-parse", "HEAD")
+		if err != nil {
+			return err
+		}
+		moved, err := at(ctx, b, to)
+		if err != nil || head != from || !moved {
+			return errors.Join(err, fmt.Errorf("task worktree changed during refork"))
+		}
+		_, err = git(ctx, b.Path, "-c", "core.hooksPath=/dev/null", "update-ref", "refs/heads/"+b.Branch, to, from)
+		return err
+	})
+}
+
+// at reports a task worktree's index and files exactly at commit, with
+// nothing untracked.
+func at(ctx context.Context, b Binding, commit string) (bool, error) {
+	untracked, err := git(ctx, b.Path, "ls-files", "--others", "--exclude-standard")
+	if err != nil || untracked != "" {
+		return false, err
+	}
+	if _, err = git(ctx, b.Path, "diff-index", "--quiet", "--cached", commit, "--"); err != nil {
+		return false, nil
+	}
+	_, err = git(ctx, b.Path, "diff-files", "--quiet")
+	return err == nil, nil
+}
+
+// locked runs f under the manager lock.
+func (m *Manager) locked(ctx context.Context, f func() error) error {
+	unlock, err := m.lock(ctx)
+	if err != nil {
+		return err
+	}
+	defer unlock()
+	return f()
 }
 func (m *Manager) verify(ctx context.Context, b Binding) error {
 	if err := workspace.Contained(m.Root, b.Path); err != nil {

@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"encoding/json"
+	"github.com/xleelz/fae/defaults"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
@@ -61,7 +62,12 @@ func TestAdapterRetirementNativeDiscoveryRaceAndBoundRestart(t *testing.T) {
 	if _, err = call(t, d, "TargetConfigPut", TargetPutParams{ID: "bound-target", Document: target, AuthorizingMessage: "message"}, ""); err != nil {
 		t.Fatal(err)
 	}
-	admission := AdmitParams{ID: "bound-before-retirement", Mode: "Normal", TargetConfig: "bound-target", TargetRevision: 1, Destination: "main", PushNamespace: "fae/fixture", Content: "bound task", AuthorizingMessage: "message"}
+	// The shipped default's Normal sub-workflow needs review and ticket tools
+	// this fixture does not install; bind tasks to its Local projection.
+	if _, err := call(t, d, "WorkflowInstall", InstallParams{ID: "default", Document: defaults.Workflow(), AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	admission := AdmitParams{ID: "bound-before-retirement", Mode: "Normal", DryRun: true, TargetConfig: "bound-target", TargetRevision: 1, Destination: "main", PushNamespace: "fae/fixture", Content: "bound task", AuthorizingMessage: "message"}
 	if _, err = call(t, d, "Admit", admission, admission.ID); err != nil {
 		t.Fatal(err)
 	}

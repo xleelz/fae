@@ -20,6 +20,9 @@ func backupStorageCommand(ctx context.Context, args []string, c common, out io.W
 		}
 		return rpc(ctx, *o, "BackupReplicationUnpin", "", map[string]any{"backup": *backup, "apply": *apply, "plan_digest": *digest, "authorizing_message": o.message}, out)
 	}
+	if len(args) > 1 && isHelp(args[1]) {
+		return subcommandHelp("backup quota", "configure|status", c.json || wantsJSON(args), out)
+	}
 	if len(args) < 2 || (args[1] != "configure" && args[1] != "status") {
 		return usage("backup quota configure|status")
 	}

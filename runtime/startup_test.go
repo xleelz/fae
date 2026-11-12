@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestStartupNonexecutionProof(t *testing.T) {
-	for _, kind := range []string{"missing", "prepared", "deadline", "launched"} {
+	for _, kind := range []string{"missing", "prepared", "deadline", "gate", "launched"} {
 		t.Run(kind, func(t *testing.T) {
 			root, _ := filepath.EvalSymlinks(t.TempDir())
 			d := &Direct{Root: root, Command: []string{"/bin/sh", "-c", "exit 17", "{config}"}, StartTimeout: 30 * time.Millisecond}
@@ -27,6 +28,12 @@ func TestStartupNonexecutionProof(t *testing.T) {
 				d.prepareProcess = func(ctx context.Context, _ *exec.Cmd, _ string) (*processHooks, error) {
 					<-ctx.Done()
 					return nil, ctx.Err()
+				}
+			}
+			if kind == "gate" {
+				// The workload is never released: registration refuses a shared registry.
+				if e := os.Mkdir(filepath.Join(root, ".processes"), 0755); e != nil {
+					t.Fatal(e)
 				}
 			}
 			started := time.Now()

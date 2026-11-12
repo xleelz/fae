@@ -115,7 +115,8 @@ func TestPaneHeldUntilRetirementProof(t *testing.T) {
 	if e != nil || len(rows) != 1 {
 		t.Fatal(rows, e)
 	}
-	assertHostCounts(t, a, 1, 0)
+	// Agent sessions are not heavy ops: they hold their pane, never heavy capacity.
+	assertHostCounts(t, a, 0, 0)
 	if e = a.Retired(ctx, "owned", true); e != nil {
 		t.Fatal(e)
 	}

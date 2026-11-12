@@ -1,0 +1,58 @@
+{
+  "provider": "claude",
+  "model": "claude-opus-5-5",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "2.1.309 (Claude Code)",
+  "adapter": "herdr",
+  "scratch": "/var/tmp/fhd-2gf1yy8p",
+  "status": "failed",
+  "task_ids": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ],
+  "target_configs": {
+    "revision_1": {
+      "id": "dogfood-target",
+      "revision": 1,
+      "hash": "8d432228c927e68edcd42a1ac56930da4e7d4ac93cd94a778bc933bc78a0b0bb",
+      "retired": false
+    },
+    "revision_2": {
+      "id": "dogfood-target",
+      "revision": 2,
+      "hash": "a0634c87d12ca7bf38b09c7b1e9b656302c5a145dbd00bb5e09c2d08ba9e55e7",
+      "retired": false
+    },
+    "pinned_tasks": []
+  },
+  "deferred_host_refusals": [
+    {
+      "command": "workspace review-prepare",
+      "refusal": "host admission: IOPressureHold",
+      "at": "2026-10-24T02:40:51.277112+00:00"
+    }
+  ],
+  "fleet_provisioning": {
+    "performed": 1,
+    "lost_ack_recovered_after_restart": true,
+    "duplicate_mutations": 0,
+    "baseline_after_receipt": true,
+    "idempotent_prepare": true
+  },
+  "dynamic_provisioning": {
+    "adapter_revision": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "53ba12111bab30443825faaad338219f6e375a36afb774a82c08111d39e865bc"
+    },
+    "later_revision": {
+      "id": "dogfood-adapter",
+      "revision": 2,
+      "hash": "eb2fd91b23aab64ca13886ef98f729d8433cd60a3f755b1a71b461ccb9dbed31"
+    },
+    "workspace": "/var/tmp/fhd-2gf1yy8p/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "ready": true,
+    "idempotent_prepare": true
+  },
+  "error": "invalid workflow: [stages.external.role: role planner holds no effect grant for dogfood-effect]\n"
+}

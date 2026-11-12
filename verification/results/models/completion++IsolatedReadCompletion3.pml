@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,7 +30,7 @@ proctype IsolatedReadCompletion3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousIsolatedReadCompletion740 = [1] of {int}->
+	chan child_AnonymousIsolatedReadCompletion760 = [1] of {int}->
 	Chandef done_ch->
 	Chandef fast_ch->
 	Chandef slow_ch->
@@ -45,33 +45,33 @@ proctype IsolatedReadCompletion3(chan child) {
 	fi->
 	run sync_monitor(fast_ch)->
 	run sync_monitor(done_ch)->
-	run AnonymousIsolatedReadCompletion74(slow_ch,fast_ch,done_ch,child_AnonymousIsolatedReadCompletion740)->
-	run receiver(child_AnonymousIsolatedReadCompletion740)->
+	run AnonymousIsolatedReadCompletion76(done_ch,slow_ch,fast_ch,child_AnonymousIsolatedReadCompletion760)->
+	run receiver(child_AnonymousIsolatedReadCompletion760)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:8:2 */
-	:: fast_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:8:2 */->
-	:: fast_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:8:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:8:2 */
+	:: fast_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:8:2 */->
+	:: fast_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:8:2 */ -> 
 		fast_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:9:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:9:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:9:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:9:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:9:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:9:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:10:2 */
-	:: slow_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:10:2 */->
-	:: slow_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:10:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:10:2 */
+	:: slow_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:10:2 */->
+	:: slow_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:10:2 */ -> 
 		slow_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousIsolatedReadCompletion74(Chandef slow_ch;Chandef fast_ch;Chandef done_ch;chan child) {
+proctype AnonymousIsolatedReadCompletion76(Chandef done_ch;Chandef slow_ch;Chandef fast_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -79,30 +79,30 @@ proctype AnonymousIsolatedReadCompletion74(Chandef slow_ch;Chandef fast_ch;Chand
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:14 */
 	:: slow_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:14 */
 	:: slow_ch.sync!false -> 
 		slow_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:14 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:25 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:25 */
 	:: fast_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:25 */
 	:: fast_ch.sync!false -> 
 		fast_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:25 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:36 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:36 */
 	:: done_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:36 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:36 */
 	:: done_ch.sync!false -> 
 		done_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/readstream.go:7:36 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/readstream.go:7:36 */
 	fi->
 	stop_process: skip->
 	child!0

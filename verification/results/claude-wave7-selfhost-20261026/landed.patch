@@ -1,0 +1,62 @@
+From 411ead4e112f92cdcd44ad95690a48ed4cb488be Mon Sep 17 00:00:00 2001
+From: Fae <fae@localhost>
+Date: Mon, 26 Oct 2026 11:52:52 +0000
+Subject: [PATCH] Watchdog: a NaN filesystem threshold falls back to the
+ default
+
+Fae task: task-06e64988ad699684810ed3e92a6a30e1
+Fae dispatch: task-06e64988ad699684810ed3e92a6a30e1/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/19
+---
+ controller/watchdog.go      |  3 ++-
+ controller/watchdog_test.go | 14 ++++++++++++++
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/controller/watchdog.go b/controller/watchdog.go
+index e93ad1b..b606f6b 100644
+--- a/controller/watchdog.go
++++ b/controller/watchdog.go
+@@ -48,7 +48,8 @@ func (w Watchdog) bounds() (int, time.Duration, float64) {
+ 	if window <= 0 {
+ 		window = DefaultRearmWindow
+ 	}
+-	if threshold <= 0 || threshold >= 1 {
++	// NaN fails every comparison, so test the valid range.
++	if !(threshold > 0 && threshold < 1) {
+ 		threshold = DefaultFilesystemThreshold
+ 	}
+ 	return budget, window, threshold
+diff --git a/controller/watchdog_test.go b/controller/watchdog_test.go
+index fee00ae..09f141a 100644
+--- a/controller/watchdog_test.go
++++ b/controller/watchdog_test.go
+@@ -6,6 +6,7 @@ import (
+ 	"encoding/json"
+ 	"errors"
+ 	"fmt"
++	"math"
+ 	"os"
+ 	"path/filepath"
+ 	"strings"
+@@ -191,6 +192,19 @@ func TestWatchdogConfiguredBoundsAndWorkspaceFilesystem(t *testing.T) {
+ 	}
+ }
+ 
++// bounds falls back to the default filesystem threshold for NaN and ±Inf:
++// NaN fails every comparison, so it must not slip past the range check.
++func TestWatchdogBoundsRefusesNonFiniteThreshold(t *testing.T) {
++	for _, v := range []float64{math.NaN(), math.Inf(1), math.Inf(-1)} {
++		if _, _, got := (Watchdog{FilesystemThreshold: v}).bounds(); got != DefaultFilesystemThreshold {
++			t.Fatalf("threshold %v: got %v, want %v", v, got, DefaultFilesystemThreshold)
++		}
++	}
++	if _, _, got := (Watchdog{FilesystemThreshold: 0.5}).bounds(); got != 0.5 {
++		t.Fatalf("threshold 0.5: got %v, want 0.5", got)
++	}
++}
++
+ // FAE-CTL-010, FAE-CLI-001, FAE-OBS-001: the hourly maintenance heartbeat
+ // carries an RFC 3339 time, the instance and the component; under --json it
+ // is a JSON object, so every line the watchdog writes is JSON.
+-- 
+2.55.0
+

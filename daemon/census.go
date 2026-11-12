@@ -93,7 +93,13 @@ func (d *Daemon) census(ctx context.Context, raw json.RawMessage) (any, error) {
 		}
 		proposals[v.ID] = v
 	}
-	jobs := d.censusSnapshots()
+	// The drive's tasks as last published: a census never waits for d.mu
+	// (FAE-ROB-020). Apply re-checks each row's version and digest.
+	published, err := d.publishedTasks()
+	if err != nil {
+		return nil, err
+	}
+	jobs := published.driveJobs
 	a := CensusArtifact{Format: 1, Instance: d.config.Instance, Rows: []CensusRow{}}
 	ids := []string{}
 	for id := range jobs {
@@ -126,7 +132,7 @@ func (d *Daemon) census(ctx context.Context, raw json.RawMessage) (any, error) {
 			if strings.TrimSpace(proposal.Evidence) == "" {
 				return nil, fmt.Errorf("%s requires explicit coverage or ruling evidence", id)
 			}
-			if err := d.validateCensusReason(ctx, jobs, e, proposal.Reason); err != nil {
+			if err := d.validateCensusReason(ctx, published, e, proposal.Reason); err != nil {
 				return nil, err
 			}
 			class, _, _ := engine.ParseRetirement(proposal.Reason)
@@ -172,26 +178,24 @@ func (d *Daemon) censusApply(ctx context.Context, raw json.RawMessage) (any, err
 }
 
 // Read classification uses the captured snapshot; apply validates the current graph.
-func (d *Daemon) validateCensusReason(ctx context.Context, jobs map[string]controlplane.JobSnapshot, e envelope, reason string) error {
+func (d *Daemon) validateCensusReason(ctx context.Context, published statusSnapshot, e envelope, reason string) error {
 	class, reference, err := engine.ParseRetirement(reason)
 	if err != nil {
 		return err
 	}
 	if class == "superseded-by" {
-		if _, ok := jobs[reference]; !ok || reference == e.Job.TaskID {
+		if _, ok := published.driveJobs[reference]; !ok {
+			if _, stored, err := published.publishedJob(ctx, d, reference); err != nil {
+				return err
+			} else if stored {
+				return nil
+			}
+			return errors.New("successor must identify another existing task")
+		}
+		if reference == e.Job.TaskID {
 			return errors.New("successor must identify another existing task")
 		}
 		return nil
 	}
 	return d.validateRetirement(ctx, e, reason)
-}
-
-func (d *Daemon) censusSnapshots() map[string]controlplane.JobSnapshot {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-	jobs := make(map[string]controlplane.JobSnapshot, len(d.jobs))
-	for id, s := range d.jobs {
-		jobs[id] = s
-	}
-	return jobs
 }

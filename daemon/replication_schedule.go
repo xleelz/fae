@@ -13,9 +13,6 @@ import (
 
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controlplane"
-	"github.com/xleelz/fae/engine"
-	"github.com/xleelz/fae/execution"
-	"github.com/xleelz/fae/workflow"
 )
 
 const replicationScheduleKey = "backup-replication-schedule"
@@ -79,6 +76,7 @@ func (d *Daemon) saveReplicationSchedule(ctx context.Context, s ReplicationSched
 	if e != nil {
 		return e
 	}
+	defer d.wakeReplicationSchedule()
 	return d.store.PutMarker(ctx, a, replicationScheduleKey, raw)
 }
 func (d *Daemon) replicationRecurrenceAuthority(ctx context.Context, message string) error {
@@ -137,7 +135,7 @@ func (d *Daemon) backupReplicationScheduleRPC(ctx context.Context, r api.Request
 	if e != nil {
 		return nil, e
 	}
-	if !d.replicationScheduleMu.TryLock() {
+	if !scheduleControlLock(ctx, &d.replicationScheduleMu, &d.replicationControls) {
 		return nil, errors.New("replication schedule running; retry control after current run")
 	}
 	defer d.replicationScheduleMu.Unlock()
@@ -190,17 +188,11 @@ func (d *Daemon) recoverReplicationSchedule(ctx context.Context) error {
 }
 func (d *Daemon) replicationScheduleHeld() (bool, error) {
 	d.mu.Lock()
-	draining := d.draining
-	d.mu.Unlock()
-	if draining {
+	defer d.mu.Unlock()
+	if d.draining {
 		return true, nil
 	}
-	if _, e := os.Stat(filepath.Join(d.layout.Root, "maintenance")); e == nil {
-		return true, nil
-	} else if !os.IsNotExist(e) {
-		return false, e
-	}
-	return false, nil
+	return d.maintenanceHeld()
 }
 func (d *Daemon) scheduleManifest(ctx context.Context, path string) (string, error) {
 	if _, e := d.readBackup(ctx, path); e != nil {
@@ -276,7 +268,7 @@ func (d *Daemon) tickReplicationSchedule(ctx context.Context, now time.Time) err
 	if e != nil || held {
 		return e
 	}
-	if !d.replicationScheduleMu.TryLock() {
+	if !scheduleRunLock(&d.replicationScheduleMu, &d.replicationControls) {
 		return nil
 	}
 	defer d.replicationScheduleMu.Unlock()
@@ -300,7 +292,7 @@ func (d *Daemon) tickReplicationSchedule(ctx context.Context, now time.Time) err
 	if d.live != nil && d.live.guard != nil {
 		sid := fmt.Sprintf("replication-schedule-select-%d-%d", now.UnixNano(), s.RunCount+1)
 		var acquireErr error
-		release, acquireErr = d.live.guard.Acquire(ctx, engine.Dispatch{ID: sid, TaskID: sid, Config: workflow.Stage{Weight: 1}}, execution.Binding{}, engine.Session{ID: sid})
+		release, acquireErr = d.live.guard.AcquireHostIO(ctx, sid)
 		if acquireErr != nil {
 			return acquireErr
 		}
@@ -331,6 +323,7 @@ func (d *Daemon) tickReplicationSchedule(ctx context.Context, now time.Time) err
 		release()
 		return errors.Join(e, saveErr)
 	}
+	unclaimed := s
 	if e == nil {
 		s.Running = s.Pending != nil
 		s.RunCount++
@@ -361,9 +354,26 @@ func (d *Daemon) tickReplicationSchedule(ctx context.Context, now time.Time) err
 		if runErr == nil && result.ManifestSHA256 != s.Pending.ManifestDigest {
 			runErr = errors.New("completed replication differs from selected manifest")
 		}
+		var deferral interface{ AdmissionDeferred() bool }
+		if errors.As(runErr, &deferral) && deferral.AdmissionDeferred() {
+			// Host admission deferred the upload before any write (FAE-HOST-002,
+			// -010). Like a park it consumes no run: the selection stays durable
+			// and a later tick retries it.
+			unclaimed.LastError = runErr.Error()
+			audit.Outcome = "deferred"
+			if e = d.saveReplicationSchedule(ctx, unclaimed, audit); e != nil {
+				return e
+			}
+			return runErr
+		}
 	}
 	s.Running = false
 	s.LastFinished = time.Now().UTC()
+	// The interval runs from completion as well: runs never follow each other
+	// back to back, so controls and status see the schedule idle between runs.
+	if next := s.LastFinished.Add(time.Duration(s.IntervalSeconds) * time.Second); next.After(s.NextAt) {
+		s.NextAt = next
+	}
 	audit.Outcome = "completed"
 	if runErr != nil {
 		s.LastError = runErr.Error()
@@ -377,21 +387,6 @@ func (d *Daemon) tickReplicationSchedule(ctx context.Context, now time.Time) err
 		return e
 	}
 	return runErr
-}
-func (d *Daemon) maintainReplicationSchedule() {
-	defer d.workers.Done()
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-d.ctx.Done():
-			return
-		case now := <-ticker.C:
-			ctx, cancel := context.WithTimeout(d.ctx, 2*time.Minute)
-			_ = d.tickReplicationSchedule(ctx, now)
-			cancel()
-		}
-	}
 }
 
 // Only scheduler code can attach this authority/identity constraint. It is

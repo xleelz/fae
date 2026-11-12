@@ -6,6 +6,7 @@ import (
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/providerhealth"
 	"github.com/xleelz/fae/runtime"
+	"strings"
 	"testing"
 )
 
@@ -14,15 +15,31 @@ type stalledRuntime struct{ retired bool }
 func (s stalledRuntime) Run(context.Context, runtime.Launch) (runtime.Collected, error) {
 	return runtime.Collected{ProcessesRetired: s.retired}, &runtime.TurnError{Class: "stalled", Cause: errors.New("stall")}
 }
+
+// FAE-RT-005: a positively detected stall is retried by default when the
+// turn's effective profile proves restricted effects (handoff, read, edit under
+// the trusted bridge), its processes are retired and its tree is unchanged.
 func TestStallReplayRequiresContractRetirementAndTree(t *testing.T) {
 	for _, tt := range []struct {
 		name                      string
 		trusted, retired, changed bool
-	}{{"safe", true, true, false}, {"untrusted", false, true, false}, {"alive", true, false, false}, {"changed", true, true, true}} {
+		capability                string
+		want                      string
+	}{{"safe", true, true, false, "", "stall-retry"}, {"default", false, true, false, "edit", "stall-retry"}, {"unrestricted", false, true, false, "shell", "uncertain"}, {"alive", false, false, false, "", "uncertain"}, {"changed", false, true, true, "", "uncertain"}, {"trusted-alive", true, false, false, "", "uncertain"}} {
 		t.Run(tt.name, func(t *testing.T) {
 			x, d, _ := fixture(t)
 			x.Runtime = stalledRuntime{tt.retired}
 			x.StallSafeReplay = tt.trusted
+			if tt.capability != "" {
+				resolve := x.Resolve
+				x.Resolve = func(ctx context.Context, d engine.Dispatch) (Binding, error) {
+					b, e := resolve(ctx, d)
+					role := b.Document.Roles["coder"]
+					role.Profile.Allowed = []string{"read", tt.capability}
+					b.Document.Roles["coder"] = role
+					return b, e
+				}
+			}
 			calls := 0
 			x.Tree = func(context.Context, Binding) (string, error) {
 				calls++
@@ -35,12 +52,8 @@ func TestStallReplayRequiresContractRetirementAndTree(t *testing.T) {
 			if e == nil {
 				t.Fatal("missing stall")
 			}
-			want := "uncertain"
-			if tt.name == "safe" {
-				want = "stall-retry"
-			}
-			if r.Class != want {
-				t.Fatal(r.Class, want)
+			if r.Class != tt.want {
+				t.Fatal(r.Class, tt.want)
 			}
 		})
 	}
@@ -74,5 +87,17 @@ func TestStallRecordsTimeoutHealth(t *testing.T) {
 	r, _ := x.Execute(context.Background(), d)
 	if count != 1 || r.Class != "stall-retry" {
 		t.Fatal(count, r.Class)
+	}
+}
+
+func TestRestrictedEffects(t *testing.T) {
+	for allowed, want := range map[string]bool{"": true, "handoff": true, "read,edit,handoff": true, "read,shell": false, "network": false} {
+		var caps []string
+		if allowed != "" {
+			caps = strings.Split(allowed, ",")
+		}
+		if RestrictedEffects(caps) != want {
+			t.Fatal(allowed, want)
+		}
 	}
 }

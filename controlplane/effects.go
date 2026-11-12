@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"time"
 )
 
 // RecordEffect writes an immutable content-addressed effect checkpoint and its
@@ -38,6 +39,16 @@ func (s *Store) RecordEffect(ctx context.Context, name, task, phase string, payl
 		}
 		if _, e = tx.ExecContext(ctx, "INSERT INTO daemon_markers (name,payload_digest,payload_size) VALUES (?,?,?)", name, Digest(canonical), len(canonical)); e != nil {
 			return e
+		}
+		// The checkpoint is authoritative; external_effects projects the call
+		// it records (FAE-EXT-006, FAE-CP-011).
+		if row, ok := effectFromCheckpoint(phase, canonical); ok {
+			if row.Task == "" {
+				row.Task = task
+			}
+			if e = s.upsertEffectTx(ctx, tx, row, time.Now().UTC()); e != nil {
+				return e
+			}
 		}
 		if e = lockEvents(ctx, tx); e != nil {
 			return e

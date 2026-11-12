@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xleelz/fae/controlplane"
+	"github.com/xleelz/fae/hostguard"
 	"os"
 	"path/filepath"
 	"testing"
@@ -25,7 +26,7 @@ func TestProphetRouteValidation(t *testing.T) {
 		}
 	}
 	r, e := prophetRoutes(Config{})
-	if e != nil || len(r) != 1 || r[0].Model != "gpt-6-astra" {
+	if e != nil || len(r) != 1 || r[0].Model != "claude-opus-5-5" || r[0].Provider != "claude" {
 		t.Fatal(r, e)
 	}
 }
@@ -33,6 +34,7 @@ func TestProphetRouteFailoverSafety(t *testing.T) {
 	for _, tc := range []struct {
 		name                                                                 string
 		unhealthy, healthError, observeError, retired, cleanup, nonExecution bool
+		refusedBeforeProvider, refusedBinding                                bool
 		budget, want                                                         int
 		success                                                              bool
 	}{
@@ -44,6 +46,12 @@ func TestProphetRouteFailoverSafety(t *testing.T) {
 		{name: "release-uncertain", retired: true, want: 1},
 		{name: "disabled", retired: true, cleanup: true, budget: -1, want: 1},
 		{name: "pre-provider", retired: true, cleanup: true, nonExecution: true, want: 2, success: true},
+		{name: "bridge-refused-before-provider", retired: true, cleanup: true, refusedBeforeProvider: true, want: 2, success: true},
+		{name: "bridge-refused-binding", retired: true, cleanup: true, refusedBinding: true, want: 2, success: true},
+		// A refused binding spends no failover: with failover disabled
+		// (as in "disabled", where an ordinary failure stops at once) the
+		// next route still runs.
+		{name: "bridge-refused-binding-no-budget", retired: true, cleanup: true, refusedBinding: true, budget: -1, want: 2, success: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			calls, observations := 0, 0
@@ -61,7 +69,14 @@ func TestProphetRouteFailoverSafety(t *testing.T) {
 				if r.Model == "second" {
 					return prophetAttempt{collected: agentruntime.Collected{Output: validProphetReply, ProcessesRetired: true}, cleanupOK: true}
 				}
-				return prophetAttempt{collected: agentruntime.Collected{Output: json.RawMessage(`{}`), ProcessesRetired: tc.retired, NonExecution: tc.nonExecution}, cleanupOK: tc.cleanup, err: errors.New("failed")}
+				var failure error = errors.New("failed")
+				if tc.refusedBeforeProvider {
+					failure = &agentruntime.BridgeRefusal{Class: agentruntime.RefusedBeforeProvider, Detail: "task scope refused"}
+				}
+				if tc.refusedBinding {
+					failure = &agentruntime.BridgeRefusal{Class: agentruntime.RefusedBinding, Detail: "Claude credentials must be supplied explicitly"}
+				}
+				return prophetAttempt{collected: agentruntime.Collected{Output: json.RawMessage(`{}`), ProcessesRetired: tc.retired, NonExecution: tc.nonExecution}, cleanupOK: tc.cleanup, err: failure}
 			}, func(_ context.Context, _ workflow.Binding, _ int, o providerhealth.Outcome) error {
 				observations++
 				if tc.observeError {
@@ -72,7 +87,7 @@ func TestProphetRouteFailoverSafety(t *testing.T) {
 			if calls != tc.want || (err == nil) != tc.success {
 				t.Fatalf("calls=%d err=%v raw=%s", calls, err, raw)
 			}
-			if tc.nonExecution && observations != 1 {
+			if (tc.nonExecution || tc.refusedBeforeProvider || tc.refusedBinding) && observations != 1 {
 				t.Fatal("pre-provider failure charged health")
 			}
 		})
@@ -168,6 +183,9 @@ func TestProphetRoutesNativeLaunchIsolationAndHealth(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer stop(t, d)
+	// Route failover and health accounting are under test, not admission: a
+	// deferred host-admission refusal would fail a route over without a launch.
+	d.live.guard.observe = func(context.Context) (hostguard.Sample, error) { return hostSample(1, 0.5), nil }
 	calls := 0
 	d.live.runner = prophetRouteRunner(func(_ context.Context, l agentruntime.Launch) (agentruntime.Collected, error) {
 		calls++

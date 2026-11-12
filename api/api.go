@@ -25,6 +25,7 @@ import (
 const Version = 1
 const MaxResponseBytes = 1 << 20
 const maxResultBytes = MaxResponseBytes - 1024
+const MethodImportLegacy = "import_legacy"
 
 type RPCError struct {
 	Code    string
@@ -67,6 +68,38 @@ func New(credential []byte, handler Handler) (*Server, error) {
 	}
 	return &Server{token: sha256.Sum256(credential), handler: handler}, nil
 }
+
+// OutsideRepository refuses a secret file inside any Git repository or
+// worktree (FAE-SEC-003): no ancestor of its physical directory may hold .git.
+func OutsideRepository(path string) error {
+	if !filepath.IsAbs(path) {
+		return errors.New("secret file path must be absolute")
+	}
+	dir, err := filepath.EvalSymlinks(filepath.Dir(path))
+	if err != nil {
+		return err
+	}
+	for p := dir; ; p = filepath.Dir(p) {
+		if _, e := os.Lstat(filepath.Join(p, ".git")); e == nil {
+			return fmt.Errorf("secret file %s must be outside any repository or worktree (found %s)", path, filepath.Join(p, ".git"))
+		} else if !os.IsNotExist(e) {
+			return e
+		}
+		if filepath.Dir(p) == p {
+			return nil
+		}
+	}
+}
+
+// RepositoryFreeCredential is Credential for a delegated credential file,
+// which must also lie outside every repository and worktree (FAE-SEC-003).
+func RepositoryFreeCredential(path string) ([]byte, error) {
+	if err := OutsideRepository(path); err != nil {
+		return nil, err
+	}
+	return Credential(path)
+}
+
 func Credential(path string) ([]byte, error) {
 	f, err := os.OpenFile(path, os.O_RDONLY|syscall.O_NOFOLLOW, 0)
 	if err == nil {
@@ -154,7 +187,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if s.shutting.Load() && req.Method != "Status" {
-		s.reply(w, nil, errors.New("shutting-down"))
+		s.reply(w, nil, &RPCError{Code: "shutting-down", Message: "daemon is shutting down"})
 		return
 	}
 	budget := requestBudget(req.Method)
@@ -242,7 +275,13 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	if s.server == nil {
 		return nil
 	}
-	return s.server.Shutdown(ctx)
+	err := s.server.Shutdown(ctx)
+	// http.Server.Shutdown closes only the listeners Serve adopted; a daemon
+	// that fails between Listen and Serve must not leave its socket listening.
+	if e := s.listener.Close(); e != nil && !errors.Is(e, net.ErrClosed) {
+		err = errors.Join(err, e)
+	}
+	return err
 }
 func (s *Server) ShuttingDown() bool { return s.shutting.Load() }
 func Call(ctx context.Context, socket string, credential []byte, req Request) (Response, error) {
@@ -291,9 +330,9 @@ func Call(ctx context.Context, socket string, credential []byte, req Request) (R
 // SetEventStream installs the authenticated streaming endpoint before Listen.
 func (s *Server) SetEventStream(handler http.HandlerFunc) { s.stream = handler }
 
-// Only filesystem backup/cleanup may exceed the ordinary request budget.
+// Only filesystem backup/cleanup and bulk legacy import may exceed the ordinary request budget.
 func requestBudget(method string) time.Duration {
-	if method == "BackupReplicationUnpin" || method == "BackupQuota" || method == "BackupRetention" || method == "BackupReplicate" || method == "PlaneBackup" || method == "CleanupRetired" || method == "ReviewWorkspacePrepare" {
+	if method == "BackupReplicationUnpin" || method == "BackupQuota" || method == "BackupRetention" || method == "BackupReplicate" || method == "PlaneBackup" || method == "CleanupRetired" || method == "ReviewWorkspacePrepare" || method == MethodImportLegacy {
 		return 2 * time.Minute
 	}
 	return 5 * time.Second

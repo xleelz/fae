@@ -11,6 +11,9 @@ func backupAutomaticScheduleCommand(ctx context.Context, args []string, c common
 		return usage("backup creation-schedule|replication-schedule configure|pause|resume|status")
 	}
 	kind, action := args[0], args[1]
+	if isHelp(action) {
+		return subcommandHelp("backup "+kind, "configure|pause|resume|status", c.json || wantsJSON(args), out)
+	}
 	switch action {
 	case "configure", "pause", "resume", "status":
 	default:

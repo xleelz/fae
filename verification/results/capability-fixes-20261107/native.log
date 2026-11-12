@@ -1,0 +1,20 @@
+=== RUN   TestBranchDecideNativeWhileSiblingRunsAndAcrossRestart
+--- PASS: TestBranchDecideNativeWhileSiblingRunsAndAcrossRestart (2.83s)
+=== RUN   TestNativeBranchSchemaRetriesStayLocal
+--- PASS: TestNativeBranchSchemaRetriesStayLocal (2.05s)
+=== RUN   TestAliasAndFailureReportsNative
+--- PASS: TestAliasAndFailureReportsNative (2.51s)
+=== RUN   TestLiveAccountModeRecordsNestedCommandsDurably
+--- PASS: TestLiveAccountModeRecordsNestedCommandsDurably (80.41s)
+=== RUN   TestOutputOwnershipPublishesOnlyCommittedRowsAndRebuildsNative
+--- PASS: TestOutputOwnershipPublishesOnlyCommittedRowsAndRebuildsNative (3.24s)
+=== RUN   TestServeRecordsIsolationHostFactNative
+--- PASS: TestServeRecordsIsolationHostFactNative (1.83s)
+=== RUN   TestExplicitSubWorkflowItemsNative
+--- PASS: TestExplicitSubWorkflowItemsNative (7.98s)
+=== RUN   TestTreeCapabilitiesAndBacklogCeilingNative
+--- PASS: TestTreeCapabilitiesAndBacklogCeilingNative (3.28s)
+=== RUN   TestWorkflowSlotsNativeHeldNextStageIgnoresLockedLedgerAndIdleRoundsDoNotWrite
+--- PASS: TestWorkflowSlotsNativeHeldNextStageIgnoresLockedLedgerAndIdleRoundsDoNotWrite (7.23s)
+PASS
+ok  	github.com/xleelz/fae/daemon	111.394s

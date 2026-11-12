@@ -1,0 +1,8 @@
+{
+  "title": "Heavy-op admission: record avg60 and direction in the pressure wait line",
+  "prompt": "FAE-HOST-005 requires the host guard to record avg10 and avg60 PSI values with their direction (rising, falling or steady) for each reading. The daemon's live admission does this: daemon/live_admission.go logReading prints io_full_avg60, memory_full_avg60, io_avg10_dir, io_avg60_dir, memory_avg10_dir and memory_avg60_dir from the hold's Step.Reading. The controller's HeavyAdmission does not. When a reading is held for pressure, the admission wait loop in controller/admission.go builds the \"pressure\" stage detail from memory_available, io_full_avg10, memory_full_avg10 and load_per_core only, and that detail reaches the operator through the \"gate waiting\" alert line.\n\nAcceptance:\n- The pressure detail also names io_full_avg60, memory_full_avg60, io_avg10_dir, io_avg60_dir, memory_avg10_dir and memory_avg60_dir, taken from the reading the hold recorded (the hostguard.Step returned by w.hold.Record). Keep the existing fields, in their order, before the new ones.\n- A new Go unit test in controller/admission_test.go, named TestHeavyAdmissionPressureWaitRecordsAvg60AndDirection, drives a heavy admission that is held for pressure and checks that a captured \"gate waiting stage=pressure\" alert line contains each of the six new field names. Before the fix it fails at run time with a message naming the missing field io_full_avg60.\n- Change only controller/admission.go and controller/admission_test.go. Keep the change minimal and in the surrounding style.",
+  "declared_files": [
+    "controller/admission.go",
+    "controller/admission_test.go"
+  ]
+}

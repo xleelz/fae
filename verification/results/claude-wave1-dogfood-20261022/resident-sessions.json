@@ -1,0 +1,178 @@
+{
+  "turns": [
+    {
+      "dispatch_id": "loop-dogfood-loop-1-attempt-1",
+      "pane_pid": 4162463,
+      "resident_id": "resident-8ddeea0cfad946c4b8c58a32",
+      "server_pid": 4162428,
+      "session_id": "loop-dogfood-loop-1-attempt-1"
+    },
+    {
+      "dispatch_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/2",
+      "pane_pid": 4107997,
+      "resident_id": "resident-ba2d1b46ef8531d38a8164ae",
+      "server_pid": 4107962,
+      "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/2/session/0"
+    },
+    {
+      "dispatch_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/5",
+      "pane_pid": 4114042,
+      "resident_id": "resident-18aeb33c56130c3d99bb7eac",
+      "server_pid": 4113998,
+      "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/5/session/0"
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-5-attempt-5",
+      "pane_pid": 4162463,
+      "resident_id": "resident-8ddeea0cfad946c4b8c58a32",
+      "server_pid": 4162428,
+      "session_id": "loop-dogfood-loop-5-attempt-5"
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-2-attempt-2",
+      "pane_pid": 4162463,
+      "resident_id": "resident-8ddeea0cfad946c4b8c58a32",
+      "server_pid": 4162428,
+      "session_id": "loop-dogfood-loop-2-attempt-2"
+    },
+    {
+      "dispatch_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/8",
+      "pane_pid": 4114042,
+      "resident_id": "resident-18aeb33c56130c3d99bb7eac",
+      "server_pid": 4113998,
+      "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/8/session/0"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/1",
+      "pane_pid": 4105155,
+      "resident_id": "resident-b588929d54d99916a90bfa61",
+      "server_pid": 4105120,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/1/session/0"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/3",
+      "pane_pid": 4108176,
+      "resident_id": "resident-b588929d54d99916a90bfa61",
+      "server_pid": 4108083,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/3/session/0"
+    },
+    {
+      "dispatch_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/13",
+      "pane_pid": 4131758,
+      "resident_id": "resident-b34899ec0e19e50bdc3b3e4d",
+      "server_pid": 4131721,
+      "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/13/session/0"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/5",
+      "pane_pid": 4112068,
+      "resident_id": "resident-fc8bacf1a75768e20571ec16",
+      "server_pid": 4112022,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/5/session/0"
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-3-attempt-3",
+      "pane_pid": 4162463,
+      "resident_id": "resident-8ddeea0cfad946c4b8c58a32",
+      "server_pid": 4162428,
+      "session_id": "loop-dogfood-loop-3-attempt-3"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/25",
+      "pane_pid": 4133780,
+      "resident_id": "resident-0a4972f2e473fd4c3a4f8eec",
+      "server_pid": 4133742,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/25/session/0"
+    },
+    {
+      "dispatch_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/4",
+      "pane_pid": 4111535,
+      "resident_id": "resident-e29ed31ce934d43b8ee09e10",
+      "server_pid": 4111476,
+      "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/4/session/0"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2",
+      "pane_pid": 4105744,
+      "resident_id": "resident-b588929d54d99916a90bfa61",
+      "server_pid": 4105685,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2/session/0"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/14",
+      "pane_pid": 4133780,
+      "resident_id": "resident-0a4972f2e473fd4c3a4f8eec",
+      "server_pid": 4133742,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/14/session/0"
+    },
+    {
+      "dispatch_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/1",
+      "pane_pid": 4105947,
+      "resident_id": "resident-ba2d1b46ef8531d38a8164ae",
+      "server_pid": 4105871,
+      "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/1/session/0"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/6",
+      "pane_pid": 4114895,
+      "resident_id": "resident-b2cbc0665251539e1d99a424",
+      "server_pid": 4114852,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/6/session/0"
+    },
+    {
+      "dispatch_id": "loop-dogfood-loop-4-attempt-4",
+      "pane_pid": 4162463,
+      "resident_id": "resident-8ddeea0cfad946c4b8c58a32",
+      "server_pid": 4162428,
+      "session_id": "loop-dogfood-loop-4-attempt-4"
+    },
+    {
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/9",
+      "pane_pid": 4114895,
+      "resident_id": "resident-b2cbc0665251539e1d99a424",
+      "server_pid": 4114852,
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/9/session/0"
+    }
+  ],
+  "reused": [
+    {
+      "resident_id": "resident-8ddeea0cfad946c4b8c58a32",
+      "server_pid": 4162428,
+      "pane_pid": 4162463,
+      "sessions": [
+        "loop-dogfood-loop-1-attempt-1",
+        "loop-dogfood-loop-5-attempt-5",
+        "loop-dogfood-loop-2-attempt-2",
+        "loop-dogfood-loop-3-attempt-3",
+        "loop-dogfood-loop-4-attempt-4"
+      ]
+    },
+    {
+      "resident_id": "resident-18aeb33c56130c3d99bb7eac",
+      "server_pid": 4113998,
+      "pane_pid": 4114042,
+      "sessions": [
+        "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/5/session/0",
+        "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/8/session/0"
+      ]
+    },
+    {
+      "resident_id": "resident-0a4972f2e473fd4c3a4f8eec",
+      "server_pid": 4133742,
+      "pane_pid": 4133780,
+      "sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/25/session/0",
+        "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/14/session/0"
+      ]
+    },
+    {
+      "resident_id": "resident-b2cbc0665251539e1d99a424",
+      "server_pid": 4114852,
+      "pane_pid": 4114895,
+      "sessions": [
+        "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/6/session/0",
+        "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/9/session/0"
+      ]
+    }
+  ]
+}

@@ -24,6 +24,16 @@ func TestEventMigrationV6InterruptedReplay(t *testing.T) {
 		} else {
 			m.ExpectExec("INSERT INTO migrations").WithArgs(6).WillReturnResult(sqlmock.NewResult(0, 1))
 			m.ExpectCommit()
+			m.ExpectBegin()
+			for _, q := range Migration7 {
+				m.ExpectExec(regexp.QuoteMeta(q)).WillReturnResult(sqlmock.NewResult(0, 0))
+			}
+			m.ExpectExec("INSERT INTO migrations").WithArgs(7).WillReturnResult(sqlmock.NewResult(0, 1))
+			m.ExpectCommit()
+			expectMigration8(m)
+			expectMigration9(m)
+			expectMigration10(m)
+			expectMigration11(m)
 		}
 		if err := s.Migrate(context.Background()); (err != nil) != (attempt == 0) {
 			t.Fatal(err)

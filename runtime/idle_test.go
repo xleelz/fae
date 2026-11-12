@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -16,7 +17,7 @@ import (
 
 func idleFixture(t *testing.T) (*OwnedIdleSessions, string) {
 	t.Helper()
-	base := "/tmp"
+	base := "/var/tmp"
 	if _, e := os.Stat("/private/tmp"); e == nil {
 		base = "/private/tmp"
 	}
@@ -196,32 +197,36 @@ func TestIdleRejectsInvalidRegistrationAndHandoff(t *testing.T) {
 // not a simulated pane counter. It uses the same public registration capability
 // that a persistent trusted adapter invokes after collection.
 func TestIdleNativeHerdrRetirement(t *testing.T) {
-	binary, e := exec.LookPath("herdr")
+	binary, e := exec.LookPath("herdr-core")
 	if e != nil {
-		t.Skip("herdr unavailable")
+		t.Skip("herdr-core unavailable")
 	}
 	p, root := idleFixture(t)
 	socket := filepath.Join(root, "h.sock")
-	config := filepath.Join(root, "h.toml")
 	shell := filepath.Join(root, "shell.sh")
 	if e = os.WriteFile(shell, []byte("#!/bin/sh\nexec /bin/sleep 300\n"), 0700); e != nil {
 		t.Fatal(e)
 	}
-	raw := "onboarding=false\n[terminal]\ndefault_shell=" + quoteTOML(shell) + "\nshell_mode=\"non_login\"\n[update]\nversion_check=false\n"
-	if e = os.WriteFile(config, []byte(raw), 0600); e != nil {
+	_, extraEnv, e := writeHerdrCoreConfig(root, socket, "herdr-idle", shell)
+	if e != nil {
 		t.Fatal(e)
 	}
-	env := []string{"PATH=/usr/bin:/bin", "HOME=" + root, "HERDR_CONFIG_PATH=" + config, "HERDR_SOCKET_PATH=" + socket}
-	cmd := exec.Command(binary, "server")
+	env := append([]string{"PATH=/usr/bin:/bin", "HOME=" + root, "TMPDIR=" + root}, extraEnv...)
+	cmd := exec.Command(binary, "serve")
 	cmd.Env = env
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	server, e := processowner.StartLinked(cmd, filepath.Join(root, ".processes"), root, "herdr-idle")
 	if e != nil {
 		t.Fatal(e)
 	}
+	var holder *processowner.Record
 	t.Cleanup(func() {
 		ctx, c := context.WithTimeout(context.Background(), 5*time.Second)
 		defer c()
+		if holder != nil {
+			_ = processowner.Terminate(ctx, holder, root)
+			_ = processowner.Retire(holder)
+		}
 		_ = processowner.Terminate(ctx, server, root)
 		_ = cmd.Wait()
 		_ = processowner.Retire(server)
@@ -235,50 +240,41 @@ func TestIdleNativeHerdrRetirement(t *testing.T) {
 	}
 	ready := false
 	for deadline := time.Now().Add(10 * time.Second); time.Now().Before(deadline); {
-		if _, e = query("workspace", "list"); e == nil {
-			ready = true
-			break
+		if socketReady(socket) {
+			if _, e = query("ls", "--json"); e == nil {
+				ready = true
+				break
+			}
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
 	if !ready {
 		t.Fatal("Herdr startup timed out")
 	}
-	data, e := query("workspace", "create", "--cwd", root, "--label", "idle-test", "--no-focus")
+	data, e := query("run", "--bg", "--no-parent", "--no-notify", "--name", "idle-test", "--cwd", root, "--json")
 	if e != nil {
 		t.Fatal(e)
 	}
-	var created struct {
-		Result struct {
-			RootPane struct {
-				ID string `json:"pane_id"`
-			} `json:"root_pane"`
-		} `json:"result"`
-	}
-	if e = json.Unmarshal(data, &created); e != nil || created.Result.RootPane.ID == "" {
+	paneID, _, e := parseHerdrCreatedTerminal(data)
+	if e != nil || paneID == "" {
 		t.Fatal(string(data), e)
 	}
-	data, e = query("pane", "process-info", "--pane", created.Result.RootPane.ID)
+	data, e = query("get", paneID, "--json")
 	if e != nil {
 		t.Fatal(e)
 	}
-	var info struct {
-		Result struct {
-			Info struct {
-				PID int `json:"shell_pid"`
-			} `json:"process_info"`
-		} `json:"result"`
-	}
-	if e = json.Unmarshal(data, &info); e != nil || info.Result.Info.PID < 1 {
+	proc, e := parseHerdrProcessInfo(data, paneID)
+	if e != nil || proc.PID < 1 {
 		t.Fatal(string(data), e)
 	}
-	pane, e := processowner.RegisterLinked(info.Result.Info.PID, filepath.Join(root, ".processes"), root, "herdr-idle")
+	pane, e := processowner.RegisterLinked(proc.PID, filepath.Join(root, ".processes"), root, "herdr-idle")
 	if e != nil {
 		t.Fatal(e)
 	}
 	if e = processowner.Watch(pane); e != nil {
 		t.Fatal(e)
 	}
+	holder = registerHerdrHolder(proc.PID, server.PID, root)
 	t.Cleanup(func() {
 		ctx, c := context.WithTimeout(context.Background(), 5*time.Second)
 		defer c()
@@ -286,6 +282,12 @@ func TestIdleNativeHerdrRetirement(t *testing.T) {
 		_ = processowner.Retire(pane)
 	})
 	e = p.Register(IdleRegistration{ID: "herdr-idle", Socket: socket, Role: "planner", Global: true, PreCode: true, Records: []*processowner.Record{pane, server}, Context: json.RawMessage(`{"summary":"native Herdr"}`), Reap: func() error {
+		if holder != nil {
+			ctx, c := context.WithTimeout(context.Background(), 5*time.Second)
+			_ = processowner.Terminate(ctx, holder, root)
+			_ = processowner.Retire(holder)
+			c()
+		}
 		e := cmd.Wait()
 		var ex *exec.ExitError
 		if errors.As(e, &ex) {
@@ -414,4 +416,81 @@ func TestIdleRetirementFailureRetainsOwnershipAndContext(t *testing.T) {
 	p.mu.Lock()
 	record.Birth = birth
 	p.mu.Unlock()
+}
+
+// A retirement runs without the registry lock: while one session's retirement
+// is in progress (its reap blocks), another session's Begin and End proceed at
+// once, the retiring session is refused for reuse, and a second retirement of
+// it awaits the first instead of racing it.
+func TestIdleRetirementDoesNotBlockOtherSessions(t *testing.T) {
+	p, root := idleFixture(t)
+	now := time.Now()
+	registerIdleProcess(t, p, root, "other", false, now)
+	reaping, release := make(chan struct{}), make(chan struct{})
+	var once sync.Once
+	unblock := func() { once.Do(func() { close(release) }) }
+	t.Cleanup(unblock)
+	cmd := exec.Command("/bin/sleep", "300")
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	r, e := processowner.StartLinked(cmd, filepath.Join(root, ".processes"), root, "slow")
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() {
+		ctx, c := context.WithTimeout(context.Background(), 5*time.Second)
+		defer c()
+		_ = processowner.Terminate(ctx, r, root)
+		_ = processowner.Retire(r)
+	})
+	e = p.Register(IdleRegistration{ID: "slow", Socket: filepath.Join(root, "slow.sock"), Role: "planner", Global: true, PreCode: true, Records: []*processowner.Record{r}, Context: json.RawMessage(`{}`), Reap: func() error {
+		close(reaping)
+		<-release
+		var exit *exec.ExitError
+		if e := cmd.Wait(); e != nil && !errors.As(e, &exit) {
+			return e
+		}
+		return nil
+	}}, now)
+	if e != nil {
+		t.Fatal(e)
+	}
+	retired := make(chan error, 1)
+	go func() { retired <- p.Retire(context.Background(), "slow") }()
+	<-reaping
+	begun := make(chan error, 1)
+	go func() { _, e := p.Begin("other"); begun <- e }()
+	select {
+	case e = <-begun:
+		if e != nil {
+			t.Fatal(e)
+		}
+	case <-time.After(5 * time.Second):
+		unblock()
+		<-begun
+		<-retired
+		t.Fatal("Begin waited for another session's retirement")
+	}
+	if e = p.End("other", json.RawMessage(`{"summary":"next"}`), now); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = p.Begin("slow"); !errors.Is(e, ErrIdleSessionRetiring) {
+		t.Fatal("session in retirement not refused for reuse", e)
+	}
+	again := make(chan error, 1)
+	go func() { again <- p.Retire(context.Background(), "slow") }()
+	select {
+	case e = <-again:
+		t.Fatal("second retirement did not await the one in progress", e)
+	case <-time.After(100 * time.Millisecond):
+	}
+	unblock()
+	if e = <-retired; e != nil {
+		t.Fatal(e)
+	}
+	if e = <-again; e != nil {
+		t.Fatal(e)
+	}
+	if p.Count() != 1 {
+		t.Fatal("sessions after retirement", p.Count())
+	}
 }

@@ -39,37 +39,26 @@ func cpuDuration(s string) (time.Duration, error) {
 	}
 	return time.Duration((float64(days)*86400 + seconds) * float64(time.Second)), nil
 }
+
+type cpuRow struct {
+	pid, parent int
+	cpu         time.Duration
+}
+
+// processCPU sums CPU time over root and its live descendants. Linux reads
+// /proc clock ticks; procps TIME there has whole-second resolution, which
+// cannot show progress inside a sub-minute stall window.
 func processCPU(ctx context.Context, root int) (time.Duration, bool) {
-	b, e := exec.CommandContext(ctx, "/bin/ps", "-axo", "pid=,ppid=,time=").Output()
-	if e != nil {
-		return 0, false
-	}
-	type row struct {
-		pid, parent int
-		cpu         time.Duration
-	}
-	rows := []row{}
-	selected := map[int]bool{root: true}
-	found := false
-	for _, line := range strings.Split(string(b), "\n") {
-		p := strings.Fields(line)
-		if len(p) != 3 {
-			continue
-		}
-		pid, e := strconv.Atoi(p[0])
-		if e != nil {
-			continue
-		}
-		parent, e := strconv.Atoi(p[1])
-		if e != nil {
-			continue
-		}
-		cpu, e := cpuDuration(p[2])
-		if e != nil {
+	rows, ok := procCPURows()
+	if !ok {
+		if rows, ok = psCPURows(ctx); !ok {
 			return 0, false
 		}
-		rows = append(rows, row{pid, parent, cpu})
-		if pid == root {
+	}
+	selected := map[int]bool{root: true}
+	found := false
+	for _, r := range rows {
+		if r.pid == root {
 			found = true
 		}
 	}
@@ -89,6 +78,33 @@ func processCPU(ctx context.Context, root int) (time.Duration, bool) {
 		}
 	}
 	return total, found
+}
+func psCPURows(ctx context.Context) ([]cpuRow, bool) {
+	b, e := exec.CommandContext(ctx, "/bin/ps", "-axo", "pid=,ppid=,time=").Output()
+	if e != nil {
+		return nil, false
+	}
+	rows := []cpuRow{}
+	for _, line := range strings.Split(string(b), "\n") {
+		p := strings.Fields(line)
+		if len(p) != 3 {
+			continue
+		}
+		pid, e := strconv.Atoi(p[0])
+		if e != nil {
+			continue
+		}
+		parent, e := strconv.Atoi(p[1])
+		if e != nil {
+			continue
+		}
+		cpu, e := cpuDuration(p[2])
+		if e != nil {
+			return nil, false
+		}
+		rows = append(rows, cpuRow{pid, parent, cpu})
+	}
+	return rows, true
 }
 func sampleActivity(ctx context.Context, pid int, dir, handoff string) activity {
 	cpu, known := processCPU(ctx, pid)

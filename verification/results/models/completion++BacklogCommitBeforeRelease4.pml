@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go#L4
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go#L4
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -31,26 +31,26 @@ proctype BacklogCommitBeforeRelease4(chan child) {
 	bool state = true->
 	int num_msgs->
 	chan child_AnonymousBacklogCommitBeforeRelease851 = [1] of {int}->
-	chan child_AnonymousBacklogCommitBeforeRelease760 = [1] of {int}->
+	chan child_AnonymousBacklogCommitBeforeRelease750 = [1] of {int}->
 	Chandef released_ch->
 	Chandef committed_ch->
 	run sync_monitor(committed_ch)->
 	run sync_monitor(released_ch)->
-	run AnonymousBacklogCommitBeforeRelease76(released_ch,committed_ch,child_AnonymousBacklogCommitBeforeRelease760)->
-	run receiver(child_AnonymousBacklogCommitBeforeRelease760)->
+	run AnonymousBacklogCommitBeforeRelease75(committed_ch,released_ch,child_AnonymousBacklogCommitBeforeRelease750)->
+	run receiver(child_AnonymousBacklogCommitBeforeRelease750)->
 	run AnonymousBacklogCommitBeforeRelease85(committed_ch,released_ch,child_AnonymousBacklogCommitBeforeRelease851)->
 	run receiver(child_AnonymousBacklogCommitBeforeRelease851)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:9:2 */
-	:: released_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:9:2 */->
-	:: released_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:9:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:9:2 */
+	:: released_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:9:2 */->
+	:: released_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:9:2 */ -> 
 		released_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousBacklogCommitBeforeRelease76(Chandef released_ch;Chandef committed_ch;chan child) {
+proctype AnonymousBacklogCommitBeforeRelease75(Chandef committed_ch;Chandef released_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -58,12 +58,12 @@ proctype AnonymousBacklogCommitBeforeRelease76(Chandef released_ch;Chandef commi
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:7:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:7:14 */
 	:: committed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:7:14 */
 	:: committed_ch.sync!false -> 
 		committed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:7:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -76,19 +76,19 @@ proctype AnonymousBacklogCommitBeforeRelease85(Chandef committed_ch;Chandef rele
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:8:14 */
-	:: committed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:8:14 */->
-	:: committed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:8:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:8:14 */
+	:: committed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:8:14 */->
+	:: committed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:8:14 */ -> 
 		committed_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:8:27 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:8:27 */
 	:: released_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:8:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:8:27 */
 	:: released_ch.sync!false -> 
 		released_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backlog.go:8:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backlog.go:8:27 */
 	fi->
 	stop_process: skip->
 	child!0

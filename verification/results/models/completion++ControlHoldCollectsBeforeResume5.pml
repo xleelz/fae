@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -32,7 +32,7 @@ proctype ControlHoldCollectsBeforeResume5(chan child) {
 	int num_msgs->
 	chan child_AnonymousControlHoldCollectsBeforeResume1262 = [1] of {int}->
 	chan child_AnonymousControlHoldCollectsBeforeResume1161 = [1] of {int}->
-	chan child_AnonymousControlHoldCollectsBeforeResume1070 = [1] of {int}->
+	chan child_AnonymousControlHoldCollectsBeforeResume1080 = [1] of {int}->
 	Chandef collected_ch->
 	Chandef completion_ch->
 	Chandef held_ch->
@@ -41,23 +41,23 @@ proctype ControlHoldCollectsBeforeResume5(chan child) {
 	run sync_monitor(held_ch)->
 	run sync_monitor(completion_ch)->
 	run sync_monitor(collected_ch)->
-	run AnonymousControlHoldCollectsBeforeResume107(held_ch,completion_ch,collected_ch,frozen_ch,child_AnonymousControlHoldCollectsBeforeResume1070)->
-	run receiver(child_AnonymousControlHoldCollectsBeforeResume1070)->
+	run AnonymousControlHoldCollectsBeforeResume108(completion_ch,collected_ch,frozen_ch,held_ch,child_AnonymousControlHoldCollectsBeforeResume1080)->
+	run receiver(child_AnonymousControlHoldCollectsBeforeResume1080)->
 	run AnonymousControlHoldCollectsBeforeResume116(frozen_ch,held_ch,completion_ch,collected_ch,child_AnonymousControlHoldCollectsBeforeResume1161)->
 	run receiver(child_AnonymousControlHoldCollectsBeforeResume1161)->
 	run AnonymousControlHoldCollectsBeforeResume126(frozen_ch,held_ch,completion_ch,collected_ch,child_AnonymousControlHoldCollectsBeforeResume1262)->
 	run receiver(child_AnonymousControlHoldCollectsBeforeResume1262)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:13:2 */
-	:: collected_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:13:2 */->
-	:: collected_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:13:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:13:2 */
+	:: collected_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:13:2 */->
+	:: collected_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:13:2 */ -> 
 		collected_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousControlHoldCollectsBeforeResume107(Chandef held_ch;Chandef completion_ch;Chandef collected_ch;Chandef frozen_ch;chan child) {
+proctype AnonymousControlHoldCollectsBeforeResume108(Chandef completion_ch;Chandef collected_ch;Chandef frozen_ch;Chandef held_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -65,21 +65,21 @@ proctype AnonymousControlHoldCollectsBeforeResume107(Chandef held_ch;Chandef com
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:10:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:10:14 */
 	:: frozen_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:10:14 */
 	:: frozen_ch.sync!false -> 
 		frozen_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:10:14 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:10:27 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:10:27 */
 	:: completion_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:10:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:10:27 */
 	:: completion_ch.sync!false -> 
 		completion_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:10:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:10:27 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -92,19 +92,19 @@ proctype AnonymousControlHoldCollectsBeforeResume116(Chandef frozen_ch;Chandef h
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:11:14 */
-	:: frozen_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:11:14 */->
-	:: frozen_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:11:14 */
+	:: frozen_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:11:14 */->
+	:: frozen_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:11:14 */ -> 
 		frozen_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:11:24 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:11:24 */
 	:: held_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:11:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:11:24 */
 	:: held_ch.sync!false -> 
 		held_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:11:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:11:24 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -117,26 +117,26 @@ proctype AnonymousControlHoldCollectsBeforeResume126(Chandef frozen_ch;Chandef h
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:14 */
-	:: held_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:14 */->
-	:: held_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:14 */
+	:: held_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:14 */->
+	:: held_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:14 */ -> 
 		held_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:22 */
-	:: completion_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:22 */->
-	:: completion_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:22 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:22 */
+	:: completion_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:22 */->
+	:: completion_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:22 */ -> 
 		completion_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:36 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:36 */
 	:: collected_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:36 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:36 */
 	:: collected_ch.sync!false -> 
 		collected_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/control.go:12:36 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/control.go:12:36 */
 	fi->
 	stop_process: skip->
 	child!0

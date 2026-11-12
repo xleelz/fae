@@ -10,10 +10,7 @@ import (
 
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controlplane"
-	"github.com/xleelz/fae/engine"
-	"github.com/xleelz/fae/execution"
 	"github.com/xleelz/fae/external"
-	"github.com/xleelz/fae/workflow"
 	"github.com/xleelz/fae/worktree"
 )
 
@@ -148,7 +145,7 @@ func (d *Daemon) prepareReviewWorkspace(ctx context.Context, p ReviewWorkspacePa
 		return record, errors.New("review workspace weighted host admission unavailable")
 	}
 	sid := "review-prepare/" + controlplane.Digest([]byte(p.Task))
-	release, err := d.live.guard.Acquire(ctx, engine.Dispatch{ID: sid, TaskID: p.Task, Config: workflow.Stage{Weight: 1}}, execution.Binding{}, engine.Session{ID: sid})
+	release, err := d.live.guard.AcquireHostIO(ctx, sid)
 	if err != nil {
 		return record, err
 	}
@@ -200,12 +197,24 @@ func (d *Daemon) prepareReviewWorkspace(ctx context.Context, p ReviewWorkspacePa
 	return record, nil
 }
 
+// reviewWorkspaceHealth is a pool read: it finds the task among the drive's
+// tasks as last published, never waiting for d.mu (FAE-ROB-020), and an
+// admitted task's executor from that checkpoint, as liveForTask would.
 func (d *Daemon) reviewWorkspaceHealth(ctx context.Context, task string) (ReviewTargetHealth, error) {
-	d.mu.Lock()
-	_, admitted := d.jobs[task]
-	d.mu.Unlock()
+	published, err := d.publishedTasks()
+	if err != nil {
+		return ReviewTargetHealth{}, err
+	}
+	snapshot, admitted, err := published.publishedJob(ctx, d, task)
+	if err != nil {
+		return ReviewTargetHealth{}, err
+	}
 	if admitted {
-		selected, err := d.liveForTask(ctx, task)
+		var e envelope
+		if err = decodeEnvelope(snapshot.Payload, &e); err != nil {
+			return ReviewTargetHealth{}, err
+		}
+		selected, err := d.liveForAdmission(ctx, e.Admission)
 		if err != nil {
 			return ReviewTargetHealth{}, err
 		}

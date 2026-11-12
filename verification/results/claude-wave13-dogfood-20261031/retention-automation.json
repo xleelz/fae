@@ -1,0 +1,46 @@
+{
+  "result": {
+    "paused_across_restart": true,
+    "automatic_prune": true,
+    "newest_retained": true,
+    "replication_pin_retained": true,
+    "runs": 1,
+    "final_state": "paused"
+  },
+  "configured": {
+    "state": "active",
+    "interval_seconds": 1,
+    "keep": 1,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-31T09:08:13.476132319Z",
+    "running": false,
+    "run_count": 0,
+    "last_started": "0001-01-01T00:00:00Z",
+    "last_finished": "0001-01-01T00:00:00Z",
+    "last_removed": 0
+  },
+  "persisted": {
+    "state": "paused",
+    "interval_seconds": 1,
+    "keep": 1,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-31T09:08:13.476132319Z",
+    "running": false,
+    "run_count": 0,
+    "last_started": "0001-01-01T00:00:00Z",
+    "last_finished": "0001-01-01T00:00:00Z",
+    "last_removed": 0
+  },
+  "final": {
+    "state": "paused",
+    "interval_seconds": 1,
+    "keep": 1,
+    "authorizing_message": "authorization",
+    "next_at": "2026-10-31T09:08:47.52855317Z",
+    "running": false,
+    "run_count": 1,
+    "last_started": "2026-10-31T09:08:16.375784593Z",
+    "last_finished": "2026-10-31T09:08:46.52855317Z",
+    "last_removed": 1
+  }
+}

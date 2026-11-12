@@ -1,0 +1,285 @@
+{
+ "description": "Host admission refuses the spec turn at the pane limit and the inventory proves only idle sessions hold it; the run escalates PaneCapStarvation.",
+ "diagnostics": {
+  "spec": "host admission: PaneLimit 60 held by idle sessions"
+ },
+ "disposition": {
+  "live": false,
+  "mode": "Local"
+ },
+ "document": "local",
+ "execution": "live",
+ "expected": {
+  "dispatches": [
+   "intake",
+   "spec"
+  ],
+  "gates": [
+   {
+    "result": {
+     "evidence_ids": [
+      "11a49f853eb8befe94fef278d487125cd20930b9e41c4c0934394443e7f00878"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "accepted"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "intake-gate"
+   }
+  ],
+  "kind": "PaneCapStarvation",
+  "state": "Escalated",
+  "transitions": [
+   {
+    "from": "Pending",
+    "to": "intake"
+   },
+   {
+    "from": "intake",
+    "to": "intake-gate"
+   },
+   {
+    "from": "intake-gate",
+    "to": "spec-loop"
+   },
+   {
+    "from": "spec-loop",
+    "to": "spec"
+   },
+   {
+    "from": "spec",
+    "kind": "PaneCapStarvation",
+    "to": "Escalated"
+   }
+  ]
+ },
+ "name": "pane-cap-starvation",
+ "pane_starved": true,
+ "script": {
+  "commit": [
+   {
+    "output": {
+     "files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "compare-red": [
+   {
+    "output": {}
+   }
+  ],
+  "format": [
+   {
+    "output": {
+     "new_debt": 0
+    }
+   }
+  ],
+  "freeze-red": [
+   {
+    "output": {}
+   }
+  ],
+  "implement": [
+   {
+    "output": {
+     "changed_files": [
+      "answer.go"
+     ],
+     "hunks": [
+      "return 42"
+     ],
+     "proof": "scripted fixture",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior"
+    }
+   }
+  ],
+  "intake": [
+   {
+    "output": {
+     "accepted": true
+    }
+   }
+  ],
+  "integrate": [
+   {
+    "output": {
+     "landed": true,
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "merge": [
+   {
+    "output": {
+     "patch_identical": true,
+     "result": "clean"
+    }
+   }
+  ],
+  "oracle": [
+   {
+    "output": {
+     "approved": true,
+     "findings": [],
+     "rationale": "all fixture findings resolved"
+    }
+   }
+  ],
+  "plan": [
+   {
+    "output": {
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "steps": [
+      "test",
+      "implement"
+     ],
+     "test_placement": "answer_test.go"
+    }
+   }
+  ],
+  "post-merge-qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "reviews": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "dimension": "correctness",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "quality",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "security",
+      "findings": [],
+      "guidance": [],
+      "sensitive_domains": []
+     },
+     {
+      "approved": true,
+      "dimension": "architecture",
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "run-red": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 1,
+     "expected_failure": true,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": false,
+     "test_in_source": true
+    }
+   }
+  ],
+  "run-tests": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "spec": [
+   {
+    "class": "infrastructure-deferred",
+    "output": null
+   }
+  ],
+  "spec-review": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "findings": []
+     },
+     {
+      "approved": true,
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "test-first": [
+   {
+    "output": {
+     "declared_files": [
+      "answer_test.go"
+     ],
+     "expected_failure": "got 0 want 42",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior",
+     "test_shape": "go-unit"
+    }
+   }
+  ]
+ }
+}

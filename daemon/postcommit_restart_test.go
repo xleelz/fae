@@ -15,7 +15,7 @@ import (
 
 func TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch(t *testing.T) {
 	cfg, _, base := liveDaemonFixture(t)
-	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second+pressureAllowance)
 	defer cancel()
 	cfg.Live.Environment["LIVE_DAEMON_RESTART_TEST"] = "1"
 	d, err := Start(ctx, cfg)
@@ -91,11 +91,15 @@ func TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch(t *testing.T) {
 	// Older durable jobs omitted ExecutionHead. Preserve the genuine broker
 	// receipt and prove that restart upgrades that snapshot without replacing Base.
 	env.Job.ExecutionHead = ""
+	d.mu.Lock()
 	legacy, err := d.persist(ctx, d.jobs["postcommit"], env, nil)
+	if err == nil {
+		d.jobs["postcommit"] = legacy
+	}
+	d.mu.Unlock()
 	if err != nil {
 		t.Fatal(err)
 	}
-	d.jobs["postcommit"] = legacy
 	// Restart the actual daemon before accepting the operator restart.
 	stop(t, d)
 	d, err = Start(ctx, cfg)
@@ -153,8 +157,17 @@ func TestTaskControlNativeLivePostCommitRestartPreservesOwnPatch(t *testing.T) {
 	}
 }
 
+// stepPostCommitTask steps one task by hand with the drive stopped. It holds
+// the writer lock as the drive would: the status keeper reads d.jobs.
 func stepPostCommitTask(t *testing.T, ctx context.Context, d *Daemon, id string) *engine.Dispatch {
 	t.Helper()
+	d.mu.Lock()
+	locked := true
+	defer func() {
+		if locked {
+			d.mu.Unlock()
+		}
+	}()
 	s := d.jobs[id]
 	var e envelope
 	if err := decodeEnvelope(s.Payload, &e); err != nil {
@@ -173,10 +186,14 @@ func stepPostCommitTask(t *testing.T, ctx context.Context, d *Daemon, id string)
 	if dispatch == nil {
 		return nil
 	}
-	result, err := d.executor.Execute(ctx, *dispatch)
+	d.mu.Unlock()
+	locked = false
+	result, err := executeAdmitted(t, ctx, d.executor, *dispatch)
 	if err != nil {
 		t.Fatal(err)
 	}
+	d.mu.Lock()
+	locked = true
 	e.Job, events, err = engine.Complete(e.Job, dispatch.ID, result)
 	if err != nil {
 		t.Fatal(err)

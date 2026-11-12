@@ -64,23 +64,14 @@ func TestTicketOutboxEnqueueIdempotence(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// FAE-CP-009: the outbox stats are one aggregate statement over the
+// projection's pending rows; no emission payload is read.
 func TestTicketOutboxStats(t *testing.T) {
 	s, m := fixture(t, 1)
-	a := emission()
-	b := a
-	b.Started = true
-	b.LastError = "uncertain"
-	c := a
-	c.Emitted = true
-	c.LastError = "old"
-	rows := sqlmock.NewRows([]string{"payload"})
-	for _, r := range []TicketEmission{a, b, c} {
-		raw, _ := json.Marshal(r)
-		rows.AddRow(string(raw))
-	}
-	m.ExpectQuery("SELECT payload").WillReturnRows(rows)
+	m.ExpectQuery(`^SELECT COUNT\(\*\),.* FROM ticket_outbox WHERE emitted=FALSE$`).WillReturnRows(sqlmock.NewRows([]string{"depth", "uncertain", "failures"}).AddRow(2, 1, 1))
 	stats, err := s.TicketStats(context.Background())
-	if err != nil || stats.Depth != 2 || stats.Failures != 1 {
+	if err != nil || stats.Depth != 2 || stats.Uncertain != 1 || stats.Failures != 1 {
 		t.Fatal(stats, err)
 	}
 }
@@ -96,8 +87,10 @@ func TestTicketCheckpointAuditAtomicity(t *testing.T) {
 			a, _ := json.Marshal(before)
 			m.ExpectBegin()
 			m.ExpectExec("UPDATE ticket_emissions").WillReturnResult(sqlmock.NewResult(0, 1))
+			m.ExpectExec("INSERT INTO ticket_outbox").WillReturnResult(sqlmock.NewResult(0, 1))
 			expectClock(m)
 			m.ExpectQuery("SELECT sequence FROM event_clock").WillReturnRows(sqlmock.NewRows([]string{"sequence"}).AddRow(0))
+			expectTaskEventMetadata(m)
 			m.ExpectExec("INSERT INTO events").WillReturnResult(sqlmock.NewResult(1, 1))
 			m.ExpectExec("UPDATE event_clock").WillReturnResult(sqlmock.NewResult(0, 1))
 			if failure == "audit" {
@@ -140,7 +133,16 @@ func TestTicketMigrationV5InterruptedReplay(t *testing.T) {
 			}
 			m.ExpectExec("INSERT INTO migrations").WithArgs(6).WillReturnResult(sqlmock.NewResult(0, 1))
 			m.ExpectCommit()
-
+			m.ExpectBegin()
+			for _, statement := range Migration7 {
+				m.ExpectExec(regexp.QuoteMeta(statement)).WillReturnResult(sqlmock.NewResult(0, 0))
+			}
+			m.ExpectExec("INSERT INTO migrations").WithArgs(7).WillReturnResult(sqlmock.NewResult(0, 1))
+			m.ExpectCommit()
+			expectMigration8(m)
+			expectMigration9(m)
+			expectMigration10(m)
+			expectMigration11(m)
 		}
 		if err := s.Migrate(context.Background()); (err != nil) != (attempt == 0) {
 			t.Fatal(attempt, err)

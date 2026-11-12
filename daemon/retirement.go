@@ -14,7 +14,9 @@ func (d *Daemon) validateRetirement(ctx context.Context, e envelope, reason stri
 	}
 	switch class {
 	case "superseded-by":
-		if _, ok := d.jobs[reference]; !ok || reference == e.Job.TaskID {
+		if _, ok, err := d.storedJob(ctx, reference); err != nil {
+			return err
+		} else if !ok || reference == e.Job.TaskID {
 			return errors.New("successor must identify another existing task")
 		}
 	case "contained":
@@ -26,7 +28,7 @@ func (d *Daemon) validateRetirement(ctx context.Context, e envelope, reason stri
 		resolved, resolveErr := controller.Git(ctx, d.config.Workspace, "rev-parse", "--verify", reference+"^{commit}")
 		own := e.Job.LatestCommitHead()
 		landed := ownLandingSHA(e)
-		if !CanRetireContained(resolveErr == nil && resolved == reference, e.Job.ExecutionKind == "live" && ((own != "" && own == reference) || (landed != "" && landed == reference))) {
+		if !CanRetireContained(resolveErr == nil && resolved == reference, e.Job.ExecutionKind == "live" && ((own != "" && own == reference) || (landed != "" && landed == reference) || d.salvageLanded(ctx, e.Job.TaskID, reference))) {
 			return errors.New("contained requires a resolving exact SHA from this task's own commit evidence")
 		}
 	}

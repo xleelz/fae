@@ -12,7 +12,7 @@ import (
 
 func (b *Broker) rawGit(ctx context.Context, w worktree.Binding, args ...string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, "git", append([]string{"-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "-C", w.Path}, args...)...)
-	cmd.Env = cleanEnv(b.Environment)
+	cmd.Env = b.literalPathGitEnv(w, nil)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("git %s: %w", args[0], err)
@@ -86,6 +86,19 @@ func (b *Broker) VerifyConflictResolution(ctx context.Context, w worktree.Bindin
 	}
 	lost := &ReconcileError{Kind: "own-hunk-loss"}
 	for _, path := range paths {
+		// A file whose exact own version upstream already holds, and the
+		// resolution keeps, is contained, not lost (FAE-VCS-007).
+		upstream, err := b.pathsEqual(ctx, w, r.OriginalTree, r.Base, []string{path})
+		if err != nil {
+			return err
+		}
+		kept, err := b.pathsEqual(ctx, w, r.OriginalTree, resolved, []string{path})
+		if err != nil {
+			return err
+		}
+		if upstream && kept {
+			continue
+		}
 		before, err := b.rawGit(ctx, w, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=0", r.OwnBase, r.OriginalTree, "--", path)
 		if err != nil {
 			return err

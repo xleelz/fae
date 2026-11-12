@@ -21,6 +21,7 @@ func persistentLaunch(t *testing.T) r.BridgeConfig {
 	if err != nil {
 		t.Fatal(err)
 	}
+	gitRepository(t, root)
 	return r.BridgeConfig{Protocol: "fae-agent-v1", Launch: r.Launch{WorkflowID: "workflow", WorkflowRevision: "revision", SessionPolicy: "workflow-global", Role: "oracle", TaskID: "one", DispatchID: "dispatch", SessionID: "session", Worktree: root, Binding: workflow.Binding{Provider: "codex", Model: "fixture"}, Profile: workflow.Profile{Allowed: []string{"handoff", "read"}}, Brief: json.RawMessage(`[{"kind":"stage","stage":"spec"},{"kind":"kernel_contract","output_schema":{"type":"object","properties":{"accepted":{"type":"boolean"}},"required":["accepted"],"additionalProperties":false}}]`)}, Handoff: filepath.Join(root, "handoff.json"), LogDirectory: root}
 }
 func sessionRoot(t *testing.T) string {
@@ -158,6 +159,7 @@ printf '%s' '{"output":{"accepted":true},"edits":[]}' > "$out"
 			l.TaskID = "two"
 			l.DispatchID = "second"
 			l.Worktree = sessionRoot(t)
+			gitRepository(t, l.Worktree)
 			l.Handoff = filepath.Join(l.Worktree, "handoff.json")
 			l.LogDirectory = l.Worktree
 		}
@@ -179,10 +181,7 @@ printf '%s' '{"output":{"accepted":true},"edits":[]}' > "$out"
 		if (i == 1) != strings.Contains(string(args), "resume\n") {
 			t.Fatal(string(args))
 		}
-		var p map[string]json.RawMessage
-		if e := json.Unmarshal(prompt, &p); e != nil {
-			t.Fatal(e)
-		}
+		p := promptBlocks(t, prompt)
 		if !strings.Contains(string(p["task_header"]), l.TaskID) || !strings.Contains(string(p["task_header"]), l.Worktree) {
 			t.Fatal(string(prompt))
 		}

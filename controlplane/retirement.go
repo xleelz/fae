@@ -12,7 +12,7 @@ import (
 // TransferRetiredEdges replaces blocking prerequisites in the same transaction
 // as the task snapshot, mirror, event and audit. The event clock serializes graph
 // mutations; validation runs against the transaction's complete graph.
-func transferRetiredEdges(ctx context.Context, tx *sql.Tx, id, successor, actor string) error {
+func (s *Store) transferRetiredEdges(ctx context.Context, tx *sql.Tx, id, successor, actor string) error {
 	var err error
 	successor, err = terminalSuccessor(ctx, tx, id, successor)
 	if err != nil {
@@ -22,7 +22,7 @@ func transferRetiredEdges(ctx context.Context, tx *sql.Tx, id, successor, actor 
 	if err != nil {
 		return err
 	}
-	edges := []BacklogEdge{}
+	edges, moved := []BacklogEdge{}, []BacklogEdge{}
 	ids := map[string]bool{id: true, successor: true}
 	for rows.Next() {
 		var e BacklogEdge
@@ -32,6 +32,7 @@ func transferRetiredEdges(ctx context.Context, tx *sql.Tx, id, successor, actor 
 		}
 		if e.From == id && e.Kind == "blocking" {
 			e.From = successor
+			moved = append(moved, e)
 		}
 		edges = append(edges, e)
 		ids[e.From] = true
@@ -58,7 +59,27 @@ func transferRetiredEdges(ctx context.Context, tx *sql.Tx, id, successor, actor 
 			}
 		}
 	}
+	// Each moved edge is in the dependent's and the successor's histories
+	// (daemon/TASKS.md: TaskGet lists it among their edits), naming the
+	// retired task it came from.
+	for _, e := range moved {
+		event := repointedEdgeEvent(e, id)
+		if err = s.appendEvents(ctx, tx, e.To, []Event{event}, ""); err != nil {
+			return err
+		}
+		if err = s.appendEvents(ctx, tx, e.From, []Event{event}, ""); err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+// repointedEdgeEvent is the backlog_edge_changed event of a blocking edge a
+// supersession moved from the retired task to its successor: the edge as it
+// is now, with repointed_from naming the retired prerequisite.
+func repointedEdgeEvent(e BacklogEdge, retired string) Event {
+	payload, _ := json.Marshal(map[string]any{"from": e.From, "to": e.To, "kind": e.Kind, "removed": false, "repointed_from": retired})
+	return Event{Kind: "backlog_edge_changed", Payload: payload}
 }
 
 // Resolve supersession chains from the transaction snapshot. The caller holds

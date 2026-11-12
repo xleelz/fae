@@ -23,7 +23,7 @@ func ValidateExternalSchemas(ctx context.Context, c LiveConfig) error {
 		}
 		managed := false
 		for _, p := range c.ReviewPolicies {
-			if p.Operations[alias] != "" || p.StatusTool == alias || p.BaselineTool == alias || reviewOperation(t.Name) {
+			if p.Operations[alias] != "" || p.StatusTool == alias || p.BaselineTool == alias || reviewOperation(t.Name) || reviewOperation(alias) {
 				managed = true
 			}
 		}

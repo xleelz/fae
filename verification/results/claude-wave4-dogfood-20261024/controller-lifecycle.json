@@ -1,0 +1,17 @@
+{
+  "roll": {
+    "accepted": true,
+    "binary_sha256": "fb8ffa59ff98fbffb6f88ced74390cef9f39b8214c4127f2a046388182ac26ae",
+    "drive_rounds": 1,
+    "holds": null,
+    "new_pid": 1168488,
+    "new_version": "unknown: dirty binary source",
+    "old_binary_sha256": "fb8ffa59ff98fbffb6f88ced74390cef9f39b8214c4127f2a046388182ac26ae",
+    "old_pid": 1166058,
+    "old_version": "unknown: dirty binary source",
+    "pid": 1168488,
+    "watchdog": "not running"
+  },
+  "old_pid": 1166058,
+  "maintenance_marker_cleared": true
+}

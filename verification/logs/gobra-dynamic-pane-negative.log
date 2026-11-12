@@ -1,6 +1,6 @@
-Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
 (c) Copyright ETH Zurich 2012 - 2026
-17:14:45.102 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - scheduler [17:14:45]
-17:14:47.130 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/dynamic-pane-negative.go:6:9> Postcondition might not hold. 
+18:38:07.361 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - scheduler [18:38:07]
+18:38:10.336 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/dynamic-pane-negative.go:6:9> Postcondition might not hold. 
 Assertion limit <= current might not hold.
-17:14:47.147 [thread-3] ERROR viper.gobra.Gobra - Gobra found 1 error.
+18:38:10.371 [thread-14] ERROR viper.gobra.Gobra - Gobra found 1 error.

@@ -3,8 +3,10 @@ package external
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"sync/atomic"
 	"testing"
 )
@@ -198,5 +200,29 @@ func TestLostPOSTResponseNeverAutomaticallyReplayed(t *testing.T) {
 	changed.Endpoint = "http://127.0.0.1:1"
 	if _, e := Perform(context.Background(), changed, i); e == nil {
 		t.Fatal("changed endpoint accepted")
+	}
+}
+
+// Appendix B ExternalEffectRefused: a definitive client-error response to a
+// performed call is a typed refusal carrying the reported id; timeouts, rate
+// limits, server errors and query responses stay untyped (uncertain).
+func TestPerformRefusalIsTyped(t *testing.T) {
+	for status, refused := range map[int]bool{403: true, 422: true, 409: true, 408: false, 429: false, 500: false, 503: false} {
+		s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(status)
+			json.NewEncoder(w).Encode(Receipt{ExternalID: "reported-1", State: "refused"})
+		}))
+		tool := fixture()
+		tool.Endpoint = s.URL
+		i, _ := NewIntent(tool, "task", "stage", "key", tool.Role, "tree", "session", tool.Arguments)
+		_, e := Perform(context.Background(), tool, i)
+		var typed *StatusError
+		if !errors.As(e, &typed) || typed.Refused() != refused || typed.ExternalID != "reported-1" || !strings.Contains(e.Error(), "reported id reported-1") {
+			t.Error(status, e)
+		}
+		if _, _, e = Query(context.Background(), tool, i); !errors.As(e, &typed) || typed.Refused() {
+			t.Error("query response typed as a refused call", status, e)
+		}
+		s.Close()
 	}
 }

@@ -1,0 +1,29 @@
+{
+  "dispatches": 5,
+  "spec": {
+    "id": "dogfood-loop",
+    "kind": "loop",
+    "role": "oracle",
+    "prompt": "Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.",
+    "binding": {
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "medium"
+    },
+    "max_iterations": 5,
+    "expires_at": "2026-10-31T09:21:55.078547135Z"
+  },
+  "session_id": "loop-dogfood-loop",
+  "state": "completed",
+  "iterations": 5,
+  "in_flight": false,
+  "next": "2026-10-31T09:07:17.553017323Z",
+  "context": {
+    "iterations": 5,
+    "scope_revision": "79cb6515144cef3b8c3d2bee542d30e3c0ae4e4cb6e09e20899c819d5661e7d2",
+    "session": "loop-dogfood-loop"
+  },
+  "last_output": {
+    "message": "Iteration 5 of loop-dogfood-loop (attempt 5): marker fae-loop-dogfood is still in place, carried over from iterations 1 through 4. Scope hasn't changed: alpha.go defines alpha() returning 0, and alpha_test.go is empty. As instructed, I made no file edits and invoked no other tools."
+  }
+}

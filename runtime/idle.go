@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/xleelz/fae/kernel"
@@ -21,7 +22,10 @@ import (
 // adapter must supply records created before allowing its own processes to run.
 // Final and QA sessions must set Protected; only explicit pre-code globals shed.
 // Reap waits for adapter-owned children after their groups have been terminated.
-// Context is a non-authoritative handoff, never evidence or a source of grants.
+// OnRetired, when set, is called once the session's retirement is proven and
+// its registration released; it runs under the registry lock and must not
+// block. Context is a non-authoritative handoff, never evidence or a source of
+// grants.
 type IdleRegistration struct {
 	ID, Socket, Role           string
 	Global, PreCode, Protected bool
@@ -29,15 +33,29 @@ type IdleRegistration struct {
 	Records                    []*processowner.Record
 	Context                    json.RawMessage
 	Reap                       func() error
+	OnRetired                  func()
 }
 
 var ErrIdleSessionActive = errors.New("session already active")
 
 type idleEntry struct {
 	IdleRegistration
-	idleSince time.Time
-	active    bool
+	idleSince        time.Time
+	active, retiring bool
+	// discard removes the context file at retirement: a released task-bound
+	// session keeps none (FAE-RT-011).
+	discard bool
+	// pending is closed when the retirement in progress ends; nil when none.
+	pending chan struct{}
+	// unproven marks a session refused for reuse whose retirement was tried
+	// and failed; it is counted in OwnedIdleSessions.unproven until retired.
+	unproven bool
 }
+
+// ErrIdleSessionRetiring refuses reuse of a released session whose retirement
+// is not yet proven; the caller reconciles it before relaunching.
+var ErrIdleSessionRetiring = errors.New("session retirement pending; relaunch required")
+
 type IdleAction struct{ Kind, Session, Reason string }
 
 // OwnedIdleSessions tracks only explicitly registered, current-daemon sessions.
@@ -49,6 +67,8 @@ type OwnedIdleSessions struct {
 	sessions           map[string]*idleEntry
 	rounds             int
 	TTL                time.Duration
+	// unproven counts the sessions marked unproven, read without the lock.
+	unproven atomic.Int64
 }
 
 func NewOwnedIdleSessions(root, owner string) (*OwnedIdleSessions, error) {
@@ -165,6 +185,9 @@ func (p *OwnedIdleSessions) Begin(id string) (json.RawMessage, error) {
 	if s.active {
 		return nil, ErrIdleSessionActive
 	}
+	if s.retiring || s.pending != nil {
+		return nil, ErrIdleSessionRetiring
+	}
 	s.active = true
 	p.rounds = 0
 	return append(json.RawMessage(nil), s.Context...), nil
@@ -185,6 +208,55 @@ func (p *OwnedIdleSessions) End(id string, handoff json.RawMessage, now time.Tim
 	s.active = false
 	s.idleSince = now
 	return nil
+}
+
+// Release ends a turn whose session must not outlive it: a task-bound session
+// retires through the retirement path when its turn is collected and keeps no
+// context (FAE-RT-011). An unproven retirement keeps the session registered and
+// refused for reuse; the next maintenance round or relaunch retries it.
+func (p *OwnedIdleSessions) Release(ctx context.Context, id string) error {
+	return p.endForRetirement(ctx, id, true)
+}
+
+// Abandon ends a turn whose session can no longer be trusted for reuse: the
+// turn's own retirement is unproven, or its handoff could not be recorded. The
+// session is never left active: it is refused for reuse and retired through
+// the retirement path now or, if that is unproven too, by the next maintenance
+// round or relaunch. Its last recorded context is kept for the relaunch
+// (FAE-SCH-014).
+func (p *OwnedIdleSessions) Abandon(ctx context.Context, id string) error {
+	return p.endForRetirement(ctx, id, false)
+}
+
+func (p *OwnedIdleSessions) endForRetirement(ctx context.Context, id string, discard bool) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	s, ok := p.sessions[id]
+	if !ok || !s.active {
+		return errors.New("invalid idle release")
+	}
+	s.active, s.retiring, s.discard = false, true, discard
+	return p.retire(ctx, s)
+}
+
+// Retire reconciles one inactive session through the retirement path, which
+// releases its registration only after exact process retirement (FAE-RT-012).
+// It is idempotent: an absent session is already retired. A session that owns
+// an in-flight turn is never closed. Once retirement is asked for, the session
+// is refused for reuse: if it stays unproven, every later maintenance round
+// retries it, like a released session's.
+func (p *OwnedIdleSessions) Retire(ctx context.Context, id string) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	s, ok := p.sessions[id]
+	if !ok {
+		return nil
+	}
+	if s.active {
+		return ErrIdleSessionActive
+	}
+	s.retiring = true
+	return p.retire(ctx, s)
 }
 func (p *OwnedIdleSessions) save(id string, data json.RawMessage) error {
 	if len(data) > 1<<20 {
@@ -235,7 +307,56 @@ func (p *OwnedIdleSessions) Handoff(id string) (json.RawMessage, error) {
 	}
 	return b, nil
 }
+
+// retire runs the retirement path for s. It is entered and left with p.mu
+// held, but releases the lock while processes are terminated, reaped and
+// acknowledged, so one session's retirement never delays another session's
+// Begin, End or Register. Meanwhile the entry is refused for reuse; it is
+// removed only once retirement is proven. A retirement of s already in
+// progress is awaited, and retried if it failed.
 func (p *OwnedIdleSessions) retire(ctx context.Context, s *idleEntry) error {
+	for s.pending != nil {
+		done := s.pending
+		p.mu.Unlock()
+		select {
+		case <-done:
+		case <-ctx.Done():
+		}
+		p.mu.Lock()
+		if e := ctx.Err(); e != nil {
+			return e
+		}
+	}
+	if p.sessions[s.ID] != s {
+		return nil // retired meanwhile
+	}
+	done := make(chan struct{})
+	s.pending = done
+	discard := s.discard
+	p.mu.Unlock()
+	e := p.retireProcesses(ctx, s, discard)
+	p.mu.Lock()
+	s.pending = nil
+	close(done)
+	if e != nil {
+		if s.retiring && !s.unproven {
+			s.unproven = true
+			p.unproven.Add(1)
+		}
+		return e
+	}
+	if s.unproven {
+		p.unproven.Add(-1)
+	}
+	delete(p.sessions, s.ID)
+	if s.OnRetired != nil {
+		s.OnRetired()
+	}
+	return nil
+}
+
+// retireProcesses runs without p.mu; it reads only fields fixed at Register.
+func (p *OwnedIdleSessions) retireProcesses(ctx context.Context, s *idleEntry, discard bool) error {
 	for _, record := range s.Records {
 		if e := processowner.Terminate(ctx, record, p.owner); e != nil {
 			return e
@@ -258,12 +379,21 @@ func (p *OwnedIdleSessions) retire(ctx context.Context, s *idleEntry) error {
 			}
 		}
 	}
-	delete(p.sessions, s.ID)
+	// No save can race this removal: the entry is neither active nor
+	// replaceable by Register until it is deleted.
+	if !discard {
+		return nil
+	}
+	if e := os.Remove(filepath.Join(p.root, s.ID+".json")); e != nil && !os.IsNotExist(e) {
+		return e
+	}
 	return nil
 }
 
 // Round uses a fresh host-wide socket census. Partial or unknown inventories fail
-// closed. A foreign-held limit never triggers ownership-based escalation.
+// closed. A foreign-held limit never triggers ownership-based escalation. A
+// reconciliation whose retirement stays unproven is returned as an error with
+// the round's actions; it never stops the rest of the round.
 func (p *OwnedIdleSessions) Round(ctx context.Context, counts map[string]int, limit, inflight int, now time.Time) ([]IdleAction, error) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -277,11 +407,55 @@ func (p *OwnedIdleSessions) Round(ctx context.Context, counts map[string]int, li
 		}
 		total += n
 	}
+	// FAE-RT-012: an idle slot whose pane was removed (its socket reports no
+	// pane or is gone) and whose registered group is proven gone, or a released
+	// session whose retirement failed, is reconciled through the retirement
+	// path instead of failing every later round closed.
+	var groups map[int]bool
+	var reconciled []IdleAction
+	var unproven error
+	for _, id := range sortedIdleIDs(p.sessions) {
+		s := p.sessions[id]
+		if s == nil || s.active || s.pending != nil || !s.retiring && counts[s.Socket] > 0 {
+			continue
+		}
+		reason := "session refused for reuse retired; durable handoff retained"
+		if s.discard {
+			reason = "released task-bound session retired"
+		}
+		if !s.retiring {
+			if groups == nil {
+				var e error
+				if groups, e = liveGroups(); e != nil {
+					break // An unreadable census proves nothing gone.
+				}
+			}
+			if !anyGroupGone(s.Records, groups) {
+				continue
+			}
+			reason = "owned pane removed under the idle slot; retired for relaunch, durable handoff retained"
+		}
+		if e := p.retire(ctx, s); e != nil {
+			unproven = errors.Join(unproven, fmt.Errorf("idle session %s retirement unproven: %w", id, e))
+			continue
+		}
+		reconciled = append(reconciled, IdleAction{Kind: "idle-session-reconciled", Session: id, Reason: reason})
+	}
+	if len(reconciled) > 0 {
+		p.rounds = 0
+		return reconciled, unproven
+	}
 	ids := make([]string, 0, len(p.sessions))
 	for id, s := range p.sessions {
+		if s.retiring || s.pending != nil {
+			// Refused for reuse and awaiting (or in) retirement: not in
+			// service, but an own idle pane while it lasts.
+			ownedIdle += counts[s.Socket]
+			continue
+		}
 		if _, ok := counts[s.Socket]; !ok {
 			p.rounds = 0
-			return nil, errors.New("registered idle socket missing from live census")
+			return nil, errors.Join(unproven, errors.New("registered idle socket missing from live census"))
 		}
 		ids = append(ids, id)
 		if !s.active {
@@ -303,36 +477,40 @@ func (p *OwnedIdleSessions) Round(ctx context.Context, counts map[string]int, li
 		s := p.sessions[id]
 		if (s.Global || s.Expire) && !s.active && now.Sub(s.idleSince) >= ttl {
 			if e := p.retire(ctx, s); e != nil {
-				return nil, e
+				return nil, errors.Join(unproven, e)
 			}
 			p.rounds = 0
-			return []IdleAction{{Kind: "idle-session-retired", Session: id, Reason: "idle TTL; durable handoff retained"}}, nil
+			return []IdleAction{{Kind: "idle-session-retired", Session: id, Reason: "idle TTL; durable handoff retained"}}, unproven
 		}
 	}
 	if total < limit || ownedIdle < limit || inflight != 0 {
 		p.rounds = 0
-		return nil, nil
+		return nil, unproven
 	}
 	p.rounds++
 	if p.rounds < 3 {
-		return nil, nil
+		return nil, unproven
 	}
 	p.rounds = 0
 	for _, id := range ids {
 		s := p.sessions[id]
 		if kernel.CanShedIdle(s.Global, s.PreCode, s.Protected, s.active, inflight) {
 			if e := p.retire(ctx, s); e != nil {
-				return nil, e
+				return nil, errors.Join(unproven, e)
 			}
-			return []IdleAction{{Kind: "idle-session-shed", Session: id, Reason: "three own-idle saturated rounds; durable handoff retained"}}, nil
+			return []IdleAction{{Kind: "idle-session-shed", Session: id, Reason: "three own-idle saturated rounds; durable handoff retained"}}, unproven
 		}
 	}
-	return []IdleAction{{Kind: "PaneCapStarvation", Reason: fmt.Sprintf("%d own idle panes saturate limit %d; no sheddable pre-code global session", ownedIdle, limit)}}, nil
+	return []IdleAction{{Kind: "PaneCapStarvation", Reason: fmt.Sprintf("%d own idle panes saturate limit %d; no sheddable pre-code global session", ownedIdle, limit)}}, unproven
 }
 func (p *OwnedIdleSessions) Close(ctx context.Context) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	for _, s := range p.sessions {
+	for _, id := range sortedIdleIDs(p.sessions) {
+		s := p.sessions[id]
+		if s == nil {
+			continue // retired meanwhile
+		}
 		if s.active {
 			return errors.New("cannot retire active idle-pool session")
 		}
@@ -343,5 +521,46 @@ func (p *OwnedIdleSessions) Close(ctx context.Context) error {
 	return nil
 }
 
+func sortedIdleIDs(sessions map[string]*idleEntry) []string {
+	ids := make([]string, 0, len(sessions))
+	for id := range sessions {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
+}
+
+// liveGroups lists the process groups with a live (non-defunct) member.
+func liveGroups() (map[int]bool, error) {
+	all, e := processowner.Census()
+	if e != nil {
+		return nil, e
+	}
+	groups := map[int]bool{}
+	for _, p := range all {
+		if !p.Defunct() {
+			groups[p.PGID] = true
+		}
+	}
+	return groups, nil
+}
+
+// anyGroupGone is positive proof from one census that a registered group has
+// no live member: its leader exited, or was retired, reaped or replaced.
+func anyGroupGone(records []*processowner.Record, groups map[int]bool) bool {
+	for _, r := range records {
+		if !groups[r.PGID] {
+			return true
+		}
+	}
+	return false
+}
+
 // Count lets the daemon avoid host inventory work when no adapter uses pooling.
 func (p *OwnedIdleSessions) Count() int { p.mu.Lock(); defer p.mu.Unlock(); return len(p.sessions) }
+
+// Unretired reports the sessions refused for reuse whose retirement was tried
+// and is still unproven. Each keeps its pane, and its pane reservation, until
+// a later maintenance round or relaunch proves it retired. It takes no lock,
+// so a status read never waits for a census or a retirement.
+func (p *OwnedIdleSessions) Unretired() int { return int(p.unproven.Load()) }

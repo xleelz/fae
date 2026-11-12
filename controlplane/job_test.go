@@ -11,11 +11,24 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
+// taskPayload is a minimal daemon envelope: an engine job at state with the
+// given history, bound to workflow wf revision 1.
+func taskPayload(id, state string, history ...map[string]any) json.RawMessage {
+	if history == nil {
+		history = []map[string]any{}
+	}
+	raw, _ := json.Marshal(map[string]any{"job": map[string]any{"task_id": id, "state": state, "revision": 1, "document": map[string]any{"id": "wf"}, "history": history}, "admission": map[string]any{"priority": 10, "run_id": "run"}})
+	return raw
+}
 func jobFixture() JobSnapshot {
-	return JobSnapshot{ID: "job", WorkflowID: "wf", WorkflowRevision: 1, TargetID: "target", TargetRevision: 1, State: "Pending", Payload: json.RawMessage(`{"stage":0}`)}
+	return JobSnapshot{ID: "job", WorkflowID: "wf", WorkflowRevision: 1, TargetID: "target", TargetRevision: 1, State: "Pending", Payload: taskPayload("job", "Pending")}
 }
 func jobRows(j JobSnapshot) *sqlmock.Rows {
-	return sqlmock.NewRows([]string{"id", "version", "wf", "wfr", "target", "tr", "state", "digest", "size"}).AddRow(j.ID, j.Version, j.WorkflowID, j.WorkflowRevision, j.TargetID, j.TargetRevision, j.State, Digest(j.Payload), len(j.Payload))
+	molecule := j.MoleculeID
+	if molecule == "" {
+		molecule = testMolecule
+	}
+	return sqlmock.NewRows([]string{"id", "version", "wf", "wfr", "target", "tr", "state", "digest", "size", "molecule"}).AddRow(j.ID, j.Version, j.WorkflowID, j.WorkflowRevision, j.TargetID, j.TargetRevision, j.State, Digest(j.Payload), len(j.Payload), molecule)
 }
 func expectClock(m sqlmock.Sqlmock) {
 	m.ExpectQuery("SELECT sequence FROM event_clock WHERE id=1 FOR UPDATE").WillReturnRows(sqlmock.NewRows([]string{"sequence"}).AddRow(0))
@@ -67,8 +80,10 @@ func TestJobSaveRetriesAndAuditFailureRollsBack(t *testing.T) {
 				m.ExpectQuery("SELECT job_id").WillReturnRows(jobRows(old))
 				m.ExpectQuery("SELECT size FROM blobs").WillReturnRows(sqlmock.NewRows([]string{"size"}).AddRow(len(j.Payload)))
 				m.ExpectExec("UPDATE jobs").WillReturnResult(sqlmock.NewResult(0, 1))
+				expectProjection(m)
 				m.ExpectExec("UPDATE backlog_items").WillReturnResult(sqlmock.NewResult(0, 0))
 				m.ExpectQuery("SELECT sequence FROM event_clock").WillReturnRows(sqlmock.NewRows([]string{"sequence"}).AddRow(0))
+				expectTaskEventMetadata(m)
 				m.ExpectExec("INSERT INTO events").WillReturnResult(sqlmock.NewResult(0, 1))
 				m.ExpectExec("UPDATE event_clock").WillReturnResult(sqlmock.NewResult(0, 1))
 				if failAudit {
@@ -153,7 +168,16 @@ func TestMigrationV2InterruptedReplay(t *testing.T) {
 			}
 			m.ExpectExec("INSERT INTO migrations").WithArgs(6).WillReturnResult(sqlmock.NewResult(0, 1))
 			m.ExpectCommit()
-
+			m.ExpectBegin()
+			for _, statement := range Migration7 {
+				m.ExpectExec(regexp.QuoteMeta(statement)).WillReturnResult(sqlmock.NewResult(0, 0))
+			}
+			m.ExpectExec("INSERT INTO migrations").WithArgs(7).WillReturnResult(sqlmock.NewResult(0, 1))
+			m.ExpectCommit()
+			expectMigration8(m)
+			expectMigration9(m)
+			expectMigration10(m)
+			expectMigration11(m)
 		}
 		e := s.Migrate(context.Background())
 		if (e != nil) != (attempt == 0) {

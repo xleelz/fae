@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
+(c) Copyright ETH Zurich 2012 - 2026
+18:44:23.708 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - ui [18:44:23]
+18:44:26.828 [ForkJoinPool-3-worker-2] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/ui-request-negative.go:12:9> Postcondition might not hold. 
+Assertion ok == (loopbackPeer && expectedHost && tokenMatches) might not hold.
+18:44:26.865 [thread-5] ERROR viper.gobra.Gobra - Gobra found 1 error.

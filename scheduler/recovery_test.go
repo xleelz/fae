@@ -94,7 +94,7 @@ func boolInt(v bool) int {
 	return 0
 }
 func TestLeaseCrashHelper(t *testing.T) {
-	root := os.Getenv("FAE_LEASE_CRASH_ROOT")
+	root := os.Getenv("LEASE_CRASH_ROOT")
 	if root == "" {
 		return
 	}
@@ -162,7 +162,7 @@ func TestSIGKILLRetiredLeaseRecoversCapacityPreservesForeign(t *testing.T) {
 	l.Advance(ctx, time.Now(), map[Owner]Liveness{current: Alive})
 	exe, _ := os.Executable()
 	cmd := exec.Command(exe, "-test.run=^TestLeaseCrashHelper$")
-	cmd.Env = append(os.Environ(), "FAE_LEASE_CRASH_ROOT="+root)
+	cmd.Env = append(os.Environ(), "LEASE_CRASH_ROOT="+root)
 	if e = cmd.Start(); e != nil {
 		t.Fatal(e)
 	}

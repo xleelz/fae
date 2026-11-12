@@ -45,6 +45,15 @@ func TestDriveDelayedLostAcknowledgementReconcilesAcrossGeneration(t *testing.T)
 			if _, e = call(t, d, "Admit", AdmitParams{ID: "checkpoint", Tree: "tree", AuthorizingMessage: "message"}, "checkpoint"); e != nil {
 				t.Fatal(e)
 			}
+			// Step by hand under the writer lock, as the drive would: the
+			// status keeper reads this state.
+			d.mu.Lock()
+			locked := true
+			defer func() {
+				if locked {
+					d.mu.Unlock()
+				}
+			}()
 			original := d.jobs["checkpoint"]
 			var proposal envelope
 			if e = decodeEnvelope(original.Payload, &proposal); e != nil {
@@ -113,13 +122,19 @@ func TestDriveDelayedLostAcknowledgementReconcilesAcrossGeneration(t *testing.T)
 			if persistErr == nil || d.pendingCheckpoint == nil {
 				t.Fatal("uncertain checkpoint forgotten", persistErr)
 			}
-			d.mu.Lock()
 			d.draining = true
 			e = d.requestDriveRearm(ctx, controlplane.Audit{Actor: "test", Action: "rearm", Outcome: "ok"})
 			d.mu.Unlock()
+			locked = false
 			if name == "divergent" {
-				if e == nil || d.pendingCheckpoint == nil || !sameJobCheckpoint(d.jobs[original.ID], original) {
-					t.Fatal("divergent proposal adopted", e)
+				// The diverged task is quarantined (its durable row untouched);
+				// it never keeps the drive down for every other task.
+				_, cached := d.jobs[original.ID]
+				if e != nil || d.pendingCheckpoint != nil || cached || d.quarantined[original.ID] == "" {
+					t.Fatal("divergent checkpoint not isolated to its task", e)
+				}
+				if durable, err := d.store.GetJob(ctx, original.ID); err != nil || !sameJobCheckpoint(durable, committed) {
+					t.Fatal("isolation rewrote the durable row", err)
 				}
 				return
 			}
@@ -148,6 +163,28 @@ func TestDriveDelayedLostAcknowledgementReconcilesAcrossGeneration(t *testing.T)
 			}
 			if count != want {
 				t.Fatal("dispatch duplicated or lost", count, want)
+			}
+			// The lost acknowledgement recorded each transition exactly once.
+			done, e := d.store.GetJob(ctx, "checkpoint")
+			var final envelope
+			if e == nil {
+				e = decodeEnvelope(done.Payload, &final)
+			}
+			recorded, err := d.store.TaskTransitions(ctx, "checkpoint", 0, 10000)
+			if e != nil || err != nil {
+				t.Fatal(e, err)
+			}
+			n := 0
+			for _, ev := range final.Job.History {
+				if ev.Kind == "transition" {
+					if n >= len(recorded) || recorded[n].From != string(ev.From) || recorded[n].To != string(ev.To) {
+						t.Fatal("transition log diverged from the checkpoint history", n, recorded)
+					}
+					n++
+				}
+			}
+			if n != len(recorded) {
+				t.Fatal("transition log duplicated rows", n, len(recorded))
 			}
 		})
 	}

@@ -1,0 +1,554 @@
+[
+  {
+    "id": "check:landing-admission-gates",
+    "kind": "native-check",
+    "category": "landing-gate",
+    "check": {
+      "source": "controller/gates.go",
+      "markers": [
+        "\"memory\"",
+        "\"io\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-007",
+      "FAE-HOST-010",
+      "FAE-CTL-051",
+      "FAE-CTL-020",
+      "FAE-CTL-040",
+      "FAE-HOST-001",
+      "FAE-HOST-016",
+      "FAE-HOST-022",
+      "FAE-HOST-023",
+      "FAE-HOST-030"
+    ],
+    "production": {
+      "path": "controller/gates.go",
+      "function": "MemoryGate"
+    },
+    "positive": {
+      "tests": [
+        "TestMemoryIOAndOverlapGates",
+        "TestHeavyAdmissionMemoryFloorIOGateAndControllerClass"
+      ],
+      "note": "memory at the 12 GiB floor and two spaced I/O readings below threshold admit a landing or gate run"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestGateSelfTestProvesEveryGateCanFail",
+        "TestMemoryIOAndOverlapGates",
+        "TestHeavyAdmissionMemoryFloorIOGateAndControllerClass"
+      ],
+      "note": "below-floor, unreadable and vacuous-floor memory; pressure, single, unspaced, at-threshold and second-above I/O readings refuse"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires"
+      ],
+      "path": "Start -> Land RPC -> landRPC -> controller.Land -> landingAdmission -> HeavyAdmission.Acquire -> MemoryGate, IOGate (accept path), then the gated landing advances the operator branch"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is accept-path; the refusals are controller- and daemon-unit level (HeavyAdmission without a started daemon)."
+  },
+  {
+    "id": "check:landing-overlap-gate",
+    "kind": "native-check",
+    "category": "landing-gate",
+    "check": {
+      "source": "controller/gates.go",
+      "markers": [
+        "\"overlap\""
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-050"
+    ],
+    "production": {
+      "path": "controller/gates.go",
+      "function": "OverlapGate"
+    },
+    "positive": {
+      "tests": [
+        "TestMemoryIOAndOverlapGates",
+        "TestGateSelfTestProvesEveryGateCanFail"
+      ],
+      "note": "disjoint changed and touched files pass"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestGateSelfTestProvesEveryGateCanFail",
+        "TestMemoryIOAndOverlapGates"
+      ],
+      "note": "an overlap, a failed overlap query and a critical expired overlap hold"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonTwoTasksSameLinesIntegrateThenRemediate",
+        "TestDaemonDependentForksFromPrerequisiteTip",
+        "TestDeploymentDurableOverlapHolds"
+      ],
+      "path": "Start -> controller.OverlapGate / roll overlap hold -> dependent and overlapping tasks remediate or hold durably on overlap"
+    },
+    "status": "native-evidenced",
+    "limits": "OverlapGate is reached only by the gate self-test (fae gates self-test); the roll computes its overlap hold in daemon/controller.go through MayReleaseOverlap, which this gate does not exercise."
+  },
+  {
+    "id": "check:landing-tree-gates",
+    "kind": "native-check",
+    "category": "landing-gate",
+    "check": {
+      "source": "controller/gates.go",
+      "markers": [
+        "\"format\"",
+        "\"filter\"",
+        "\"compile\"",
+        "\"suite\"",
+        "\"frozen\"",
+        "\"qa\"",
+        "\"own-hunk\"",
+        "\"landing\""
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-030",
+      "FAE-CTL-031",
+      "FAE-CTL-050",
+      "FAE-CTL-052",
+      "FAE-ROB-033",
+      "FAE-ROB-002",
+      "FAE-ROB-003",
+      "FAE-ROB-015",
+      "FAE-ROB-020",
+      "FAE-ROB-021",
+      "FAE-ROB-030",
+      "FAE-ROB-031",
+      "FAE-ROB-032",
+      "FAE-ROB-042"
+    ],
+    "production": {
+      "path": "controller/gates.go",
+      "function": "LandingGate"
+    },
+    "positive": {
+      "tests": [
+        "TestHunkCompileFrozenQAAndLandingGates",
+        "TestGoTestCountsAndFilter",
+        "TestFormatItemsAreItemScoped",
+        "TestLandCleanLandingRecordsEveryGateCount",
+        "TestEngineProtectedDocumentOnlyCommitFloor"
+      ],
+      "note": "every gate passes on positive evidence; a clean landing records a positive count for every gate"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestGateSelfTestProvesEveryGateCanFail",
+        "TestHunkCompileFrozenQAAndLandingGates",
+        "TestLandZeroMatchFilterHoldsAndKeepsTarget",
+        "TestLandSalvageTrailAndDroppedProductionHunk"
+      ],
+      "note": "vacuous, failing, zero-count, dropped-hunk, unlisted-failure, build-failure and forged-pass inputs refuse; a zero-match filter and a dropped production hunk hold the landing with the target unchanged"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLandGatesAdvanceOperatorBranchAndSalvageRetires",
+        "TestApplyLandingTestShapeAndTargetPolicyDocumentChecks"
+      ],
+      "path": "Start -> Land RPC -> landRPC -> controller.Land -> format, filter, compile, suite, frozen, QA and own-hunk gates on the merged tip -> LandingGate -> CanAdvanceTarget; the test asserts every recorded gate has a positive count, and the salvage path validates the trail through LandingGate"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is accept-path; refusals are controller-level landings on real Git fixtures. The gates are Go-specific (go test JSON, gofmt items)."
+  },
+  {
+    "id": "check:role-shim-refusals",
+    "kind": "native-check",
+    "category": "role-shim-refusal",
+    "check": {
+      "source": "commandshim/role.go",
+      "markers": [
+        "\"shim policy: %v\", err",
+        "\"empty command\"",
+        "\"nested \" + name + \" inside a leased command is refused (FAE-HOST-014); run it as its own command\"",
+        "name + \" requires a scoped broker adapter (including version probes)\"",
+        "\"this role has no \" + capability + \" capability (pre-code roles never build, test or format)\"",
+        "name + \" is not on the session's base PATH\"",
+        "name + \" is not an allowed command shim of this role's tool profile\"",
+        "\"git \" + sub + \": a Local task makes no external effect, so pushes and remote changes are refused\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-011",
+      "FAE-HOST-014",
+      "FAE-WF-042",
+      "FAE-VCS-002",
+      "FAE-MODE-002",
+      "FAE-RT-015",
+      "FAE-RT-017",
+      "FAE-RT-019",
+      "FAE-WF-002",
+      "FAE-WF-005",
+      "FAE-WF-006",
+      "FAE-WF-007",
+      "FAE-WF-008",
+      "FAE-WF-022",
+      "FAE-WF-044",
+      "FAE-WF-045",
+      "FAE-WF-051",
+      "FAE-WF-052",
+      "FAE-WF-063",
+      "FAE-WF-075",
+      "FAE-WF-076",
+      "FAE-WF-081",
+      "FAE-WF-083",
+      "FAE-WF-086",
+      "FAE-WF-091",
+      "FAE-WF-092",
+      "FAE-WF-093",
+      "FAE-RT-001",
+      "FAE-RT-003",
+      "FAE-RT-006",
+      "FAE-RT-007",
+      "FAE-RT-008",
+      "FAE-RT-013",
+      "FAE-VCS-001",
+      "FAE-VCS-006",
+      "FAE-VCS-007",
+      "FAE-VCS-011",
+      "FAE-MODE-001",
+      "FAE-MODE-004"
+    ],
+    "production": {
+      "path": "commandshim/role.go",
+      "function": "RunShim"
+    },
+    "positive": {
+      "tests": [
+        "TestRoleShimRefusalCorpus",
+        "TestRoleShimRunsHeavyCommandsUnderTheLease",
+        "TestCaptureTaskScopeInlineBoundsAndSeparatedScopes",
+        "TestAgenticToolboxRangeReadReplacementEditAndReadOnlyRefusal",
+        "TestAgenticTurnBudgetExhaustionAndCheckpointResume",
+        "TestTurnBudgetExhaustedResumeOnceAndCheckpointProvenance",
+        "TestTurnBudgetExhaustedTargetStageTransition"
+      ],
+      "note": "a granted, leased test of the own worktree runs with the command's own exit code"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestRoleShimRefusalCorpus",
+        "TestRoleShimRefusalsExit77WithoutALease",
+        "TestRoleShimNestedInvocationIsRefused",
+        "TestAgenticTurnRevertsOutOfScopeWritesAndRefusesOutput",
+        "TestAgenticShellRequiresRoleShimsAndPreToolHook"
+      ],
+      "note": "Each remaining RunShim refusal exits before execution. Read-only git queries are now delegated to the separately censused runRoleGit policy; mutation, remote access and confinement refusals remain covered there."
+    },
+    "native": {
+      "tests": [
+        "TestHeavyOpShimPolicyAndHookCLI",
+        "TestRoleSessionShimsCarryTheLaunchPolicy",
+        "TestToolLessSessionHasNoRoleShimsAndAgenticShellRequiresShimsAndHook",
+        "TestAgenticShellRequiresRoleShimsAndPreToolHook",
+        "TestTargetConfigInlineBoundsAndCheckpointIntervalDefaults",
+        "TestAdmitReadOnlyFilesValidationAndLiveScope",
+        "TestLiveClaudeBridgeFixture"
+      ],
+      "path": "fae heavy-op run --shim-policy -> commandshim.RunShim and runtime LaunchConfig role shim wiring for agentic-shell sessions"
+    },
+    "status": "native-evidenced",
+    "limits": "RunShim runs when a role session's broker is the fae binary (commandshim.SelfBroker); daemon unit tests using a test binary receive the denial wrappers unless exercising the heavy-op CLI."
+  },
+  {
+    "id": "check:role-shim-denials",
+    "kind": "native-check",
+    "category": "role-shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "fae: command refused (exit 77): role tools and nested heavy commands require a separate broker dispatch; use a scoped host-command stage"
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-011",
+      "FAE-WF-042"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "InstallDenials"
+    },
+    "positive": {
+      "tests": [
+        "TestRoleShimRefusalCorpus",
+        "TestRoleShimsWithoutABrokerFailClosed"
+      ],
+      "note": "the denial wrappers install for every shimmed tool"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestRoleShimRefusalCorpus",
+        "TestRoleShimsWithoutABrokerFailClosed"
+      ],
+      "note": "go, gofmt, git and cargo wrappers exit 77 with the exact denial text when no broker exists"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonClaudeProviderPath"
+      ],
+      "path": "Start -> setupLive (RoleShims{Broker: SelfBroker()} is empty for a test binary) -> drive -> liveExecutor.Execute -> runtime Direct installs the role shims (InstallRoleShims -> InstallDenials) first on the session PATH -> the bridge's go resolves to the denial wrapper and exits 77 with the denial text"
+    },
+    "status": "native-evidenced",
+    "limits": "Reached natively only because a test binary is not a fae broker; with the fae binary as broker the sessions get the RunShim wrappers instead (check:role-shim-refusals)."
+  },
+  {
+    "id": "check:corpus-kernel-transitions",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestKernelExhaustive"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-020",
+      "FAE-WF-021",
+      "FAE-VER-009",
+      "FAE-VER-001",
+      "FAE-VER-002",
+      "FAE-VER-005",
+      "FAE-VER-006",
+      "FAE-VER-007",
+      "FAE-VER-008",
+      "FAE-VER-011"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "CanTransition"
+    },
+    "positive": {
+      "tests": [
+        "TestKernelExhaustive"
+      ],
+      "note": "every pair over the seven kernel states, a stage state and an unknown state: exactly the WF-021 kernel edges plus stage edges are legal"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestKernelExhaustive"
+      ],
+      "note": "terminal out-edges, Parked as a stored state, Cancelled outside Pending/Blocked, unknown states and Escalated to anything but Retired or the first stage are refused"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonScriptedLifecycle"
+      ],
+      "path": "Start -> drive -> dispatchTask -> engine Prepare/Complete -> transition -> workflow.CanTransition on every transition of the scripted default run"
+    },
+    "status": "native-evidenced",
+    "limits": "Exhaustive over a minimal protected document; the daemon path shows only legal transitions (accept path)."
+  },
+  {
+    "id": "check:corpus-gate-logic",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestThreeValuedTables",
+        "TestUnknownCauses"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-061",
+      "FAE-VER-009"
+    ],
+    "production": {
+      "path": "workflow/gate.go",
+      "function": "Eval"
+    },
+    "positive": {
+      "tests": [
+        "TestThreeValuedTables",
+        "TestGateOperationsAndTrace"
+      ],
+      "note": "the full and/or/not truth tables over true, false and unknown; each operator passes on matching evidence and records leaves and evidence ids"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestUnknownCauses",
+        "TestThreeValuedTables"
+      ],
+      "note": "a missing stage, a missing field, an unrecognised enum value, a type mismatch and an unknown operator each yield unknown and fail closed, naming the unknown leaf"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonScriptedLifecycle"
+      ],
+      "path": "Start -> drive -> engine gate stages -> engine.record -> workflow.Evaluate -> Eval for every gate of the scripted default run"
+    },
+    "status": "native-evidenced",
+    "limits": "The daemon path shows passing gates of the default content; unknown causes are unit-level."
+  },
+  {
+    "id": "check:corpus-floor-weakenings",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestKernelFloorWeakeningsAreRefused"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-070",
+      "FAE-VER-004"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestKernelFloorWeakeningsAreRefused"
+      ],
+      "note": "each valid base (the shipped default and random protected graphs) validates before it is weakened"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestKernelFloorWeakeningsAreRefused",
+        "TestDaemonRefusesFloorWeakenedWorkflows"
+      ],
+      "note": "random weakenings of each of the ten WF-070 floors (250 per floor) are refused by that floor's own rule and through strict parsing, and change the content hash; floor 1 attacks the JSON itself"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonRefusesFloorWeakenedWorkflows"
+      ],
+      "path": "Start -> WorkflowInstall RPC -> workflow.Parse -> workflow.Validate refuses the shipped default with one floor weakened (protected-commit bypass, loop cap, self-review, vacuous test gate, attempt limit, kernel edge) and installs nothing"
+    },
+    "status": "native-evidenced",
+    "limits": "Floors 2 (immutability), 4 (isolation) and 5 (host guard) have no content switch; they are attacked only through the content levers that reach them (child revision pins, HostCommand environment, profile overrides, fan regions, command weight and timeout, role caps), and everything else is an unknown key refused by strict parsing."
+  },
+  {
+    "id": "check:corpus-crash-matrix",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestCrashMatrixEveryDurableBoundary",
+        "TestLiveCrashMatrixEveryDurableBoundary"
+      ]
+    },
+    "requirements": [
+      "FAE-VER-010",
+      "FAE-ROB-011",
+      "FAE-ROB-012"
+    ],
+    "production": {
+      "path": "daemon/shutdown.go",
+      "function": "recoverInFlight"
+    },
+    "positive": {
+      "tests": [
+        "TestCrashMatrixEveryDurableBoundary",
+        "TestLiveCrashMatrixEveryDurableBoundary"
+      ],
+      "note": "the boundaries are enumerated from an uninterrupted run of the shipped default (scripted, and live with real Git and host effects); each is interrupted by SIGKILL and by a graceful stop and resumes to the uninterrupted outcome with no completed turn or effect repeated; only a SIGKILLed in-flight turn charges dispatch recovery"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption",
+        "TestDaemonMultiplexerPaneLossParksUncertain",
+        "TestMultiplexerLostPaneEndsTurn"
+      ],
+      "note": "recovery refuses to adopt an unproven or tampered effect (it parks UncertainDispatch), and a lost Herdr pane's turn is never counted as done: it ends at once and parks for the operator"
+    },
+    "native": {
+      "tests": [
+        "TestCrashMatrixEveryDurableBoundary",
+        "TestLiveCrashMatrixEveryDurableBoundary",
+        "TestDaemonMultiplexerPaneLossParksUncertain"
+      ],
+      "path": "helper daemon processes SIGKILLed or stopped at each boundary, then Start -> loadJob -> recoverInFlight (adoption, planned replay or UncertainDispatch) -> drive to the terminal outcome; the pane-loss seam kills a Herdr pane mid-turn under the multiplexer adapter"
+    },
+    "status": "native-evidenced",
+    "limits": "Single-task live chains with the scripted live bridge; real provider sessions are dogfood only. The pane-loss seam needs Herdr and skips without it."
+  },
+  {
+    "id": "check:local-denials",
+    "kind": "native-check",
+    "category": "role-shim-refusal",
+    "check": {
+      "source": "commandshim/local_denials.go",
+      "markers": [
+        "fae: command refused in Local mode (exit 78): git "
+      ]
+    },
+    "requirements": [
+      "FAE-MODE-002"
+    ],
+    "production": {
+      "path": "commandshim/local_denials.go",
+      "function": "InstallLocalDenials"
+    },
+    "positive": {
+      "tests": [
+        "TestLocalDenialWrappersGivePushTheLocalCode"
+      ],
+      "note": "a Local run's git wrapper refuses every other call with the shared denial text and 77"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestLocalDenialWrappersGivePushTheLocalCode",
+        "TestBrokerRefuseModeGivesLocalPushItsCode"
+      ],
+      "note": "a Local task's nested push or remote change exits 78 with the Local-mode reason, past git's global options, under the wrappers alone and through the broker's refuse mode"
+    },
+    "native": {
+      "tests": [
+        "TestInstanceRootInsideRepositoryRefused",
+        "TestSecretFileOwnerOnlyOutsideRepository"
+      ],
+      "path": "Start(Local) -> commandshim.InstallLocalDenials and instance/local isolation boundary checks"
+    },
+    "status": "native-evidenced",
+    "limits": "Shown through the broker (effects), the wrappers, and daemon startup isolation checks."
+  },
+  {
+    "id": "check:role-git-query-refusals",
+    "kind": "native-check",
+    "category": "role-shim-refusal",
+    "check": {
+      "source": "commandshim/role_git.go",
+      "markers": [
+        "\"role git remote commands require engine authority\"",
+        "\"role sessions allow read-only git queries; the engine's VCS broker commits\"",
+        "\"git query outside the session worktree\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-011",
+      "FAE-VCS-002",
+      "FAE-MODE-002"
+    ],
+    "production": {
+      "path": "commandshim/role_git.go",
+      "function": "runRoleGit"
+    },
+    "positive": {
+      "tests": [
+        "TestRoleGitQueriesStayInsideOwnWorktree"
+      ],
+      "note": "Real git rev-parse/status/diff/ls-files queries succeed inside the dedicated worktree."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestRoleGitQueriesStayInsideOwnWorktree"
+      ],
+      "note": "Actual query/mutation/remote invocations fire each exact refusal; output paths and -C escape are also refused by accounted policy."
+    },
+    "native": {
+      "tests": [
+        "TestRoleGitQueriesStayInsideOwnWorktree"
+      ],
+      "path": "The installed role git execution policy is called with a real git binary and temporary own worktree; allowed queries execute, commit/checkout/worktree/push/output and outside worktree queries are refused."
+    },
+    "status": "native-evidenced",
+    "limits": "This test reaches the OS git executable through runRoleGit without a model invocation. The role wrapper dispatcher and permission-hook wiring remain covered by the separate role shim and agentic launch tests."
+  }
+]

@@ -18,7 +18,7 @@ func TestDelegatedConfigurationSafety(t *testing.T) {
 		{"valid", "controller", "absolute", 0600, true}, {"public config", "controller", "absolute", 0644, false}, {"operator spoof", "operator", "absolute", 0600, false}, {"relative credential", "controller", "relative", 0600, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			root := t.TempDir()
+			root := outsideCheckout(t)
 			path := tc.path
 			if path == "absolute" {
 				path = filepath.Join(root, "credential")

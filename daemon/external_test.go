@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -29,6 +28,7 @@ func externalDocument() workflow.Document {
 	doc.Artifacts["ExternalReceipt"] = workflow.ArtifactType{Version: 1, Schema: json.RawMessage(`{"type":"object","additionalProperties":false,"required":["tool","argument_digest","external_id","reconciliation_state","idempotency_key"],"properties":{"tool":{"type":"string"},"argument_digest":{"type":"string"},"external_id":{"type":"string"},"reconciliation_state":{"type":"string"},"idempotency_key":{"type":"string"}}}`)}
 	role := doc.Roles["planner"]
 	role.Outputs = append(role.Outputs, "ExternalReceipt")
+	role.Profile.Effects = append(role.Profile.Effects, "fixture")
 	doc.Roles["planner"] = role
 	doc.Stages["external"] = workflow.Stage{Primitive: workflow.ExternalEffect, Role: "planner", NormalOnly: true, Subject: "fixture", Pins: externalTool("").Arguments, IdempotenceKey: "review-create", Output: "ExternalReceipt"}
 	for n, e := range doc.Edges {
@@ -93,7 +93,7 @@ func TestExternalModeAndDryRunTerminal(t *testing.T) {
 	}
 }
 func TestExternalCrashHelper(t *testing.T) {
-	path := os.Getenv("FAE_EXTERNAL_CRASH")
+	path := os.Getenv("EXTERNAL_CRASH")
 	if path == "" {
 		return
 	}
@@ -132,10 +132,10 @@ func TestExternalCrashHelper(t *testing.T) {
 	d.mu.Lock()
 	d.jobs[j.TaskID] = stored
 	d.mu.Unlock()
-	if e = os.WriteFile(path+".ready", payload, 0600); e != nil {
+	if e = writeReady(path+".ready", payload); e != nil {
 		t.Fatal(e)
 	}
-	if _, e = d.live.Execute(ctx, *j.InFlight); e != nil {
+	if _, e = executeAdmitted(t, ctx, d.live, *j.InFlight); e != nil {
 		t.Fatal(e)
 	}
 	t.Fatal("blocked response unexpectedly returned")
@@ -186,31 +186,17 @@ func TestExternalSIGKILLQueryAdoption(t *testing.T) {
 	if e := os.WriteFile(path, raw, 0600); e != nil {
 		t.Fatal(e)
 	}
-	exe, _ := os.Executable()
-	cmd := exec.Command(exe, "-test.run=^TestExternalCrashHelper$")
-	cmd.Env = append(os.Environ(), "FAE_EXTERNAL_CRASH="+path)
-	log, e := os.Create(path + ".log")
-	if e != nil {
-		t.Fatal(e)
-	}
-	defer log.Close()
-	cmd.Stdout = log
-	cmd.Stderr = log
-	if e = cmd.Start(); e != nil {
-		t.Fatal(e)
-	}
-	defer func() { cmd.Process.Kill(); cmd.Wait() }()
-	select {
-	case <-performed:
-	case <-time.After(40 * time.Second):
-		b, _ := os.ReadFile(path + ".log")
-		t.Fatalf("helper: %s", b)
-	}
-	if e = cmd.Process.Kill(); e != nil {
-		t.Fatal(e)
-	}
-	cmd.Wait()
-	raw, e = os.ReadFile(path + ".ready")
+	helper := startSubprocess(t, "TestExternalCrashHelper", path+".log", "EXTERNAL_CRASH="+path)
+	helper.await(t, 40*time.Second+pressureAllowance, func() bool {
+		select {
+		case <-performed:
+			return true
+		default:
+			return false
+		}
+	})
+	helper.kill()
+	raw, e := os.ReadFile(path + ".ready")
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -219,7 +205,9 @@ func TestExternalSIGKILLQueryAdoption(t *testing.T) {
 		t.Fatal(e)
 	}
 	var d *Daemon
-	deadline := time.Now().Add(10 * time.Second)
+	// The killed helper's process watchdog stops its Dolt asynchronously; a
+	// loaded host can take a while, so this restart guard is generous.
+	deadline := time.Now().Add(30 * time.Second)
 	for {
 		d, e = Start(ctx, cfg)
 		if e == nil {
@@ -365,7 +353,7 @@ func TestExternalLiveDryRunAndExistingReceipt(t *testing.T) {
 			if _, e = call(t, d, "TargetConfigPut", TargetPutParams{ID: "normal", Document: target, AuthorizingMessage: "message"}, ""); e != nil {
 				t.Fatal(e)
 			}
-			admission := AdmitParams{ID: j.TaskID, RunID: "external-run", Mode: "Normal", TargetConfig: "normal", Destination: "main", PushNamespace: "fae/fixture", TicketRoom: "fixture", CommitExternal: mode != "dry-run"}
+			admission := AdmitParams{ID: j.TaskID, RunID: "external-run", Mode: "Normal", TargetConfig: "normal", Destination: "main", PushNamespace: "fae/fixture", TicketRoom: "fixture", CommitExternal: mode != "dry-run", DryRun: mode == "dry-run"}
 			if e = d.pinTarget(ctx, &admission, j.Document); e != nil {
 				t.Fatal(e)
 			}
@@ -377,7 +365,7 @@ func TestExternalLiveDryRunAndExistingReceipt(t *testing.T) {
 			d.mu.Lock()
 			d.jobs[j.TaskID] = saved
 			d.mu.Unlock()
-			r, e := d.live.Execute(ctx, *j.InFlight)
+			r, e := executeAdmitted(t, ctx, d.live, *j.InFlight)
 			if mode == "malformed" {
 				if e == nil {
 					t.Fatal("accepted malformed response")
@@ -461,6 +449,26 @@ func TestExternalAdmissionAuthorityAndPins(t *testing.T) {
 			t.Fatal("accepted invalid mode", params)
 		}
 	}
+	// FAE-CLI-011 at the daemon: Normal names exactly one of dry run and
+	// commit-external; FAE-MODE-004: each missing live value is named alone.
+	for _, tc := range []struct {
+		p    AdmitParams
+		want string
+	}{
+		{AdmitParams{ID: "implicit", Mode: "Normal", AuthorizingMessage: "general"}, "exactly one of dry_run"},
+		{AdmitParams{ID: "both", Mode: "Normal", DryRun: true, CommitExternal: true, AuthorizingMessage: "general"}, "exactly one of dry_run"},
+		{AdmitParams{ID: "local-dry", Mode: "Local", DryRun: true, AuthorizingMessage: "general"}, "exactly one of dry_run"},
+		{AdmitParams{ID: "no-destination", Mode: "Normal", CommitExternal: true, PushNamespace: "fae/fixture", TicketRoom: "fixture", AuthorizingMessage: "explicit"}, "missing review destination branch (--review-destination-branch)"},
+		{AdmitParams{ID: "no-namespace", Mode: "Normal", CommitExternal: true, Destination: "main", TicketRoom: "fixture", AuthorizingMessage: "explicit"}, "missing push namespace (--push-namespace)"},
+	} {
+		raw, _ := json.Marshal(tc.p)
+		d.mu.Lock()
+		_, e = d.admit(ctx, tc.p.ID, raw, controlplane.Audit{Actor: "operator", MessageID: tc.p.AuthorizingMessage, Action: "admit", Outcome: "ok"})
+		d.mu.Unlock()
+		if e == nil || !strings.Contains(e.Error(), tc.want) || strings.Count(e.Error(), "missing") > 1 {
+			t.Fatalf("%s: %v", tc.p.ID, e)
+		}
+	}
 }
 
 func TestExternalReviewWithoutTicketRoom(t *testing.T) {
@@ -487,4 +495,97 @@ func serveExternalFixtureSchema(w http.ResponseWriter, r *http.Request) bool {
 	schema, _ := json.Marshal(map[string]any{"type": "object", "properties": properties, "additionalProperties": false})
 	json.NewEncoder(w).Encode(external.SchemaCatalog{Server: "fixture", Tools: []external.ToolSchema{{Name: "fixture_create", InputSchema: schema}}})
 	return true
+}
+
+// FAE-EXT-006: both a Local-mode refusal and a Perform failure persist an
+// external_effects row with Outcome == "refused" and Outcome == "failed".
+func TestExternalEffectsRowsRecordRefusedAndFailedOutcomes(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if serveExternalFixtureSchema(w, r) {
+			return
+		}
+		if r.Method == http.MethodGet {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("perform failed"))
+	}))
+	defer server.Close()
+	cfg.Live.ExternalTools = map[string]external.Tool{"fixture": externalTool(server.URL)}
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stop(t, d)
+	d.mu.Lock()
+	d.draining = true
+	d.mu.Unlock()
+	authorize(t, d)
+
+	target := normalTargetFixture(cfg.Workspace, server.URL)
+	target.IntegrationRef = cfg.Live.IntegrationRef
+	target.ProtectedBranches = []string{target.IntegrationRef}
+	if _, err = call(t, d, "TargetConfigPut", TargetPutParams{ID: "normal", Document: target, AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+
+	w, err := d.live.manager.Ensure(ctx, "external-run", "external-work", cfg.Live.Base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree, err := d.live.broker.Tree(ctx, w)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// 1. Local mode refusal -> Outcome == "refused"
+	localJob := externalJob(t, tree, cfg.Live.Base, false)
+	localJob.TaskID = "external-refused"
+	localJob.InFlight.TaskID = localJob.TaskID
+	localJob.Disposition = domain.Disposition{Mode: domain.Local}
+	localAdmission := AdmitParams{ID: localJob.TaskID, RunID: "external-run", Mode: "Local", TargetConfig: "normal"}
+	if err = d.pinTarget(ctx, &localAdmission, localJob.Document); err != nil {
+		t.Fatal(err)
+	}
+	localPayload, _ := json.Marshal(envelope{Job: localJob, Admission: localAdmission})
+	localSaved, err := d.store.AdmitJob(ctx, controlplane.Audit{Actor: "test", Action: "external refused fixture", Outcome: "ok"}, "external-refused-mol", controlplane.JobSnapshot{ID: localJob.TaskID, WorkflowID: localJob.Document.ID, WorkflowRevision: 1, TargetID: "normal", TargetRevision: 1, State: string(localJob.State), Payload: localPayload})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d.mu.Lock()
+	d.jobs[localJob.TaskID] = localSaved
+	d.mu.Unlock()
+	if _, err = executeAdmitted(t, ctx, d.live, *localJob.InFlight); err == nil {
+		t.Fatal("expected Local mode external effect refusal")
+	}
+	refusedRows, err := d.store.ExternalEffects(ctx, localJob.TaskID, 10)
+	if err != nil || len(refusedRows) != 1 || refusedRows[0].Outcome != "refused" {
+		t.Fatalf("expected 1 external_effects row with Outcome=refused, got %+v (%v)", refusedRows, err)
+	}
+
+	// 2. Perform failure -> Outcome == "failed"
+	failJob := externalJob(t, tree, cfg.Live.Base, true)
+	failJob.TaskID = "external-failed"
+	failJob.InFlight.TaskID = failJob.TaskID
+	failAdmission := AdmitParams{ID: failJob.TaskID, RunID: "external-run", Mode: "Normal", TargetConfig: "normal", Destination: "main", PushNamespace: "fae/fixture", TicketRoom: "fixture", CommitExternal: true}
+	if err = d.pinTarget(ctx, &failAdmission, failJob.Document); err != nil {
+		t.Fatal(err)
+	}
+	failPayload, _ := json.Marshal(envelope{Job: failJob, Admission: failAdmission})
+	failSaved, err := d.store.AdmitJob(ctx, controlplane.Audit{Actor: "test", Action: "external failed fixture", Outcome: "ok"}, "external-failed-mol", controlplane.JobSnapshot{ID: failJob.TaskID, WorkflowID: failJob.Document.ID, WorkflowRevision: 1, TargetID: "normal", TargetRevision: 1, State: string(failJob.State), Payload: failPayload})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d.mu.Lock()
+	d.jobs[failJob.TaskID] = failSaved
+	d.mu.Unlock()
+	if _, err = executeAdmitted(t, ctx, d.live, *failJob.InFlight); err == nil {
+		t.Fatal("expected Perform failure")
+	}
+	failedRows, err := d.store.ExternalEffects(ctx, failJob.TaskID, 10)
+	if err != nil || len(failedRows) != 1 || failedRows[0].Outcome != "failed" {
+		t.Fatalf("expected 1 external_effects row with Outcome=failed, got %+v (%v)", failedRows, err)
+	}
 }

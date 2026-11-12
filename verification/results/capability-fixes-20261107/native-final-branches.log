@@ -1,0 +1,6 @@
+=== RUN   TestBranchDecideNativeWhileSiblingRunsAndAcrossRestart
+--- PASS: TestBranchDecideNativeWhileSiblingRunsAndAcrossRestart (3.32s)
+=== RUN   TestNativeBranchSchemaRetriesStayLocal
+--- PASS: TestNativeBranchSchemaRetriesStayLocal (2.29s)
+PASS
+ok  	github.com/xleelz/fae/daemon	5.632s

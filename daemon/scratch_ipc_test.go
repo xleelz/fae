@@ -79,7 +79,13 @@ func TestScratchIPCSnapshotAndRefusals(t *testing.T) {
 	}
 }
 func TestScratchIPCUnknownAndLiveSocket(t *testing.T) {
-	root, err := os.MkdirTemp("/private/tmp", "fipc-")
+	// A short physical path keeps the UNIX socket under the sun_path limit;
+	// /tmp is a symlink to /private/tmp on macOS.
+	base := "/var/tmp"
+	if st, err := os.Stat("/private/tmp"); err == nil && st.IsDir() {
+		base = "/private/tmp"
+	}
+	root, err := os.MkdirTemp(base, "fipc-")
 	if err != nil {
 		t.Fatal(err)
 	}

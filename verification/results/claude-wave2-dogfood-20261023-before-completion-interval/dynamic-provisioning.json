@@ -1,0 +1,164 @@
+{
+  "result": {
+    "adapter_revision": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "928a5bf44d50104726a290c30c3b21e23ffa0322e9806e6a2546895bb1dc9b87"
+    },
+    "later_revision": {
+      "id": "dogfood-adapter",
+      "revision": 2,
+      "hash": "5f92f8d55357cc5d87881555989231cf1f0b8dab84e6b41296f355508b7e4cb9"
+    },
+    "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "ready": true,
+    "idempotent_prepare": true
+  },
+  "plan": {
+    "task": "provider-beta",
+    "run_id": "dogfood",
+    "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "base": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+    "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf"
+  },
+  "prepared": {
+    "task": "provider-beta",
+    "run_id": "dogfood",
+    "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "base": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+    "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+    "adapter": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "928a5bf44d50104726a290c30c3b21e23ffa0322e9806e6a2546895bb1dc9b87"
+    },
+    "policy": {
+      "package": "sample",
+      "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+      "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+      "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+      "provision_tool": "fleet",
+      "baseline_tool": "baseline",
+      "status_tool": "read",
+      "baseline_approved": true
+    },
+    "state": "ready",
+    "health": {
+      "package": "sample",
+      "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+      "green": true
+    },
+    "provision": {
+      "intent": {
+        "schema_digest": "4b188541ca5873425765edb17f69dfd884ba1ed746cd078aba8010aab37660df",
+        "typed_arguments": {
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+          "package": "sample",
+          "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+        },
+        "endpoint": "http://127.0.0.1:34693",
+        "server": "dogfood",
+        "key": "2d8c85245a4ed2bf95af00439779659957c0c4d2c023ca3394897b98d805a4d5",
+        "task": "provider-beta",
+        "stage": "review-workspace-provision",
+        "tool": "fleet_prepare",
+        "arguments": {
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+          "package": "sample",
+          "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+        },
+        "digest": "12cad33a88814e7a1d7c963ca967ea76597bf94effecdb1f23e79dee9296b4f5",
+        "tree": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+        "session": "review-prepare/ec64de8c3d7eab79cfa7fd50be705561a4cf857ce55466872af00029f4617215"
+      },
+      "attempted": true,
+      "receipt": {
+        "data": {
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+          "package": "sample",
+          "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+        },
+        "key": "2d8c85245a4ed2bf95af00439779659957c0c4d2c023ca3394897b98d805a4d5",
+        "task": "provider-beta",
+        "tool": "fleet_prepare",
+        "digest": "12cad33a88814e7a1d7c963ca967ea76597bf94effecdb1f23e79dee9296b4f5",
+        "external_id": "local-fleet-workspace",
+        "state": "performed",
+        "tree": "aed0da6125c802d0f68229a52c8e0a20c40320cf"
+      }
+    }
+  },
+  "installed": {
+    "retired": false,
+    "binding": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "928a5bf44d50104726a290c30c3b21e23ffa0322e9806e6a2546895bb1dc9b87"
+    },
+    "document": {
+      "schema_version": 1,
+      "tools": {
+        "baseline": {
+          "endpoint": "http://127.0.0.1:34693",
+          "server": "dogfood",
+          "name": "review_baseline",
+          "role": "planner",
+          "arguments": {
+            "integration_tip": "$integration_tip",
+            "package": "$package"
+          }
+        },
+        "dogfood-effect": {
+          "endpoint": "http://127.0.0.1:34693",
+          "server": "dogfood",
+          "name": "fixture_create",
+          "role": "planner",
+          "arguments": {
+            "destination": "main",
+            "draft": "true",
+            "push_namespace": "fae/dogfood",
+            "ticket_room": "local-fixture"
+          }
+        },
+        "fleet": {
+          "endpoint": "http://127.0.0.1:34693",
+          "server": "dogfood",
+          "name": "fleet_prepare",
+          "role": "planner",
+          "arguments": {
+            "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+            "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+            "package": "sample",
+            "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194"
+          }
+        },
+        "read": {
+          "endpoint": "http://127.0.0.1:34693",
+          "server": "dogfood",
+          "name": "review_read",
+          "role": "planner",
+          "arguments": {
+            "review_id": "$review"
+          }
+        }
+      },
+      "review_policies": {
+        "provider-beta": {
+          "package": "sample",
+          "workspace": "/var/tmp/fhd-8pt7tj81/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "branch": "fae/task/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+          "integration_tip": "aed0da6125c802d0f68229a52c8e0a20c40320cf",
+          "provision_tool": "fleet",
+          "baseline_tool": "baseline",
+          "status_tool": "read",
+          "baseline_approved": true
+        }
+      }
+    }
+  }
+}

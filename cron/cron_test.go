@@ -1,12 +1,13 @@
 package cron
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 )
 
 func spec() Spec {
-	return Spec{ID: "daily", Kind: "cron", Anchor: time.Date(2026, 10, 18, 10, 0, 0, 123, time.UTC), IntervalSeconds: 60, Template: Template{WorkflowID: "default", Revision: 1}}
+	return Spec{ID: "daily", Kind: "cron", Anchor: time.Date(2026, 10, 18, 10, 0, 0, 123, time.UTC), IntervalSeconds: 60, Template: Template{WorkflowID: "default", Revision: 1, Priority: 10}}
 }
 func TestAnchoredDueAndExclusiveEnd(t *testing.T) {
 	p := spec()
@@ -56,11 +57,30 @@ func TestBoundedCatchUpAndPause(t *testing.T) {
 	}
 }
 func TestCronValidation(t *testing.T) {
-	for _, edit := range []func(*Spec){func(p *Spec) { p.ID = "../bad" }, func(p *Spec) { p.Kind = "loop" }, func(p *Spec) { p.IntervalSeconds = 0 }, func(p *Spec) { p.IntervalSeconds = 31536001 }, func(p *Spec) { p.Anchor = time.Time{} }, func(p *Spec) { p.End = p.Anchor }, func(p *Spec) { p.Template.Revision = 0 }, func(p *Spec) { p.Template.Mode = "Normal" }, func(p *Spec) { p.CatchUpLimit = 101 }} {
+	for _, edit := range []func(*Spec){func(p *Spec) { p.ID = "../bad" }, func(p *Spec) { p.Kind = "loop" }, func(p *Spec) { p.IntervalSeconds = 0 }, func(p *Spec) { p.IntervalSeconds = 31536001 }, func(p *Spec) { p.Anchor = time.Time{} }, func(p *Spec) { p.End = p.Anchor }, func(p *Spec) { p.Template.Revision = 0 }, func(p *Spec) { p.Template.Priority = 0 }, func(p *Spec) { p.Template.Priority = 5 }, func(p *Spec) { p.Template.Priority = 9 }, func(p *Spec) { p.Template.Mode = "Normal" }, func(p *Spec) { p.CatchUpLimit = 101 }} {
 		p := spec()
 		edit(&p)
 		if _, e := New(p); e == nil {
 			t.Fatal(p)
+		}
+	}
+	var omitted Spec
+	if e := json.Unmarshal([]byte(`{"id":"daily","kind":"cron","anchor":"2026-10-18T10:00:00Z","interval_seconds":60,"template":{"workflow_id":"default","revision":1}}`), &omitted); e != nil {
+		t.Fatal(e)
+	}
+	if s, e := New(omitted); e != nil || s.Spec.Template.Priority != 10 {
+		t.Fatalf("omitted priority: %+v %v", s, e)
+	}
+	for _, raw := range []string{
+		`{"id":"daily","kind":"cron","anchor":"2026-10-18T10:00:00Z","interval_seconds":60,"template":{"workflow_id":"default","revision":1,"priority":0}}`,
+		`{"id":"daily","kind":"cron","anchor":"2026-10-18T10:00:00Z","interval_seconds":60,"template":{"workflow_id":"default","revision":1,"priority":9}}`,
+	} {
+		var p Spec
+		if e := json.Unmarshal([]byte(raw), &p); e != nil {
+			t.Fatal(e)
+		}
+		if _, e := New(p); e == nil {
+			t.Fatalf("explicit priority < 10 accepted: %s", raw)
 		}
 	}
 	s, _ := New(spec())

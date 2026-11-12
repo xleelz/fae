@@ -209,9 +209,28 @@ func requestPath(ctx context.Context, t Tool, method, path string, i Intent) (Re
 		return r, false, errors.New("trailing external response")
 	}
 	if statusError {
-		return r, false, fmt.Errorf("external status %d", resp.StatusCode)
+		return r, false, &StatusError{Method: method, Status: resp.StatusCode, ExternalID: r.ExternalID}
 	}
 	return r, true, nil
+}
+
+// StatusError is a decoded non-success adapter response.
+type StatusError struct {
+	Method, ExternalID string
+	Status             int
+}
+
+func (e *StatusError) Error() string {
+	if e.ExternalID != "" {
+		return fmt.Sprintf("external status %d (reported id %s)", e.Status, e.ExternalID)
+	}
+	return fmt.Sprintf("external status %d", e.Status)
+}
+
+// Refused reports a definitive refusal of a performed call: a client-error
+// status other than a timeout or rate limit. Server errors stay uncertain.
+func (e *StatusError) Refused() bool {
+	return e.Method == http.MethodPost && e.Status >= 400 && e.Status < 500 && e.Status != http.StatusRequestTimeout && e.Status != http.StatusTooManyRequests
 }
 
 // Query never performs an effect. A not-found observation is not proof that an

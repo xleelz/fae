@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,32 +30,32 @@ proctype ProphetObservationAndRetirementBeforeFailover3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousProphetObservationAndRetirementBeforeFailover962 = [1] of {int}->
-	chan child_AnonymousProphetObservationAndRetirementBeforeFailover841 = [1] of {int}->
-	chan child_AnonymousProphetObservationAndRetirementBeforeFailover740 = [1] of {int}->
+	chan child_AnonymousProphetObservationAndRetirementBeforeFailover942 = [1] of {int}->
+	chan child_AnonymousProphetObservationAndRetirementBeforeFailover861 = [1] of {int}->
+	chan child_AnonymousProphetObservationAndRetirementBeforeFailover760 = [1] of {int}->
 	Chandef next_ch->
 	Chandef retired_ch->
 	Chandef observed_ch->
 	run sync_monitor(observed_ch)->
 	run sync_monitor(retired_ch)->
 	run sync_monitor(next_ch)->
-	run AnonymousProphetObservationAndRetirementBeforeFailover74(observed_ch,retired_ch,next_ch,child_AnonymousProphetObservationAndRetirementBeforeFailover740)->
-	run receiver(child_AnonymousProphetObservationAndRetirementBeforeFailover740)->
-	run AnonymousProphetObservationAndRetirementBeforeFailover84(observed_ch,retired_ch,next_ch,child_AnonymousProphetObservationAndRetirementBeforeFailover841)->
-	run receiver(child_AnonymousProphetObservationAndRetirementBeforeFailover841)->
-	run AnonymousProphetObservationAndRetirementBeforeFailover96(next_ch,observed_ch,retired_ch,child_AnonymousProphetObservationAndRetirementBeforeFailover962)->
-	run receiver(child_AnonymousProphetObservationAndRetirementBeforeFailover962)->
+	run AnonymousProphetObservationAndRetirementBeforeFailover76(next_ch,observed_ch,retired_ch,child_AnonymousProphetObservationAndRetirementBeforeFailover760)->
+	run receiver(child_AnonymousProphetObservationAndRetirementBeforeFailover760)->
+	run AnonymousProphetObservationAndRetirementBeforeFailover86(next_ch,observed_ch,retired_ch,child_AnonymousProphetObservationAndRetirementBeforeFailover861)->
+	run receiver(child_AnonymousProphetObservationAndRetirementBeforeFailover861)->
+	run AnonymousProphetObservationAndRetirementBeforeFailover94(observed_ch,retired_ch,next_ch,child_AnonymousProphetObservationAndRetirementBeforeFailover942)->
+	run receiver(child_AnonymousProphetObservationAndRetirementBeforeFailover942)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:10:2 */
-	:: next_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:10:2 */->
-	:: next_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:10:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:10:2 */
+	:: next_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:10:2 */->
+	:: next_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:10:2 */ -> 
 		next_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousProphetObservationAndRetirementBeforeFailover74(Chandef observed_ch;Chandef retired_ch;Chandef next_ch;chan child) {
+proctype AnonymousProphetObservationAndRetirementBeforeFailover76(Chandef next_ch;Chandef observed_ch;Chandef retired_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -63,17 +63,17 @@ proctype AnonymousProphetObservationAndRetirementBeforeFailover74(Chandef observ
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:7:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:7:14 */
 	:: observed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:7:14 */
 	:: observed_ch.sync!false -> 
 		observed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:7:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousProphetObservationAndRetirementBeforeFailover84(Chandef observed_ch;Chandef retired_ch;Chandef next_ch;chan child) {
+proctype AnonymousProphetObservationAndRetirementBeforeFailover86(Chandef next_ch;Chandef observed_ch;Chandef retired_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -81,17 +81,17 @@ proctype AnonymousProphetObservationAndRetirementBeforeFailover84(Chandef observ
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:8:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:8:14 */
 	:: retired_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:8:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:8:14 */
 	:: retired_ch.sync!false -> 
 		retired_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:8:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:8:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousProphetObservationAndRetirementBeforeFailover96(Chandef next_ch;Chandef observed_ch;Chandef retired_ch;chan child) {
+proctype AnonymousProphetObservationAndRetirementBeforeFailover94(Chandef observed_ch;Chandef retired_ch;Chandef next_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -99,26 +99,26 @@ proctype AnonymousProphetObservationAndRetirementBeforeFailover96(Chandef next_c
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:14 */
-	:: observed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:14 */->
-	:: observed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:14 */
+	:: observed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:14 */->
+	:: observed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:14 */ -> 
 		observed_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:26 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:26 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:26 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:26 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:26 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:26 */ -> 
 		retired_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:37 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:37 */
 	:: next_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:37 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:37 */
 	:: next_ch.sync!false -> 
 		next_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/prophet_route.go:9:37 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/prophet_route.go:9:37 */
 	fi->
 	stop_process: skip->
 	child!0

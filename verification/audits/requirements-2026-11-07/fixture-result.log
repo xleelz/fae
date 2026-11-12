@@ -1,0 +1,5 @@
+=== RUN   TestAuditFeatureUnmatchedPattern
+    audit_feature_review_test.go:3: CONFIRMED valid workflow and literal completes Done, identical unmatched turn aborts rehearsal
+--- PASS: TestAuditFeatureUnmatchedPattern (0.01s)
+PASS
+ok  	github.com/xleelz/fae/engine	0.018s

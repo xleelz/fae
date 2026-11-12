@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go#L4
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go#L4
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,32 +30,32 @@ proctype CleanupDropsArchiveAcknowledgment4(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousCleanupDropsArchiveAcknowledgment1072 = [1] of {int}->
+	chan child_AnonymousCleanupDropsArchiveAcknowledgment1062 = [1] of {int}->
 	chan child_AnonymousCleanupDropsArchiveAcknowledgment951 = [1] of {int}->
-	chan child_AnonymousCleanupDropsArchiveAcknowledgment860 = [1] of {int}->
+	chan child_AnonymousCleanupDropsArchiveAcknowledgment850 = [1] of {int}->
 	Chandef removed_ch->
 	Chandef archive_ch->
 	Chandef backup_ch->
 	run sync_monitor(backup_ch)->
 	run sync_monitor(archive_ch)->
 	run sync_monitor(removed_ch)->
-	run AnonymousCleanupDropsArchiveAcknowledgment86(archive_ch,removed_ch,backup_ch,child_AnonymousCleanupDropsArchiveAcknowledgment860)->
-	run receiver(child_AnonymousCleanupDropsArchiveAcknowledgment860)->
+	run AnonymousCleanupDropsArchiveAcknowledgment85(backup_ch,archive_ch,removed_ch,child_AnonymousCleanupDropsArchiveAcknowledgment850)->
+	run receiver(child_AnonymousCleanupDropsArchiveAcknowledgment850)->
 	run AnonymousCleanupDropsArchiveAcknowledgment95(backup_ch,archive_ch,removed_ch,child_AnonymousCleanupDropsArchiveAcknowledgment951)->
 	run receiver(child_AnonymousCleanupDropsArchiveAcknowledgment951)->
-	run AnonymousCleanupDropsArchiveAcknowledgment107(removed_ch,backup_ch,archive_ch,child_AnonymousCleanupDropsArchiveAcknowledgment1072)->
-	run receiver(child_AnonymousCleanupDropsArchiveAcknowledgment1072)->
+	run AnonymousCleanupDropsArchiveAcknowledgment106(archive_ch,removed_ch,backup_ch,child_AnonymousCleanupDropsArchiveAcknowledgment1062)->
+	run receiver(child_AnonymousCleanupDropsArchiveAcknowledgment1062)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:11:2 */
-	:: removed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:11:2 */->
-	:: removed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:11:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:11:2 */
+	:: removed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:11:2 */->
+	:: removed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:11:2 */ -> 
 		removed_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousCleanupDropsArchiveAcknowledgment86(Chandef archive_ch;Chandef removed_ch;Chandef backup_ch;chan child) {
+proctype AnonymousCleanupDropsArchiveAcknowledgment85(Chandef backup_ch;Chandef archive_ch;Chandef removed_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -63,12 +63,12 @@ proctype AnonymousCleanupDropsArchiveAcknowledgment86(Chandef archive_ch;Chandef
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:8:13 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:8:13 */
 	:: backup_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:8:13 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:8:13 */
 	:: backup_ch.sync!false -> 
 		backup_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:8:13 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:8:13 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -81,17 +81,17 @@ proctype AnonymousCleanupDropsArchiveAcknowledgment95(Chandef backup_ch;Chandef 
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:9:13 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:9:13 */
 	:: archive_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:9:13 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:9:13 */
 	:: archive_ch.sync!false -> 
 		archive_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:9:13 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:9:13 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousCleanupDropsArchiveAcknowledgment107(Chandef removed_ch;Chandef backup_ch;Chandef archive_ch;chan child) {
+proctype AnonymousCleanupDropsArchiveAcknowledgment106(Chandef archive_ch;Chandef removed_ch;Chandef backup_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -99,19 +99,19 @@ proctype AnonymousCleanupDropsArchiveAcknowledgment107(Chandef removed_ch;Chande
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:10:13 */
-	:: backup_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:10:13 */->
-	:: backup_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:10:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:10:13 */
+	:: backup_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:10:13 */->
+	:: backup_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:10:13 */ -> 
 		backup_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:10:23 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:10:23 */
 	:: removed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:10:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:10:23 */
 	:: removed_ch.sync!false -> 
 		removed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/cleanup.go:10:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/cleanup.go:10:23 */
 	fi->
 	stop_process: skip->
 	child!0

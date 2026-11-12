@@ -1,0 +1,29 @@
+{
+  "dispatches": 5,
+  "spec": {
+    "id": "dogfood-loop",
+    "kind": "loop",
+    "role": "oracle",
+    "prompt": "Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.",
+    "binding": {
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "medium"
+    },
+    "max_iterations": 5,
+    "expires_at": "2026-10-22T03:23:21.688225925Z"
+  },
+  "session_id": "loop-dogfood-loop",
+  "state": "completed",
+  "iterations": 5,
+  "in_flight": false,
+  "next": "2026-10-22T03:08:38.027044068Z",
+  "context": {
+    "iterations": 5,
+    "scope_revision": "4de7bc7ea8c1a7c3b08ea41778b9ec0c5da56e412edf3fcda2aa80e1589d3deb",
+    "session": "loop-dogfood-loop"
+  },
+  "last_output": {
+    "message": "Iteration 5 of the provider-loop stage (dispatch loop-dogfood-loop-5-attempt-5). The marker is still fae-loop-dogfood. The files haven't changed: alpha.go still returns 0 from alpha(), and alpha_test.go is still empty. This turn makes no edits and uses no tools beyond this output."
+  }
+}

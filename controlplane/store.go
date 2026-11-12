@@ -14,16 +14,25 @@ import (
 )
 
 type Options struct {
-	MessageMaxAge  time.Duration
-	Attempts       int
-	Backoff        time.Duration
+	MessageMaxAge time.Duration
+	Attempts      int
+	Backoff       time.Duration
+	// InlineLimit bounds every row column in bytes (FAE-CP-012): a longer
+	// payload is stored as a content-addressed blob, or refused where the
+	// record must stay inline. Zero selects DefaultInlineLimit.
 	InlineLimit    int
 	VersionCommits bool
 	Sleep          func(context.Context, time.Duration) error
+	// OwnerPID and OwnerStart identify the daemon process that owns the
+	// sessions the plane records.
+	OwnerPID   int
+	OwnerStart string
 }
 type Store struct {
 	db      *sql.DB
 	options Options
+	// fault, when set by tests, interrupts a checkpoint between two writes.
+	fault func(step string) error
 }
 
 func New(db *sql.DB, o Options) *Store {
@@ -36,14 +45,29 @@ func New(db *sql.DB, o Options) *Store {
 	if o.Backoff <= 0 {
 		o.Backoff = 10 * time.Millisecond
 	}
-	if o.InlineLimit <= 0 || o.InlineLimit > 65536 {
-		o.InlineLimit = 65536
+	if o.InlineLimit <= 0 || o.InlineLimit > DefaultInlineLimit {
+		o.InlineLimit = DefaultInlineLimit
 	}
+	o.InlineLimit = max(o.InlineLimit, MinInlineLimit)
 	if o.Sleep == nil {
 		o.Sleep = sleep
 	}
 	return &Store{db: db, options: o}
 }
+
+// The configurable inline limit (FAE-CP-012): 64 KiB by default, the size
+// of a TEXT column, and at least 4 KiB, which still fits a blob reference
+// and the small records that are refused rather than spilled.
+const (
+	DefaultInlineLimit = 65536
+	MinInlineLimit     = 4096
+)
+
+// ValidInlineLimit reports whether a configured inline limit is in range.
+func ValidInlineLimit(n int) bool { return n >= MinInlineLimit && n <= DefaultInlineLimit }
+
+// InlineLimit is the store's effective inline limit in bytes.
+func (s *Store) InlineLimit() int { return s.options.InlineLimit }
 func Open(ctx context.Context, dsn string, o Options) (*Store, error) {
 	db, e := sql.Open("mysql", dsn)
 	if e != nil {
@@ -106,9 +130,6 @@ func (s *Store) Mutate(ctx context.Context, a Audit, body func(context.Context, 
 	if e != nil {
 		return e
 	}
-	if len(inputs) > s.options.InlineLimit {
-		return errors.New("audit inputs exceed inline limit; use a blob reference")
-	}
 	return s.transaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
 		if e := consumeActionAuthority(ctx, tx, a); e != nil {
 			return e
@@ -116,14 +137,16 @@ func (s *Store) Mutate(ctx context.Context, a Audit, body func(context.Context, 
 		if e := body(ctx, tx); e != nil {
 			return e
 		}
-		if _, e := tx.ExecContext(ctx, `INSERT INTO audit (actor,action,message_id,inputs,argument_digest,outcome,created_at) VALUES (?,?,?,?,?,?,?)`, a.Actor, a.Action, a.MessageID, string(inputs), hash, a.Outcome, time.Now().UTC()); e != nil {
+		// Oversized inputs are stored by reference; the digest still covers
+		// the whole canonical input (FAE-CP-012).
+		stored, e := s.inlineOrRef(ctx, tx, inputs)
+		if e != nil {
 			return e
 		}
-		if s.options.VersionCommits {
-			_, e := tx.ExecContext(ctx, `CALL DOLT_COMMIT('-Am', ?)`, a.Action+" by "+a.Actor)
+		if _, e := tx.ExecContext(ctx, `INSERT INTO audit (actor,action,message_id,inputs,argument_digest,outcome,created_at) VALUES (?,?,?,?,?,?,?)`, a.Actor, a.Action, a.MessageID, stored, hash, a.Outcome, time.Now().UTC()); e != nil {
 			return e
 		}
-		return nil
+		return s.versionCommit(ctx, tx, a.Action+" by "+a.Actor)
 	})
 }
 

@@ -48,14 +48,19 @@ func (d *Daemon) reviewCheckpoint(ctx context.Context, task string) (reviewCheck
 	e = json.Unmarshal(raw, &s)
 	return s, e
 }
-func (d *Daemon) saveReview(ctx context.Context, task, operation string, s reviewCheckpoint) error {
+func (d *Daemon) saveReview(ctx context.Context, task, operation string, s reviewCheckpoint, branch, tree string) error {
 	raw, _ := json.Marshal(s)
-	return d.store.PutMarker(ctx, controlplane.Audit{Actor: "daemon", Action: "review " + operation, Inputs: raw, Outcome: "performed"}, reviewKey(task), raw)
+	return d.store.PutMarker(ctx, controlplane.Audit{Actor: "daemon", Action: "review " + operation, Inputs: raw, Outcome: "performed"}, reviewKey(task), raw, controlplane.CodeReview{ID: s.ID, Task: task, Branch: branch, Tree: tree, Revisions: s.Revision, Published: s.Published, Merged: s.Merged})
 }
 
 func (c LiveConfig) reviewOperation(task, subject string) string {
 	t := c.ExternalTools[subject]
 	p := c.ReviewPolicies[task]
+	// Content naming an operation as its subject (the shipped default) gets
+	// that operation whatever the vendor tool is called; never a generic effect.
+	if p.Operations[subject] == "" && reviewOperation(subject) {
+		return subject
+	}
 	return p.Operation(subject, t.Name)
 }
 func configureReviewJob(c LiveConfig, j *engine.Job) error {
@@ -87,6 +92,14 @@ func configureReviewJob(c LiveConfig, j *engine.Job) error {
 	}
 	j.ReviewStages = stages
 	j.ReviewDisabled = c.DisableReviewPublishMerge || p.DisablePublishMerge
+	if p.RemediationStage == "" {
+		// The content's read failure route is its declared remediation loop.
+		for stage, op := range stages {
+			if op == "review_read" && j.Document.Stages[j.Document.Stages[stage].Failure].Primitive == workflow.Loop {
+				p.RemediationStage = j.Document.Stages[stage].Failure
+			}
+		}
+	}
 	j.ReviewRemediation = p.RemediationStage
 	j.ReviewPollSeconds = p.PollSeconds
 	if j.ReviewPollSeconds == 0 {
@@ -227,6 +240,12 @@ func (x *liveExecutor) bindReview(ctx context.Context, dispatch engine.Dispatch,
 				return t, zero, p, errors.New("review creation implicit publication forbidden")
 			}
 		}
+		// Fail closed for vendor publish/merge flags no argument key maps.
+		for k, v := range args {
+			if ImplicitPublicationFlag(k, v) {
+				return t, zero, p, fmt.Errorf("review creation implicit publication forbidden: argument %s=%s", k, v)
+			}
+		}
 	}
 	t.Arguments = args
 	key := dispatch.Config.IdempotenceKey
@@ -295,9 +314,20 @@ func (x *liveExecutor) executeReview(ctx context.Context, dispatch engine.Dispat
 	}()
 
 	op := x.config.reviewOperation(dispatch.TaskID, dispatch.Config.Subject)
-	// Dry runs do not query status, baseline or effect endpoints.
+	// Dry runs record the intended effect (tool, pinned arguments, digest) and
+	// query no status, baseline or effect endpoint (FAE-MODE-003).
 	if !env.Job.Disposition.Live {
-		return externalOutput(external.Intent{Tool: t.Name}, external.Receipt{}, "dry-run"), nil
+		planned := t
+		planned.DiscoveredSchema = nil
+		i, e := external.NewIntent(planned, dispatch.TaskID, dispatch.Stage, dispatch.Config.IdempotenceKey, dispatch.Config.Role, dispatch.Tree, dispatch.Sessions[0].ID, dispatch.Config.Pins)
+		if e != nil {
+			return nil, e
+		}
+		raw, _ := json.Marshal(i)
+		if e = x.daemon.store.RecordEffect(ctx, effectKey(dispatch)+"/external-intent", dispatch.TaskID, "intent", raw); e != nil {
+			return nil, e
+		}
+		return externalOutput(i, external.Receipt{}, "dry-run"), nil
 	}
 	s, e := x.daemon.reviewCheckpoint(ctx, dispatch.TaskID)
 	if e != nil {
@@ -354,6 +384,8 @@ func (x *liveExecutor) executeReview(ctx context.Context, dispatch engine.Dispat
 				kind = "remediation"
 			}
 			out := reviewOutput(i, receipt, "read", s, kind)
+			// The implementer remediates from the read's build, analyzers and comments.
+			out["review_status"] = status
 			if kind == "remediation" {
 				w := worktree.Binding{Path: p.Workspace, Branch: p.Branch}
 				committedTree, err := effectGit(ctx, w, "rev-parse", "HEAD^{tree}")
@@ -443,7 +475,7 @@ func (x *liveExecutor) finishReview(ctx context.Context, dispatch engine.Dispatc
 	case "review_merge":
 		s.Merged = true
 	}
-	if e := x.daemon.saveReview(ctx, dispatch.TaskID, i.Tool, s); e != nil {
+	if e := x.daemon.saveReview(ctx, dispatch.TaskID, i.Tool, s, i.Arguments[x.config.ReviewPolicies[dispatch.TaskID].ArgumentKey("branch")], dispatch.Tree); e != nil {
 		return nil, e
 	}
 	return reviewOutput(i, r, "reconciled", s, "performed"), nil

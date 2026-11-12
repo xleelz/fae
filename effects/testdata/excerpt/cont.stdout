@@ -1,0 +1,14 @@
+{"ImportPath":"","Action":"build-output","Output":"WORK=/tmp/go-build357162477\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"mkdir -p $WORK/b001/\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"echo '# import config' \u003e $WORK/b001/importcfg # internal\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"cd /work/fixture\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"/usr/local/go/pkg/tool/linux_amd64/compile -o $WORK/b001/_pkg_.a -trimpath \"$WORK/b001=\u003e\" -p example.com/m2/p -lang=go1.23 -complete -buildid IJhFRzU-m95fX3R4zMs4/IJhFRzU-m95fX3R4zMs4 -goversion go1.27.2 -c=16 -nolocalimports -importcfg $WORK/b001/importcfg -pack ./p/p.go\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"# example.com/m2/p\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"p/p.go:4:12: not enough arguments in call to F\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"\thave ()\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"\twant (int)\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-output","Output":"p/p.go:6:11: cannot use 3 (constant of type int) as I value in variable declaration: int does not implement I (missing method M)\n"}
+{"ImportPath":"example.com/m2/p","Action":"build-fail"}
+{"Time":"2026-10-26T10:25:15.164970078Z","Action":"start","Package":"example.com/m2/p"}
+{"Time":"2026-10-26T10:25:15.165119463Z","Action":"output","Package":"example.com/m2/p","Output":"FAIL\texample.com/m2/p [build failed]\n","OutputType":"frame"}
+{"Time":"2026-10-26T10:25:15.165140285Z","Action":"fail","Package":"example.com/m2/p","Elapsed":0,"FailedBuild":"example.com/m2/p"}

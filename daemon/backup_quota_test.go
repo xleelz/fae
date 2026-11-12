@@ -113,7 +113,7 @@ func TestBackupQuotaNativeCountRestartAndAuthority(t *testing.T) {
 		t.Fatal("quota reconfigured during backup")
 	}
 	quotaCall(t, d, BackupQuotaParams{Action: "configure", MaxBackups: 1, AuthorizingMessage: "quota"})
-	first, e := d.backupPlane(ctx)
+	first, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -121,7 +121,7 @@ func TestBackupQuotaNativeCountRestartAndAuthority(t *testing.T) {
 	if s.BackupCount != 1 || s.UsageBytes <= 0 || s.Exceeded {
 		t.Fatal(s)
 	}
-	b, e := d.backupPlane(ctx)
+	b, e := backupAdmitted(t, ctx, d)
 	if e == nil || b.Path != "" {
 		t.Fatal("quota allocated denied backup", b, e)
 	}
@@ -136,7 +136,7 @@ func TestBackupQuotaNativeCountRestartAndAuthority(t *testing.T) {
 		t.Fatal(s)
 	}
 	quotaCall(t, d, BackupQuotaParams{Action: "configure", MaxBackups: 2, AuthorizingMessage: "quota"})
-	if _, e = d.backupPlane(ctx); e != nil {
+	if _, e = backupAdmitted(t, ctx, d); e != nil {
 		t.Fatal(e)
 	}
 	if _, e = d.readBackup(ctx, first.Path); e != nil {
@@ -160,7 +160,7 @@ func TestBackupQuotaNativeExportOverrunPreserved(t *testing.T) {
 	defer stop(t, d)
 	scheduleGrant(t, d, "quota")
 	quotaCall(t, d, BackupQuotaParams{Action: "configure", MaxBytes: 1, AuthorizingMessage: "quota"})
-	b, e := d.backupPlane(ctx)
+	b, e := backupAdmitted(t, ctx, d)
 	if e == nil || b.Path == "" || !strings.Contains(e.Error(), "quota") {
 		t.Fatal(b, e)
 	}
@@ -174,7 +174,7 @@ func TestBackupQuotaNativeExportOverrunPreserved(t *testing.T) {
 	if _, e = d.readBackup(ctx, b.Path); e == nil {
 		t.Fatal("unverified export certified")
 	}
-	denied, e := d.backupPlane(ctx)
+	denied, e := backupAdmitted(t, ctx, d)
 	if e == nil || denied.Path != "" {
 		t.Fatal("overrun admitted another backup", denied, e)
 	}

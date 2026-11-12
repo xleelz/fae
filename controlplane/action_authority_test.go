@@ -65,6 +65,10 @@ func TestDelegatedMessageDirections(t *testing.T) {
 		name, actor, text, verb, class string
 		allow                          bool
 	}{
+		{"capacity grant", "controller", `{"authorize":{"classes":["capacity"]}}`, "WorkflowLimitSet", "capacity", true},
+		{"runtime cannot set capacity", "controller", `{"authorize":{"classes":["runtime"]}}`, "WorkflowLimitSet", "capacity", false},
+		{"exact verb cannot replace capacity grant", "controller", `{"authorize":{"verbs":["WorkflowLimitSet"]}}`, "WorkflowLimitSet", "capacity", false},
+		{"capacity cannot authorize runtime", "controller", `{"authorize":{"classes":["capacity"]}}`, "Drain", "runtime", false},
 		{"controller plain", "controller", "please act", "Cancel", "task", false},
 		{"controller exact", "controller", `{"authorize":{"verbs":["Cancel"]}}`, "Cancel", "task", true},
 		{"controller wrong verb", "controller", `{"authorize":{"verbs":["Admit"]}}`, "Cancel", "task", false},

@@ -36,19 +36,22 @@ func TestBacklogBatchRollbackIncludesEdgesAndEveryItem(t *testing.T) {
 			s, m := fixture(t, 1)
 			one := jobFixture()
 			two := jobFixture()
-			two.ID = "second"
+			two.ID, two.Payload = "second", taskPayload("second", "Pending")
 			m.ExpectBegin()
 			expectClock(m)
 			m.ExpectExec("INSERT INTO backlog_edges").WithArgs("job", "second", "blocking", audit().Actor, sqlmock.AnyArg()).WillReturnResult(sqlmock.NewResult(1, 1))
 			for n, j := range []JobSnapshot{one, two} {
+				expectBind(m, n == 1)
 				m.ExpectQuery("SELECT size FROM blobs").WillReturnRows(sqlmock.NewRows([]string{"size"}).AddRow(len(j.Payload)))
 				if n == 1 && !failAudit {
 					m.ExpectExec("INSERT INTO jobs").WillReturnError(errors.New("injected second insert"))
 					break
 				}
 				m.ExpectExec("INSERT INTO jobs").WillReturnResult(sqlmock.NewResult(1, 1))
+				expectProjection(m)
 				m.ExpectExec("INSERT INTO backlog_items").WillReturnResult(sqlmock.NewResult(1, 1))
 				m.ExpectQuery("SELECT sequence FROM event_clock").WillReturnRows(sqlmock.NewRows([]string{"sequence"}).AddRow(n))
+				expectTaskEventMetadata(m)
 				m.ExpectExec("INSERT INTO events").WillReturnResult(sqlmock.NewResult(1, 1))
 				m.ExpectExec("UPDATE event_clock").WillReturnResult(sqlmock.NewResult(1, 1))
 			}

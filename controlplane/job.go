@@ -23,18 +23,33 @@ type JobSnapshot struct {
 	TargetRevision   int64           `json:"target_revision"`
 	State            string          `json:"state"`
 	Payload          json.RawMessage `json:"payload"`
-	Events           []Event         `json:"-"`
+	// MoleculeID is the bound molecule, assigned by the plane at admission.
+	MoleculeID string  `json:"molecule_id,omitempty"`
+	Events     []Event `json:"-"`
+	// Decisions commit with the snapshot that applies them (decision.go).
+	Decisions []Decision `json:"-"`
+	// replayed marks AdmitJob's original response to an idempotent retry.
+	replayed bool
 }
+
+// Replayed reports an admission retry answered with its original response,
+// which may be older than the job's current checkpoint.
+func (j JobSnapshot) Replayed() bool { return j.replayed }
+
 type Event struct {
-	Sequence  int64           `json:"sequence"`
-	Kind      string          `json:"kind"`
-	JobID     string          `json:"job_id"`
-	Payload   json.RawMessage `json:"payload"`
-	Timestamp time.Time       `json:"timestamp"`
+	ParentTask string          `json:"parent_task"`
+	TreeRoot   string          `json:"tree_root"`
+	RunID      string          `json:"run_id,omitempty"`
+	WorkflowID string          `json:"workflow_id,omitempty"`
+	Sequence   int64           `json:"sequence"`
+	Kind       string          `json:"kind"`
+	JobID      string          `json:"job_id"`
+	Payload    json.RawMessage `json:"payload"`
+	Timestamp  time.Time       `json:"timestamp"`
 }
 
 func validateJob(j JobSnapshot) error {
-	if j.ID == "" || len(j.ID) > 255 || j.WorkflowID == "" || j.WorkflowRevision < 1 || j.TargetID == "" || j.TargetRevision < 1 || j.State == "" {
+	if j.ID == "" || len(j.ID) > MaxTaskIDBytes || j.WorkflowID == "" || j.WorkflowRevision < 1 || j.TargetID == "" || j.TargetRevision < 1 || j.State == "" {
 		return errors.New("job identity, pinned revisions and state required")
 	}
 	if !json.Valid(j.Payload) {
@@ -43,12 +58,12 @@ func validateJob(j JobSnapshot) error {
 	return nil
 }
 
-const jobColumns = `job_id,version,workflow_id,workflow_revision,target_id,target_revision,state,payload_digest,payload_size`
+const jobColumns = `job_id,version,workflow_id,workflow_revision,target_id,target_revision,state,payload_digest,payload_size,molecule_id`
 
 func scanJob(row interface{ Scan(...any) error }) (JobSnapshot, BlobRef, error) {
 	var j JobSnapshot
 	var r BlobRef
-	e := row.Scan(&j.ID, &j.Version, &j.WorkflowID, &j.WorkflowRevision, &j.TargetID, &j.TargetRevision, &j.State, &r.Digest, &r.Size)
+	e := row.Scan(&j.ID, &j.Version, &j.WorkflowID, &j.WorkflowRevision, &j.TargetID, &j.TargetRevision, &j.State, &r.Digest, &r.Size, &j.MoleculeID)
 	return j, r, e
 }
 func (s *Store) GetJob(ctx context.Context, id string) (JobSnapshot, error) {
@@ -104,7 +119,7 @@ func (s *Store) AdmitJob(ctx context.Context, a Audit, key string, j JobSnapshot
 	if len(key) > 255 {
 		return j, errors.New("idempotency key too long")
 	}
-	j.Version = 1
+	j.Version, j.MoleculeID = 1, ""
 	raw, e := json.Marshal(j)
 	if e != nil {
 		return j, e
@@ -138,21 +153,18 @@ func (s *Store) AdmitJob(ctx context.Context, a Audit, key string, j JobSnapshot
 		if e := checkJobAdapterTx(ctx, tx, j); e != nil {
 			return e
 		}
-		payload, e := CanonicalJSON(j.Payload)
-		if e != nil {
-			return e
-		}
-		if e = s.putBlob(ctx, tx, payload); e != nil {
-			return e
-		}
-		if _, e = tx.ExecContext(ctx, `INSERT INTO jobs (`+jobColumns+`) VALUES (?,?,?,?,?,?,?,?,?)`, j.ID, j.Version, j.WorkflowID, j.WorkflowRevision, j.TargetID, j.TargetRevision, j.State, Digest(payload), len(payload)); e != nil {
+		if e := s.admitJobTx(ctx, tx, a, &j); e != nil {
 			return e
 		}
 		if key != "" {
-			if e = s.putBlob(ctx, tx, raw); e != nil {
+			response, e := json.Marshal(j)
+			if e != nil {
 				return e
 			}
-			if _, e = tx.ExecContext(ctx, `INSERT INTO request_keys (request_key,request_digest,response_digest,response_size) VALUES (?,?,?,?)`, key, requestHash, Digest(raw), len(raw)); e != nil {
+			if e = s.putBlob(ctx, tx, response); e != nil {
+				return e
+			}
+			if _, e = tx.ExecContext(ctx, `INSERT INTO request_keys (request_key,request_digest,response_digest,response_size) VALUES (?,?,?,?)`, key, requestHash, Digest(response), len(response)); e != nil {
 				return e
 			}
 		}
@@ -163,6 +175,7 @@ func (s *Store) AdmitJob(ctx context.Context, a Audit, key string, j JobSnapshot
 		if e == nil {
 			e = json.Unmarshal(raw, &j)
 		}
+		j.replayed = true
 	}
 	return j, e
 }
@@ -203,9 +216,15 @@ func (s *Store) SaveJob(ctx context.Context, a Audit, j JobSnapshot, expected in
 				return e
 			}
 			if class == "superseded-by" {
-				if e = transferRetiredEdges(ctx, tx, j.ID, reference, a.Actor); e != nil {
+				if e = s.transferRetiredEdges(ctx, tx, j.ID, reference, a.Actor); e != nil {
 					return e
 				}
+			}
+		}
+		if j.MoleculeID = old.MoleculeID; j.MoleculeID == "" {
+			// A job admitted before molecules were bound joins its revision's molecule.
+			if j.MoleculeID, e = s.bindMoleculeTx(ctx, tx, j.WorkflowID, j.WorkflowRevision, false); e != nil {
+				return e
 			}
 		}
 		payload, e := CanonicalJSON(j.Payload)
@@ -215,7 +234,10 @@ func (s *Store) SaveJob(ctx context.Context, a Audit, j JobSnapshot, expected in
 		if e = s.putBlob(ctx, tx, payload); e != nil {
 			return e
 		}
-		result, e := tx.ExecContext(ctx, `UPDATE jobs SET version=?,state=?,payload_digest=?,payload_size=? WHERE job_id=? AND version=?`, j.Version, j.State, Digest(payload), len(payload), j.ID, expected)
+		if e = s.inject("job"); e != nil {
+			return e
+		}
+		result, e := tx.ExecContext(ctx, `UPDATE jobs SET version=?,state=?,payload_digest=?,payload_size=?,molecule_id=? WHERE job_id=? AND version=?`, j.Version, j.State, Digest(payload), len(payload), j.MoleculeID, j.ID, expected)
 		if e != nil {
 			return e
 		}
@@ -226,12 +248,51 @@ func (s *Store) SaveJob(ctx context.Context, a Audit, j JobSnapshot, expected in
 		if n != 1 {
 			return ErrConflict
 		}
+		if e = s.recordJobTx(ctx, tx, a, j, j.MoleculeID); e != nil {
+			return e
+		}
+		if e = s.inject("backlog"); e != nil {
+			return e
+		}
 		if _, e = tx.ExecContext(ctx, `UPDATE backlog_items SET state=?,updated_at=? WHERE item_id=?`, j.State, time.Now().UTC(), j.ID); e != nil {
+			return e
+		}
+		for _, d := range j.Decisions {
+			if e = s.insertDecision(ctx, tx, j.ID, d); e != nil {
+				return e
+			}
+		}
+		if e = s.inject("events"); e != nil {
 			return e
 		}
 		return s.appendEvents(ctx, tx, j.ID, j.Events, "job_updated")
 	})
+	if e == nil {
+		j.Decisions = nil // committed with this version; never re-applied by a later save
+	}
 	return j, e
+}
+
+// admitJobTx binds a new job to its revision's molecule (refusing a retired or
+// unknown workflow revision, FAE-WF-006, -007), inserts its snapshot and
+// projects its task records, all in the admission transaction.
+func (s *Store) admitJobTx(ctx context.Context, tx *sql.Tx, a Audit, j *JobSnapshot) error {
+	molecule, e := s.bindMoleculeTx(ctx, tx, j.WorkflowID, j.WorkflowRevision, true)
+	if e != nil {
+		return e
+	}
+	j.MoleculeID = molecule
+	payload, e := CanonicalJSON(j.Payload)
+	if e != nil {
+		return e
+	}
+	if e = s.putBlob(ctx, tx, payload); e != nil {
+		return e
+	}
+	if _, e = tx.ExecContext(ctx, `INSERT INTO jobs (`+jobColumns+`) VALUES (?,?,?,?,?,?,?,?,?,?)`, j.ID, j.Version, j.WorkflowID, j.WorkflowRevision, j.TargetID, j.TargetRevision, j.State, Digest(payload), len(payload), molecule); e != nil {
+		return e
+	}
+	return s.recordJobTx(ctx, tx, a, *j, molecule)
 }
 func lockEvents(ctx context.Context, tx *sql.Tx) error {
 	var n int64
@@ -245,7 +306,38 @@ func (s *Store) appendEvents(ctx context.Context, tx *sql.Tx, id string, events 
 	if e := tx.QueryRowContext(ctx, `SELECT sequence FROM event_clock WHERE id=1`).Scan(&seq); e != nil {
 		return e
 	}
+	metadata := map[string]eventMetadata{}
 	for _, event := range events {
+		eventJob := id
+		if event.JobID != "" && event.JobID != id && event.Kind == "change-request" {
+			var p struct {
+				Request struct{ ID, Source, Target string }
+			}
+			if json.Unmarshal(event.Payload, &p) != nil || p.Request.Source != id || p.Request.Target != event.JobID {
+				return errors.New("invalid cross-task change-request event")
+			}
+			eventJob = event.JobID
+			var body struct {
+				Request json.RawMessage `json:"request"`
+			}
+			if err := json.Unmarshal(event.Payload, &body); err != nil {
+				return err
+			}
+			key := "change-request/" + Digest([]byte(p.Request.Target)) + "/" + Digest([]byte(p.Request.ID))
+			if err := s.putMarkerTx(ctx, tx, key, body.Request); err != nil {
+				return err
+			}
+		}
+		if event.JobID != "" && event.JobID != id && event.Kind == "child-admitted" {
+			var link struct {
+				ChildTask  string `json:"child_task"`
+				ParentTask string `json:"parent_task"`
+			}
+			if json.Unmarshal(event.Payload, &link) != nil || link.ChildTask != id || link.ParentTask != event.JobID {
+				return errors.New("invalid cross-task child admission event")
+			}
+			eventJob = event.JobID
+		}
 		if event.Kind == "" || len(event.Kind) > 255 {
 			return errors.New("event kind required")
 		}
@@ -256,11 +348,31 @@ func (s *Store) appendEvents(ctx context.Context, tx *sql.Tx, id string, events 
 		if e != nil {
 			return e
 		}
-		if len(payload) > s.options.InlineLimit {
-			return errors.New("event exceeds inline limit")
+		if eventJob != "" {
+			m, ok := metadata[eventJob]
+			if !ok {
+				m, e = taskEventMetadata(ctx, tx, eventJob)
+				if e != nil {
+					return e
+				}
+				metadata[eventJob] = m
+			}
+			innerStored, innerErr := s.inlineOrRef(ctx, tx, payload)
+			if innerErr != nil {
+				return innerErr
+			}
+			payload, e = json.Marshal(storedTaskEvent{Version: 1, Metadata: m, Payload: json.RawMessage(innerStored)})
+			if e != nil {
+				return e
+			}
+		}
+		// An oversized payload is stored by reference (FAE-CP-012).
+		stored, e := s.inlineOrRef(ctx, tx, payload)
+		if e != nil {
+			return e
 		}
 		seq++
-		if _, e = tx.ExecContext(ctx, `INSERT INTO events (sequence,kind,job_id,payload,created_at) VALUES (?,?,?,?,?)`, seq, event.Kind, id, string(payload), time.Now().UTC()); e != nil {
+		if _, e = tx.ExecContext(ctx, `INSERT INTO events (sequence,kind,job_id,payload,created_at) VALUES (?,?,?,?,?)`, seq, event.Kind, eventJob, stored, time.Now().UTC()); e != nil {
 			return e
 		}
 	}
@@ -307,9 +419,15 @@ func (s *Store) readEvents(ctx context.Context, id string, after int64, limit in
 		}
 		events = append(events, ev)
 	}
-	return events, rows.Err()
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return nil, err
+	}
+	return s.restoreEventMetadata(ctx, events)
 }
-func (s *Store) PutMarker(ctx context.Context, a Audit, name string, payload json.RawMessage) error {
+
+// PutMarker replaces a durable daemon marker. A schedule marker projects its
+// schedules, and each projection its record family, in the same transaction.
+func (s *Store) PutMarker(ctx context.Context, a Audit, name string, payload json.RawMessage, projections ...Projection) error {
 	if name == "" || len(name) > 255 {
 		return errors.New("marker name required")
 	}
@@ -321,8 +439,19 @@ func (s *Store) PutMarker(ctx context.Context, a Audit, name string, payload jso
 		if e := s.putBlob(ctx, tx, canonical); e != nil {
 			return e
 		}
-		_, e := tx.ExecContext(ctx, `REPLACE INTO daemon_markers (name,payload_digest,payload_size) VALUES (?,?,?)`, name, Digest(canonical), len(canonical))
-		return e
+		if _, e := tx.ExecContext(ctx, `REPLACE INTO daemon_markers (name,payload_digest,payload_size) VALUES (?,?,?)`, name, Digest(canonical), len(canonical)); e != nil {
+			return e
+		}
+		if e := s.projectSchedulesTx(ctx, tx, a, name, canonical); e != nil {
+			return e
+		}
+		now := time.Now().UTC()
+		for _, p := range projections {
+			if e := p.projectTx(ctx, s, tx, canonical, now); e != nil {
+				return e
+			}
+		}
+		return nil
 	})
 }
 func (s *Store) GetMarker(ctx context.Context, name string) (json.RawMessage, error) {
@@ -334,16 +463,8 @@ func (s *Store) GetMarker(ctx context.Context, name string) (json.RawMessage, er
 	return s.GetBlob(ctx, r)
 }
 func (s *Store) RecordMessage(ctx context.Context, id, text string) error {
-	if id == "" || len(id) > 255 || text == "" {
-		return errors.New("message id and text required")
-	}
-	return s.Mutate(ctx, Audit{Actor: "operator", Action: "message", MessageID: id, Outcome: "recorded"}, func(ctx context.Context, tx *sql.Tx) error {
-		if e := s.putBlob(ctx, tx, []byte(text)); e != nil {
-			return e
-		}
-		_, e := tx.ExecContext(ctx, `INSERT INTO operator_messages (message_id,thread_root,author,text_digest,created_at) VALUES (?,?,?,?,?)`, id, id, "operator", Digest([]byte(text)), time.Now().UTC())
-		return e
-	})
+	_, e := s.PostMessage(ctx, MessageInput{ID: id, Text: text})
+	return e
 }
 func (s *Store) RequireMessage(ctx context.Context, id string) error {
 	if e := s.RequireScheduleAuthority(ctx, id); e != nil {

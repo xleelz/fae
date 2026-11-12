@@ -24,7 +24,7 @@ func (s *Server) AddPrincipal(credential []byte, p Principal) error {
 		return errors.New("credential must contain 32 bytes")
 	}
 	switch p.Actor {
-	case "controller", "prophet", "workflow-role", "qa":
+	case "controller", "prophet", "workflow-role", "qa", "ui", "ui-writer":
 	default:
 		return errors.New("invalid delegated principal")
 	}

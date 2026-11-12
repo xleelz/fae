@@ -1,0 +1,1305 @@
+{
+  "schema": "fae-self-host-acceptance/1",
+  "outcome": "Done",
+  "task": {
+    "title": "Heavy-op admission: record avg60 and direction in the pressure wait line",
+    "prompt": "FAE-HOST-005 requires the host guard to record avg10 and avg60 PSI values with their direction (rising, falling or steady) for each reading. The daemon's live admission does this: daemon/live_admission.go logReading prints io_full_avg60, memory_full_avg60, io_avg10_dir, io_avg60_dir, memory_avg10_dir and memory_avg60_dir from the hold's Step.Reading. The controller's HeavyAdmission does not. When a reading is held for pressure, the admission wait loop in controller/admission.go builds the \"pressure\" stage detail from memory_available, io_full_avg10, memory_full_avg10 and load_per_core only, and that detail reaches the operator through the \"gate waiting\" alert line.\n\nAcceptance:\n- The pressure detail also names io_full_avg60, memory_full_avg60, io_avg10_dir, io_avg60_dir, memory_avg10_dir and memory_avg60_dir, taken from the reading the hold recorded (the hostguard.Step returned by w.hold.Record). Keep the existing fields, in their order, before the new ones.\n- A new Go unit test in controller/admission_test.go, named TestHeavyAdmissionPressureWaitRecordsAvg60AndDirection, drives a heavy admission that is held for pressure and checks that a captured \"gate waiting stage=pressure\" alert line contains each of the six new field names. Before the fix it fails at run time with a message naming the missing field io_full_avg60.\n- Change only controller/admission.go and controller/admission_test.go. Keep the change minimal and in the surrounding style.",
+    "declared_files": [
+      "controller/admission.go",
+      "controller/admission_test.go"
+    ],
+    "id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74"
+  },
+  "timing": {
+    "started_at": "2026-10-27T01:14:00Z",
+    "finished_at": "2026-10-27T01:32:32Z",
+    "wait_seconds": 14400
+  },
+  "history": {
+    "state": "Done",
+    "stage": "Done",
+    "attempts": 2,
+    "test_runs": 4,
+    "failures": {},
+    "admitted_at": "2026-10-27T01:14:02.206968Z",
+    "done_at": "2026-10-27T01:32:22.36474Z",
+    "admission_to_done_seconds": 1100.158,
+    "transitions": [
+      {
+        "at": "2026-10-27T01:14:02.206968Z",
+        "from": "Pending",
+        "to": "intake",
+        "attempt": 1,
+        "note": "admitted"
+      },
+      {
+        "at": "2026-10-27T01:14:16.467361Z",
+        "from": "intake",
+        "to": "intake-gate",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1"
+      },
+      {
+        "at": "2026-10-27T01:14:16.524111Z",
+        "from": "intake-gate",
+        "to": "spec-loop",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:14:16.576547Z",
+        "from": "spec-loop",
+        "to": "spec",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:14:38.489005Z",
+        "from": "spec",
+        "to": "spec-review",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2"
+      },
+      {
+        "at": "2026-10-27T01:15:24.460421Z",
+        "from": "spec-review",
+        "to": "spec-gate",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3"
+      },
+      {
+        "at": "2026-10-27T01:15:24.524543Z",
+        "from": "spec-gate",
+        "to": "plan",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:15:47.699231Z",
+        "from": "plan",
+        "to": "red-route",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4"
+      },
+      {
+        "at": "2026-10-27T01:15:47.760554Z",
+        "from": "red-route",
+        "to": "red-loop",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:15:47.815606Z",
+        "from": "red-loop",
+        "to": "test-first",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:16:04.907972Z",
+        "from": "test-first",
+        "to": "run-red",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5"
+      },
+      {
+        "at": "2026-10-27T01:16:23.534903Z",
+        "from": "run-red",
+        "to": "red-gate",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6"
+      },
+      {
+        "at": "2026-10-27T01:16:23.59751Z",
+        "from": "red-gate",
+        "to": "freeze-red",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:16:24.113253Z",
+        "from": "freeze-red",
+        "to": "implement-loop",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/7"
+      },
+      {
+        "at": "2026-10-27T01:16:24.173319Z",
+        "from": "implement-loop",
+        "to": "implement",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:16:46.994153Z",
+        "from": "implement",
+        "to": "request-judge",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/8"
+      },
+      {
+        "at": "2026-10-27T01:16:55.677605Z",
+        "from": "request-judge",
+        "to": "implement-loop",
+        "attempt": 1,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9"
+      },
+      {
+        "at": "2026-10-27T01:16:55.783476Z",
+        "from": "implement-loop",
+        "to": "implement",
+        "attempt": 1,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:17:14.815123Z",
+        "from": "implement",
+        "to": "green-route",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10"
+      },
+      {
+        "at": "2026-10-27T01:17:14.877417Z",
+        "from": "green-route",
+        "to": "run-tests",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:18:03.633574Z",
+        "from": "run-tests",
+        "to": "compare-red",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/11"
+      },
+      {
+        "at": "2026-10-27T01:18:04.147878Z",
+        "from": "compare-red",
+        "to": "green-gate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/12"
+      },
+      {
+        "at": "2026-10-27T01:18:04.213517Z",
+        "from": "green-gate",
+        "to": "format",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:18:05.24454Z",
+        "from": "format",
+        "to": "format-gate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13"
+      },
+      {
+        "at": "2026-10-27T01:18:05.309093Z",
+        "from": "format-gate",
+        "to": "reviews",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:18:51.732407Z",
+        "from": "reviews",
+        "to": "reviews-gate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14"
+      },
+      {
+        "at": "2026-10-27T01:18:51.825471Z",
+        "from": "reviews-gate",
+        "to": "oracle",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:19:23.413589Z",
+        "from": "oracle",
+        "to": "verdict",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15"
+      },
+      {
+        "at": "2026-10-27T01:19:23.502588Z",
+        "from": "verdict",
+        "to": "qa",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:24:53.079233Z",
+        "from": "qa",
+        "to": "qa-gate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/16"
+      },
+      {
+        "at": "2026-10-27T01:24:53.158508Z",
+        "from": "qa-gate",
+        "to": "merge",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:24:54.07348Z",
+        "from": "merge",
+        "to": "merge-route",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/17"
+      },
+      {
+        "at": "2026-10-27T01:24:54.199435Z",
+        "from": "merge-route",
+        "to": "post-merge-qa",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:31:17.618875Z",
+        "from": "post-merge-qa",
+        "to": "post-merge-gate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/19"
+      },
+      {
+        "at": "2026-10-27T01:31:17.705089Z",
+        "from": "post-merge-gate",
+        "to": "commit",
+        "attempt": 2,
+        "note": "stage-complete"
+      },
+      {
+        "at": "2026-10-27T01:32:21.683886Z",
+        "from": "commit",
+        "to": "integrate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/21"
+      },
+      {
+        "at": "2026-10-27T01:32:22.285128Z",
+        "from": "integrate",
+        "to": "integration-gate",
+        "attempt": 2,
+        "note": "completed task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/22"
+      },
+      {
+        "at": "2026-10-27T01:32:22.36474Z",
+        "from": "integration-gate",
+        "to": "Done",
+        "attempt": 2,
+        "note": "stage-complete"
+      }
+    ],
+    "artifact_counts": {
+      "Intake": 1,
+      "Spec": 1,
+      "SpecReview": 2,
+      "Plan": 1,
+      "RedReport": 1,
+      "EngineRun": 4,
+      "FrozenIdentity": 1,
+      "ImplementationReport": 2,
+      "RequestDecision": 1,
+      "Compare": 1,
+      "Format": 1,
+      "Review": 4,
+      "OracleVerdict": 1,
+      "ReconcileReport": 1,
+      "Commit": 1,
+      "Integration": 1
+    },
+    "artifacts": [
+      {
+        "at": "2026-10-27T01:14:16.24349Z",
+        "stage": "intake",
+        "kind": "Intake",
+        "role": "spec",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1"
+      },
+      {
+        "at": "2026-10-27T01:14:38.258543Z",
+        "stage": "spec",
+        "kind": "Spec",
+        "role": "spec",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2"
+      },
+      {
+        "at": "2026-10-27T01:15:24.233894Z",
+        "stage": "spec-review",
+        "kind": "SpecReview",
+        "role": "spec-reviewer",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3"
+      },
+      {
+        "at": "2026-10-27T01:15:24.233894Z",
+        "stage": "spec-review",
+        "kind": "SpecReview",
+        "role": "spec-reviewer",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3"
+      },
+      {
+        "at": "2026-10-27T01:15:47.47158Z",
+        "stage": "plan",
+        "kind": "Plan",
+        "role": "planner",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4"
+      },
+      {
+        "at": "2026-10-27T01:16:04.486773Z",
+        "stage": "test-first",
+        "kind": "RedReport",
+        "role": "coder",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5"
+      },
+      {
+        "at": "2026-10-27T01:16:23.501573Z",
+        "stage": "run-red",
+        "kind": "EngineRun",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6"
+      },
+      {
+        "at": "2026-10-27T01:16:24.082065Z",
+        "stage": "freeze-red",
+        "kind": "FrozenIdentity",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/7"
+      },
+      {
+        "at": "2026-10-27T01:16:46.298653Z",
+        "stage": "implement",
+        "kind": "ImplementationReport",
+        "role": "coder",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/8"
+      },
+      {
+        "at": "2026-10-27T01:16:55.442766Z",
+        "stage": "request-judge",
+        "kind": "RequestDecision",
+        "role": "oracle",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9"
+      },
+      {
+        "at": "2026-10-27T01:17:14.391599Z",
+        "stage": "implement",
+        "kind": "ImplementationReport",
+        "role": "coder",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10"
+      },
+      {
+        "at": "2026-10-27T01:18:03.596335Z",
+        "stage": "run-tests",
+        "kind": "EngineRun",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/11"
+      },
+      {
+        "at": "2026-10-27T01:18:04.115915Z",
+        "stage": "compare-red",
+        "kind": "Compare",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/12"
+      },
+      {
+        "at": "2026-10-27T01:18:05.209644Z",
+        "stage": "format",
+        "kind": "Format",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13"
+      },
+      {
+        "at": "2026-10-27T01:18:51.488871Z",
+        "stage": "reviews",
+        "kind": "Review",
+        "role": "reviewer-security",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14"
+      },
+      {
+        "at": "2026-10-27T01:18:51.488871Z",
+        "stage": "reviews",
+        "kind": "Review",
+        "role": "reviewer-architecture",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14"
+      },
+      {
+        "at": "2026-10-27T01:18:51.488871Z",
+        "stage": "reviews",
+        "kind": "Review",
+        "role": "reviewer-correctness",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14"
+      },
+      {
+        "at": "2026-10-27T01:18:51.488871Z",
+        "stage": "reviews",
+        "kind": "Review",
+        "role": "reviewer-quality",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14"
+      },
+      {
+        "at": "2026-10-27T01:19:23.172145Z",
+        "stage": "oracle",
+        "kind": "OracleVerdict",
+        "role": "oracle",
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15"
+      },
+      {
+        "at": "2026-10-27T01:24:53.010382Z",
+        "stage": "qa",
+        "kind": "EngineRun",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/16"
+      },
+      {
+        "at": "2026-10-27T01:24:54.031526Z",
+        "stage": "merge",
+        "kind": "ReconcileReport",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/17"
+      },
+      {
+        "at": "2026-10-27T01:31:17.550981Z",
+        "stage": "post-merge-qa",
+        "kind": "EngineRun",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/19"
+      },
+      {
+        "at": "2026-10-27T01:32:21.643414Z",
+        "stage": "commit",
+        "kind": "Commit",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/21"
+      },
+      {
+        "at": "2026-10-27T01:32:22.245979Z",
+        "stage": "integrate",
+        "kind": "Integration",
+        "role": "",
+        "provider": "",
+        "model": "",
+        "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/22"
+      }
+    ]
+  },
+  "landed": {
+    "integration_ref": "refs/heads/fae/integration",
+    "base": "2ad283df0ca3282ca40583aa0aed8588620107f4",
+    "tip": "6ecd091062f94fc282de54ade1ebf22957d97238",
+    "moved": true,
+    "landed_commit": "6ecd091062f94fc282de54ade1ebf22957d97238",
+    "commits": [
+      {
+        "sha": "6ecd091062f94fc282de54ade1ebf22957d97238",
+        "subject": "Heavy-op admission: record avg60 and direction in the pressure wait line",
+        "stat": "controller/admission.go      |  3 ++-\n controller/admission_test.go | 28 ++++++++++++++++++++++++++++\n 2 files changed, 30 insertions(+), 1 deletion(-)"
+      }
+    ],
+    "diff_stat": "controller/admission.go      |  3 ++-\n controller/admission_test.go | 28 ++++++++++++++++++++++++++++\n 2 files changed, 30 insertions(+), 1 deletion(-)"
+  },
+  "engine_runs": [
+    {
+      "stage": "run-red",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6",
+      "attempt": 1,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-a",
+        "-x",
+        "./..."
+      ],
+      "launched_at": "2026-10-27T01:16:04.972352Z",
+      "reaped_at": "2026-10-27T01:16:23.547568Z",
+      "wall_seconds": 18.575,
+      "artifact": "EngineRun",
+      "result": {
+        "executed_count": 1,
+        "exit_code": 1,
+        "expected_failure": true,
+        "fresh_build": true,
+        "matched_count": 1,
+        "output_digest": "668d9b85df8618bcc8448a196d371aa37e9d55971370f9beb2356729aaaa702c",
+        "red_passed": false,
+        "test_in_source": true
+      }
+    },
+    {
+      "stage": "run-tests",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/11",
+      "attempt": 2,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-a",
+        "-x",
+        "./..."
+      ],
+      "launched_at": "2026-10-27T01:17:14.938394Z",
+      "reaped_at": "2026-10-27T01:18:03.644215Z",
+      "wall_seconds": 48.706,
+      "artifact": "EngineRun",
+      "result": {
+        "executed_count": 1,
+        "exit_code": 0,
+        "expected_failure": false,
+        "fresh_build": true,
+        "matched_count": 1,
+        "output_digest": "fe96995a3c8dfaec38ef14b79e4282d4fd462f1d32af66ebc5131235e3b0ca39",
+        "red_passed": true,
+        "test_in_source": true
+      }
+    },
+    {
+      "stage": "format",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13",
+      "attempt": 2,
+      "command": [
+        "gofmt",
+        "-l",
+        "."
+      ],
+      "launched_at": "2026-10-27T01:18:04.282025Z",
+      "reaped_at": "2026-10-27T01:18:05.254799Z",
+      "wall_seconds": 0.973,
+      "artifact": "Format",
+      "result": {
+        "new_debt": 0
+      }
+    },
+    {
+      "stage": "qa",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/16",
+      "attempt": 2,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-a",
+        "-x",
+        "./..."
+      ],
+      "launched_at": "2026-10-27T01:19:23.585721Z",
+      "reaped_at": "2026-10-27T01:24:53.089723Z",
+      "wall_seconds": 329.504,
+      "artifact": "EngineRun",
+      "result": {
+        "executed_count": 2305,
+        "exit_code": 0,
+        "expected_failure": false,
+        "fresh_build": true,
+        "matched_count": 1,
+        "output_digest": "8ef927d803a594b6bd46049dfc9a94ce231897b5e7df90266e6c2ed75b44eed1",
+        "red_passed": true,
+        "test_in_source": true
+      }
+    },
+    {
+      "stage": "post-merge-qa",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/18",
+      "attempt": 2,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-a",
+        "-x",
+        "./..."
+      ],
+      "launched_at": "2026-10-27T01:24:54.28103Z",
+      "reaped_at": "2026-10-27T01:25:24.353252Z",
+      "wall_seconds": 30.072,
+      "artifact": null,
+      "result": null
+    },
+    {
+      "stage": "post-merge-qa",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/19",
+      "attempt": 2,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-a",
+        "-x",
+        "./..."
+      ],
+      "launched_at": "2026-10-27T01:25:31.587773Z",
+      "reaped_at": "2026-10-27T01:31:17.629453Z",
+      "wall_seconds": 346.042,
+      "artifact": "EngineRun",
+      "result": {
+        "executed_count": 2305,
+        "exit_code": 0,
+        "expected_failure": false,
+        "fresh_build": true,
+        "matched_count": 1,
+        "output_digest": "6afb5b0ac849e1d35ca71ba73b2846c94783dadadcca64e13ff3333730c13d5c",
+        "red_passed": true,
+        "test_in_source": true
+      }
+    }
+  ],
+  "provider_turns": [
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1",
+      "role": "spec",
+      "stage": "intake",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 13476,
+      "duration_api_ms": 13443,
+      "num_turns": 2,
+      "total_cost_usd": 0.6334224
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2",
+      "role": "spec",
+      "stage": "spec",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 21101,
+      "duration_api_ms": 21068,
+      "num_turns": 2,
+      "total_cost_usd": 0.6561872000000001
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3",
+      "role": "spec-reviewer",
+      "stage": "spec-review",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 18423,
+      "duration_api_ms": 18390,
+      "num_turns": 2,
+      "total_cost_usd": 0.661084
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/1",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3",
+      "role": "spec-reviewer",
+      "stage": "spec-review",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 26229,
+      "duration_api_ms": 26196,
+      "num_turns": 2,
+      "total_cost_usd": 0.67844
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4",
+      "role": "planner",
+      "stage": "plan",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 22391,
+      "duration_api_ms": 22358,
+      "num_turns": 2,
+      "total_cost_usd": 0.6857998
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5",
+      "role": "coder",
+      "stage": "test-first",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 16111,
+      "duration_api_ms": 16078,
+      "num_turns": 2,
+      "total_cost_usd": 0.6807174
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/8/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/8",
+      "role": "coder",
+      "stage": "implement",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 21558,
+      "duration_api_ms": 21526,
+      "num_turns": 2,
+      "total_cost_usd": 0.7090098
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9",
+      "role": "oracle",
+      "stage": "request-judge",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 7822,
+      "duration_api_ms": 7790,
+      "num_turns": 2,
+      "total_cost_usd": 0.696156
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10",
+      "role": "coder",
+      "stage": "implement",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 18037,
+      "duration_api_ms": 18003,
+      "num_turns": 2,
+      "total_cost_usd": 0.9224338
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14",
+      "role": "reviewer-correctness",
+      "stage": "reviews",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 13505,
+      "duration_api_ms": 13471,
+      "num_turns": 2,
+      "total_cost_usd": 0.9053288
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/1",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14",
+      "role": "reviewer-quality",
+      "stage": "reviews",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 12242,
+      "duration_api_ms": 12209,
+      "num_turns": 2,
+      "total_cost_usd": 0.8989888
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/2",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14",
+      "role": "reviewer-security",
+      "stage": "reviews",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 10255,
+      "duration_api_ms": 10222,
+      "num_turns": 2,
+      "total_cost_usd": 0.8983048
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/3",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14",
+      "role": "reviewer-architecture",
+      "stage": "reviews",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 7945,
+      "duration_api_ms": 7910,
+      "num_turns": 2,
+      "total_cost_usd": 0.8946968
+    },
+    {
+      "session_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15/session/0",
+      "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15",
+      "role": "oracle",
+      "stage": "oracle",
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "started": true,
+      "completed": true,
+      "subtype": "success",
+      "is_error": false,
+      "duration_ms": 30761,
+      "duration_api_ms": 30728,
+      "num_turns": 2,
+      "total_cost_usd": 0.9587897999999999
+    }
+  ],
+  "provider_turn_counts": {
+    "launched": 14,
+    "completed": 14
+  },
+  "provider_log": [
+    {
+      "sequence": 15,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1/session/0",
+      "created": "2026-10-27T01:14:16.25366Z"
+    },
+    {
+      "sequence": 24,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+      "created": "2026-10-27T01:14:38.268669Z"
+    },
+    {
+      "sequence": 31,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/0",
+      "created": "2026-10-27T01:14:57.482084Z"
+    },
+    {
+      "sequence": 36,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/1",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/1",
+      "created": "2026-10-27T01:15:24.243379Z"
+    },
+    {
+      "sequence": 44,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/0",
+      "created": "2026-10-27T01:15:47.480464Z"
+    },
+    {
+      "sequence": 53,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+      "created": "2026-10-27T01:16:04.496021Z"
+    },
+    {
+      "sequence": 76,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/8/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/8/session/0",
+      "created": "2026-10-27T01:16:46.308406Z"
+    },
+    {
+      "sequence": 83,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+      "created": "2026-10-27T01:16:55.4536Z"
+    },
+    {
+      "sequence": 91,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10/session/0",
+      "created": "2026-10-27T01:17:14.40095Z"
+    },
+    {
+      "sequence": 120,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/0",
+      "created": "2026-10-27T01:18:19.402472Z"
+    },
+    {
+      "sequence": 125,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/1",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/1",
+      "created": "2026-10-27T01:18:32.216915Z"
+    },
+    {
+      "sequence": 130,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/2",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/2",
+      "created": "2026-10-27T01:18:43.010352Z"
+    },
+    {
+      "sequence": 135,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/3",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/3",
+      "created": "2026-10-27T01:18:51.498547Z"
+    },
+    {
+      "sequence": 143,
+      "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15/session/0",
+      "line": "provider claude model claude-opus-5-5 outcome ok score 100.000 session task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15/session/0",
+      "created": "2026-10-27T01:19:23.181471Z"
+    }
+  ],
+  "final_status": {
+    "instance": {
+      "pid": 2787164,
+      "adapter": "direct",
+      "uptime_seconds": 1112.403329474,
+      "version": {
+        "binary_sha256": "4560344570f8bde26c7897c8547f39c203a867ee27fb8be44dc593dea41931b8",
+        "commit": "e547c03bca53aa7a8168062a090117f12dea5a94",
+        "commit_time": "2026-10-22T00:47:42Z",
+        "go": "go1.27.2",
+        "modified": true,
+        "version": "v0.0.0-20261022004742-e547c03bca53+dirty"
+      },
+      "default_workflow": {
+        "state": "installed",
+        "revision": 1,
+        "hash": "2e663e9270518d7598a2b0d6b9b6ab4b7b93adff60f81ae4b61c48a41d0f4ddc",
+        "generation": 3
+      },
+      "counts": {
+        "Done": 1
+      },
+      "drive_alive": true
+    },
+    "task": {
+      "execution_kind": "live",
+      "id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74",
+      "version": 63,
+      "workflow_id": "default",
+      "workflow_revision": 2,
+      "target_id": "/home/lbethay/fae-self8/repo",
+      "target_revision": 1,
+      "state": "Done",
+      "run_id": "backlog-drain",
+      "priority": 10,
+      "disposition": {
+        "mode": "Local",
+        "live": false
+      },
+      "stage": "Done",
+      "parked": false,
+      "in_flight": false,
+      "latest_artifacts": [
+        {
+          "execution_kind": "live",
+          "artifact_id": "11a49f853eb8befe94fef278d487125cd20930b9e41c4c0934394443e7f00878",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1",
+          "stage": "intake",
+          "role": "spec",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/1/session/0",
+          "tree": "0481d79e1bf953dad846c0e1ce1a60563c48eba0",
+          "produced_at": "2026-10-27T01:14:16.243490071Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "6f3e46d0354bbbae653bac2bebad30ee4f0d7e695749f0fc5f8232808946cc50",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2",
+          "stage": "spec",
+          "role": "spec",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/2/session/0",
+          "tree": "0481d79e1bf953dad846c0e1ce1a60563c48eba0",
+          "produced_at": "2026-10-27T01:14:38.258543312Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "50cba2e4a592dd9921acdb440a982880bbcc3ba80bd2a6832926c15751024903",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3",
+          "stage": "spec-review",
+          "role": "spec-reviewer",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/3/session/1",
+          "tree": "0481d79e1bf953dad846c0e1ce1a60563c48eba0",
+          "produced_at": "2026-10-27T01:15:24.233894081Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "d4626a09426fbbefe9d6488d62a2bbd4bfdca16d0e7a3e8c0778a3c002be4313",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4",
+          "stage": "plan",
+          "role": "planner",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/4/session/0",
+          "tree": "0481d79e1bf953dad846c0e1ce1a60563c48eba0",
+          "produced_at": "2026-10-27T01:15:47.471579837Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "cc6b34d97b42c68ff1aa314fb40b93a27d0fd333d88e06a7f7908b69f301f2b3",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5",
+          "stage": "test-first",
+          "role": "coder",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/5/session/0",
+          "tree": "373482afc46367c95c06e77f918a0c022889f984",
+          "produced_at": "2026-10-27T01:16:04.486773359Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "92bfbc7ab4de8f5a0bc4a179f5bd5d68c0fff55b1a20807804f423a0c9f59b3f",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6",
+          "stage": "run-red",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/6/session/0",
+          "tree": "373482afc46367c95c06e77f918a0c022889f984",
+          "produced_at": "2026-10-27T01:16:23.501572833Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "50936f76c46815eb4102d77650024e969a9b59bd71fa707bd54273301ccd7ae2",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/7",
+          "stage": "freeze-red",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/7/session/0",
+          "tree": "373482afc46367c95c06e77f918a0c022889f984",
+          "produced_at": "2026-10-27T01:16:24.082065469Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "646bbdacbc4b52dc4c5d49d6cebc6b6101cf050c67919a639bdda48d0b40e7ec",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10",
+          "stage": "implement",
+          "role": "coder",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/10/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:17:14.391599025Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "a98655aa84a2920c3087b84a73887367896990be88a10caf70d5ddbab034101d",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9",
+          "stage": "request-judge",
+          "role": "oracle",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/9/session/0",
+          "tree": "373482afc46367c95c06e77f918a0c022889f984",
+          "produced_at": "2026-10-27T01:16:55.442766311Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "4c3d6dad24d43fbad5bbc41afe441d57079590e096354ba943f71758bcde1d4f",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/11",
+          "stage": "run-tests",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/11/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:18:03.596334812Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "861d37aa3a4f5abd7b53f1e45f1c19d43a9deda6059000f7e4bc70c77fa2a050",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/12",
+          "stage": "compare-red",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/12/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:18:04.115914571Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "3535f319e29d07860ecfc7e4e6e843b3b5e2505d9ce771696e775cebd9fb147f",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13",
+          "stage": "format",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/13/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:18:05.209644077Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "24777333d6019678a1530e5bfe59e06134ca38063ea78606c4a591db3742b0cd",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14",
+          "stage": "reviews",
+          "role": "reviewer-architecture",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/14/session/3",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:18:51.488870895Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "8b4803c171c978b1ade12a4647f3d9e2bbfd1ce6461d6a16f2aba2698fd8c093",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15",
+          "stage": "oracle",
+          "role": "oracle",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/15/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:19:23.172144731Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2,
+          "provider": "claude",
+          "model": "claude-opus-5-5"
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "2ade64e635ddfe0c51a179f0636e770b05300d4c1e71dc3858b2bf2f6752d757",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/16",
+          "stage": "qa",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/16/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:24:53.01038203Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "6bb54c5ca8e6b16963df5a03f64bd33d9dfc494542e4b814ada9e8a3d08687ba",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/17",
+          "stage": "merge",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/17/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:24:54.03152574Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "47e1486ce12232c3ac1752e1f1594476ce99df2d223e8e62b3ae09fc6c92031c",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/19",
+          "stage": "post-merge-qa",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/19/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:31:17.550980507Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "ef51f9be9d63aacad4cf34ccdabfd98714eea45d8a9f9d8d60afa561bbf2adcf",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/21",
+          "stage": "commit",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/21/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:32:21.643414346Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        },
+        {
+          "execution_kind": "live",
+          "artifact_id": "c2b5ab46e656447c03c70303737b59e4b8b5ef574c574b3cc9ddd8f58bb04715",
+          "dispatch_id": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/22",
+          "stage": "integrate",
+          "role": "",
+          "session": "task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/22/session/0",
+          "tree": "644c535dedf936567ac3dfe03b170faa5c54cbeb",
+          "produced_at": "2026-10-27T01:32:22.245979017Z",
+          "workflow_hash": "19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb",
+          "workflow_revision": 2
+        }
+      ]
+    }
+  }
+}

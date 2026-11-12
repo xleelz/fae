@@ -1,0 +1,7 @@
+{"ImportPath":"","Action":"build-output","Output":"WORK=/tmp/go-build869334843\n"}
+{"ImportPath":"example.com/nothere/pkg","Action":"build-output","Output":"# example.com/fixture/missing\n"}
+{"ImportPath":"example.com/nothere/pkg","Action":"build-output","Output":"missing/missing.go:3:8: cannot find module providing package example.com/nothere/pkg: unrecognized import path \"example.com/nothere/pkg\": reading https://example.com/nothere/pkg?go-get=1: 404 Not Found\n"}
+{"ImportPath":"example.com/nothere/pkg","Action":"build-fail"}
+{"Time":"2026-10-26T10:20:13.558051428Z","Action":"start","Package":"example.com/fixture/missing"}
+{"Time":"2026-10-26T10:20:13.558169486Z","Action":"output","Package":"example.com/fixture/missing","Output":"FAIL\texample.com/fixture/missing [setup failed]\n","OutputType":"frame"}
+{"Time":"2026-10-26T10:20:13.55818547Z","Action":"fail","Package":"example.com/fixture/missing","Elapsed":0,"FailedBuild":"example.com/nothere/pkg"}

@@ -189,6 +189,8 @@ func (f prophetRuntimeFunc) Run(ctx context.Context, l agentruntime.Launch) (age
 }
 func TestProphetLiveGuardNoRoleSlotsAndPrivateContext(t *testing.T) {
 	a := admissionFixture(t, 1)
+	// The scheduled task has an explicit unbounded tree cap.
+	a.view.Store(&scheduleView{treeRoot: map[string]string{"alpha": "alpha"}, treeLimit: map[string]int{"alpha": -1}})
 	d := a.daemon
 	db, mock, e := sqlmock.New()
 	if e != nil {
@@ -198,7 +200,8 @@ func TestProphetLiveGuardNoRoleSlotsAndPrivateContext(t *testing.T) {
 	d.store = controlplane.New(db, controlplane.Options{})
 	mock.ExpectQuery("SELECT").WillReturnRows(sqlmock.NewRows([]string{"provider", "model", "outcome", "score", "failures", "last_ok", "last_failure", "hold_until"}))
 	d.live = &liveExecutor{guard: a, runner: prophetRuntimeFunc(func(ctx context.Context, l agentruntime.Launch) (agentruntime.Collected, error) {
-		assertHostCounts(t, a, 1, 0)
+		// A Prophet turn is an agent session: no role slot, no heavy-op unit.
+		assertHostCounts(t, a, 0, 0)
 		if !l.FreshContext || l.WorkflowID != "fae-prophet" || l.Role != "prophet" || l.SessionPolicy != "" || len(l.Profile.Allowed) != 1 || l.Profile.Allowed[0] != "handoff" {
 			t.Fatal(l)
 		}

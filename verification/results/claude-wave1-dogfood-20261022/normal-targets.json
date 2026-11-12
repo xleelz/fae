@@ -1,0 +1,40 @@
+{
+  "result": {
+    "local_task": "cron-7d533ed758e7c6b84e828429-0",
+    "live_task": "provider-beta",
+    "live_effects": 1,
+    "normal_revision": {
+      "id": "dogfood-normal",
+      "revision": 1,
+      "hash": "5ace10ce9aa526671cdbcf84fbe59d8e14add0366656ff0dc16db91da16bdd6b",
+      "retired": false
+    },
+    "adapter": "disposable localhost fixture"
+  },
+  "calls": [
+    {
+      "schema_digest": "dd12af3cc01d6dd9e9b176802c5ff892cb614a5057a3befca49beadee5de02de",
+      "typed_arguments": {
+        "destination": "main",
+        "draft": "true",
+        "push_namespace": "fae/dogfood",
+        "ticket_room": "local-fixture"
+      },
+      "endpoint": "http://127.0.0.1:42181",
+      "server": "dogfood",
+      "key": "066d5f93ddb0aad7161e4a0a807bb270924c757c2073b7e48737628edd67e6a5",
+      "task": "provider-beta",
+      "stage": "f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/external",
+      "tool": "fixture_create",
+      "arguments": {
+        "destination": "main",
+        "draft": "true",
+        "push_namespace": "fae/dogfood",
+        "ticket_room": "local-fixture"
+      },
+      "digest": "cc4990d47895281b506b729332dd62dbc4537b0389cbb5013568db93f279eb77",
+      "tree": "b18ec2c6ebac3a6017a26ecc0ee9d079cdf9d645",
+      "session": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/19/session/0"
+    }
+  ]
+}

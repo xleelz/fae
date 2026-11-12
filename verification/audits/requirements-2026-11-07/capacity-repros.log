@@ -1,0 +1,16 @@
+=== RUN   TestAuditPriorityIsReversed
+    audit_review_repro_test.go:3: CONFIRMED: priority10 granted ahead of queued priority100
+--- PASS: TestAuditPriorityIsReversed (0.06s)
+=== RUN   TestAuditMoleculeExemptionStaysAfterLimitClears
+    audit_review_repro_test.go:4: CONFIRMED: now-eligible ahead waiter still IgnoreFIFO; behind owner acquired
+--- PASS: TestAuditMoleculeExemptionStaysAfterLimitClears (0.13s)
+=== RUN   TestAuditSmallerRevisionLeavesObsoleteResizeAtQueueHead
+    audit_review_repro_test.go:5: CONFIRMED: live revision3 fits its granted reservation, obsolete revision2 resize remains FIFO head and blocks another fitting holder
+--- PASS: TestAuditSmallerRevisionLeavesObsoleteResizeAtQueueHead (0.13s)
+PASS
+ok  	github.com/xleelz/fae/scheduler	0.318s
+=== RUN   TestAuditDetachedCostIgnored
+    audit_review_repro_test.go:3: CONFIRMED: child footprint1000 priced as root footprint1
+--- PASS: TestAuditDetachedCostIgnored (0.00s)
+PASS
+ok  	github.com/xleelz/fae/daemon	0.008s

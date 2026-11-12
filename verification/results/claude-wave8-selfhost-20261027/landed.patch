@@ -1,0 +1,69 @@
+From 6ecd091062f94fc282de54ade1ebf22957d97238 Mon Sep 17 00:00:00 2001
+From: Fae <fae@localhost>
+Date: Tue, 27 Oct 2026 01:32:21 +0000
+Subject: [PATCH] Heavy-op admission: record avg60 and direction in the
+ pressure wait line
+
+Fae task: task-f832eaeaa2819f8cd825b6fd3c2c3e74
+Fae dispatch: task-f832eaeaa2819f8cd825b6fd3c2c3e74/19afc0bfd16d87a403f7a4bfa19d21cfa6ed8ef8c5a06adb7c387de695b2cddb/21
+---
+ controller/admission.go      |  3 ++-
+ controller/admission_test.go | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/controller/admission.go b/controller/admission.go
+index 38d0c31..7189b3c 100644
+--- a/controller/admission.go
++++ b/controller/admission.go
+@@ -201,7 +201,8 @@ func (w *admissionWait) host(ctx context.Context) error {
+ 				detail += " (" + observeErr.Error() + ")"
+ 			}
+ 		case soft.Outcome != hostguard.OutcomeProceed:
+-			stage, detail = "pressure", fmt.Sprintf("%s: %s memory_available=%s io_full_avg10=%s memory_full_avg10=%s load_per_core=%s", soft.Outcome, soft.Reason, formatBytes(sample.Memory), reading(sample.IO10), reading(sample.Memory10), reading(sample.LoadPerCore))
++			r := soft.Reading
++			stage, detail = "pressure", fmt.Sprintf("%s: %s memory_available=%s io_full_avg10=%s memory_full_avg10=%s load_per_core=%s io_full_avg60=%s memory_full_avg60=%s io_avg10_dir=%s io_avg60_dir=%s memory_avg10_dir=%s memory_avg60_dir=%s", soft.Outcome, soft.Reason, formatBytes(sample.Memory), reading(sample.IO10), reading(sample.Memory10), reading(sample.LoadPerCore), reading(r.IO.Avg60), reading(r.Memory.Avg60), r.IO.Dir10, r.IO.Dir60, r.Memory.Dir10, r.Memory.Dir60)
+ 		case !io.Passed:
+ 			stage, detail = "io", fmt.Sprintf("io_full_avg10=%s %s", reading(sample.IO10), io.Reason)
+ 		default:
+diff --git a/controller/admission_test.go b/controller/admission_test.go
+index 21352b8..fc553e4 100644
+--- a/controller/admission_test.go
++++ b/controller/admission_test.go
+@@ -107,6 +107,34 @@ func TestHeavyAdmissionRoleBacksOffBoundedThenRefuses(t *testing.T) {
+ 	}
+ }
+ 
++// FAE-HOST-005: a reading held for pressure records the avg60 PSI values and
++// the direction of each avg10 and avg60 series in its waiting line.
++func TestHeavyAdmissionPressureWaitRecordsAvg60AndDirection(t *testing.T) {
++	policy := hostguard.DefaultPolicy()
++	a, _, alerts, _ := admissionFixture(t, hostSample(64, 1, 0, 4.5))
++	a.Class, a.MemoryFloor, a.Slice = "role", -1, policy.Interval
++	a.HostChecks = max(policy.Checks, 2)
++	var timeout *AdmissionTimeout
++	if _, e := a.Acquire(context.Background(), "avg60"); !errors.As(e, &timeout) || timeout.Stage != "pressure" {
++		t.Fatal(e)
++	}
++	line := ""
++	for _, l := range *alerts {
++		if strings.Contains(l, "gate waiting stage=pressure") {
++			line = l
++			break
++		}
++	}
++	if line == "" {
++		t.Fatal("no pressure waiting line", *alerts)
++	}
++	for _, name := range []string{"io_full_avg60", "memory_full_avg60", "io_avg10_dir", "io_avg60_dir", "memory_avg10_dir", "memory_avg60_dir"} {
++		if !strings.Contains(line, name+"=") {
++			t.Fatalf("pressure waiting line lacks %s: %s", name, line)
++		}
++	}
++}
++
+ // FAE-HOST-001: pressure seen under the granted lease releases it and returns
+ // to the bounded host wait; the lease is never held through a back-off.
+ func TestHeavyAdmissionPressureUnderLeaseReleases(t *testing.T) {
+-- 
+2.55.0
+

@@ -14,6 +14,7 @@ import (
 	"github.com/xleelz/fae/effects"
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/kernel"
+	"github.com/xleelz/fae/processowner"
 	"github.com/xleelz/fae/workflow"
 	"github.com/xleelz/fae/worktree"
 )
@@ -120,7 +121,7 @@ func (x *liveExecutor) recordEffectResult(ctx context.Context, i *effectIntent, 
 
 // recordedEffect loads daemon-written evidence, never operator-supplied result
 // JSON. Exact postconditions are remeasured before the engine may adopt it.
-func (d *Daemon) recordedEffect(ctx context.Context, dispatch engine.Dispatch, w worktree.Binding, retired bool) (engine.Result, error) {
+func (d *Daemon) recordedEffect(ctx context.Context, dispatch engine.Dispatch, w worktree.Binding, retired bool, doc workflow.Document) (engine.Result, error) {
 	var zero engine.Result
 	if dispatch.Config.Primitive == workflow.ExternalEffect {
 		return d.reconcileExternal(ctx, dispatch, w)
@@ -190,15 +191,7 @@ func (d *Daemon) recordedEffect(ctx context.Context, dispatch engine.Dispatch, w
 		expectedHead = intent.TargetAfter
 	}
 	valid := receipt.Intent == effectKey(dispatch) && receipt.Result.DispatchID == dispatch.ID && receipt.Result.TaskID == dispatch.TaskID && receipt.Result.Tree == dispatch.Tree && receipt.Result.Session == dispatch.Sessions[0].ID && receipt.Result.ExecutionKind == "live" && receipt.Result.Class == "" && receipt.Result.NewTree == "" && receipt.Result.NewBase == "" && !receipt.Result.ProducedAt.Before(dispatch.CreatedAt) && !receipt.Result.ProducedAt.After(time.Now().UTC()) && receipt.Head == head && head == expectedHead && tree == dispatch.Tree
-	artifact, ok := d.jobs[dispatch.TaskID]
-	if !ok {
-		return zero, errors.New("effect task missing")
-	}
-	var env envelope
-	if e = decodeEnvelope(artifact.Payload, &env); e != nil {
-		return zero, e
-	}
-	schema, ok := env.Job.Document.Artifacts[dispatch.Config.Output]
+	schema, ok := doc.Artifacts[dispatch.Config.Output]
 	if !ok || workflow.ValidateArtifact(schema.Schema, receipt.Result.Output) != nil {
 		return zero, errors.New("recorded effect output schema invalid")
 	}
@@ -235,18 +228,129 @@ func (d *Daemon) recordedEffect(ctx context.Context, dispatch engine.Dispatch, w
 	return receipt.Result, nil
 }
 
-func (d *Daemon) effectNonExecution(ctx context.Context, dispatch engine.Dispatch) bool {
-	raw, e := d.store.GetMarker(ctx, effectKey(dispatch)+"/intent")
+// adoptCompletedEffect adopts, at recovery, an interrupted local effect whose
+// completed daemon receipt survives (FAE-ROB-012/-016): nothing re-runs and no
+// budget is charged. Leases are retired first (the receipt proves the effect's
+// owned processes retired; their owner must be provably dead), then the receipt
+// and every postcondition are remeasured. A receipt rebuilt from intent alone,
+// an external effect or any mismatch keeps the conservative park.
+func (d *Daemon) adoptCompletedEffect(ctx context.Context, e envelope) (engine.Job, bool, error) {
+	j := e.Job
+	dispatch := *j.InFlight
+	local := supportedEffect(dispatch.Config.Primitive) && dispatch.Config.Primitive != workflow.ExternalEffect
+	if !local || j.OperatorStage != "" || e.Admission.TargetConfig != "" {
+		return j, false, nil
+	}
+	_, err := d.store.GetMarker(ctx, effectKey(dispatch)+"/result")
+	if errors.Is(err, sql.ErrNoRows) {
+		return j, false, nil
+	}
+	if err != nil {
+		return j, false, err
+	}
+	if err = d.retireReceiptLeases(ctx, dispatch); err != nil {
+		return j, false, err
+	}
+	w := d.live.manager.Binding(e.Admission.RunID, j.TaskID)
+	if err = d.live.manager.Verify(ctx, w); err != nil {
+		return j, false, err
+	}
+	result, err := d.recordedEffect(ctx, dispatch, w, true, j.Document)
+	if !CanAutoAdoptEffect(true, true, err == nil, local) {
+		return j, false, err
+	}
+	adopted, _, err := engine.AdoptInterruptedEffect(j, dispatch.ID, result)
+	return adopted, err == nil, err
+}
+
+// retireReceiptLeases retires the lease proofs of a dispatch whose completed
+// receipt or non-execution already proves its owned processes gone. Each
+// proof's owner must be provably dead; a live owner may still hold the lease.
+func (d *Daemon) retireReceiptLeases(ctx context.Context, dispatch engine.Dispatch) error {
+	proofs, err := d.live.guard.journal.Entries()
+	if err != nil {
+		return err
+	}
+	found := false
+	for _, proof := range proofs {
+		for _, session := range dispatch.Sessions {
+			if proof.Session != session.ID {
+				continue
+			}
+			if !processowner.ProvedDead(proof.Owner.PID, proof.Birth) {
+				return errors.New("effect lease owner death unproven")
+			}
+			proof.State = "retired"
+			if err = d.live.guard.journal.Put(proof); err != nil {
+				return err
+			}
+			found = true
+		}
+	}
+	if !found {
+		return nil
+	}
+	return d.live.guard.recoverProofs(ctx)
+}
+
+// effectRefusal is the record of an effect refused before anything ran,
+// after its intent was recorded: the live executor's refusal before launch
+// (FAE-RT-004), kept beside the intent so recovery reads the dispatch as a
+// non-execution.
+type effectRefusal struct {
+	Intent string `json:"intent"`
+	Detail string `json:"detail"`
+}
+
+// recordEffectRefusal records, against a recorded intent, that the effect
+// was refused before its command, measurement or write started.
+func (x *liveExecutor) recordEffectRefusal(ctx context.Context, i *effectIntent, cause error) error {
+	return x.recordDispatchRefusal(ctx, i.Dispatch, cause)
+}
+
+func (x *liveExecutor) recordDispatchRefusal(ctx context.Context, d engine.Dispatch, cause error) error {
+	raw, _ := json.Marshal(effectRefusal{Intent: effectKey(d), Detail: cause.Error()})
+	return x.daemon.store.RecordEffect(ctx, effectKey(d)+"/refused-before-exec", d.TaskID, "observed", raw)
+}
+
+func (d *Daemon) hasRefusedBeforeExec(ctx context.Context, dispatch engine.Dispatch) bool {
+	if _, e := d.store.GetMarker(ctx, effectKey(dispatch)+"/result"); e == nil {
+		return false
+	}
+	raw, e := d.store.GetMarker(ctx, effectKey(dispatch)+"/refused-before-exec")
 	if e != nil {
 		return false
 	}
-	var intent effectIntent
-	if decodeEffect(raw, &intent) != nil {
+	var refusal effectRefusal
+	return decodeEffect(raw, &refusal) == nil && refusal.Intent == effectKey(dispatch) && d.effectNonExecution(ctx, dispatch)
+}
+
+// effectNonExecution reports positive evidence that a dispatch's effect never
+// ran: its intent was recorded and the effect either never reached its
+// launch boundary or was refused before anything started.
+func (d *Daemon) effectNonExecution(ctx context.Context, dispatch engine.Dispatch) bool {
+	raw, e := d.store.GetMarker(ctx, effectKey(dispatch)+"/intent")
+	hasIntent := e == nil
+	if hasIntent {
+		var intent effectIntent
+		if decodeEffect(raw, &intent) != nil {
+			return false
+		}
+		expected, _ := json.Marshal(dispatch)
+		recorded, _ := json.Marshal(intent.Dispatch)
+		if string(expected) != string(recorded) {
+			return false
+		}
+	} else if !errors.Is(e, sql.ErrNoRows) {
 		return false
 	}
-	expected, _ := json.Marshal(dispatch)
-	recorded, _ := json.Marshal(intent.Dispatch)
-	if string(expected) != string(recorded) {
+	if raw, e = d.store.GetMarker(ctx, effectKey(dispatch)+"/refused-before-exec"); e == nil {
+		var refusal effectRefusal
+		if decodeEffect(raw, &refusal) == nil && refusal.Intent == effectKey(dispatch) {
+			return true
+		}
+	}
+	if !hasIntent {
 		return false
 	}
 	_, e = d.store.GetMarker(ctx, effectKey(dispatch)+"/started")

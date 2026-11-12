@@ -61,7 +61,10 @@ func routeProphet(ctx context.Context, c Config, health func(context.Context) ([
 	if budget < 0 {
 		budget = 0
 	}
-	attempts := 0
+	// attempts names each launch; failovers counts those that spend the
+	// budget: a binding the bridge refused before its provider ran spends
+	// none, as in the workflow (FAE-RT-010).
+	attempts, failovers := 0, 0
 	var last error
 	for _, route := range routes {
 		if err = ctx.Err(); err != nil {
@@ -81,21 +84,42 @@ func routeProphet(ctx context.Context, c Config, health func(context.Context) ([
 		if !eligible {
 			continue
 		}
-		a := run(ctx, route, attempts)
-		attempts++
-		runErr := a.err
-		if runErr == nil {
-			runErr = workflow.ValidateArtifact(json.RawMessage(prophetSchema), a.collected.Output)
-			var answer ProphetAnswer
-			if runErr == nil {
-				runErr = decode(a.collected.Output, &answer)
-			}
-			if runErr == nil && (len(a.collected.Output) > 1<<20 || answer.Reply == "" || len(answer.Reply) > 65536 || len(answer.Proposals) > 32 || len(answer.Information) > 65536 || len(answer.Context) > 65536) {
-				runErr = errors.New("invalid bounded Prophet response")
+		// FAE-RT-004, as in the workflow: a provider that never acknowledged
+		// the prompt is relaunched on the same route, charging nothing, up to
+		// the agent-start bound, each start after confirmed retirement. The
+		// start that exhausts the bound charges the binding Unavailable and
+		// fails over.
+		var a prophetAttempt
+		var runErr error
+		notStarted, exhausted := false, false
+		for starts := 1; ; starts++ {
+			a = run(ctx, route, attempts)
+			attempts++
+			runErr = prophetAnswerError(a)
+			var refusal *agentruntime.BridgeRefusal
+			notStarted = errors.As(runErr, &refusal) && refusal.Class == agentruntime.ProviderNotStarted
+			exhausted = notStarted && starts >= engine.AgentStartAttempts
+			if !notStarted || exhausted || !a.cleanupOK || !a.collected.ProcessesRetired || ctx.Err() != nil {
+				break
 			}
 		}
 		observed := true
-		if !a.collected.NonExecution {
+		// A turn the bridge refused before it launched the provider (its
+		// binding included) is local, like a non-execution failure: it
+		// charges no binding.
+		var refusal *agentruntime.BridgeRefusal
+		local := errors.As(runErr, &refusal) && refusal.BeforeProvider()
+		if !local || refusal.Class != agentruntime.RefusedBinding {
+			failovers++
+		}
+		switch {
+		case notStarted:
+			if exhausted && a.cleanupOK && a.collected.ProcessesRetired {
+				e = observe(ctx, route, attempts-1, providerhealth.Unavailable)
+				observed = e == nil
+				runErr = errors.Join(runErr, e)
+			}
+		case !a.collected.NonExecution && !local:
 			var turnError *agentruntime.TurnError
 			stalled := errors.As(runErr, &turnError) && turnError.Class == "stalled"
 			outcome := providerhealth.Classify(a.collected.LogDirectory, runErr == nil, errors.Is(runErr, context.DeadlineExceeded) || stalled)
@@ -110,11 +134,52 @@ func routeProphet(ctx context.Context, c Config, health func(context.Context) ([
 			return a.collected.Output, nil
 		}
 		last = runErr
-		if !CanFailoverProphet(observed, a.cleanupOK && a.collected.ProcessesRetired, attempts <= budget) {
+		if !CanFailoverProphet(observed, a.cleanupOK && a.collected.ProcessesRetired, failovers <= budget) {
 			return nil, last
 		}
 	}
 	return nil, errors.Join(last, errors.New("Prophet all-routes-unavailable; submit a new operator turn after recovery"))
+}
+
+// prophetAnswerError is a Prophet launch's failure: its run error, else a
+// reply that fails the schema or the reply bounds.
+func prophetAnswerError(a prophetAttempt) error {
+	if a.err != nil {
+		return a.err
+	}
+	if err := workflow.ValidateArtifact(json.RawMessage(prophetSchema), a.collected.Output); err != nil {
+		return err
+	}
+	var answer ProphetAnswer
+	if err := decode(a.collected.Output, &answer); err != nil {
+		return err
+	}
+	if len(a.collected.Output) > 1<<20 || answer.Reply == "" || len(answer.Reply) > 65536 || len(answer.Proposals) > 32 || len(answer.Information) > 65536 || len(answer.Context) > 65536 {
+		return errors.New("invalid bounded Prophet response")
+	}
+	return nil
+}
+
+func (d *Daemon) credentialIdentityForRoute(route workflow.Binding) string {
+	if d != nil && d.live != nil && d.live.guard != nil {
+		return d.live.guard.resolveCredentialIdentity(engine.Session{Route: route})
+	}
+	if d != nil && d.config.Live != nil && len(d.config.Live.Environment) > 0 {
+		env := d.config.Live.Environment
+		prov := strings.ToUpper(strings.TrimSpace(route.Provider))
+		if prov != "" {
+			if v := strings.TrimSpace(env["FAE_CREDENTIAL_"+prov]); v != "" {
+				return v
+			}
+		}
+		if v := strings.TrimSpace(env["FAE_CREDENTIAL_IDENTITY"]); v != "" {
+			return v
+		}
+		if v := strings.TrimSpace(env["CREDENTIAL_IDENTITY"]); v != "" {
+			return v
+		}
+	}
+	return "default"
 }
 
 func (d *Daemon) runProphet(ctx context.Context, task, id string, brief json.RawMessage) (json.RawMessage, error) {
@@ -132,7 +197,7 @@ func (d *Daemon) runProphet(ctx context.Context, task, id string, brief json.Raw
 			sid = fmt.Sprintf("%s-route-%d", id, attempt)
 		}
 		dispatch := engine.Dispatch{ID: sid, TaskID: task, Config: workflow.Stage{Primitive: workflow.Review, Weight: 1}}
-		session := engine.Session{ID: sid, Role: "prophet"}
+		session := engine.Session{ID: sid, Role: "prophet", Route: route, CredentialIdentity: d.credentialIdentityForRoute(route), TaskID: "prophet:" + sid, Admitted: time.Now().UTC()}
 		release, err := x.guard.Acquire(ctx, dispatch, execution.Binding{Worktree: dir, Document: workflow.Document{}}, session)
 		if err != nil {
 			return prophetAttempt{err: err, collected: agentruntime.Collected{NonExecution: true, ProcessesRetired: true}, cleanupOK: true}
@@ -152,8 +217,8 @@ func (d *Daemon) runProphet(ctx context.Context, task, id string, brief json.Raw
 		if attempt > 0 {
 			sid = fmt.Sprintf("%s-route-%d", id, attempt)
 		}
-		d.mu.Lock()
-		defer d.mu.Unlock()
+		// One plane transaction, which orders concurrent observations of a
+		// route itself; it touches no writer state, so it takes no d.mu.
 		err := d.store.ObserveProvider(ctx, controlplane.ProviderObservation{ID: sid, TaskID: task, Provider: route.Provider, Model: route.Model, Outcome: outcome, At: time.Now().UTC()})
 		if err == nil {
 			d.notifyEvents()

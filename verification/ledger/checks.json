@@ -1,0 +1,1310 @@
+[
+  {
+    "id": "check:validator-references",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "\"schema_version\", \"must be 1 or 2\"",
+        "\"id\", \"required\"",
+        "\"start\", \"unknown stage\"",
+        "\"stages\", \"required\"",
+        "\"roles\", \"required\"",
+        "\"artifacts\", \"required\"",
+        "p, \"empty role name\"",
+        "p, \"instructions and briefs required\"",
+        "p+\".cap\", \"positive or -1 required\"",
+        "p+\".scope\", \"unknown scope\"",
+        "p+\".routes\", \"required\"",
+        "fmt.Sprintf(\"%s.routes[%d]\", p, i), \"provider and model required\"",
+        "p+\".routes\", \"unknown effort\"",
+        "fmt.Sprintf(\"%s.routes[%d]\", p, i), \"effort \"+b.Effort+\" is not supported by provider \"+b.Provider",
+        "p+\".outputs\", \"unknown artifact \"+a",
+        "p+\".profile.allowed\", \"unknown capability \"+c",
+        "\"artifacts.\"+name, \"name, positive version and JSON schema required\"",
+        "\"artifacts.\"+name+\".schema\", err.Error()",
+        "p, \"unknown endpoint\"",
+        "p+\".phase\", \"unknown phase\"",
+        "p+\".kind\", \"escalation kind must be an Appendix B kind on an Escalate stage\"",
+        "p, \"reserved or empty stage name\"",
+        "p+\".primitive\", \"unknown primitive\"",
+        "p+\".role\", \"unknown role\"",
+        "p+\".output\", \"required\"",
+        "p+\".output\", \"output not permitted by role\"",
+        "p+\".output\", \"unknown artifact\"",
+        "ip, \"unknown artifact, wrong version, or missing name\"",
+        "ip, \"unknown producer stage\"",
+        "p+\".subject\", \"unknown stage \"+s.Subject",
+        "p+\".count\", \"review count must be between 0 and 16\"",
+        "\"molecule_concurrency.max_running\", \"must be -1 (unbounded) or 1..1000000\"",
+        "path, \"unknown stage \"+x.Stage",
+        "path, \"unknown artifact type \"+x.Type"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-001",
+      "FAE-WF-003",
+      "FAE-WF-004",
+      "FAE-WF-040",
+      "FAE-WF-041",
+      "FAE-WF-090",
+      "FAE-WF-030",
+      "FAE-WF-050"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestDefaultRoleSafetyPolicy",
+        "TestStrictParse",
+        "TestStoredClaudeMinimalRevisionParsesAndWritesRefuseIt"
+      ],
+      "note": "the shipped default and its Local projection validate"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus",
+        "TestValidationMutationCorpus",
+        "TestParseNamesEveryErrorPath"
+      ],
+      "note": "one mutation per rule, refused at the rule path"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals). The route-effort rule (Claude has no minimal effort) is a write rule: `RouteEffortIssues`, applied by `ValidateWrite`, WorkflowInstall and `workflow validate`, not by `Validate`, so a stored revision that breaks it still loads."
+  },
+  {
+    "id": "check:validator-briefs",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "p, \"brief key must be default or a declared phase of a stage using this role\"",
+        "p, \"empty brief template\"",
+        "p+\".role\", fmt.Sprintf(\"role %s has no brief template for phase %s\", role, phaseName(s.Phase))"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-040",
+      "FAE-WF-043"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestDefaultContentRunsLiveWithoutPatches"
+      ],
+      "note": "every default stage renders a phase or default brief"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus"
+      ],
+      "note": "unknown brief key, empty template and missing phase template refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals)."
+  },
+  {
+    "id": "check:validator-graph",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "p, \"kernel edges cannot be overridden\"",
+        "p, \"kernel destination cannot be overridden\"",
+        "\"stages.\"+id, \"unreachable\"",
+        "\"stages.\"+n, \"cycle avoids bounded Loop\"",
+        "\"stages.\"+id, \"no path to Done\"",
+        "\"stages.\"+id, \"no success route\"",
+        "\"stages.\"+id, \"ambiguous success route: \"+strings.Join(success, \", \")",
+        "p+\".max_iterations\", \"finite positive cap required\"",
+        "p+\".default\", \"default arm must be an edge\"",
+        "fmt.Sprintf(\"%s.cases[%d]\", p, i), \"invalid expression or missing edge\"",
+        "p+\".failure\", \"failure route must be an edge\"",
+        "p+\".reverify\", \"must be an outgoing bounded Loop of a Merge or Integrate stage\"",
+        "\"limits.attempts\", \"must be positive\"",
+        "\"limits.test_runs\", \"must be positive\"",
+        "\"limits.scope_widens\", \"must be positive\""
+      ]
+    },
+    "requirements": [
+      "FAE-WF-021",
+      "FAE-WF-074",
+      "FAE-WF-090",
+      "FAE-WF-096"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestGeneratedKernelAndBoundedCycles",
+        "TestFanOutBranchesFromAndChangeProducingValidation",
+        "TestEngineFanOutBranchesFromEmptyAndDynamicExpansion",
+        "TestEngineParallelFanOutPrepareAndCompleteBranch",
+        "TestBranchWorktreesForkCommitScopeAndOrderedFanInIntegration"
+      ],
+      "note": "generated bounded graphs validate"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus",
+        "TestValidationMutationCorpus",
+        "TestGeneratedKernelAndBoundedCycles",
+        "TestFanOutBranchesFromAndChangeProducingValidation"
+      ],
+      "note": "kernel overrides, unreachable stages, unbounded cycles, dead ends, ambiguous routes and missing arms refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads",
+        "TestDriveParallelFanOutAndBranchWorktrees",
+        "TestFanOutDaemonRestartInsideBranch"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals)."
+  },
+  {
+    "id": "check:validator-evidence-gates",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "p+\".expression\", \"required\"",
+        "p+\".expression\", err.Error()",
+        "p+\".expression\", \"must assert positive evidence on every passing arm\"",
+        "p+\".expression\", \"test gate must assert exit zero and executed_count >= 1\"",
+        "p+\".expression\", \"test-run gate must assert executed_count >= 1 for \"+sel.label()"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-060",
+      "FAE-WF-062",
+      "FAE-WF-095",
+      "FAE-ROB-033"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestDefaultFloorMutationCorpus",
+        "TestCheckCommandValidationAndNonVacuousGates",
+        "TestParseCheckOutputJSONAndLines",
+        "TestEngineCheckCommandAndGateEnforcement",
+        "TestCheckCommandWritesExemptionOverlapRefusalAndNonCommit"
+      ],
+      "note": "default gates assert positive evidence and executed counts"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus",
+        "TestValidationMutationCorpus",
+        "TestDefaultFloorMutationCorpus",
+        "TestCheckCommandValidationAndNonVacuousGates"
+      ],
+      "note": "gates that could pass on empty evidence or zero executed tests refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads",
+        "TestApplyLandingTestShapeAndTargetPolicyDocumentChecks"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals)."
+  },
+  {
+    "id": "check:validator-protected-floors",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "\"stages.\"+q.node, \"protected effect has a path without independent review and passing test gate\"",
+        "p+\".role\", \"reviewer must differ from every change producer\"",
+        "p+\".reviewers\", \"unknown or change-producing reviewer\"",
+        "p+\".reviewers\", \"output not permitted by reviewer role\"",
+        "p, \"external effect requires Normal-only mode, pins and idempotence key\"",
+        "p, \"command vector, positive weight and timeout required\"",
+        "p+\".test_shape\", \"declared test shape requires a test-run HostCommand of a supported form (\"+strings.Join(TestShapes, \", \")+\") matching its command\""
+      ]
+    },
+    "requirements": [
+      "FAE-WF-033",
+      "FAE-WF-035",
+      "FAE-WF-036",
+      "FAE-WF-071",
+      "FAE-WF-072"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestShippedNormalSubWorkflow"
+      ],
+      "note": "the shipped default passes every protected-effect path check, including its Normal external effects"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus",
+        "TestValidationMutationCorpus",
+        "TestDefaultFloorMutationCorpus"
+      ],
+      "note": "a commit or external effect reachable without independent review and a passing test gate, self-review and unpinned effects refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals)."
+  },
+  {
+    "id": "check:validator-test-first",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/red.go",
+      "markers": [
+        "\"stages.\" + id + \".phase\", \"code-bearing change producer must declare test-first or implement phase\"",
+        "\"stages.\" + x.node, \"freeze requires a passing declared RED gate\"",
+        "\"stages.\" + x.node, \"implementation path lacks frozen RED\"",
+        "\"stages.\" + x.node, \"commit path lacks frozen RED comparison\"",
+        "\"stages.\" + x.node, \"commit path lacks a passing run of the frozen RED test\""
+      ]
+    },
+    "requirements": [
+      "FAE-WF-073"
+    ],
+    "production": {
+      "path": "workflow/red.go",
+      "function": "validateRedPaths"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestDefaultFloorMutationCorpus"
+      ],
+      "note": "the code-bearing default proves the RED sequence on every implementation path"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus",
+        "TestDefaultFloorMutationCorpus"
+      ],
+      "note": "missing RED gate, frozen RED, comparison or passing RED run refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals). The default is code-bearing; only workflows declaring code_bearing are checked."
+  },
+  {
+    "id": "check:validator-requests",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/requests.go",
+      "markers": [
+        "\"requests.from\", \"required\"",
+        "path, \"must name an AgentTurn stage\"",
+        "path, \"output artifact must declare a request field\"",
+        "path, \"requesting stage needs an edge to the judge\"",
+        "\"requests.judge\", \"must name an AgentTurn stage other than the requesting stages\"",
+        "\"requests.judge\", \"judge role must differ from every requesting and change-producing role\"",
+        "\"requests.judge\", \"judge artifact must declare a boolean approved field\"",
+        "\"requests.rework_cap\", \"a RED rework route needs a positive cap\"",
+        "\"requests.rework_cap\", \"requires a RED rework route\"",
+        "\"requests\", \"judge needs an edge to route \"+r",
+        "\"requests.judge\", \"judge routes only to the widen and rework routes, not \"+to"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-078"
+    ],
+    "production": {
+      "path": "workflow/requests.go",
+      "function": "validateRequests"
+    },
+    "positive": {
+      "tests": [
+        "TestRequestPolicyRuleCorpus",
+        "TestRequestValidation",
+        "TestScopeWidenApprovedCarriedThroughRestart"
+      ],
+      "note": "the shipped default's request policy (requests from implement, judged by an independent oracle turn, widen and RED-rework routes, rework cap 3) and the engine tests' policy validate; under it an approved widen is judged, counted once and carried into every later dispatch across a restart"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestRequestPolicyRuleCorpus",
+        "TestRequestValidation"
+      ],
+      "note": "no requesting stage, a requester that is not an AgentTurn, whose artifact declares no request or that has no edge to the judge, a judge that is a requester, shares a requesting or change-producing role or declares no boolean approved, a RED rework route without a positive cap or a cap without the route, and a judge missing an edge to a route or routing elsewhere are refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads"
+      ],
+      "path": "Start -> RPC WorkflowInstall of the default document, which declares a request policy -> workflow.Parse -> workflow.Validate -> validateRequests; accept path"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the accept path of the default's policy is shown. These rules check the policy's shape: that a judged request is durable, counted and carried forward is the engine's (check:scope-widen), not this check's."
+  },
+  {
+    "id": "check:shim-scope-and-lease",
+    "kind": "native-check",
+    "category": "shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "\"target outside own worktree: \" + name",
+        "\"empty command\"",
+        "\"code role, own worktree, a heavy lease and non-nested dispatch are required\"",
+        "\"unsupported build wrapper requires a scoped broker adapter (including version probes)\"",
+        "\"unsupported Go verb; probes also require broker admission\"",
+        "\"flags must precede package targets\"",
+        "\"missing parallelism value\"",
+        "\"missing output path\"",
+        "\"unsupported Go flag: \" + a",
+        "\"target must be an explicit own-worktree path\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-011",
+      "FAE-HOST-013",
+      "FAE-HOST-014"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "Prepare"
+    },
+    "positive": {
+      "tests": [
+        "TestShimRefusalCorpus",
+        "TestParallelismClampAndActualInvocation"
+      ],
+      "note": "a leased, scoped targeted test is admitted and clamped"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestShimRefusalCorpus",
+        "TestPolicyRefusalMatrix",
+        "TestOutputAndSymlinkScope"
+      ],
+      "note": "each refusal reason fired by one command vector"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start -> RPC Admit -> drive -> liveExecutor.Execute HostCommand -> effects.Broker.Run -> commandshim.Policy.Prepare (accept path for the default go test and gofmt vectors)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is the accept path; refusals are unit-only."
+  },
+  {
+    "id": "check:shim-vcs-local",
+    "kind": "native-check",
+    "category": "shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "\"VCS commands in role command paths are disabled in Local mode; use the dedicated VCS broker\"",
+        "\"use the dedicated VCS broker\""
+      ]
+    },
+    "requirements": [
+      "FAE-MODE-002"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "Prepare"
+    },
+    "positive": {
+      "tests": [
+        "TestShimRefusalCorpus"
+      ],
+      "note": "positive control: a scoped go test vector is admitted"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestShimRefusalCorpus",
+        "TestPolicyRefusalMatrix",
+        "TestNestedWrappersActuallyRefuse"
+      ],
+      "note": "git push and git remote refused in Local and non-Local policies"
+    },
+    "native": {
+      "tests": [
+        "TestLiveHostCommandShimPolicyRefusals"
+      ],
+      "path": "Start -> drive -> dispatchTask -> liveExecutor.Execute (HostCommand of an installed workflow) -> policyFor -> authorizeCommand -> effects.Broker.Run -> commandshim.Policy.Prepare refuses before lookup or exec; each refusal is recorded as a refused-before-launch failure that charges nothing, and the repeated refusal escalates SameGate with no evidence and no output (git status in a Local task)"
+    },
+    "status": "native-evidenced",
+    "limits": "The broker always prepares with Local true, so only the Local refusal is reached natively; \"use the dedicated VCS broker\" (non-Local) is unit-only. Role sessions without a fae broker get denial wrappers instead (check:role-shim-denials). The refusal exit code is the shared 77."
+  },
+  {
+    "id": "check:shim-formatter-bounds",
+    "kind": "native-check",
+    "category": "shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "\"unsupported formatter flag\"",
+        "\"formatter requires explicit per-file targets\"",
+        "\"formatter requires a regular per-file target; use item-scoped formatting\"",
+        "\"formatter tree exceeds 10000 entries; use item-scoped formatting\"",
+        "\"symlink in formatter tree; use item-scoped formatting\"",
+        "\"formatter tree exceeds 64 MiB; use item-scoped formatting\"",
+        "path + \" exceeds 1 MiB; use item-scoped formatting\"",
+        "path + \" exceeds 30k lines; use item-scoped formatting\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-012"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "FormatTargets"
+    },
+    "positive": {
+      "tests": [
+        "TestShimRefusalCorpus",
+        "TestFormatterBounds"
+      ],
+      "note": "small explicit files are formatted"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestShimRefusalCorpus",
+        "TestFormatterBounds"
+      ],
+      "note": "oversized, over-long, irregular, symlinked and oversized-tree targets refused naming item-scoped formatting"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start -> drive -> format HostCommand (gofmt -l .) -> effects.Broker.Run -> commandshim.Policy.Prepare -> FormatTargets/CheckFormatFile (accept path)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is the accept path; refusals are unit-only."
+  },
+  {
+    "id": "check:shim-ram-output",
+    "kind": "native-check",
+    "category": "shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "\"RAM-backed temporary build output: \" + dest"
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-011",
+      "FAE-HOST-020"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "Prepare"
+    },
+    "positive": {
+      "tests": [
+        "TestShimRefusalCorpus"
+      ],
+      "note": "an on-disk output path is admitted"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestShimRefusalCorpus",
+        "TestOutputAndSymlinkScope"
+      ],
+      "note": "a build output under a RAM-backed root refused"
+    },
+    "native": {
+      "tests": [
+        "TestLiveHostCommandShimPolicyRefusals"
+      ],
+      "path": "Start -> drive -> dispatchTask -> liveExecutor.Execute (HostCommand of an installed workflow) -> policyFor -> authorizeCommand -> effects.Broker.Run -> commandshim.Policy.Prepare refuses before lookup or exec; each refusal is recorded as a refused-before-launch failure that charges nothing, and the repeated refusal escalates SameGate with no evidence and no output (go build -o shim-output . with the fixture worktree under /var/tmp, a broker RAM root)"
+    },
+    "status": "native-evidenced",
+    "limits": "Natively reached because daemon fixtures live under /var/tmp, which the broker counts as RAM-backed; an output under the worktree on another filesystem is admitted."
+  },
+  {
+    "id": "check:shim-accounted-go",
+    "kind": "native-check",
+    "category": "shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "\"unsupported nested go flag \" + a + \"; nested calls may pass only the go build, test, vet and list flags the policy lists\"",
+        "\"nested go -\" + name + \" passes \" + bad + \", which may run another program or write a file; nested calls may pass only listed compiler, linker and assembler flags\"",
+        "\"nested go -\" + name + \"=\" + value + \" is refused; nested builds use the gc compiler and install no shared libraries\"",
+        "\"nested go with \" + kv + \": nested go runs with the run's GOROOT mirror, GOTOOLCHAIN=local and GOENV=off, so the go its tests start meets the run's wrappers and no Go env file sets flags the policy never sees\"",
+        "\"nested go with \" + key + \"=\" + d + \": \" + why + \" outside the run's worktree and scratch directory\"",
+        "\"nested go with \" + kv + \": \" + key + \" may name a program go runs or that program's flags, or is a Go setting the policy does not know; nested calls keep the run's own value or leave it unset\"",
+        "\"nested go with \" + kv + \": more threads than the call's clamp, -p=\" + strconv.Itoa(threads) + \"; nested calls keep the run's own value or set at most the clamp\"",
+        "\"nested go test -cpu \" + list + \" runs tests at more threads than the call's clamp, -p=\" + strconv.Itoa(threads) + \"; nested calls may list only values from 1 to the clamp\"",
+        "\"nested go test passes \" + a + \" to the test binary after -args, unchecked; nested calls may pass there only test binary flags that write no file (give a profile or output flag before -args, where its path is checked)\"",
+        "\"nested go would run \" + found + \" for \" + key + \", a program the call's PATH chose: the run's PATH has no \" + name + \" to run instead; nested calls run only the run's own programs go finds by name\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-014",
+      "FAE-HOST-020",
+      "FAE-HOST-015"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "prepareAccountedGo"
+    },
+    "positive": {
+      "tests": [
+        "TestAccountedGoFlagsAreAnAllowlist",
+        "TestAccountedGoRunsWithTheRunsGoEnvironment",
+        "TestBrokerAccountsGoAndGofmtStartedByARealGoTest",
+        "TestAccountedGoEnvironmentIsAnAllowlist",
+        "TestAccountedGoClampsCPUTestBinaryFlagsAndPatterns",
+        "TestNestedRunThatSelectsEveryTestIsAWholeSuite",
+        "TestAccountedGoPinsTheProgramsGoFindsByName",
+        "TestBrokerNestedCgoBuildRunsTheRunsCompiler"
+      ],
+      "note": "listed go flags, in-scope paths, listed compiler/linker/assembler flags, the run's own GOROOT mirror, toolchain and build locations, freely settable Go environment keys and the run's own values of the others are admitted and clamped; a real Go test's nested go test runs with -test.parallel=2; reserved patterns (all, std, cmd, work, tool) and a -run that selects every test are clamped as whole suites; the C compiler, C++ and Fortran compilers and pkg-config go finds by name are pinned to the run's own, so a real nested cgo build runs the host's gcc, not one a test put first on its PATH"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestShimRefusalCorpus",
+        "TestAccountedGoEnvUnderTheRunsMirror",
+        "TestAccountedGoFlagsAreAnAllowlist",
+        "TestAccountedGoRunsWithTheRunsGoEnvironment",
+        "TestAccountedGoEnvironmentIsAnAllowlist",
+        "TestAccountedGoClampsCPUTestBinaryFlagsAndPatterns",
+        "TestBrokerAccountedGoRefusesEnvironmentAndTestBinaryFlags",
+        "TestAccountedGoPinsTheProgramsGoFindsByName"
+      ],
+      "note": "an unlisted go flag (argument or GOFLAGS), a tool flag that runs a program or writes a file (the linker's -I and -r included), -compiler other than gc or -buildmode=shared, a foreign GOROOT, GOTOOLCHAIN or GOENV, a Go build location under a RAM-backed root outside the scope, a changed program-naming or unknown Go environment key (CC, CGO_*FLAGS, PKG_CONFIG, ...), GOMAXPROCS or a -cpu value above the call's clamp, a -test. output or unknown flag after -args, and a cgo program (C compiler, pkg-config, ...) go would find by name on the call's PATH where the run's PATH has none are refused with 77"
+    },
+    "native": {
+      "tests": [
+        "TestLiveAccountModeRefusesNestedGoOutsideThePolicy"
+      ],
+      "path": "Start(live, nested_commands: account) -> Admit RPC -> drive -> liveExecutor.Execute HostCommand (the shipped workflow's go test) -> effects.Broker.Run installs the accounting wrappers and the sealed GOROOT mirror -> a workspace test's nested go vet -toolexec, CC=... go vet, go test -cpu=64 and -args -test.gocoverdir=/dev/shm reach the wrapper -> commandshim.PrepareAccounted -> prepareAccountedGo/accountedGoEnv refuse each with 77 and its reason; the task reaches Done and the run's nested-commands record in Dolt holds every call"
+    },
+    "status": "native-evidenced",
+    "limits": "Through the daemon, four refusal families are shown (a program-running flag, a program-naming environment key, a -cpu above the clamp and a writing test-binary flag); the rest are unit and broker tests. A lexical policy over the call's arguments and environment, not containment: a test can still run the toolchain by absolute path or a PATH it chooses."
+  },
+  {
+    "id": "check:shim-accounted-nested",
+    "kind": "native-check",
+    "category": "shim-refusal",
+    "check": {
+      "source": "commandshim/shim.go",
+      "markers": [
+        "\"nested go flag -\" + name + \" runs other programs or leaves the run's directories\"",
+        "\"nested build, test or format outside the run's worktree and scratch directory: \" + p.CWD",
+        "\"nested go env -w and -u change the user's Go environment; nested calls may only read it\"",
+        "\"unsupported nested Go verb \" + strconv.Quote(verb) + \"; nested calls may run go build, test, vet, list, version and env\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-014",
+      "FAE-HOST-011",
+      "FAE-MODE-002"
+    ],
+    "production": {
+      "path": "commandshim/shim.go",
+      "function": "PrepareAccounted"
+    },
+    "positive": {
+      "tests": [
+        "TestAccountedNestedCallsPassTheShimPolicy",
+        "TestBrokerAccountedNestedCallsAreClampedAndConfined",
+        "TestAccountedGitProtectsTheRunsRepository"
+      ],
+      "note": "an account-mode run's nested go is clamped (whole suite 1, otherwise 2) and runs; go version/env and scoped gofmt run as called; nested git (PrepareAccounted's dispatch to accounted_git.go) reads the run's own repository with --no-optional-locks and changes a test's own repository in the scratch or a temporary directory as called"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestShimRefusalCorpus",
+        "TestAccountedNestedCallsPassTheShimPolicy",
+        "TestAccountedGitProtectsTheRunsRepository",
+        "TestAccountedGitProtectsRepositoriesOutsideTheRun",
+        "TestBrokerAccountedGitCannotChangeTheOperatorsRepository"
+      ],
+      "note": "tool-running and directory-changing go flags (arguments or GOFLAGS), a build or format outside the worktree and scratch directory, go env -w/-u and other go verbs are refused with 77; nested git's refusals live in accounted_git.go (its own census in TestAccountedGitProtectsTheRunsRepository): a push or remote change (78 for a Local task, 77 otherwise), any write to the run's own repository or one outside the run's and the temporary directories, injected configuration on a read, aliases and unknown subcommands, mail and server commands, and options that have git run a program"
+    },
+    "native": {
+      "tests": [
+        "TestLiveAccountModeRecordsNestedCommandsDurably",
+        "TestLiveAccountModeNestedGitCannotChangeTheWorkspace"
+      ],
+      "path": "Start(live, nested_commands account) -> liveExecutor.Execute HostCommand -> effects.Broker.Run -> commandshim.InstallAccounting wrapper -> fae heavy-op run --shim-policy (a fae built from the module) -> RunShim -> PrepareAccounted (git --version and git status accept paths; the Local task's git push exits 78 in RunShim first; a workspace branch, an integration-tip update-ref and a remote configuration from the task worktree are refused in accounted_git.go, 77, 77 and 78, while the test's own TMPDIR repository is committed)"
+    },
+    "status": "native-evidenced",
+    "limits": "Natively only git; the go and gofmt branches and the other refusals are unit and broker tests through the wrappers. A policy over what reaches the wrappers, asking the real git where the call's repository is; not containment: programs git starts (hooks in a test's own repository) run the real git."
+  },
+  {
+    "id": "check:host-admission",
+    "kind": "native-check",
+    "category": "host-guard-gate",
+    "check": {
+      "source": "hostguard/guard.go",
+      "markers": [
+        "\"LeaseLedger\"",
+        "\"Configuration\"",
+        "\"HostHardLimit\"",
+        "\"PaneLimit\"",
+        "\"MemoryReservation\"",
+        "\"HostPressure\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-002",
+      "FAE-HOST-003",
+      "FAE-HOST-004",
+      "FAE-HOST-006"
+    ],
+    "production": {
+      "path": "hostguard/guard.go",
+      "function": "admit"
+    },
+    "positive": {
+      "tests": [
+        "TestHostGateReasonCorpus",
+        "TestThresholds",
+        "TestHardReservationAndGaps"
+      ],
+      "note": "a healthy host is admitted; exactly-at-threshold values proceed"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestHostGateReasonCorpus",
+        "TestThresholds",
+        "TestHardReservationAndGaps",
+        "TestBadConfiguration"
+      ],
+      "note": "each refusal reason (ledger, configuration, hard limit, panes, reservation, pressure) driven by one sample"
+    },
+    "native": {
+      "tests": [
+        "TestDynamicHostThresholdsAffectAdmission",
+        "TestLiveAdmissionHardLimitRaisesAlert"
+      ],
+      "path": "Start -> RPC RuntimeConfig -> live admission Acquire (called directly with the real plane) -> hostguard admission refuses HostPressure under a stricter threshold and admits under a relaxed one; the hard-limit test refuses HostHardLimit and alerts"
+    },
+    "status": "native-evidenced",
+    "limits": "Native tests call the daemon admission method directly rather than through a dispatched turn."
+  },
+  {
+    "id": "check:host-pressure-hold",
+    "kind": "native-check",
+    "category": "host-guard-gate",
+    "check": {
+      "source": "hostguard/hold.go",
+      "markers": [
+        "\"HostPressure\"",
+        "\"HostPressureHold\"",
+        "\"PressureHoldLifted\"",
+        "\"IOPressure\"",
+        "\"IOPressureHold\"",
+        "\"IOGateClear\"",
+        "\"TelemetryGap\""
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-004",
+      "FAE-HOST-005",
+      "FAE-HOST-010"
+    ],
+    "production": {
+      "path": "hostguard/hold.go",
+      "function": "Record"
+    },
+    "positive": {
+      "tests": [
+        "TestHostGateReasonCorpus",
+        "TestPressureHoldReadingsUnderThirtySecondsDoNotLift",
+        "TestIOGateChainContinuity"
+      ],
+      "note": "two below-threshold readings 30 s apart lift a hold or clear the I/O gate; unknown telemetry proceeds with a gap"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestHostGateReasonCorpus",
+        "TestPressureHoldSecondReadingAboveThresholdKeepsHold",
+        "TestWaitBoundedDistinguishesWaitingFromRefused"
+      ],
+      "note": "pressure refuses and holds; an early second reading keeps the hold"
+    },
+    "native": {
+      "tests": [
+        "TestDynamicHostThresholdsAffectAdmission"
+      ],
+      "path": "Start -> live admission Acquire (called directly) -> pressure Hold.Record classifies the reading (HostPressure) before any lease"
+    },
+    "status": "native-evidenced",
+    "limits": "Daemon-level hold and I/O gate sequences are otherwise shown on the admission fixture without a started daemon."
+  },
+  {
+    "id": "check:corpus-validator-mutations",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestValidatorRuleCorpus",
+        "TestValidationMutationCorpus",
+        "TestDefaultFloorMutationCorpus"
+      ]
+    },
+    "requirements": [
+      "FAE-VER-004",
+      "FAE-WF-090"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestDefaultRoleSafetyPolicy"
+      ],
+      "note": "the valid default is the corpus base"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus",
+        "TestValidationMutationCorpus",
+        "TestDefaultFloorMutationCorpus"
+      ],
+      "note": "each kernel floor and rule violated one way per case, all refused"
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowGovernanceNativeRevisionsRetirementAndReads"
+      ],
+      "path": "Start -> RPC WorkflowValidate/WorkflowInstall -> workflow.Parse -> workflow.Validate; a valid document is accepted and a broken one (unknown start, zero attempts) refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Each rule fires in the unit corpus; through the daemon only the validator wiring is shown (accept path plus the unknown-start and zero-attempt refusals)."
+  },
+  {
+    "id": "check:corpus-generated-graphs",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestGeneratedKernelAndBoundedCycles",
+        "TestGeneratedDurableWorkflowParity10000",
+        "TestGeneratedWorkflowPropertiesFullLibrary"
+      ]
+    },
+    "requirements": [
+      "FAE-VER-003",
+      "FAE-WF-074",
+      "FAE-WF-090",
+      "FAE-ROB-018",
+      "FAE-WF-031"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestGeneratedKernelAndBoundedCycles",
+        "TestGeneratedDurableWorkflowParity10000",
+        "TestGeneratedWorkflowPropertiesFullLibrary"
+      ],
+      "note": "random bounded graphs validate; 10,000 generated chains reach their expected terminal state with resume parity; 10,000 random valid graphs over the full primitive library (AgentTurn, Gate, Branch, Loop, Review, HostCommand results, Freeze/Compare, HumanDecision, FanOut/FanIn, SubWorkflow, Escalate, protected VcsCommit/Integrate, ExternalEffect) with random outputs and host-command results, interrupted at random boundaries, terminate or park resumably, never run a stage without its inputs, never move a terminal task, audit every transition, pass gates only on evidence, respect the caps and reach the uninterrupted outcome; every generated history transition carries attempt >= 1 and a non-empty cause (ROB-018, engine history only)"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestGeneratedKernelAndBoundedCycles",
+        "TestGeneratedWorkflowPropertiesFullLibrary"
+      ],
+      "note": "removing any Loop cap from a generated graph is refused; in thousands of runs a random required input's recorded evidence is deleted and the stage about to run parks naming exactly that input instead of dispatching (WF-031)"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonGeneratedWorkflows"
+      ],
+      "path": "Start -> WorkflowInstall RPC -> workflow.Validate of eight generated AgentTurn chains with a closing gate -> Admit -> drive -> dispatchTask -> engine with the scripted executor: each reaches its generated Done or Escalated outcome with one dispatch per stage, audited transitions and evidence-reading gates"
+    },
+    "status": "native-evidenced",
+    "limits": "The full-library suite runs 10,000 cases by default and 2,500 under the race detector (scripts/test.sh adds a plain 10,000-case run). Engine-level with the scripted adapter; the daemon path is shown for generated AgentTurn chains only."
+  },
+  {
+    "id": "check:corpus-default-parity",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestDefaultWorkflowParityCorpus"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-080",
+      "FAE-WF-094",
+      "FAE-VER-003",
+      "FAE-MODE-002",
+      "FAE-MODE-003",
+      "FAE-WF-077",
+      "FAE-WF-084",
+      "FAE-EXT-012",
+      "FAE-EXT-013",
+      "FAE-EXT-003",
+      "FAE-EXT-004",
+      "FAE-EXT-006",
+      "FAE-EXT-010",
+      "FAE-EXT-014",
+      "FAE-EXT-020",
+      "FAE-PLAN-001",
+      "FAE-PLAN-002"
+    ],
+    "production": {
+      "path": "engine/engine.go",
+      "function": "PrepareWith"
+    },
+    "positive": {
+      "tests": [
+        "TestDefaultWorkflowParityCorpus"
+      ],
+      "note": "42 recorded runs of the shipped default (Local projection, unprojected content, Normal live and dry-run sub-workflow) replay to their recorded transition sequences and full gate results; every Branch arm of the shipped content and 19 escalation kinds are covered (CoordinatorVeto is documented unreachable), and 26 runs replay identically through the engine-driven simulator. Requirement support is engine-level replay of the shipped content: external-effect-outside-normal (a Local task's first Normal-only effect is refused, MODE-002), normal-dry-run (every intent recorded, DryRunComplete, MODE-003), oracle-red-test-blocker / oracle-production-blocker (verdict routing, WF-077), oracle-withholds-approval (no approval without zero blockers, WF-084), normal-review-remediation / normal-review-revision-cap (revision 2 on the same review, bounded, EXT-012), normal-merge-barrier / normal-live-delivery (Done only after merge, EXT-013)"
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestParityCorpusDetectsDivergence"
+      ],
+      "note": "swapped verdict arms or a dropped recorded transition make the replay diverge"
+    },
+    "native": {
+      "tests": [
+        "TestDaemonScriptedLifecycle",
+        "TestCrashMatrixEveryDurableBoundary"
+      ],
+      "path": "Start -> drive -> dispatchTask -> engine.PrepareWith for every stage of the shipped default (scripted happy path, the corpus's local-happy-path run); the crash matrix resumes the same pipeline at every durable boundary to the uninterrupted outcome"
+    },
+    "status": "native-evidenced",
+    "limits": "Engine-level replay with recorded results standing in for executors; the daemon drive, live executors and real Git/VCS effects are covered by the daemon tests, not by this corpus. CoordinatorVeto is never raised (no transition verifier exists)."
+  },
+  {
+    "id": "check:validator-cap-scope",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "\"roles.\"+name+\".cap_scope\", \"must be workflow, tree or task\""
+      ]
+    },
+    "requirements": [
+      "FAE-SCH-024"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestScopedRoleKeysShareTreeAndIsolateTask"
+      ],
+      "note": "Valid default configuration and the explicit scoped runtime/input behavior are exercised."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus"
+      ],
+      "note": "The exact rule has an individual invalid-value mutation in workflow/rule_corpus_test.go; host cap_scope and instance run_stats are refused."
+    },
+    "native": {
+      "tests": [
+        "TestTreeNativeValidatorScopes"
+      ],
+      "path": "Start -> authenticated WorkflowInstall -> workflow.Parse/ValidateWrite -> Validate; the test refuses host cap_scope and instance run_stats at their exact field paths and accepts tree cap_scope and task run_stats."
+    },
+    "status": "native-evidenced",
+    "limits": "The native test proves policy field acceptance/refusal before installing a workflow revision. Runtime scoped-cap scheduling and engine run_stats input behavior are checked separately by the cited positive tests; this entry does not claim every behavior of the requirement."
+  },
+  {
+    "id": "check:validator-run-stats",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "\"stages.\"+id+\".run_stats\", \"must be tree or task\""
+      ]
+    },
+    "requirements": [
+      "FAE-WF-120"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestValidatorRuleCorpus",
+        "TestRunStatsOnlyDeclaredStageGetsImmutableEngineInput"
+      ],
+      "note": "Valid default configuration and the explicit scoped runtime/input behavior are exercised."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus"
+      ],
+      "note": "The exact rule has an individual invalid-value mutation in workflow/rule_corpus_test.go; host cap_scope and instance run_stats are refused."
+    },
+    "native": {
+      "tests": [
+        "TestTreeNativeValidatorScopes"
+      ],
+      "path": "Start -> authenticated WorkflowInstall -> workflow.Parse/ValidateWrite -> Validate; the test refuses host cap_scope and instance run_stats at their exact field paths and accepts tree cap_scope and task run_stats."
+    },
+    "status": "native-evidenced",
+    "limits": "The native test proves policy field acceptance/refusal before installing a workflow revision. Runtime scoped-cap scheduling and engine run_stats input behavior are checked separately by the cited positive tests; this entry does not claim every behavior of the requirement."
+  },
+  {
+    "id": "check:corpus-fanin-write-output",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestNewFanInWriteRequiresListOutputButLegacyReadsRemain"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-096",
+      "FAE-WF-093"
+    ],
+    "production": {
+      "path": "workflow/fan_write.go",
+      "function": "JoinOutputIssues"
+    },
+    "positive": {
+      "tests": [
+        "TestNewFanInWriteRequiresListOutputButLegacyReadsRemain"
+      ],
+      "note": "Declared array output is accepted; legacy missing-output revisions still parse."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestNewFanInWriteRequiresListOutputButLegacyReadsRemain"
+      ],
+      "note": "Missing output and declared object output fail new-write validation; old Parse remains compatible."
+    },
+    "native": {
+      "tests": [
+        "TestFanInNewWritesRequireDeclaredListNative"
+      ],
+      "path": "Start -> authenticated WorkflowInstall -> ParseWrite -> ValidateWrite -> JoinOutputIssues; missing/object joins are refused and declared array join installs."
+    },
+    "status": "native-evidenced",
+    "limits": "Proves the new-write join type contract; branch output ambiguity is checked independently by validateFan and its existing mutation corpus. Does not claim every amended FanIn runtime behavior."
+  },
+  {
+    "id": "check:corpus-footprint-content",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestFootprintDerivedContentAndDeclaredFloor",
+        "TestMoleculeFootprintDistinctRolePerPathAndPinnedChild",
+        "TestFootprintExplicitZeroAndUnknownFieldsRemainRefused",
+        "TestWorkflowFootprintFailureRollsBackRevision",
+        "TestFootprintDiamondDAGAnalysisIsBounded",
+        "TestFootprintRepeatedPinnedChildUsesSharedCache"
+      ]
+    },
+    "requirements": [
+      "FAE-SCH-020"
+    ],
+    "production": {
+      "path": "workflow/footprint.go",
+      "function": "DeriveFootprint"
+    },
+    "positive": {
+      "tests": [
+        "TestFootprintDerivedContentAndDeclaredFloor",
+        "TestMoleculeFootprintDistinctRolePerPathAndPinnedChild",
+        "TestFootprintExplicitZeroAndUnknownFieldsRemainRefused",
+        "TestWorkflowFootprintFailureRollsBackRevision",
+        "TestFootprintDiamondDAGAnalysisIsBounded",
+        "TestFootprintRepeatedPinnedChildUsesSharedCache"
+      ],
+      "note": "New content derives and validates counts, pinned-child resolution, recursion bounds and declaration floors; native WorkflowValidate, WorkflowInstall, Admit and WorkflowSimulate report/persist derived6/effective8."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestFootprintDerivedContentAndDeclaredFloor",
+        "TestMoleculeFootprintDistinctRolePerPathAndPinnedChild",
+        "TestFootprintExplicitZeroAndUnknownFieldsRemainRefused",
+        "TestWorkflowFootprintFailureRollsBackRevision",
+        "TestFootprintDiamondDAGAnalysisIsBounded",
+        "TestFootprintRepeatedPinnedChildUsesSharedCache"
+      ],
+      "note": "New content derives and validates counts, pinned-child resolution, recursion bounds and declaration floors; native WorkflowValidate, WorkflowInstall, Admit and WorkflowSimulate report/persist derived6/effective8."
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowFootprintNativeReportsAndPinsCount"
+      ],
+      "path": "New content derives and validates counts, pinned-child resolution, recursion bounds and declaration floors; native WorkflowValidate, WorkflowInstall, Admit and WorkflowSimulate report/persist derived6/effective8. The native test also checks the per-revision marker exists; the store fault test requires rollback when writing its footprint fails."
+    },
+    "status": "native-evidenced",
+    "limits": "The native test uses a scripted one-stage tree with a max_sessions bound. Static/dynamic graph derivation and declaration refusals are separately exercised by the firing corpus. A shared100000-step budget bounds both graph analyses and child derivation; the 24-diamond DAG corpus proves bounded refusal and repeat child pins reuse a cached result."
+  },
+  {
+    "id": "check:corpus-workflow-limit-capacity",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestWorkflowLimitNativeCapacityAuthorityAndNoOtherEdits",
+        "TestDelegatedMessageDirections",
+        "TestCLICodes"
+      ]
+    },
+    "requirements": [
+      "FAE-CLI-044",
+      "FAE-SCH-018"
+    ],
+    "production": {
+      "path": "daemon/workflow_limit.go",
+      "function": "workflowLimitSet"
+    },
+    "positive": {
+      "tests": [
+        "TestWorkflowLimitNativeCapacityAuthorityAndNoOtherEdits",
+        "TestDelegatedMessageDirections",
+        "TestCLICodes"
+      ],
+      "note": "Authenticated capacity-granted controller request sets the audited marker and read metadata; runtime/exact-verb grants, zero, unknown thresholds, and capacity-granted Drain are refused; host_memory bounds a request of8."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestWorkflowLimitNativeCapacityAuthorityAndNoOtherEdits",
+        "TestDelegatedMessageDirections",
+        "TestCLICodes"
+      ],
+      "note": "Authenticated capacity-granted controller request sets the audited marker and read metadata; runtime/exact-verb grants, zero, unknown thresholds, and capacity-granted Drain are refused; host_memory bounds a request of8."
+    },
+    "native": {
+      "tests": [
+        "TestWorkflowLimitNativeCapacityAuthorityAndNoOtherEdits"
+      ],
+      "path": "Authenticated capacity-granted controller request sets the audited marker and read metadata; runtime/exact-verb grants, zero, unknown thresholds, and capacity-granted Drain are refused; host_memory bounds a request of8."
+    },
+    "status": "native-evidenced",
+    "limits": "Ledger slot atomicity and host capacity arithmetic are checked by the scheduler ledger corpus, independently of this RPC/CLI contract."
+  },
+  {
+    "id": "check:corpus-native-tool-metadata",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestClaudeNativeToolUseEmitsBoundedContentFreeMetadata",
+        "TestToolAuditBoundedAndRefusalsAlwaysEmittedWithoutContent",
+        "TestToolMonitorBoundedLinesAndFinalDrain"
+      ]
+    },
+    "requirements": [
+      "FAE-OBS-009"
+    ],
+    "production": {
+      "path": "provider/claude_tool_events.go",
+      "function": "recordNativeTools"
+    },
+    "positive": {
+      "tests": [
+        "TestClaudeNativeToolUseEmitsBoundedContentFreeMetadata",
+        "TestToolAuditBoundedAndRefusalsAlwaysEmittedWithoutContent",
+        "TestToolMonitorBoundedLinesAndFinalDrain"
+      ],
+      "note": "Native main-session stream-json tool_use IDs are replayed through the provider collector;3reads survive without duplication, refused read/write events survive allowance limits, and file contents are excluded. Native scripted dispatch proves the daemon tool event persistence route."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestClaudeNativeToolUseEmitsBoundedContentFreeMetadata",
+        "TestToolAuditBoundedAndRefusalsAlwaysEmittedWithoutContent",
+        "TestToolMonitorBoundedLinesAndFinalDrain"
+      ],
+      "note": "Native main-session stream-json tool_use IDs are replayed through the provider collector;3reads survive without duplication, refused read/write events survive allowance limits, and file contents are excluded. Native scripted dispatch proves the daemon tool event persistence route."
+    },
+    "native": {
+      "tests": [
+        "TestTurnStatsAndToolEventsNativePersistWithExactReadings"
+      ],
+      "path": "Native main-session stream-json tool_use IDs are replayed through the provider collector;3reads survive without duplication, refused read/write events survive allowance limits, and file contents are excluded. Native scripted dispatch proves the daemon tool event persistence route."
+    },
+    "status": "native-evidenced",
+    "limits": "Provider transcript decoding and native daemon event persistence are exercised separately; this entry does not claim a live network model invocation."
+  },
+  {
+    "id": "check:corpus-turn-stats-visit-attempts",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestProviderStatedTurnStatsExactOrAbsent",
+        "TestTurnStatsSameSessionAttemptsWithinVisitAndReplay",
+        "TestTurnStatsExactAbsentAndAttemptSequenceAcrossResume"
+      ]
+    },
+    "requirements": [
+      "FAE-OBS-008"
+    ],
+    "production": {
+      "path": "engine/turn_stats.go",
+      "function": "recordTurnStats"
+    },
+    "positive": {
+      "tests": [
+        "TestProviderStatedTurnStatsExactOrAbsent",
+        "TestTurnStatsSameSessionAttemptsWithinVisitAndReplay",
+        "TestTurnStatsExactAbsentAndAttemptSequenceAcrossResume"
+      ],
+      "note": "Exact/absent provider readings survive collection, durable task history and one event per attempt. Same-session attempts survive replay/restart; numbering continues within a visit and starts at1 for a new stage."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestProviderStatedTurnStatsExactOrAbsent",
+        "TestTurnStatsSameSessionAttemptsWithinVisitAndReplay",
+        "TestTurnStatsExactAbsentAndAttemptSequenceAcrossResume"
+      ],
+      "note": "Exact/absent provider readings survive collection, durable task history and one event per attempt. Same-session attempts survive replay/restart; numbering continues within a visit and starts at1 for a new stage."
+    },
+    "native": {
+      "tests": [
+        "TestTurnStatsAndToolEventsNativePersistWithExactReadings"
+      ],
+      "path": "Exact/absent provider readings survive collection, durable task history and one event per attempt. Same-session attempts survive replay/restart; numbering continues within a visit and starts at1 for a new stage."
+    },
+    "status": "native-evidenced",
+    "limits": "The native adapter result is scripted; provider terminal parsing and restart/dedup behavior are separate focused tests. No price or token estimation is exercised or authorized."
+  },
+  {
+    "id": "check:corpus-subworkflow-join-outcomes",
+    "kind": "native-check",
+    "category": "generated-corpus",
+    "check": {
+      "corpus": [
+        "TestSubworkflowJoinFailureAndImplicitOutputOffline",
+        "TestSubworkflowJoinFailureAndImplicitOutputNative",
+        "TestEngineFanOutBranchesFromEmptyAndDynamicExpansion"
+      ]
+    },
+    "requirements": [
+      "FAE-WF-096",
+      "FAE-WF-113"
+    ],
+    "production": {
+      "path": "engine/nested_fan.go",
+      "function": "finishNestedBranch"
+    },
+    "positive": {
+      "tests": [
+        "TestSubworkflowJoinFailureAndImplicitOutputOffline",
+        "TestSubworkflowJoinFailureAndImplicitOutputNative"
+      ],
+      "note": "A passing SubWorkflow branch with no explicit branch.output contributes its sole Consult artifact, including the mapped child note and artifact identity, to the ordered list join."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestSubworkflowJoinFailureAndImplicitOutputOffline",
+        "TestSubworkflowJoinFailureAndImplicitOutputNative",
+        "TestEngineFanOutBranchesFromEmptyAndDynamicExpansion"
+      ],
+      "note": "A child failure whose SubWorkflow failure route is the join remains a failed element and fails an all join even without branch.pass. Invalid dynamic width escalates before any branch evidence or extra attempt."
+    },
+    "native": {
+      "tests": [
+        "TestSubworkflowJoinFailureAndImplicitOutputNative"
+      ],
+      "path": "Start -> scenario child revision install -> workflow parent install -> Admit -> two parallel branch regions -> real child task collection -> SubWorkflow success/failure binding -> ordered join artifact; pass reaches Done and child failure reaches Escalated."
+    },
+    "status": "native-evidenced",
+    "limits": "Uses isolated Dolt and scripted provider results; it proves child outcome classification and mapped join artifacts, not OS session cancellation or worktree integration."
+  },
+  {
+    "id": "check:validator-branch-failure",
+    "kind": "native-check",
+    "category": "validator-rule",
+    "check": {
+      "source": "workflow/workflow.go",
+      "markers": [
+        "p+\".branch_failure\", \"only FanOut branch_failure: fail-branch is supported\""
+      ]
+    },
+    "requirements": [
+      "FAE-WF-131"
+    ],
+    "production": {
+      "path": "workflow/workflow.go",
+      "function": "Validate"
+    },
+    "positive": {
+      "tests": [
+        "TestBranchFailureRoutesSharedJoinAndDefaultEscalation",
+        "TestSharedBranchGateJoinAndSameGateCounterIsolation"
+      ],
+      "note": "Explicit shared join and fail-branch configurations validate; budget/schema failures remain failed branches while settle siblings finish."
+    },
+    "firing": {
+      "refusal_tests": [
+        "TestValidatorRuleCorpus"
+      ],
+      "note": "The branch_failure corpus mutation places an invalid policy on AgentTurn and verifies the exact field refusal."
+    },
+    "native": {
+      "tests": [
+        "TestNativeBranchSchemaRetriesStayLocal"
+      ],
+      "path": "Authenticated WorkflowInstall validates fail-branch policy before real daemon branch execution; each branch retries its own invalid output once."
+    },
+    "status": "native-evidenced",
+    "limits": "Native test accepts policy declaration; fallback exhaustion, shared gate targets, typed join failures and selective resume are verified by the engine tests."
+  }
+]

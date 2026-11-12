@@ -1,0 +1,3 @@
+package main
+import("fmt";"encoding/json";"github.com/xleelz/fae/defaults";"github.com/xleelz/fae/workflow")
+func main(){d:=defaults.Workflow();d.Recursion=&workflow.Recursion{MaxDepth:9,MaxDescendants:1,MaxChildrenPerVisit:1};raw,_:=json.Marshal(d);_,configured:=workflow.ParseWithRecursionCeiling(raw,12);_,fallback:=workflow.Parse(raw);fmt.Printf("configured12=%v\nbacklog-equivalent-default=%v\n",configured,fallback)}

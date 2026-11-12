@@ -1,0 +1,7 @@
+Ledger census: 72 Gobra guards, 55 Gomela positive models, 55 negative models; 178 entries
+Non-formal checks: 51 entries covering 6 bridge-refusal-class, 17 derived-scope-refusal, 32 generated-corpus, 12 hook-denial, 13 host-guard-gate, 11 landing-gate, 44 nested-git-refusal, 4 redaction-family, 13 refusal-family, 13 role-shim-refusal, 35 shim-refusal, 83 validator-rule
+Accepted requirements with a supporting check (not acceptance): 207 of 284
+Proposed requirements with a supporting check (not accepted): 24 of 82
+Entries without a requirement (unmapped_reason given): 24
+Native daemon-path evidence unknown for 0 entries: none
+Ledger census passed (evidence census only; not requirement acceptance)

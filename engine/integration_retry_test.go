@@ -9,7 +9,15 @@ import (
 	"github.com/xleelz/fae/engine"
 )
 
-func TestKnownIntegrationTargetMoveRefreshesAllApprovals(t *testing.T) {
+// FAE-VCS-005a/-008: a known no-write target move re-reconciles; the
+// patch-identical reconcile carries the approvals and re-runs QA only.
+func TestKnownIntegrationTargetMoveRerunsQA(t *testing.T) {
+	// The upstream change may leave the task tree unchanged (base-only).
+	for _, union := range []string{"union", ""} {
+		knownTargetMove(t, union)
+	}
+}
+func knownTargetMove(t *testing.T, union string) {
 	j, e := engine.NewLive("retry", 1, defaults.Workflow(), "reviewed")
 	if e != nil {
 		t.Fatal(e)
@@ -31,7 +39,7 @@ func TestKnownIntegrationTargetMoveRefreshesAllApprovals(t *testing.T) {
 			t.Fatal(e)
 		}
 		if j.Parked || j.State == domain.Escalated {
-			t.Fatalf("stopped %s %s", j.State, j.Reason)
+			t.Fatalf("%q: stopped %s %s", union, j.State, j.Reason)
 		}
 		if d == nil {
 			continue
@@ -46,7 +54,7 @@ func TestKnownIntegrationTargetMoveRefreshesAllApprovals(t *testing.T) {
 			moved = true
 		}
 		if d.Stage == "merge" && moved && !reconciled {
-			r.NewTree = "union"
+			r.NewTree = union
 			r.NewBase = "new-tip"
 			reconciled = true
 		}
@@ -69,8 +77,8 @@ func TestKnownIntegrationTargetMoveRefreshesAllApprovals(t *testing.T) {
 			}
 		}
 	}
-	if j.State != domain.Done || j.Counts["commit"] != 2 || j.Counts["integrate"] != 2 || j.Counts["reviews"] != 2 || j.Counts["qa"] != 2 || j.Base != "new-tip" {
-		t.Fatalf("no fully refreshed landing: %s %+v", j.State, j.Counts)
+	if j.State != domain.Done || j.Counts["commit"] != 2 || j.Counts["integrate"] != 2 || j.Counts["reviews"] != 1 || j.Counts["qa"] != 1 || j.Counts["post-merge-qa"] != 2 || j.Base != "new-tip" || len(j.Carries) != 1 {
+		t.Fatalf("%q: no QA-refreshed landing: %s %s %+v", union, j.State, j.Reason, j.Counts)
 	}
 }
 func TestTargetMovedClassCannotForgeOtherTransitions(t *testing.T) {

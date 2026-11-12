@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -63,29 +63,29 @@ proctype Completion5(chan child) {
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:9:2 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:9:2 */
 	:: cancel_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:9:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:9:2 */
 	:: cancel_ch.sync!false -> 
 		cancel_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:9:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:9:2 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:10:2 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:10:2 */
 	:: timer_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:10:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:10:2 */
 	:: timer_ch.sync!false -> 
 		timer_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:10:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:10:2 */
 	fi->
 	run complete14(result_ch,cancel_ch,timer_ch,child_complete140)->
 	run receiver(child_complete140)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:12:2 */
-	:: result_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:12:2 */->
-	:: result_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:12:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:12:2 */
+	:: result_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:12:2 */->
+	:: result_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:12:2 */ -> 
 		result_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -97,58 +97,58 @@ proctype complete14(Chandef result_ch;Chandef cancel_ch;Chandef timer_ch;chan ch
 	int i->
 	bool state = true->
 	int num_msgs->
-	do /* Select	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:15:2 */
+	do /* Select	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:15:2 */
 	:: cancel_ch.deq?state,num_msgs -> 
 		
 
-		if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:17:3 */
+		if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:17:3 */
 		:: result_ch.enq?ok -> 
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:17:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:17:3 */
 		:: result_ch.sync!false -> 
 			result_ch.sending?ok->
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:17:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:17:3 */
 		fi->
 		break
 	:: cancel_ch.sync?state -> 
 		cancel_ch.rcving!false->
 		
 
-		if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:17:3 */
+		if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:17:3 */
 		:: result_ch.enq?ok -> 
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:17:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:17:3 */
 		:: result_ch.sync!false -> 
 			result_ch.sending?ok->
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:17:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:17:3 */
 		fi->
 		break
 	:: timer_ch.deq?state,num_msgs -> 
 		
 
-		if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:19:3 */
+		if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:19:3 */
 		:: result_ch.enq?ok -> 
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:19:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:19:3 */
 		:: result_ch.sync!false -> 
 			result_ch.sending?ok->
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:19:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:19:3 */
 		fi->
 		break
 	:: timer_ch.sync?state -> 
 		timer_ch.rcving!false->
 		
 
-		if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:19:3 */
+		if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:19:3 */
 		:: result_ch.enq?ok -> 
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:19:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:19:3 */
 		:: result_ch.sync!false -> 
 			result_ch.sending?ok->
-			assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:19:3 */
+			assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:19:3 */
 		fi->
 		break
 	od->
 	for10_exit: skip->
 	for10_end: skip->
-	result_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:21:2 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/completion.go:21:2 */->
+	result_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:21:2 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/completion.go:21:2 */->
 	stop_process: skip->
 	child!0
 }

@@ -7,11 +7,12 @@ import (
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/daemon"
 	"os"
+	"strings"
 	"testing"
 )
 
 func TestCleanupCLI(t *testing.T) {
-	home := t.TempDir()
+	home := shortHome(t)
 	layout, err := daemon.Paths(home, "test")
 	if err != nil {
 		t.Fatal(err)
@@ -46,7 +47,16 @@ func TestCleanupCLI(t *testing.T) {
 		args   []string
 		method string
 		apply  bool
-	}{{[]string{"backup", "plane"}, "PlaneBackup", false}, {[]string{"cleanup", "retired"}, "CleanupRetired", false}, {[]string{"cleanup", "retired", "--dry-run"}, "CleanupRetired", false}, {[]string{"cleanup", "retired", "--apply", "--backup", "/owned/plane-x", "--pace", "500ms"}, "CleanupRetired", true}} {
+		limit  int
+	}{
+		{[]string{"backup", "plane"}, "PlaneBackup", false, 0},
+		{[]string{"cleanup", "retired"}, "CleanupRetired", false, 0},
+		{[]string{"cleanup", "retired", "--dry-run"}, "CleanupRetired", false, 0},
+		{[]string{"cleanup", "retired", "--apply", "--backup", "/owned/plane-x", "--pace", "500ms"}, "CleanupRetired", true, 0},
+		{[]string{"cleanup", "done"}, "CleanupRetired", false, 0},
+		{[]string{"cleanup", "done", "--limit", "25"}, "CleanupRetired", false, 25},
+		{[]string{"cleanup", "done", "--apply", "--backup", "/owned/plane-x", "--pace", "500ms"}, "CleanupRetired", true, 0},
+	} {
 		args := append(tt.args, "--home", home, "--instance", "test", "--authorizing-message", "m")
 		if err = execute(context.Background(), args, &bytes.Buffer{}); err != nil {
 			t.Fatal(err)
@@ -56,12 +66,19 @@ func TestCleanupCLI(t *testing.T) {
 		if err = json.Unmarshal(r.Params, &p); err != nil {
 			t.Fatal(err)
 		}
-		if r.Method != tt.method || p.Apply != tt.apply || p.AuthorizingMessage != "m" {
+		if r.Method != tt.method || p.Apply != tt.apply || p.Limit != tt.limit || p.AuthorizingMessage != "m" || p.Done != (tt.args[0] == "cleanup" && tt.args[1] == "done") {
 			t.Fatal(r, p)
 		}
 		if tt.apply && (p.Backup != "/owned/plane-x" || p.PaceMS != 500) {
 			t.Fatal(p)
 		}
+	}
+	var help bytes.Buffer
+	if err = execute(context.Background(), []string{"cleanup", "done", "--help"}, &help); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(help.String(), `--limit (default "200"): most tasks planned in one run (1..10000; already-cleaned and skipped tasks are not counted)`) {
+		t.Fatalf("unexpected cleanup help:\n%s", help.String())
 	}
 	for _, tt := range []struct {
 		args   []string
@@ -110,9 +127,10 @@ func TestCleanupCLI(t *testing.T) {
 			}
 		}
 	}
-	for _, args := range [][]string{{"backup", "quota"}, {"backup", "quota", "invalid"}, {"backup", "quota", "configure", "--max-bytes", "-1"}, {"backup", "quota", "configure", "--max-bytes", "1152921504606846977"}, {"backup", "quota", "configure", "--max-backups", "10001"}, {"backup", "quota", "configure", "--max-backups", "-1"}, {"backup", "quota", "status", "--max-bytes", "1"}, {"backup", "unpin"}, {"backup", "unpin", "--backup", "/x", "--apply"}, {"backup", "unpin", "--backup", "/x", "--apply", "--dry-run", "--plan-digest", "x"}, {"backup", "creation-schedule"}, {"backup", "creation-schedule", "invalid"}, {"backup", "creation-schedule", "configure", "--interval", "500ms"}, {"backup", "creation-schedule", "pause", "--interval", "2s"}, {"backup", "replication-schedule", "configure"}, {"backup", "replication-schedule", "configure", "--endpoint", "https://replica.example", "--max-bytes", "100"}, {"backup", "replication-schedule", "configure", "--endpoint", "https://replica.example", "--max-bytes", "-1"}, {"backup", "retention-schedule"}, {"backup", "retention-schedule", "invalid"}, {"backup", "retention-schedule", "configure", "--interval", "500ms"}, {"backup", "retention-schedule", "configure", "--keep", "0"}, {"backup", "retention-schedule", "pause", "--keep", "2"}, {"cleanup", "scratch-archive"}, {"cleanup", "scratch-archive", "--source", "/x", "--survivor", "/y", "--apply"}, {"cleanup", "scratch-archive", "--source", "/x", "--survivor", "/y", "--apply", "--dry-run", "--plan-digest", "x"}, {"backup", "retention", "--keep", "0"}, {"backup", "retention", "--apply"}, {"backup", "retention", "--apply", "--dry-run", "--plan-digest", "x"}, {"backup", "replicate"}, {"backup", "replicate", "--backup", "/x"}, {"cleanup"}, {"cleanup", "unknown"}, {"backup", "unknown"}, {"cleanup", "retired", "--pace", "1ms"}, {"cleanup", "retired", "--pace", "2m"}} {
-		if execute(context.Background(), args, &bytes.Buffer{}) == nil {
-			t.Fatal("invalid arguments", args)
+	for _, args := range [][]string{{"backup", "quota"}, {"backup", "quota", "invalid"}, {"backup", "quota", "configure", "--max-bytes", "-1"}, {"backup", "quota", "configure", "--max-bytes", "1152921504606846977"}, {"backup", "quota", "configure", "--max-backups", "10001"}, {"backup", "quota", "configure", "--max-backups", "-1"}, {"backup", "quota", "status", "--max-bytes", "1"}, {"backup", "unpin"}, {"backup", "unpin", "--backup", "/x", "--apply"}, {"backup", "unpin", "--backup", "/x", "--apply", "--dry-run", "--plan-digest", "x"}, {"backup", "creation-schedule"}, {"backup", "creation-schedule", "invalid"}, {"backup", "creation-schedule", "configure", "--interval", "500ms"}, {"backup", "creation-schedule", "pause", "--interval", "2s"}, {"backup", "replication-schedule", "configure"}, {"backup", "replication-schedule", "configure", "--endpoint", "https://replica.example", "--max-bytes", "100"}, {"backup", "replication-schedule", "configure", "--endpoint", "https://replica.example", "--max-bytes", "-1"}, {"backup", "retention-schedule"}, {"backup", "retention-schedule", "invalid"}, {"backup", "retention-schedule", "configure", "--interval", "500ms"}, {"backup", "retention-schedule", "configure", "--keep", "0"}, {"backup", "retention-schedule", "pause", "--keep", "2"}, {"cleanup", "scratch-archive"}, {"cleanup", "scratch-archive", "--source", "/x", "--survivor", "/y", "--apply"}, {"cleanup", "scratch-archive", "--source", "/x", "--survivor", "/y", "--apply", "--dry-run", "--plan-digest", "x"}, {"backup", "retention", "--keep", "0"}, {"backup", "retention", "--apply"}, {"backup", "retention", "--apply", "--dry-run", "--plan-digest", "x"}, {"backup", "replicate"}, {"backup", "replicate", "--backup", "/x"}, {"cleanup"}, {"cleanup", "unknown"}, {"backup", "unknown"}, {"cleanup", "retired", "--pace", "1ms"}, {"cleanup", "retired", "--pace", "2m"}, {"cleanup", "retired", "--apply", "--dry-run"}, {"cleanup", "done", "--apply", "--dry-run"}, {"cleanup", "retired", "--limit", "0"}, {"cleanup", "retired", "--limit", "-5"}, {"cleanup", "done", "--limit", "10001"}, {"backup", "plane", "--limit", "10"}} {
+		err := execute(context.Background(), args, &bytes.Buffer{})
+		if err == nil || exitCode(err) != 2 {
+			t.Fatalf("invalid arguments %v: err=%v code=%d, want code 2", args, err, exitCode(err))
 		}
 	}
 }

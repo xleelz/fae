@@ -122,13 +122,13 @@ func TestReadPoolDeadlineDoesNotPinCaller(t *testing.T) {
 func TestBoardSnapshotAgeAndStaleness(t *testing.T) {
 	d := &Daemon{}
 	d.status.Store(statusSnapshot{Updated: time.Now().Add(-11 * time.Second)})
-	_, err := d.board(nil)
+	_, err := d.board(context.Background(), nil)
 	var rpc *api.RPCError
 	if !errors.As(err, &rpc) || rpc.Code != "snapshot-stale" {
 		t.Fatal(err)
 	}
 	d.status.Store(statusSnapshot{Updated: time.Now().Add(-time.Second)})
-	page, err := d.board(nil)
+	page, err := d.board(context.Background(), nil)
 	if err != nil || page.SnapshotAgeMillis < 1000 {
 		t.Fatalf("%+v %v", page, err)
 	}

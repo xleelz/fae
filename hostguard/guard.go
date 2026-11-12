@@ -12,6 +12,9 @@ type Reading struct {
 	Value float64
 	Known bool
 }
+
+// Sample is one FAE-HOST-001 reading. Swap is swap total (zero means no swap
+// configured); IO and Memory pressure are the PSI "full" averages.
 type Sample struct {
 	Memory, Swap                                Reading
 	IO10, IO60, Memory10, Memory60, LoadPerCore Reading
@@ -51,6 +54,10 @@ func admit(s Sample, c Config, pending int, ledgerReadable, newPane bool) Decisi
 		return Decision{Reason: "Configuration"}
 	}
 	gap := !known(s.Memory) || !known(s.Swap) || !known(s.IO10) || !known(s.IO60) || !known(s.Memory10) || !known(s.Memory60) || !known(s.LoadPerCore)
+	// FAE-HOST-003: with no swap configured (swap total zero) the stricter
+	// no-swap floor applies; unreadable swap is treated the same way. Swap that
+	// is configured but exhausted keeps the ordinary floor, while the higher
+	// soft floor still backs off before either hard floor is reached.
 	floor := c.Hard
 	if !known(s.Swap) || s.Swap.Value == 0 {
 		floor = c.HardNoSwap
@@ -64,13 +71,18 @@ func admit(s Sample, c Config, pending int, ledgerReadable, newPane bool) Decisi
 	if newPane && known(s.Memory) && float64(pending)+1 > (s.Memory.Value-float64(floor))/float64(c.PerPane) {
 		return Decision{Gap: gap, Reason: "MemoryReservation"}
 	}
-	if (known(s.Memory) && s.Memory.Value < float64(c.Soft)) || (known(s.IO10) && s.IO10.Value > c.IO) || (known(s.Memory10) && s.Memory10.Value > c.MemoryPressure) || (known(s.LoadPerCore) && s.LoadPerCore.Value > c.Load) {
+	// The soft guard shares SoftLevel with pressure holds, so a HostPressure
+	// refusal and a hold-entering reading can never disagree. A value exactly
+	// at a soft threshold proceeds (FAE-HOST-002).
+	if level, _ := SoftLevel(s, c); level == LevelPressure {
 		return Decision{Gap: gap, Reason: "HostPressure"}
 	}
 	return Decision{Allowed: true, Gap: gap}
 }
 
-// PressureClear enforces strict below-threshold readings separated by 30s.
+// PressureClear is the stateless two-reading rule for a single metric: both
+// readings strictly below threshold and at least 30 s apart. Live admission
+// uses the stateful Hold, which applies the same CanLiftPressureHold rule.
 func PressureClear(first, second Reading, t1, t2 time.Time, threshold float64) bool {
-	return known(first) && known(second) && first.Value < threshold && second.Value < threshold && t2.Sub(t1) >= 30*time.Second
+	return CanLiftPressureHold(known(first) && first.Value < threshold, known(second) && second.Value < threshold, t2.Sub(t1) >= 30*time.Second, !t2.Before(t1))
 }

@@ -1,0 +1,29 @@
+{
+  "dispatches": 5,
+  "spec": {
+    "id": "dogfood-loop",
+    "kind": "loop",
+    "role": "oracle",
+    "prompt": "Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.",
+    "binding": {
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "medium"
+    },
+    "max_iterations": 5,
+    "expires_at": "2026-10-26T10:26:21.669134747Z"
+  },
+  "session_id": "loop-dogfood-loop",
+  "state": "completed",
+  "iterations": 5,
+  "in_flight": false,
+  "next": "2026-10-26T10:11:39.387878309Z",
+  "context": {
+    "iterations": 5,
+    "scope_revision": "84bc21b546f315af205fa06ce80ae032a6a582a6905017110a62f3c115ac1722",
+    "session": "loop-dogfood-loop"
+  },
+  "last_output": {
+    "message": "Iteration 5 of loop-dogfood-loop. Marker: fae-loop-dogfood. The files are the same as in iterations 1 to 4: alpha.go defines alpha(), which returns 0, and alpha_test.go is still empty. This was a review-only turn, so I made no edits."
+  }
+}

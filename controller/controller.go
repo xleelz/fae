@@ -10,17 +10,21 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xleelz/fae/processowner"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
 )
 
+// LaunchSpec pins a daemon launch. A recorded spec names its environment only
+// by EnvironmentDigest (see SealEnvironment); values travel to the launcher.
 type LaunchSpec struct {
-	Binary      string   `json:"binary"`
-	Arguments   []string `json:"arguments"`
-	Directory   string   `json:"directory"`
-	Environment []string `json:"environment"`
-	SHA256      string   `json:"sha256"`
+	Binary            string   `json:"binary"`
+	Arguments         []string `json:"arguments"`
+	Directory         string   `json:"directory"`
+	Environment       []string `json:"environment,omitempty"`
+	EnvironmentDigest string   `json:"environment_digest,omitempty"`
+	SHA256            string   `json:"sha256"`
 }
 type Marker struct {
 	OldBirth                                      string
@@ -38,6 +42,7 @@ type Marker struct {
 type Health struct {
 	BinaryHash, ProcessBirth string
 	Workspace                string
+	HostLedger               string
 	Holds                    []OverlapHold
 	PID, DoltPID             int
 	OldPID                   int
@@ -53,6 +58,10 @@ type Health struct {
 	Unsafe                   []string
 	QA                       []string
 	Overlap                  []string
+	Watchdog                 string `json:",omitempty"`
+	// The replaced daemon's binary and both builds' source versions, reported
+	// by a roll (FAE-CTL-001 outputs).
+	OldBinaryHash, OldVersion, NewVersion string `json:",omitempty"`
 }
 type Params struct {
 	GrantMessage       string        `json:"grant_message,omitempty"`
@@ -78,6 +87,10 @@ type Client struct {
 	RPC        RPC
 	MarkerPath string
 	Poll       time.Duration
+	Log        io.Writer
+	// WatchdogIdentity, when set, makes the running watchdog's sandbox state
+	// part of post-start acceptance.
+	WatchdogIdentity string
 }
 
 func HashFile(path string) (string, error) {
@@ -226,9 +239,15 @@ func (c Client) Start(ctx context.Context, o Options) (Health, error) {
 	if o.Launcher != "" && o.Launcher != launcher {
 		return Health{}, errors.New("launcher differs from authorized maintenance marker")
 	}
+	if spec, e = ResolveEnvironment(filepath.Dir(c.MarkerPath), spec); e != nil {
+		return Health{}, fmt.Errorf("authorized launch environment unavailable: %w", e)
+	}
 	launchedPID, e := Launch(ctx, launcher, spec)
 	if e != nil {
-		return Health{}, fmt.Errorf("start failed; maintenance marker retained; retry using previous binary: %w", e)
+		failed := fmt.Errorf("start failed; maintenance marker retained; retry using previous binary: %w", e)
+		// The daemon is down, so no RPC can record this: the marker names the
+		// state and the next action, and the error goes to standard error.
+		return Health{}, errors.Join(failed, markStartFailed(c.MarkerPath, failed))
 	}
 	launchedBirth, e := processowner.Birth(launchedPID)
 	if e != nil {
@@ -243,10 +262,15 @@ func (c Client) Start(ctx context.Context, o Options) (Health, error) {
 			if probe != nil || childProbe != nil || !safe || !childSafe {
 				return h, c.abort(ctx, o.Message, "acceptance-failed", "restore previous binary", errors.Join(probe, childProbe, errors.New("sandbox acceptance refused")))
 			}
-			accepted, acceptErr := c.RPC(ctx, Params{Action: "accept", AuthorizingMessage: o.Message, Marker: marker})
+			watchdog, watchErr := watchdogAcceptance(c.WatchdogIdentity)
+			if watchErr != nil {
+				return h, c.abort(ctx, o.Message, "acceptance-failed", "restore previous binary; restart the watchdog unsandboxed", watchErr)
+			}
+			accepted, acceptErr := c.RPC(ctx, Params{Action: "accept", AuthorizingMessage: o.Message, Marker: &Marker{ID: marker.ID}})
 			if acceptErr != nil {
 				return h, acceptErr
 			}
+			accepted.Watchdog = watchdog
 			return accepted, nil
 		}
 		if e = c.pause(accept); e != nil {
@@ -289,7 +313,7 @@ func (c Client) Roll(ctx context.Context, o Options) (Health, error) {
 		if o.GatedRef == "" {
 			o.GatedRef = o.BuildRef
 		}
-		binary, _, _, e := BuildGated(ctx, h.Workspace, o.BuildRef, o.GatedRef, filepath.Join(filepath.Dir(c.MarkerPath), "deployments"))
+		binary, _, _, e := BuildGated(ctx, BuildLease{Ledger: h.HostLedger, Log: c.Log}, h.Workspace, o.BuildRef, o.GatedRef, filepath.Join(filepath.Dir(c.MarkerPath), "deployments"))
 		if e != nil {
 			return Health{}, c.preparationFailed(o, e)
 		}
@@ -305,7 +329,8 @@ func (c Client) Roll(ctx context.Context, o Options) (Health, error) {
 	}
 	h, e := c.Start(ctx, o)
 	if e == nil {
-		h.OldPID = marker.OldPID
+		h.OldPID, h.Holds = marker.OldPID, marker.Holds
+		h.OldBinaryHash, h.OldVersion, h.NewVersion = marker.Launch.SHA256, binaryVersion(marker.Launch.Binary), binaryVersion(o.Binary)
 		return h, nil
 	}
 	rollback := o
@@ -313,11 +338,11 @@ func (c Client) Roll(ctx context.Context, o Options) (Health, error) {
 	if h.PID > 1 && !processowner.ProvedDead(h.PID, h.ProcessBirth) {
 		_, stopErr := c.RPC(ctx, Params{Action: "stop", AuthorizingMessage: o.Message, Marker: marker})
 		if stopErr != nil {
-			return h, errors.Join(e, fmt.Errorf("rollback needs operator intervention: %w", stopErr))
+			return h, c.abort(context.Background(), o.Message, "roll-rollback-failed", "rollback needs operator intervention", errors.Join(e, fmt.Errorf("rollback needs operator intervention: %w", stopErr)))
 		}
 		for !processowner.ProvedDead(h.PID, h.ProcessBirth) {
 			if pause := c.pause(ctx); pause != nil {
-				return h, errors.Join(e, pause)
+				return h, c.abort(context.Background(), o.Message, "roll-rollback-failed", "rollback needs operator intervention", errors.Join(e, pause))
 			}
 		}
 	}
@@ -325,7 +350,7 @@ func (c Client) Roll(ctx context.Context, o Options) (Health, error) {
 	if re == nil {
 		return restored, c.preparationFailed(o, fmt.Errorf("deployment failed; previous binary restored: %w", e))
 	}
-	return restored, errors.Join(e, re)
+	return restored, c.abort(context.Background(), o.Message, "roll-rollback-failed", "restore previous binary", errors.Join(e, re))
 }
 
 func (c Client) preparationFailed(o Options, cause error) error {
@@ -333,4 +358,28 @@ func (c Client) preparationFailed(o Options, cause error) error {
 	defer cancel()
 	_, e := c.RPC(ctx, Params{Action: "preflight-failed", AuthorizingMessage: o.Message, Note: cause.Error(), Marker: &Marker{Launcher: o.Launcher}})
 	return errors.Join(cause, e)
+}
+
+// binaryVersion is a build's source revision, or why it has none.
+func binaryVersion(binary string) string {
+	revision, err := SourceRevision(binary)
+	if err != nil {
+		return "unknown: " + err.Error()
+	}
+	return revision
+}
+
+// markStartFailed records a failed start in the private maintenance marker:
+// state failed (a start may be retried) and the next action naming the cause.
+func markStartFailed(path string, cause error) error {
+	m, err := ReadMarker(path)
+	if err != nil || m == nil {
+		return err
+	}
+	m.State, m.NextAction = "failed", "start failed ("+cause.Error()+"); retry fae maintenance start with the previous binary"
+	raw, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	return savePrivate(path, raw)
 }

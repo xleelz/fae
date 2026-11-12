@@ -60,7 +60,7 @@ func TestBoundsAndRecovery(t *testing.T) {
 	}
 	s.State = "active"
 	s.Spec.ExpiresAt = now.Add(time.Hour)
-	s.Complete(Result{json.RawMessage(`{}`), json.RawMessage(`{}`)}, nil, now)
+	s.Complete(Result{Context: json.RawMessage(`{}`), Output: json.RawMessage(`{}`)}, nil, now)
 	if s.Due(now) || !s.Due(now.Add(10*time.Second)) {
 		t.Fatal(s)
 	}
@@ -117,5 +117,54 @@ func TestDeferralRequiresUnjoinedProof(t *testing.T) {
 	s.Complete(Result{}, errors.Join(&DeferredError{Cause: errors.New("capacity")}, errors.New("release failed")), now)
 	if s.State != "uncertain" {
 		t.Fatal("resource uncertainty accepted as safe deferral", s)
+	}
+}
+
+// FAE-RT-004: a loop turn that provably never started is relaunched within the
+// agent-start bound without counting as an execution, and parks uncertain only
+// when all relaunch attempts fail before starting or lose their unjoined proof.
+func TestStartupNotExecutedRelaunchesAndParksWhenExhausted(t *testing.T) {
+	now := time.Now().UTC()
+	s, err := New(Spec{ID: "relaunch", Kind: "loop", Role: "oracle", Prompt: "continue", IntervalSeconds: 10, MaxIterations: 2}, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.InFlight = true
+	s.Complete(Result{}, &NotStartedError{Cause: errors.New("startup-not-executed")}, now)
+	if s.State != "active" || s.Iterations != 0 || s.StartupNotExecuted != 1 || s.StartupFailures != 1 || s.InFlight || !s.Due(now) {
+		t.Fatalf("after first non-executed start: %+v", s)
+	}
+	s.InFlight = true
+	r, err := Scripted(context.Background(), Request{Spec: s.Spec, SessionID: s.SessionID, Iteration: 1, Context: s.Context})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.Complete(r, nil, now)
+	if s.State != "active" || s.Iterations != 1 || s.StartupNotExecuted != 1 || s.StartupFailures != 0 || s.InFlight {
+		t.Fatalf("after relaunch recovery: %+v", s)
+	}
+
+	exhausted, err := New(Spec{ID: "exhausted", Kind: "loop", Role: "oracle", Prompt: "continue", MaxIterations: 2}, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := int64(1); i <= StartAttempts; i++ {
+		exhausted.InFlight = true
+		exhausted.Complete(Result{}, &NotStartedError{Cause: errors.New("refused-before-launch")}, now)
+		wantState := "active"
+		if i == StartAttempts {
+			wantState = "uncertain"
+		}
+		if exhausted.State != wantState || exhausted.Iterations != 0 || exhausted.StartupNotExecuted != i {
+			t.Fatalf("attempt %d: state=%q want=%q iterations=%d startup_not_executed=%d", i, exhausted.State, wantState, exhausted.Iterations, exhausted.StartupNotExecuted)
+		}
+	}
+
+	joined, _ := New(Spec{ID: "joined", Kind: "loop", Role: "oracle", Prompt: "continue"}, now)
+	joined.RecordStartupNotExecuted()
+	joined.InFlight = true
+	joined.Complete(Result{}, errors.Join(&NotStartedError{Cause: errors.New("startup-not-executed")}, errors.New("release failed")), now)
+	if joined.State != "uncertain" || joined.Iterations != 0 || joined.StartupNotExecuted != 1 {
+		t.Fatalf("joined non-execution error: %+v", joined)
 	}
 }

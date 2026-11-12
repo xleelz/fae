@@ -20,7 +20,7 @@ func upstream(t *testing.T, b *Broker, repo, base, name, contents string) string
 	idx := dir + "/index"
 	run := func(input string, args ...string) string {
 		cmd := exec.Command("git", append([]string{"-C", repo}, args...)...)
-		cmd.Env = append(cleanEnv(nil), "GIT_INDEX_FILE="+idx, "GIT_AUTHOR_NAME=Test", "GIT_AUTHOR_EMAIL=test@localhost", "GIT_COMMITTER_NAME=Test", "GIT_COMMITTER_EMAIL=test@localhost")
+		cmd.Env = append(cleanEnv(nil, os.TempDir()), "GIT_INDEX_FILE="+idx, "GIT_AUTHOR_NAME=Test", "GIT_AUTHOR_EMAIL=test@localhost", "GIT_COMMITTER_NAME=Test", "GIT_COMMITTER_EMAIL=test@localhost")
 		cmd.Stdin = strings.NewReader(input)
 		out, e := cmd.CombinedOutput()
 		if e != nil {
@@ -153,7 +153,7 @@ func TestIntegrationBlobAndEmptyContainment(t *testing.T) {
 			tip := upstream(t, b, repo, base, "x.go", contents)
 			tip = upstream(t, b, repo, tip, "other", "unrelated\n")
 			r, e := b.Integrate(ctx, w, c, "refs/heads/fae/integration", base)
-			if e != nil || !r.Landed || r.ContainedBy != tip {
+			if e != nil || !r.Landed || r.ContainedBy != tip || r.Containment != ContainedUpstream {
 				t.Fatalf("%+v %v", r, e)
 			}
 			if gitTest(t, repo, "rev-parse", "refs/heads/fae/integration") != tip {
@@ -177,7 +177,7 @@ func TestIntegrationPatchContainment(t *testing.T) {
 	tip := upstream(t, b, repo, base, "x.go", contents)
 	tip = upstream(t, b, repo, tip, "x.go", contents+"// later unrelated addition\n")
 	r, e := b.Integrate(ctx, w, c, "refs/heads/fae/integration", base)
-	if e != nil || r.ContainedBy != tip {
+	if e != nil || r.ContainedBy != tip || r.Containment != ContainedUpstream {
 		t.Fatalf("%+v %v", r, e)
 	}
 }

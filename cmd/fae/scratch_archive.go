@@ -2,13 +2,15 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/xleelz/fae/daemon"
 	"io"
 )
 
+// scratchArchiveCleanupCommand goes through the serving instance's daemon
+// (FAE-CLI-001): --instance names the live daemon, --scratch-instance the
+// removed scratch instance under the same home. Apply needs a message.
 func scratchArchiveCleanupCommand(ctx context.Context, args []string, c common, out io.Writer) error {
 	f, o := flags("cleanup scratch-archive", c)
+	scratch := f.String("scratch-instance", "", "removed scratch instance whose archives are cleaned")
 	source := f.String("source", "", "redundant noncanonical scratch archive")
 	survivor := f.String("survivor", "", "canonical archive from completed scratch cleanup")
 	digest := f.String("plan-digest", "", "reviewed preview digest")
@@ -17,12 +19,12 @@ func scratchArchiveCleanupCommand(ctx context.Context, args []string, c common, 
 	if err := parse(f, args); err != nil {
 		return err
 	}
-	if *source == "" || *survivor == "" || (*apply && (*dry || *digest == "")) {
-		return usage("source and survivor required; apply requires plan-digest and excludes dry-run")
+	if *scratch == "" || *source == "" || *survivor == "" || (*apply && (*dry || *digest == "")) {
+		return usage("scratch-instance, source and survivor required; apply requires plan-digest and excludes dry-run")
 	}
-	result, err := daemon.CleanupScratchArchive(ctx, daemon.ScratchArchiveCleanupParams{Home: o.home, Instance: o.instance, Source: *source, Survivor: *survivor, Apply: *apply, PlanDigest: *digest})
-	if err != nil {
-		return err
+	p := map[string]any{"scratch_instance": *scratch, "source": *source, "survivor": *survivor}
+	if *apply {
+		p["apply"], p["plan_digest"], p["authorizing_message"] = true, *digest, o.message
 	}
-	return json.NewEncoder(out).Encode(result)
+	return rpc(ctx, *o, "ScratchArchiveCleanup", "", p, out)
 }

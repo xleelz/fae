@@ -1,0 +1,79 @@
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+SIGKILL during actual provider turn; retired uncertain dispatches explicitly resolved
+watchdog rearmed stopped drive; daemon, Dolt and active dispatch identities preserved
+cron-7d533ed758e7c6b84e828429-0 stage: intake
+provider-beta stage: intake
+provider-beta stage: intake-gate
+drained mid-run restart completed; dynamic limit preserved and raised
+cron-7d533ed758e7c6b84e828429-0 stage: spec
+provider-beta stage: spec
+provider-beta stage: spec-review
+cron-7d533ed758e7c6b84e828429-0 stage: spec-review
+provider-beta stage: plan
+cron-7d533ed758e7c6b84e828429-0 stage: spec-gate
+cron-7d533ed758e7c6b84e828429-0 stage: plan
+provider-beta stage: test-first
+cron-7d533ed758e7c6b84e828429-0 stage: test-first
+provider-beta stage: run-red
+cron-7d533ed758e7c6b84e828429-0 stage: run-red
+provider-beta stage: freeze-red
+provider-beta stage: implement
+cron-7d533ed758e7c6b84e828429-0 stage: freeze-red
+cron-7d533ed758e7c6b84e828429-0 stage: implement
+provider-beta stage: run-tests
+cron-7d533ed758e7c6b84e828429-0 stage: run-tests
+provider-beta stage: compare-red
+provider-beta stage: format
+provider-beta stage: reviews
+cron-7d533ed758e7c6b84e828429-0 stage: green-gate
+cron-7d533ed758e7c6b84e828429-0 stage: reviews
+provider-beta stage: oracle
+cron-7d533ed758e7c6b84e828429-0 stage: reviews-gate
+cron-7d533ed758e7c6b84e828429-0 stage: oracle
+provider-beta stage: qa
+provider-beta stage: merge
+provider-beta stage: post-merge-qa
+cron-7d533ed758e7c6b84e828429-0 stage: verdict
+cron-7d533ed758e7c6b84e828429-0 stage: qa
+provider-beta stage: commit
+cron-7d533ed758e7c6b84e828429-0 stage: merge
+cron-7d533ed758e7c6b84e828429-0 stage: post-merge-qa
+provider-beta stage: integration-gate
+provider-beta stage: external
+cron-7d533ed758e7c6b84e828429-0 stage: post-merge-gate
+cron-7d533ed758e7c6b84e828429-0 stage: integrate
+provider-beta stage: Done
+cron-7d533ed758e7c6b84e828429-0 stage: reverify-loop
+cron-7d533ed758e7c6b84e828429-0 stage: run-tests
+cron-7d533ed758e7c6b84e828429-0 stage: compare-red
+cron-7d533ed758e7c6b84e828429-0 stage: format
+cron-7d533ed758e7c6b84e828429-0 stage: reviews
+cron-7d533ed758e7c6b84e828429-0 stage: oracle
+cron-7d533ed758e7c6b84e828429-0 stage: qa
+cron-7d533ed758e7c6b84e828429-0 stage: qa-gate
+cron-7d533ed758e7c6b84e828429-0 stage: post-merge-qa
+cron-7d533ed758e7c6b84e828429-0 stage: commit
+cron-7d533ed758e7c6b84e828429-0 stage: integrate
+cron-7d533ed758e7c6b84e828429-0 stage: Done
+{"provider": "claude", "model": "claude-opus-5-5", "herdr_version": "herdr 0.9.5", "provider_version": "2.1.309 (Claude Code)", "adapter": "herdr", "scratch": "/var/tmp/fhd-0ata7_y3", "status": "failed", "task_ids": ["cron-7d533ed758e7c6b84e828429-0", "provider-beta"], "target_configs": {"revision_1": {"id": "dogfood-target", "revision": 1, "hash": "4d7581d06596ea47005b4489943715db36bf6260bcd5d6308cb30fd0543cfc91", "retired": false}, "revision_2": {"id": "dogfood-target", "revision": 2, "hash": "a66521933e973e5e8773ad12d9e1c82947599ad134b696914a9e27ddd97ee136", "retired": false}, "pinned_tasks": ["cron-7d533ed758e7c6b84e828429-0", "provider-beta"]}, "fleet_provisioning": {"performed": 1, "lost_ack_recovered_after_restart": true, "duplicate_mutations": 0, "baseline_after_receipt": true, "idempotent_prepare": true}, "dynamic_provisioning": {"adapter_revision": {"id": "dogfood-adapter", "revision": 1, "hash": "cc8a197249476fbff21d78190cf8270a1123c26f7f91656a454b4e285e440175"}, "later_revision": {"id": "dogfood-adapter", "revision": 2, "hash": "da9f7cc29afea04b1e4502b4c21db1f4876ae0e78db5928ce9fdf95f8e8228e5"}, "workspace": "/var/tmp/fhd-0ata7_y3/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194", "ready": true, "idempotent_prepare": true}, "crash_recovery": {"signal": "SIGKILL", "started_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/1/session/0"], "uncertain_sessions": ["cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/1/session/0"], "resolutions": [{"action": "redispatch", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/1", "id": "cron-7d533ed758e7c6b84e828429-0", "version": 5}], "automatic_replay": false}, "adapter_retirement": {"first_tombstone_preserved": true, "new_bindings_refused": ["write", "target"], "bound_task": "provider-beta"}, "independent_drive": {"before": {"BinaryHash": "8c91bba3b76b3ab55ece7c7eb35e9e2a83b331821c66d7cf721c585de97298bc", "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:11848845", "Workspace": "/var/tmp/fhd-0ata7_y3/repo", "HostLedger": "/var/tmp/fhd-0ata7_y3/host-leases", "Holds": null, "PID": 358951, "DoltPID": 358983, "OldPID": 0, "DriveAlive": true, "DriveGeneration": 1, "DriveCause": "", "DriveRounds": 3, "LastTransition": "2026-10-23T08:20:26.159920429Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "d706ca0d6982bc31774420408116200d247c4a86cdbda1edeabd3e6d01f56d93", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "stopped": {"BinaryHash": "8c91bba3b76b3ab55ece7c7eb35e9e2a83b331821c66d7cf721c585de97298bc", "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:11848845", "Workspace": "/var/tmp/fhd-0ata7_y3/repo", "HostLedger": "/var/tmp/fhd-0ata7_y3/host-leases", "Holds": null, "PID": 358951, "DoltPID": 358983, "OldPID": 0, "DriveAlive": false, "DriveGeneration": 1, "DriveCause": "operator-stop", "DriveRounds": 3, "LastTransition": "2026-10-23T08:20:26.159920429Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "d706ca0d6982bc31774420408116200d247c4a86cdbda1edeabd3e6d01f56d93", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "resumed": {"BinaryHash": "8c91bba3b76b3ab55ece7c7eb35e9e2a83b331821c66d7cf721c585de97298bc", "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:11848845", "Workspace": "/var/tmp/fhd-0ata7_y3/repo", "HostLedger": "/var/tmp/fhd-0ata7_y3/host-leases", "Holds": null, "PID": 358951, "DoltPID": 358983, "OldPID": 0, "DriveAlive": true, "DriveGeneration": 2, "DriveCause": "operator-stop", "DriveRounds": 3, "LastTransition": "2026-10-23T08:20:26.159920429Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "d706ca0d6982bc31774420408116200d247c4a86cdbda1edeabd3e6d01f56d93", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "retained_dispatches": {"cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/2", "provider-beta": "provider-beta/5ce7657bf09e23849222c196ee679cf1b80627778d1260c4c18cac1870aee3e2/1"}, "daemon_and_plane_unchanged": true, "retained_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/2/session/0"], "provider_start_evidence": [{"session_id": "cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/2/session/0", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/b3da91a1fa58fb60cabbb3e7bed0bc20a828d2fed0e82ea5e64a9390ccab4c25/2", "events": [{"type": "system", "subtype": "init", "session_id": "a620ad0c-63c3-491b-828e-090791ed9092"}]}], "deferred_before_execution": []}, "dynamic_limits": {"during_active_turns": {"effective_pane_limit": 16, "heavy_capacity": 1, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 16, "tasks_in_flight": 1}, "after_restart": {"dynamic": {"effective_pane_limit": 16, "heavy_capacity": 1, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 16, "tasks_in_flight": 1}, "fixed": {"instance_root": "/var/tmp/fhd-0ata7_y3/i/dogfood", "socket_path": "/var/tmp/fhd-0ata7_y3/i/dogfood/run/rpc.sock"}}, "raised": {"effective_pane_limit": 24, "heavy_capacity": 2, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 24, "tasks_in_flight": 2}}, "restart_checkpoint": {"cron-7d533ed758e7c6b84e828429-0": {"state": "intake-gate", "version": 7, "artifacts": 1}, "provider-beta": {"state": "intake-gate", "version": 4, "artifacts": 1}}, "controller_lifecycle": {"roll": {"accepted": true, "binary_sha256": "8c91bba3b76b3ab55ece7c7eb35e9e2a83b331821c66d7cf721c585de97298bc", "drive_rounds": 1, "holds": null, "new_pid": 360781, "old_pid": 358951, "pid": 360781, "watchdog": "not running"}, "old_pid": 358951, "maintenance_marker_cleared": true}, "provider_loop": {"iterations": 5, "state": "completed", "session_id": "loop-dogfood-loop"}, "cron_schedules": {"completed": 1, "admitted": 1, "duplicate_occurrences": 0}, "normal_targets": {"local_task": "cron-7d533ed758e7c6b84e828429-0", "live_task": "provider-beta", "live_effects": 1, "normal_revision": {"id": "dogfood-normal", "revision": 1, "hash": "ca7c60f93700b735040266719c34524e071bd16629a737e69d4a8a88ccd72b32", "retired": false}, "adapter": "disposable localhost fixture"}, "prophet_sessions": {"answered": 2, "scopes": ["task", "global"], "actions_enacted": 0, "durable_health_observations": 2}, "retirement": {"transferred": {"dependent_effect": "transferred", "dependents": ["retire-dependent"], "held_dependents": [], "id": "retire-old", "reason_class": "superseded-by", "reference": "retire-successor", "state": "Retired", "version": 3}, "held": {"dependent_effect": "held", "held_dependents": ["retire-dependent"]}, "hidden_by_default": true, "dependent_withheld": true}, "census_cleanup": {"applied": ["retire-successor"], "removed": ["retire-old", "retire-successor"], "verified_backup": true, "archives_verified": 2}, "lease_audit": {"capacity": 2, "granted": 34, "released": 34, "recovered": 0, "final_holders": 0}, "pane_audit": {"before_shutdown_reservations": 9}, "stall_recoveries": {"cron-7d533ed758e7c6b84e828429-0": 0, "provider-beta": 0}, "tasks": {"cron-7d533ed758e7c6b84e828429-0": {"artifact_records": 35, "version": 86}, "provider-beta": {"artifact_records": 23, "version": 54}}, "integration_sha": "0dcfd77c496664356ecc92129b03a4d8ff3016f7", "base_sha": "5656b5a175e4b30ad1f7e7a0a4a73d86720b0889", "backup_policy": {"lost_ack_recovered_after_restart": true, "uploads": 1, "remote_content_verified": true, "remote_restore_fsck": true, "idempotent_repeat": true, "replication_pin_invalidated_preview": true, "removed": 2, "retained": 1}, "retention_automation": {"paused_across_restart": true, "automatic_prune": true, "newest_retained": true, "replication_pin_retained": true, "runs": 2, "final_state": "paused"}, "deferred_host_refusals": [{"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:25:58.870598+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:26:13.884990+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:26:28.898645+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:26:43.913476+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:26:58.928583+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:27:13.943148+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:27:28.957101+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:27:43.971696+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:27:58.987147+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:28:14.001150+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:28:29.015492+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:28:44.030112+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:28:59.044293+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:29:14.058552+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:29:29.072836+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:29:44.088219+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:29:59.102686+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:30:14.117291+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:30:29.132088+00:00"}, {"command": "backup creation-schedule", "refusal": "backup creation schedule running; retry control after current run", "at": "2026-10-23T08:30:44.147196+00:00"}], "error": "backup creation schedule running; retry control after current run\n"}
+Traceback (most recent call last):
+  File "/home/lbethay/workplace/fae/scripts/dogfood.py", line 731, in <module>
+    call('backup','creation-schedule','pause','--authorizing-message','authorization')
+  File "/home/lbethay/workplace/fae/scripts/dogfood.py", line 138, in call
+    if r.returncode:raise RuntimeError(r.stderr)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: backup creation schedule running; retry control after current run
+
+dogfood exit=1

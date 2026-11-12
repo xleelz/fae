@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/xleelz/fae/defaults"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -184,6 +185,11 @@ func TestReviewWorkspaceNativePrepareRestartAndEffects(t *testing.T) {
 	if _, err = call(t, d, "ReviewWorkspacePrepare", p, ""); err != nil {
 		t.Fatal("idempotent retry", err)
 	}
+	// The shipped default's Normal sub-workflow needs review and ticket tools
+	// this fixture does not install; bind tasks to its Local projection.
+	if _, err := call(t, d, "WorkflowInstall", InstallParams{ID: "default", Document: defaults.Workflow(), AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
 	target := targetFixture(cfg.Workspace)
 	target.SchemaVersion = 3
 	target.IntegrationRef = cfg.Live.IntegrationRef
@@ -196,7 +202,7 @@ func TestReviewWorkspaceNativePrepareRestartAndEffects(t *testing.T) {
 	if err = os.Rename(plan.Workspace, plan.Workspace+"-moved"); err != nil {
 		t.Fatal(err)
 	}
-	lost := AdmitParams{ID: task, RunID: p.RunID, Mode: "Normal", TargetConfig: "review-target", TargetRevision: 1, Destination: "main", PushNamespace: "fae/", Content: "must refuse", AuthorizingMessage: "message"}
+	lost := AdmitParams{ID: task, RunID: p.RunID, Mode: "Normal", DryRun: true, TargetConfig: "review-target", TargetRevision: 1, Destination: "main", PushNamespace: "fae/", Content: "must refuse", AuthorizingMessage: "message"}
 	if _, err = call(t, d, "Admit", lost, task); err == nil {
 		t.Fatal("missing ready workspace recreated in admission")
 	}
@@ -219,7 +225,7 @@ func TestReviewWorkspaceNativePrepareRestartAndEffects(t *testing.T) {
 	if d.validatePreparedWorkspace(ctx, foreign) == nil {
 		t.Fatal("foreign prepared branch accepted")
 	}
-	admission := AdmitParams{ID: task, RunID: p.RunID, Mode: "Normal", TargetConfig: "review-target", TargetRevision: 1, Destination: "main", PushNamespace: "fae/", Content: "test prepared binding", AuthorizingMessage: "message"}
+	admission := AdmitParams{ID: task, RunID: p.RunID, Mode: "Normal", DryRun: true, TargetConfig: "review-target", TargetRevision: 1, Destination: "main", PushNamespace: "fae/", Content: "test prepared binding", AuthorizingMessage: "message"}
 	if _, err = call(t, d, "Admit", admission, task); err != nil {
 		t.Fatal(err)
 	}
@@ -276,8 +282,9 @@ func TestReviewWorkspaceNativePrepareRestartAndEffects(t *testing.T) {
 	if err != nil {
 		t.Fatal("retired dynamic target restart", err)
 	}
-	if d.jobs[task].State != "Retired" {
-		t.Fatal("retired state lost")
+	// Retired tasks are read from the plane, not materialised (FAE-CP-009).
+	if retired, err := d.store.GetJob(ctx, task); err != nil || retired.State != "Retired" {
+		t.Fatal("retired state lost", err)
 	}
 	if err = d.checkPinnedTarget(ctx, admitted.Admission, admitted.Job.Document); err == nil {
 		t.Fatal("ordinary target validation bypassed physical check")

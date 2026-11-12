@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -32,8 +32,8 @@ proctype BackupReplicationVerifiesBeforeReceipt5(chan child) {
 	int num_msgs->
 	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1564 = [1] of {int}->
 	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1463 = [1] of {int}->
-	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1392 = [1] of {int}->
-	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1271 = [1] of {int}->
+	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1372 = [1] of {int}->
+	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1281 = [1] of {int}->
 	chan child_AnonymousBackupReplicationVerifiesBeforeReceipt1160 = [1] of {int}->
 	Chandef confirmed_ch->
 	Chandef content_ch->
@@ -47,19 +47,19 @@ proctype BackupReplicationVerifiesBeforeReceipt5(chan child) {
 	run sync_monitor(confirmed_ch)->
 	run AnonymousBackupReplicationVerifiesBeforeReceipt116(intent_ch,transferred_ch,receipt_ch,content_ch,confirmed_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1160)->
 	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1160)->
-	run AnonymousBackupReplicationVerifiesBeforeReceipt127(transferred_ch,receipt_ch,content_ch,confirmed_ch,intent_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1271)->
-	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1271)->
-	run AnonymousBackupReplicationVerifiesBeforeReceipt139(content_ch,confirmed_ch,intent_ch,transferred_ch,receipt_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1392)->
-	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1392)->
+	run AnonymousBackupReplicationVerifiesBeforeReceipt128(receipt_ch,content_ch,confirmed_ch,intent_ch,transferred_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1281)->
+	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1281)->
+	run AnonymousBackupReplicationVerifiesBeforeReceipt137(transferred_ch,receipt_ch,content_ch,confirmed_ch,intent_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1372)->
+	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1372)->
 	run AnonymousBackupReplicationVerifiesBeforeReceipt146(intent_ch,transferred_ch,receipt_ch,content_ch,confirmed_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1463)->
 	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1463)->
 	run AnonymousBackupReplicationVerifiesBeforeReceipt156(intent_ch,transferred_ch,receipt_ch,content_ch,confirmed_ch,child_AnonymousBackupReplicationVerifiesBeforeReceipt1564)->
 	run receiver(child_AnonymousBackupReplicationVerifiesBeforeReceipt1564)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:16:2 */
-	:: confirmed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:16:2 */->
-	:: confirmed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:16:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:16:2 */
+	:: confirmed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:16:2 */->
+	:: confirmed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:16:2 */ -> 
 		confirmed_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -73,17 +73,17 @@ proctype AnonymousBackupReplicationVerifiesBeforeReceipt116(Chandef intent_ch;Ch
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:11:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:11:14 */
 	:: intent_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:11:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:11:14 */
 	:: intent_ch.sync!false -> 
 		intent_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:11:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:11:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousBackupReplicationVerifiesBeforeReceipt127(Chandef transferred_ch;Chandef receipt_ch;Chandef content_ch;Chandef confirmed_ch;Chandef intent_ch;chan child) {
+proctype AnonymousBackupReplicationVerifiesBeforeReceipt128(Chandef receipt_ch;Chandef content_ch;Chandef confirmed_ch;Chandef intent_ch;Chandef transferred_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -91,24 +91,24 @@ proctype AnonymousBackupReplicationVerifiesBeforeReceipt127(Chandef transferred_
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:12:14 */
-	:: intent_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:12:14 */->
-	:: intent_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:12:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:12:14 */
+	:: intent_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:12:14 */->
+	:: intent_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:12:14 */ -> 
 		intent_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:12:24 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:12:24 */
 	:: transferred_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:12:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:12:24 */
 	:: transferred_ch.sync!false -> 
 		transferred_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:12:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:12:24 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousBackupReplicationVerifiesBeforeReceipt139(Chandef content_ch;Chandef confirmed_ch;Chandef intent_ch;Chandef transferred_ch;Chandef receipt_ch;chan child) {
+proctype AnonymousBackupReplicationVerifiesBeforeReceipt137(Chandef transferred_ch;Chandef receipt_ch;Chandef content_ch;Chandef confirmed_ch;Chandef intent_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -116,19 +116,19 @@ proctype AnonymousBackupReplicationVerifiesBeforeReceipt139(Chandef content_ch;C
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:13:14 */
-	:: transferred_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:13:14 */->
-	:: transferred_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:13:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:13:14 */
+	:: transferred_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:13:14 */->
+	:: transferred_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:13:14 */ -> 
 		transferred_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:13:29 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:13:29 */
 	:: receipt_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:13:29 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:13:29 */
 	:: receipt_ch.sync!false -> 
 		receipt_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:13:29 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:13:29 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -141,19 +141,19 @@ proctype AnonymousBackupReplicationVerifiesBeforeReceipt146(Chandef intent_ch;Ch
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:14:14 */
-	:: receipt_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:14:14 */->
-	:: receipt_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:14:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:14:14 */
+	:: receipt_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:14:14 */->
+	:: receipt_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:14:14 */ -> 
 		receipt_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:14:25 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:14:25 */
 	:: content_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:14:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:14:25 */
 	:: content_ch.sync!false -> 
 		content_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:14:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:14:25 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -166,19 +166,19 @@ proctype AnonymousBackupReplicationVerifiesBeforeReceipt156(Chandef intent_ch;Ch
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:15:14 */
-	:: content_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:15:14 */->
-	:: content_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:15:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:15:14 */
+	:: content_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:15:14 */->
+	:: content_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:15:14 */ -> 
 		content_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:15:25 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:15:25 */
 	:: confirmed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:15:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:15:25 */
 	:: confirmed_ch.sync!false -> 
 		confirmed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/backup_replication.go:15:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/backup_replication.go:15:25 */
 	fi->
 	stop_process: skip->
 	child!0

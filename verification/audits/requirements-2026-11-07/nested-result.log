@@ -1,0 +1,5 @@
+new <nil>
+prepare <nil>
+stage=a fan_stage=inner branch=deep/a
+stage=b fan_stage=inner branch=deep/b
+stage=sibling fan_stage=outer branch=side

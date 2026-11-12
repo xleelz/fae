@@ -3,28 +3,36 @@ package daemon
 import (
 	"bytes"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controller"
 	"github.com/xleelz/fae/controlplane"
-	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/workflow"
 )
 
 type AdmitParams struct {
-	TargetConfig       string `json:"target_config,omitempty"`
-	TargetRevision     int64  `json:"target_revision,omitempty"`
-	TargetHash         string `json:"target_hash,omitempty"`
-	CommitExternal     bool   `json:"commit_external,omitempty"`
+	maxSessionsSet bool
+	Inputs         map[string]any    `json:"inputs,omitempty"`
+	ParentTask     string            `json:"parent_task,omitempty"`
+	FromParent     map[string]string `json:"from_parent,omitempty"`
+	MaxSessions    int               `json:"max_sessions,omitempty"`
+
+	Writes         []string `json:"writes,omitempty"`
+	TargetConfig   string   `json:"target_config,omitempty"`
+	TargetRevision int64    `json:"target_revision,omitempty"`
+	TargetHash     string   `json:"target_hash,omitempty"`
+	CommitExternal bool     `json:"commit_external,omitempty"`
+	// DryRun states a Normal dry run; a Normal submission names exactly one
+	// of DryRun and CommitExternal (FAE-CLI-011).
+	DryRun             bool   `json:"dry_run,omitempty"`
 	TicketRoom         string `json:"ticket_room,omitempty"`
 	Destination        string `json:"destination,omitempty"`
 	PushNamespace      string `json:"push_namespace,omitempty"`
@@ -39,9 +47,25 @@ type AdmitParams struct {
 	RunID              string `json:"run_id,omitempty"`
 	Mode               string `json:"mode,omitempty"`
 	AuthorizingMessage string `json:"authorizing_message"`
+	// TaskClass selects a declared task class; empty takes the default.
+	TaskClass string `json:"task_class,omitempty"`
+	// CarryFrom re-admits an inactive earlier task of the same item, carrying
+	// its accepted pre-code evidence forward (FAE-WF-086).
+	CarryFrom string `json:"carry_from,omitempty"`
+	// Optional structured fields (FAE-CLI-014): the files the work declares,
+	// its required test filter and test command shape, pinned at admission;
+	// landing uses them in place of the target's defaults.
+	DeclaredFiles []string               `json:"declared_files,omitempty"`
+	ReadOnlyFiles []string               `json:"read_only_files,omitempty"`
+	Reads         *workflow.ReadPolicy   `json:"reads,omitempty"`
+	TestFilter    string                 `json:"test_filter,omitempty"`
+	TestShape     string                 `json:"test_shape,omitempty"`
+	FollowUpOf    string                 `json:"follow_up_of,omitempty"`
+	TurnBudget    *engine.TurnBudgetSpec `json:"turn_budget,omitempty"`
 }
 type InstallParams struct {
 	ID                 string            `json:"id"`
+	Name               string            `json:"name,omitempty"`
 	Document           workflow.Document `json:"document"`
 	AuthorizingMessage string            `json:"authorizing_message"`
 }
@@ -71,22 +95,10 @@ func validWorkflow(raw []byte) error {
 	}
 	return nil
 }
-func (d *Daemon) installDefault(ctx context.Context) error {
-	doc := defaults.Workflow()
-	if d.live != nil && d.live.guard.panes != nil {
-		if err := validatePaneFloor(doc, d.live.guard.effectivePaneLimit()); err != nil {
-			return err
-		}
-	}
-	_, _, err := d.store.GetWorkflow(ctx, doc.ID, 0)
-	if err == nil {
-		return nil
-	}
-	if !errors.Is(err, sql.ErrNoRows) {
-		return err
-	}
-	raw, _ := json.Marshal(doc)
-	_, err = d.store.WriteWorkflow(ctx, controlplane.Audit{Actor: "daemon", Action: "install builtin workflow", Outcome: "ok"}, doc.ID, doc.ID, raw, validWorkflow)
+
+// validWorkflowWrite applies current authoring rules only to new revisions.
+func validWorkflowWrite(raw []byte) error {
+	_, err := workflow.ParseWrite(raw)
 	return err
 }
 func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
@@ -94,8 +106,20 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 	if authErr != nil {
 		return nil, authErr
 	}
+	if !permission.Read {
+		// An early refusal needs no lock; the check repeats under d.mu below.
+		if refusal := d.mutationRefusal(verb, false); refusal != nil {
+			return nil, refusal
+		}
+	}
 	if r.Method == "AdapterPut" {
 		return d.adapterInstallRPC(ctx, r, principal)
+	}
+	if r.Method == "import_legacy" {
+		return d.importLegacyRPC(ctx, r, principal)
+	}
+	if r.Method == "UIToken" {
+		return d.uiTokenRPC(ctx, r, principal)
 	}
 	if r.Method == "AdapterGet" {
 		var p struct {
@@ -116,11 +140,23 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 	if r.Method == "ReviewWorkspacePlan" || r.Method == "ReviewWorkspacePrepare" {
 		return d.reviewWorkspaceRPC(ctx, r)
 	}
+	if r.Method == "DispatchPauseList" {
+		return d.dispatchPauseList(ctx, r.Params)
+	}
 	if r.Method == "Census" {
 		return d.census(ctx, r.Params)
 	}
+	if r.Method == "Land" || r.Method == "LandStatus" {
+		return d.landRPC(ctx, r, principal)
+	}
 	if r.Method == "CensusApply" {
 		return d.censusApply(ctx, r.Params)
+	}
+	if r.Method == "ScratchArchiveCleanup" {
+		return d.scratchArchiveRPC(ctx, r)
+	}
+	if r.Method == "GatesSelfTest" {
+		return gatesSelfTest(r.Params)
 	}
 	if r.Method == "ScratchCleanupAuthorize" {
 		if principal.Actor != "operator" || principal.Task != "" {
@@ -168,11 +204,29 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 	if r.Method == "ProphetSession" || r.Method == "ProphetChatRead" || r.Method == "ProphetChat" {
 		return d.prophetRPC(ctx, r)
 	}
+	if r.Method == "Alerts" || r.Method == "Metrics" || r.Method == "HostMetrics" {
+		return d.observabilityRead(ctx, r)
+	}
 	if value, handled, err := d.cachedRead(r); handled {
 		return value, err
 	}
 	if r.Method == "BacklogShow" {
 		return d.backlogShow(ctx, r.Params)
+	}
+	if r.Method == "ChangeRequests" {
+		return d.changeRequestsRead(ctx, r.Params)
+	}
+	if r.Method == "WorkflowLimit" {
+		return d.workflowSlotSnapshot(ctx)
+	}
+	if r.Method == "Tree" {
+		return d.treeRead(ctx, r.Params)
+	}
+	if r.Method == "TaskGet" {
+		return d.taskGet(ctx, r.Params)
+	}
+	if value, handled, err := d.operatorRead(ctx, r); handled {
+		return value, err
 	}
 	if r.Method == "ReviewTargetHealth" {
 		var p struct {
@@ -186,7 +240,15 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 		}
 		return d.reviewWorkspaceHealth(ctx, p.Task)
 	}
-
+	if workflowReads[r.Method] {
+		return d.workflowRead(ctx, r)
+	}
+	if apiReads[r.Method] {
+		return d.apiRead(ctx, r.Method, r.Params)
+	}
+	if r.Method == "Show" {
+		return d.show(ctx, r.Params)
+	}
 	if r.Method == "Status" {
 		var p struct {
 			IncludeRetired bool `json:"include_retired"`
@@ -195,8 +257,12 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 		if err := decode(r.Params, &p); err != nil {
 			return nil, err
 		}
+		// childMu guards only the child's identity: a task-row read below may
+		// wait on the plane, and must not hold up a plane restart, shutdown or
+		// the Status calls queued behind their writer lock.
 		d.childMu.RLock()
-		defer d.childMu.RUnlock()
+		pid, port := d.child.PID(), d.child.Port()
+		d.childMu.RUnlock()
 		adapter := "scripted"
 		if d.config.Live != nil {
 			adapter = d.config.Live.Adapter
@@ -204,17 +270,51 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 				adapter = "direct"
 			}
 		}
-		return map[string]any{"instance": d.config.Instance, "pid": os.Getpid(), "uptime_seconds": time.Since(d.started).Seconds(), "adapter": adapter, "plane": map[string]any{"kind": "Dolt", "pid": d.child.PID(), "port": d.child.Port(), "data_dir": d.layout.Data, "schema_version": controlplane.SchemaVersion}, "socket": d.layout.Socket, "shutting_down": d.ctx.Err() != nil, "snapshot": d.statusSummary(p.IncludeRetired)}, nil
+		version := BuildVersion()
+		version["binary_sha256"] = d.binaryHash
+		out := d.statusExtraFields()
+		out["default_workflow"] = d.defaultWorkflow.Load()
+		out["startup_checks"] = d.startupReport.Load()
+		plane := map[string]any{"kind": "Dolt", "pid": pid, "port": port, "endpoint": fmt.Sprintf("127.0.0.1:%d", port), "data_dir": d.layout.Data, "schema_version": controlplane.SchemaVersion, "last_commit": nil}
+		if x := d.statusExtras.value.Load(); x != nil {
+			plane["last_commit"] = x.LastCommit
+		}
+		snapshot, err := d.statusRead(ctx, p.IncludeRetired, p.Tasks)
+		if err != nil {
+			return nil, err
+		}
+		for k, v := range map[string]any{"instance": d.config.Instance, "pid": os.Getpid(), "uptime_seconds": time.Since(d.started).Seconds(), "version": version, "adapter": adapter, "plane": plane, "socket": d.layout.Socket, "shutting_down": d.ctx.Err() != nil, "snapshot": snapshot} {
+			out[k] = v
+		}
+		return out, nil
 	}
 	if r.Method == "Board" {
-		return d.board(r.Params)
+		return d.board(ctx, r.Params)
+	}
+	if out, ok, err := d.recordRead(ctx, r.Method, r.Params); ok {
+		return out, err
 	}
 	switch r.Method {
-	case "TargetConfigGet", "TargetConfigList", "History", "TaskHistory", "Events", "Workflows", "ProviderHealth", "ProviderObservations":
+	case "TargetConfigGet", "TargetConfigList", "History", "TaskHistory", "Events", "ProviderHealth", "ProviderObservations":
 		switch r.Method {
 		case "ProviderHealth":
-			if err := decode(r.Params, &struct{}{}); err != nil {
+			var p struct {
+				WindowSeconds int64 `json:"window_seconds"`
+			}
+			if err := decode(r.Params, &p); err != nil {
 				return nil, err
+			}
+			// API-001's window defaults to 15 minutes. An absent window takes
+			// it; an out-of-range one falls back to it, as `provider-health
+			// --window` does (REQUIREMENTS.md conventions), and the response
+			// says so. A window that is not an integer is still refused.
+			var windowWarning string
+			if p.WindowSeconds < 0 || p.WindowSeconds > 86400 {
+				windowWarning = fmt.Sprintf("window_seconds %d is out of range (1..86400); using the default 900", p.WindowSeconds)
+				p.WindowSeconds = 0
+			}
+			if p.WindowSeconds == 0 {
+				p.WindowSeconds = 900
 			}
 			health, err := d.store.ProviderHealth(ctx)
 			if err != nil {
@@ -228,7 +328,15 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 			for _, h := range health {
 				rows = append(rows, map[string]any{"health": h, "effective_score": h.At(now), "eligible": h.Eligible(now)})
 			}
-			return map[string]any{"at": now, "bindings": rows}, nil
+			series, truncated, err := d.providerHealthSeries(ctx, time.Duration(p.WindowSeconds)*time.Second)
+			if err != nil {
+				return nil, err
+			}
+			result := map[string]any{"at": now, "bindings": rows, "window_seconds": p.WindowSeconds, "series": series, "series_truncated": truncated}
+			if windowWarning != "" {
+				result["window_warning"] = windowWarning
+			}
+			return result, nil
 		case "ProviderObservations":
 			var p struct {
 				After int64 `json:"after"`
@@ -244,19 +352,18 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 		case "History", "TaskHistory":
 			return d.history(ctx, r.Params)
 		case "Events":
-			var p struct {
-				IncludeRetired bool  `json:"include_retired"`
-				After          int64 `json:"after"`
-				Limit          int   `json:"limit"`
-			}
+			var p eventsParams
 			if err := decode(r.Params, &p); err != nil {
 				return nil, err
 			}
 			if p.Limit == 0 {
 				p.Limit = 100
 			}
-			return d.eventRead(ctx, p.After, p.Limit, p.IncludeRetired)
+			return d.eventReadFiltered(ctx, p.After, p.Limit, p.IncludeRetired, p.EventFilter)
 		case "TargetConfigList":
+			if err := decode(r.Params, &struct{}{}); err != nil {
+				return nil, err
+			}
 			return d.store.ListTargets(ctx)
 		case "TargetConfigGet":
 			var p struct {
@@ -271,31 +378,19 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 				Revision controlplane.TargetRevision `json:"revision"`
 				Document json.RawMessage             `json:"document"`
 			}{rev, raw}, err
-		case "Workflows":
-			var p struct {
-				ID       string `json:"id"`
-				Revision int64  `json:"revision"`
-			}
-			if err := decode(r.Params, &p); err != nil {
-				return nil, err
-			}
-			revision, raw, err := d.store.GetWorkflow(ctx, p.ID, p.Revision)
-			return struct {
-				Revision controlplane.Revision `json:"revision"`
-				Document json.RawMessage       `json:"document"`
-			}{revision, raw}, err
 		}
 	}
+	// Reads a writer only checks run before the writer lock and are re-checked
+	// under it (FAE-ROB-020/-021).
+	ctx = d.readBeforeWriterLock(ctx, r.Method, r.Params)
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	defer d.publishStatus()
-	if d.ctx.Err() != nil {
-		return nil, errors.New("shutting-down")
-	}
-	if _, err := os.Stat(filepath.Join(d.layout.Root, "maintenance")); err == nil {
-		return nil, errors.New("maintenance")
-	} else if !os.IsNotExist(err) {
+	if err := d.mutationRefusal(verb, permission.Read); err != nil {
 		return nil, err
+	}
+	if r.Method != "Admit" {
+		d.awaitCheckpoint()
 	}
 	if r.Method == "Schedule" {
 		var p ScheduleParams
@@ -307,14 +402,7 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 		}
 	}
 	if r.Method == "Message" {
-		var p struct {
-			ID   string `json:"id"`
-			Text string `json:"text"`
-		}
-		if err := decode(r.Params, &p); err != nil {
-			return nil, err
-		}
-		return map[string]string{"id": p.ID}, d.store.RecordMessage(ctx, p.ID, p.Text)
+		return d.messageRPC(ctx, principal, r.Params)
 	}
 	if err := d.reconcileBacklogCheckpoint(ctx); err != nil {
 		return nil, fmt.Errorf("backlog outcome unresolved: %w", err)
@@ -336,7 +424,7 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 			}
 		}
 		if p.Action == "accept" || p.Action == "stop" || p.Action == "abort" {
-			marker, err := controller.ReadMarker(d.controllerMarkerPath())
+			marker, err := d.maintenanceMarker()
 			if err != nil {
 				return nil, err
 			}
@@ -349,18 +437,56 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 	if err := json.Unmarshal(r.Params, &authority); err != nil {
 		return nil, err
 	}
-	var authErr2 error
-	ctx, authErr2 = d.store.AuthorizeAction(ctx, authority.AuthorizingMessage, principal.Actor, verb, permission.Class, continuation, actionClasses())
-	if authErr2 != nil {
-		return nil, authErr2
+	skipAuthorize := false
+	if authority.AuthorizingMessage == "" {
+		if r.Method == "Notify" {
+			var np TaskNotifyParams
+			_ = json.Unmarshal(r.Params, &np)
+			if (principal.Actor == "controller" || np.Actor == "controller") && np.Kind == "note" && strings.TrimSpace(np.FromTask) != "" {
+				skipAuthorize = true
+			} else if principal.Actor == "operator" && np.Actor != "controller" {
+				skipAuthorize = true
+			}
+		} else if r.Method == "FollowUp" && principal.Actor == "operator" {
+			skipAuthorize = true
+		}
+	}
+	if !skipAuthorize {
+		var authErr2 error
+		ctx, authErr2 = d.store.AuthorizeAction(ctx, authority.AuthorizingMessage, principal.Actor, verb, permission.Class, continuation, actionClasses())
+		if authErr2 != nil {
+			return nil, authErr2
+		}
 	}
 	audit := controlplane.Audit{Actor: principal.Actor, Action: r.Method, MessageID: authority.AuthorizingMessage, Inputs: r.Params, Outcome: "ok"}
 
 	switch r.Method {
+	case "WorkflowLimitSet":
+		return d.workflowLimitSet(ctx, r.Params, audit)
+	case "TreeLimit":
+		return d.treeLimit(ctx, r.Params, audit)
+	case "ControllerOperation":
+		return d.controllerOperation(ctx, r.Params, audit)
+	case "Notify":
+		return d.taskNotify(ctx, r.Params, audit)
+	case "ResumeAtStage":
+		return d.taskControl(ctx, r.Method, r.Params, audit)
+	case "SupplyArtifact":
+		return d.supplyArtifact(ctx, r.Params, audit)
+	case "ChangeRequestDisposition":
+		return d.changeRequestDisposition(ctx, r.Params, audit)
+	case "FollowUp":
+		return d.taskFollowUp(ctx, r.Key, r.Params, audit)
 	case "BacklogAdmit":
 		return d.backlogAdmit(ctx, r.Params, audit)
 	case "BacklogEdge":
 		return d.backlogEdge(ctx, r.Params, audit)
+	case "TaskCreate":
+		return d.taskCreate(ctx, r.Params, audit)
+	case "TaskUpdate":
+		return d.taskUpdate(ctx, r.Params, audit)
+	case "TaskDelete":
+		return d.taskDelete(ctx, r.Params, audit)
 	case "ReconcileDone":
 		var p struct {
 			DryRun             bool   `json:"dry_run"`
@@ -372,12 +498,26 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 		return d.reconcileBacklogDone(ctx, p.DryRun, audit)
 	case "Retire", "Escalate", "Block", "Cancel", "Defer", "Undefer", "Reprioritize", "SetAttemptLimit", "RestartWithInformation", "ResumeWithContext", "Resume":
 		return d.taskControl(ctx, r.Method, r.Params, audit)
+	case "ResumeRun":
+		return d.resumeRun(ctx, r.Params, audit)
 	case "Controller":
 		return d.controllerAction(ctx, r.Params, audit)
+	case "AlertAcknowledge":
+		return d.alertAcknowledge(ctx, r.Params, audit)
 	case "ResolveUncertain":
 		return d.resolveUncertain(ctx, r.Params, audit)
 	case "RuntimeConfig":
 		return d.updateRuntimeConfig(ctx, r.Params, audit)
+	case "PoolResize":
+		return d.poolResize(ctx, r.Params, audit)
+	case "QuotaSet":
+		return d.quotaSet(ctx, r.Params, audit)
+	case "QuotaClear":
+		return d.quotaClear(ctx, r.Params, audit)
+	case "DispatchPause":
+		return d.dispatchPause(ctx, r.Params, audit)
+	case "DispatchUnpause":
+		return d.dispatchUnpause(ctx, r.Params, audit)
 	case "Schedule":
 		var p ScheduleParams
 		if err := decode(r.Params, &p); err != nil {
@@ -440,10 +580,33 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 				return nil, err
 			}
 		}
+		if p.Name == "" {
+			p.Name = p.ID
+		}
+		if len(p.Name) > 255 {
+			return nil, errors.New("workflow name exceeds 255 bytes")
+		}
 		raw, _ := json.Marshal(p.Document)
-		return d.store.WriteWorkflow(ctx, audit, p.ID, p.ID, raw, validWorkflow)
+		parsed, err := d.parseWorkflowWrite(raw)
+		if err != nil {
+			return nil, err
+		}
+		footprint, err := d.resolveFootprint(ctx, parsed, 0)
+		if err != nil {
+			return nil, fmt.Errorf("workflow footprint: %w", err)
+		}
+		raw, err = json.Marshal(parsed)
+		if err != nil {
+			return nil, err
+		}
+		footprintJSON, _ := json.Marshal(footprint)
+		return d.store.WriteWorkflow(ctx, audit, p.ID, p.Name, raw, d.validWorkflowWrite, footprintJSON)
+	case "WorkflowRetire":
+		return d.workflowRetire(ctx, r.Params, audit)
 	case "Admit":
 		return d.admit(ctx, r.Key, r.Params, audit)
+	case "AttachDesignDoc", "Reclaim", "Migrate", "Decide", "QuarantineRelease", "QuarantineRetire":
+		return d.operatorVerb(ctx, r, audit)
 	default:
 		return nil, fmt.Errorf("unknown RPC method %q", r.Method)
 	}
@@ -464,33 +627,4 @@ func decodeEnvelope(raw []byte, e *envelope) error {
 	d.UseNumber()
 	d.DisallowUnknownFields()
 	return d.Decode(e)
-}
-
-func (d *Daemon) statusSummary(include ...bool) any {
-	value := d.status.Load()
-	if value == nil {
-		return nil
-	}
-	s := value.(statusSnapshot)
-	if len(include) == 0 || !include[0] {
-		s.Counts = copyCountsWithoutRetired(s.Counts)
-		visible := []BoardItem{}
-		for _, t := range s.Tasks {
-			if t.State != "Retired" {
-				visible = append(visible, t)
-			}
-		}
-		s.Tasks = visible
-	}
-	return struct {
-		TicketOutbox  ticketStatus   `json:"ticket_outbox"`
-		Configuration map[string]any `json:"configuration"`
-		Drained       bool           `json:"drained"`
-		Draining      bool           `json:"draining"`
-		Active        int            `json:"active"`
-		Counts        map[string]int `json:"counts"`
-		Total         int            `json:"total"`
-		Updated       time.Time      `json:"updated"`
-		AgeMillis     int64          `json:"age_ms"`
-	}{s.TicketOutbox, s.Configuration, s.Drained, s.Draining, s.Active, s.Counts, len(s.Tasks), s.Updated, time.Since(s.Updated).Milliseconds()}
 }

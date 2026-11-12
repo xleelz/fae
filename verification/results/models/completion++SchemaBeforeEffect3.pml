@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,8 +30,8 @@ proctype SchemaBeforeEffect3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousSchemaBeforeEffect962 = [1] of {int}->
-	chan child_AnonymousSchemaBeforeEffect861 = [1] of {int}->
+	chan child_AnonymousSchemaBeforeEffect942 = [1] of {int}->
+	chan child_AnonymousSchemaBeforeEffect841 = [1] of {int}->
 	chan child_AnonymousSchemaBeforeEffect740 = [1] of {int}->
 	Chandef effect_ch->
 	Chandef validated_ch->
@@ -41,15 +41,15 @@ proctype SchemaBeforeEffect3(chan child) {
 	run sync_monitor(effect_ch)->
 	run AnonymousSchemaBeforeEffect74(discovered_ch,validated_ch,effect_ch,child_AnonymousSchemaBeforeEffect740)->
 	run receiver(child_AnonymousSchemaBeforeEffect740)->
-	run AnonymousSchemaBeforeEffect86(effect_ch,discovered_ch,validated_ch,child_AnonymousSchemaBeforeEffect861)->
-	run receiver(child_AnonymousSchemaBeforeEffect861)->
-	run AnonymousSchemaBeforeEffect96(effect_ch,discovered_ch,validated_ch,child_AnonymousSchemaBeforeEffect962)->
-	run receiver(child_AnonymousSchemaBeforeEffect962)->
+	run AnonymousSchemaBeforeEffect84(discovered_ch,validated_ch,effect_ch,child_AnonymousSchemaBeforeEffect841)->
+	run receiver(child_AnonymousSchemaBeforeEffect841)->
+	run AnonymousSchemaBeforeEffect94(discovered_ch,validated_ch,effect_ch,child_AnonymousSchemaBeforeEffect942)->
+	run receiver(child_AnonymousSchemaBeforeEffect942)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:10:2 */
-	:: effect_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:10:2 */->
-	:: effect_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:10:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:10:2 */
+	:: effect_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:10:2 */->
+	:: effect_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:10:2 */ -> 
 		effect_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -63,17 +63,17 @@ proctype AnonymousSchemaBeforeEffect74(Chandef discovered_ch;Chandef validated_c
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:7:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:7:14 */
 	:: discovered_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:7:14 */
 	:: discovered_ch.sync!false -> 
 		discovered_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:7:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousSchemaBeforeEffect86(Chandef effect_ch;Chandef discovered_ch;Chandef validated_ch;chan child) {
+proctype AnonymousSchemaBeforeEffect84(Chandef discovered_ch;Chandef validated_ch;Chandef effect_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -81,24 +81,24 @@ proctype AnonymousSchemaBeforeEffect86(Chandef effect_ch;Chandef discovered_ch;C
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:8:14 */
-	:: discovered_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:8:14 */->
-	:: discovered_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:8:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:8:14 */
+	:: discovered_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:8:14 */->
+	:: discovered_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:8:14 */ -> 
 		discovered_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:8:28 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:8:28 */
 	:: validated_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:8:28 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:8:28 */
 	:: validated_ch.sync!false -> 
 		validated_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:8:28 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:8:28 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousSchemaBeforeEffect96(Chandef effect_ch;Chandef discovered_ch;Chandef validated_ch;chan child) {
+proctype AnonymousSchemaBeforeEffect94(Chandef discovered_ch;Chandef validated_ch;Chandef effect_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -106,19 +106,19 @@ proctype AnonymousSchemaBeforeEffect96(Chandef effect_ch;Chandef discovered_ch;C
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:9:14 */
-	:: validated_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:9:14 */->
-	:: validated_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:9:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:9:14 */
+	:: validated_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:9:14 */->
+	:: validated_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:9:14 */ -> 
 		validated_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:9:27 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:9:27 */
 	:: effect_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:9:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:9:27 */
 	:: effect_ch.sync!false -> 
 		effect_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/schema.go:9:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/schema.go:9:27 */
 	fi->
 	stop_process: skip->
 	child!0

@@ -10,7 +10,10 @@ import (
 	"time"
 )
 
-const DefaultExpiry = 7 * 24 * time.Hour
+const (
+	DefaultExpiry = 7 * 24 * time.Hour
+	StartAttempts = 3
+)
 
 var identifier = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$`)
 
@@ -25,16 +28,18 @@ type Spec struct {
 	ExpiresAt       time.Time        `json:"expires_at"`
 }
 type Schedule struct {
-	Dispatches int64           `json:"dispatches"`
-	Spec       Spec            `json:"spec"`
-	SessionID  string          `json:"session_id"`
-	State      string          `json:"state"`
-	Iterations int64           `json:"iterations"`
-	InFlight   bool            `json:"in_flight"`
-	Next       time.Time       `json:"next"`
-	Context    json.RawMessage `json:"context,omitempty"`
-	LastOutput json.RawMessage `json:"last_output,omitempty"`
-	Error      string          `json:"error,omitempty"`
+	Dispatches         int64           `json:"dispatches"`
+	Spec               Spec            `json:"spec"`
+	SessionID          string          `json:"session_id"`
+	State              string          `json:"state"`
+	Iterations         int64           `json:"iterations"`
+	StartupNotExecuted int64           `json:"startup_not_executed,omitempty"`
+	StartupFailures    int64           `json:"startup_failures,omitempty"`
+	InFlight           bool            `json:"in_flight"`
+	Next               time.Time       `json:"next"`
+	Context            json.RawMessage `json:"context,omitempty"`
+	LastOutput         json.RawMessage `json:"last_output,omitempty"`
+	Error              string          `json:"error,omitempty"`
 }
 type Request struct {
 	Attempt   int64
@@ -43,13 +48,29 @@ type Request struct {
 	Iteration int64
 	Context   json.RawMessage
 }
-type Result struct{ Context, Output json.RawMessage }
+type Result struct {
+	Context            json.RawMessage
+	Output             json.RawMessage
+	StartupNotExecuted int64
+}
 
 // DeferredError is a trusted adapter's positive proof that no provider execution
 // occurred and all acquired resources were released. Joined errors lose this proof.
 type DeferredError struct{ Cause error }
 
 func (e *DeferredError) Error() string { return "loop admission deferred: " + e.Cause.Error() }
+
+// NotStartedError is a trusted adapter's positive proof that a loop turn
+// failed before starting (the transport never ran the bridge, the bridge
+// refused before launching the provider, or the provider never acknowledged
+// the prompt) and all acquired resources were released. Joined errors lose
+// this proof.
+type NotStartedError struct{ Cause error }
+
+func (e *NotStartedError) Error() string { return "loop start not executed: " + e.Cause.Error() }
+func (e *NotStartedError) Unwrap() error { return e.Cause }
+
+func (s *Schedule) RecordStartupNotExecuted() { s.StartupNotExecuted++ }
 
 type Runner func(context.Context, Request) (Result, error)
 
@@ -82,12 +103,27 @@ func (s *Schedule) Recover() {
 }
 func (s *Schedule) Complete(r Result, err error, now time.Time) {
 	s.InFlight = false
+	if r.StartupNotExecuted > 0 {
+		s.StartupNotExecuted += r.StartupNotExecuted
+	}
 	if err != nil {
 		if _, safe := err.(*DeferredError); safe {
 			s.Error = err.Error()
 			s.Next = now.Add(5 * time.Second)
 			s.Bound(now)
 			return
+		}
+		if _, safe := err.(*NotStartedError); safe {
+			if r.StartupNotExecuted == 0 {
+				s.StartupNotExecuted++
+			}
+			s.StartupFailures++
+			if s.StartupFailures < StartAttempts {
+				s.Error = err.Error()
+				s.Next = now
+				s.Bound(now)
+				return
+			}
 		}
 		s.State = "uncertain"
 		s.Error = err.Error()
@@ -101,6 +137,7 @@ func (s *Schedule) Complete(r Result, err error, now time.Time) {
 	s.Context = append(json.RawMessage(nil), r.Context...)
 	s.LastOutput = append(json.RawMessage(nil), r.Output...)
 	s.Iterations++
+	s.StartupFailures = 0
 	s.Error = ""
 	s.Next = now.Add(time.Duration(s.Spec.IntervalSeconds) * time.Second)
 	s.Bound(now)
@@ -124,7 +161,7 @@ func Scripted(_ context.Context, r Request) (Result, error) {
 	c.Prompts++
 	raw, _ := json.Marshal(c)
 	out, _ := json.Marshal(map[string]any{"prompt": r.Spec.Prompt, "iteration": c.Prompts})
-	return Result{raw, out}, nil
+	return Result{Context: raw, Output: out}, nil
 }
 
 // Validate rejects corrupted durable records before any provider can launch.
@@ -132,7 +169,7 @@ func (s Schedule) Validate() error {
 	if _, err := New(s.Spec, s.Spec.ExpiresAt.Add(-time.Second)); err != nil {
 		return err
 	}
-	if s.Spec.ExpiresAt.IsZero() || s.SessionID != "loop-"+s.Spec.ID || s.Iterations < 0 || s.Spec.MaxIterations > 0 && s.Iterations > s.Spec.MaxIterations || s.Next.IsZero() {
+	if s.Spec.ExpiresAt.IsZero() || s.SessionID != "loop-"+s.Spec.ID || s.Iterations < 0 || s.StartupNotExecuted < 0 || s.StartupFailures < 0 || s.Spec.MaxIterations > 0 && s.Iterations > s.Spec.MaxIterations || s.Next.IsZero() {
 		return errors.New("invalid durable loop bounds or identity")
 	}
 	switch s.State {

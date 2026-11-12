@@ -26,3 +26,6 @@ func exited(pid int) (bool, error) {
 	}
 	return p.Proc.P_stat == 5, nil // Darwin SZOMB; direct child is not reaped yet.
 }
+
+// awaitExit is unavailable here; Wait polls the child's state instead.
+func awaitExit(int) error { return errUnsupportedWait }

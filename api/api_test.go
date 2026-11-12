@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/hex"
+	"net"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -33,11 +34,22 @@ func TestAuthenticationAndStrictParsing(t *testing.T) {
 		t.Fatalf("unauthorized effect: %d", calls)
 	}
 }
-func TestSocketAndCredential(t *testing.T) {
-	root := t.TempDir()
-	if err := os.Chmod(root, 0700); err != nil {
+
+// apiSocketDir is an owner-only directory short enough for a Unix socket path
+// (108 bytes) under any TMPDIR: t.TempDir() under a brokered run's TMPDIR,
+// beside a task worktree, is already too long.
+func apiSocketDir(t *testing.T) string {
+	t.Helper()
+	dir, err := os.MkdirTemp("/var/tmp", "fae-api-")
+	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { os.RemoveAll(dir) })
+	return dir
+}
+
+func TestSocketAndCredential(t *testing.T) {
+	root := apiSocketDir(t)
 	token, err := Credential(filepath.Join(root, "credential"))
 	if err != nil {
 		t.Fatal(err)
@@ -94,7 +106,7 @@ func TestShutdownRefusesMutation(t *testing.T) {
 	r.Header.Set("Authorization", hex.EncodeToString(token))
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, r)
-	if !strings.Contains(w.Body.String(), "shutting-down") {
+	if !strings.Contains(w.Body.String(), `"error_code":"shutting-down"`) {
 		t.Fatal(w.Body.String())
 	}
 }
@@ -124,5 +136,29 @@ func TestDuplicateRequestKeysRefused(t *testing.T) {
 	s.ServeHTTP(w, r)
 	if w.Code != 400 || calls != 0 {
 		t.Fatal("ambiguous request accepted")
+	}
+}
+
+// A server shut down between Listen and Serve (a daemon start that fails
+// after binding its socket) stops listening; a later Shutdown is harmless.
+func TestShutdownBeforeServeClosesTheListener(t *testing.T) {
+	root := apiSocketDir(t)
+	s, err := New(make([]byte, 32), func(context.Context, Request) (any, error) { return nil, nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	socket := filepath.Join(root, "s")
+	if err = s.Listen(socket); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.Shutdown(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if conn, err := net.Dial("unix", socket); err == nil {
+		conn.Close()
+		t.Fatal("socket still accepts after Shutdown")
+	}
+	if err = s.Shutdown(context.Background()); err != nil {
+		t.Fatal("second Shutdown", err)
 	}
 }

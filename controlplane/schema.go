@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-const SchemaVersion = 6
+const SchemaVersion = 12
 
 // SchemaStatements is forward-only migration 1. SQL uses Dolt's MySQL dialect.
 var SchemaStatements = []string{
@@ -48,7 +48,10 @@ var Migration2 = []string{
 
 // Migrate applies numbered, replayable forward migrations. Dolt DDL can commit
 // implicitly, so all statements are idempotent before recording each version.
-func (s *Store) Migrate(ctx context.Context) error {
+// Each version is its own Dolt commit naming it (FAE-CP-008).
+func (s *Store) Migrate(ctx context.Context) error { return s.migrateTo(ctx, SchemaVersion) }
+
+func (s *Store) migrateTo(ctx context.Context, target int) error {
 	if _, e := s.db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS migrations (version BIGINT PRIMARY KEY, applied_at DATETIME(6) NOT NULL)`); e != nil {
 		return e
 	}
@@ -59,16 +62,25 @@ func (s *Store) Migrate(ctx context.Context) error {
 	if version > SchemaVersion {
 		return fmt.Errorf("schema %d is newer than supported %d", version, SchemaVersion)
 	}
-	migrations := [][]string{SchemaStatements, Migration2, Migration3, Migration4, Migration5, Migration6}
-	for next := version + 1; next <= SchemaVersion; next++ {
+	migrations := [][]string{SchemaStatements, Migration2, Migration3, Migration4, Migration5, Migration6, Migration7, Migration8, Migration9, Migration10, Migration11, Migration12}
+	// Go steps run after a version's statements, in its transaction.
+	steps := map[int][]func(context.Context, *sql.Tx) error{8: {migration8Columns, s.backfillRecords}, 9: {migration9Columns, s.backfillFamilies}, 10: {s.migration10}, 11: {migration11Columns, s.backfillBoardColumns}, 12: {migration12Columns, s.backfillTreeIndex}}
+	for next := version + 1; next <= target; next++ {
 		err := s.transaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
 			for _, statement := range migrations[next-1] {
 				if _, e := tx.ExecContext(ctx, statement); e != nil {
 					return e
 				}
 			}
-			_, e := tx.ExecContext(ctx, `INSERT INTO migrations (version,applied_at) VALUES (?,UTC_TIMESTAMP(6))`, next)
-			return e
+			for _, step := range steps[next] {
+				if e := step(ctx, tx); e != nil {
+					return e
+				}
+			}
+			if _, e := tx.ExecContext(ctx, `INSERT INTO migrations (version,applied_at) VALUES (?,UTC_TIMESTAMP(6))`, next); e != nil {
+				return e
+			}
+			return s.versionCommit(ctx, tx, fmt.Sprintf("migration %d by daemon", next))
 		})
 		if err != nil {
 			return err
@@ -77,9 +89,21 @@ func (s *Store) Migrate(ctx context.Context) error {
 	return nil
 }
 
+// versionCommit makes the transaction's writes one Dolt commit (FAE-CP-008).
+func (s *Store) versionCommit(ctx context.Context, tx *sql.Tx, message string) error {
+	if !s.options.VersionCommits {
+		return nil
+	}
+	_, e := tx.ExecContext(ctx, `CALL DOLT_COMMIT('-Am', ?)`, message)
+	return e
+}
+
 // Migration3 serializes each durable resource pool on a single conflict row.
 var Migration3 = []string{`CREATE TABLE IF NOT EXISTS resource_pools (pool_key VARCHAR(255) PRIMARY KEY, kind VARCHAR(64) NOT NULL, version BIGINT NOT NULL, payload LONGTEXT NOT NULL)`}
 
 var Migration4 = []string{`CREATE TABLE IF NOT EXISTS provider_observations (observation_id VARCHAR(255) PRIMARY KEY, digest CHAR(64) NOT NULL, payload TEXT NOT NULL)`}
 
 var Migration6 = []string{`CREATE INDEX IF NOT EXISTS events_created ON events (created_at,sequence)`, `CREATE TABLE IF NOT EXISTS event_retention (id BIGINT PRIMARY KEY, floor_sequence BIGINT NOT NULL)`, `INSERT IGNORE INTO event_retention (id,floor_sequence) VALUES (1,0)`}
+
+// TurnCheckpointsTableDDL defines the durable agentic turn checkpoints table (FAE-RT-019).
+const TurnCheckpointsTableDDL = `CREATE TABLE IF NOT EXISTS turn_checkpoints (task_id VARCHAR(255) NOT NULL, stage_id VARCHAR(255) NOT NULL, visit BIGINT NOT NULL, attempt BIGINT NOT NULL, provider_session VARCHAR(255) NOT NULL, worktree_tree VARCHAR(255) NOT NULL, assistant_turns BIGINT NOT NULL DEFAULT 0, updated_at DATETIME(6) NOT NULL, PRIMARY KEY(task_id,stage_id,visit,attempt))`

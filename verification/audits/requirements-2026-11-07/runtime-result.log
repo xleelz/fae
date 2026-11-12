@@ -1,0 +1,6 @@
+=== RUN   TestAuditReviewIndependentReadWriteScopes
+    audit_capability_overlay_test.go:8: SEC011-authorized output refused solely by independent read allowlist: session wrote denied path gen/new.yaml
+--- FAIL: TestAuditReviewIndependentReadWriteScopes (0.00s)
+FAIL
+FAIL	github.com/xleelz/fae/provider	0.008s
+FAIL

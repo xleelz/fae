@@ -1,0 +1,59 @@
+{
+  "result": {
+    "lost_ack_recovered_after_restart": true,
+    "uploads": 1,
+    "remote_content_verified": true,
+    "remote_restore_fsck": true,
+    "idempotent_repeat": true,
+    "replication_pin_invalidated_preview": true,
+    "removed": 2,
+    "retained": 1
+  },
+  "replication": {
+    "backup": "/var/tmp/fhd-573mfg4r/i/dogfood/backup/plane-1364100839",
+    "endpoint": "http://127.0.0.1:37731",
+    "sha256": "43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1",
+    "manifest_sha256": "50fde474cf74899708830e581109d6ffd69d730c24c5e43b46086a77ef8cb20c",
+    "size": 17610240,
+    "max_bytes": 268435456,
+    "state": "replicated",
+    "receipt": {
+      "id": "43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1",
+      "sha256": "43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1",
+      "manifest_sha256": "50fde474cf74899708830e581109d6ffd69d730c24c5e43b46086a77ef8cb20c",
+      "size": 17610240,
+      "state": "stored"
+    }
+  },
+  "retention": {
+    "plan_digest": "2c029723f4e03ae28195747d8543218c4ca2795e36e6a04a1be5486d69e1d05f",
+    "keep": 1,
+    "retained": [
+      {
+        "path": "/var/tmp/fhd-573mfg4r/i/dogfood/backup/plane-1364100839",
+        "reasons": [
+          "newest",
+          "snapshot coverage: cron-7d533ed758e7c6b84e828429-0",
+          "snapshot coverage: provider-beta",
+          "snapshot coverage: retire-dependent",
+          "snapshot coverage: retire-old",
+          "snapshot coverage: retire-successor"
+        ]
+      }
+    ],
+    "remove": [
+      "/var/tmp/fhd-573mfg4r/i/dogfood/backup/plane-1432818361",
+      "/var/tmp/fhd-573mfg4r/i/dogfood/backup/plane-969035642"
+    ],
+    "removed": [
+      "/var/tmp/fhd-573mfg4r/i/dogfood/backup/plane-1432818361",
+      "/var/tmp/fhd-573mfg4r/i/dogfood/backup/plane-969035642"
+    ]
+  },
+  "reads": [
+    "/backups/43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1",
+    "/backups/43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1/content",
+    "/backups/43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1",
+    "/backups/43b84ae01862dcb36ef15cb79b3259d23ba39172cefcd1ea26e3d572e2a027b1/content"
+  ]
+}

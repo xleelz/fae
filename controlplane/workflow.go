@@ -5,8 +5,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 )
+
+// ErrWorkflowRetired refuses new revisions and new bindings; bound tasks continue.
+var ErrWorkflowRetired = errors.New("workflow retired")
 
 type Revision struct {
 	WorkflowID string
@@ -17,8 +21,11 @@ type Revision struct {
 }
 
 // WriteWorkflow validates before opening a transaction and assigns the next immutable revision.
-func (s *Store) WriteWorkflow(ctx context.Context, a Audit, id, name string, content json.RawMessage, validate func([]byte) error) (Revision, error) {
+func (s *Store) WriteWorkflow(ctx context.Context, a Audit, id, name string, content json.RawMessage, validate func([]byte) error, footprint ...json.RawMessage) (Revision, error) {
 	var r Revision
+	if len(footprint) > 1 || (len(footprint) == 1 && (!json.Valid(footprint[0]) || len(footprint[0]) > 4096)) {
+		return r, errors.New("one bounded JSON workflow footprint required")
+	}
 	if id == "" || name == "" || validate == nil {
 		return r, errors.New("workflow identity and validator required")
 	}
@@ -35,7 +42,7 @@ func (s *Store) WriteWorkflow(ctx context.Context, a Audit, id, name string, con
 			return e
 		}
 		if retired > 0 {
-			return errors.New("workflow retired")
+			return ErrWorkflowRetired
 		}
 		var latest int64
 		if e := tx.QueryRowContext(ctx, `SELECT COALESCE(MAX(revision),0) FROM workflows WHERE workflow_id=?`, id).Scan(&latest); e != nil {
@@ -51,45 +58,17 @@ func (s *Store) WriteWorkflow(ctx context.Context, a Audit, id, name string, con
 		if _, e := tx.ExecContext(ctx, `INSERT INTO workflows (workflow_id,revision,parent_revision,name,content_digest,created_by,created_at) VALUES (?,?,?,?,?,?,?)`, id, latest+1, parent, name, hash, a.Actor, time.Now().UTC()); e != nil {
 			return e
 		}
+		if len(footprint) == 1 {
+			if err := s.putMarkerTx(ctx, tx, WorkflowFootprintKey(id, latest+1), footprint[0]); err != nil {
+				return err
+			}
+		}
 		r = Revision{id, latest + 1, latest, name, hash}
 		return nil
 	})
 	return r, e
 }
 
-// BindMolecule retains a single immutable identity for a workflow/revision pair.
-func (s *Store) BindMolecule(ctx context.Context, a Audit, id string, revision int64) (string, error) {
-	var molecule string
-	e := s.Mutate(ctx, a, func(ctx context.Context, tx *sql.Tx) error {
-		var retired int
-		if e := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM workflow_status WHERE workflow_id=? AND retired_at IS NOT NULL`, id).Scan(&retired); e != nil {
-			return e
-		}
-		if retired > 0 {
-			return errors.New("workflow retired")
-		}
-		var hash string
-		if e := tx.QueryRowContext(ctx, `SELECT content_digest FROM workflows WHERE workflow_id=? AND revision=?`, id, revision).Scan(&hash); e != nil {
-			return e
-		}
-		var existing string
-		e := tx.QueryRowContext(ctx, `SELECT content_digest FROM molecules WHERE workflow_id=? AND revision=?`, id, revision).Scan(&existing)
-		if e == nil {
-			if existing != hash {
-				return errors.New("molecule content hash mismatch")
-			}
-			molecule = hash
-			return nil
-		}
-		if !errors.Is(e, sql.ErrNoRows) {
-			return e
-		}
-		_, e = tx.ExecContext(ctx, `INSERT INTO molecules (molecule_id,workflow_id,revision,content_digest,created_at) VALUES (?,?,?,?,?)`, hash, id, revision, hash, time.Now().UTC())
-		molecule = hash
-		return e
-	})
-	return molecule, e
-}
 func (s *Store) RetireWorkflow(ctx context.Context, a Audit, id, reason string) error {
 	if reason == "" {
 		return errors.New("retirement reason required")
@@ -107,7 +86,77 @@ func (s *Store) RetireWorkflow(ctx context.Context, a Audit, id, reason string) 
 	})
 }
 
-// RecordArtifact stores canonical content and immutable provenance in the same transaction.
+type WorkflowRetirement struct {
+	WorkflowID string    `json:"workflow_id"`
+	RetiredAt  time.Time `json:"retired_at"`
+	RetiredBy  string    `json:"retired_by"`
+	Reason     string    `json:"reason"`
+}
+
+// WorkflowRetirement returns the first retirement record, or nil while active.
+func (s *Store) WorkflowRetirement(ctx context.Context, id string) (*WorkflowRetirement, error) {
+	r := WorkflowRetirement{WorkflowID: id}
+	var at sql.NullTime
+	var by, reason sql.NullString
+	e := s.db.QueryRowContext(ctx, `SELECT retired_at,retired_by,reason FROM workflow_status WHERE workflow_id=?`, id).Scan(&at, &by, &reason)
+	if errors.Is(e, sql.ErrNoRows) || e == nil && !at.Valid {
+		return nil, nil
+	}
+	if e != nil {
+		return nil, e
+	}
+	r.RetiredAt, r.RetiredBy, r.Reason = at.Time.UTC(), by.String, reason.String
+	return &r, nil
+}
+
+// WorkflowActive is checked by every admission path before a new binding.
+func (s *Store) WorkflowActive(ctx context.Context, id string) error {
+	r, e := s.WorkflowRetirement(ctx, id)
+	if e != nil {
+		return e
+	}
+	if r != nil {
+		return ErrWorkflowRetired
+	}
+	return nil
+}
+
+type WorkflowListing struct {
+	WorkflowID string    `json:"workflow_id"`
+	Revision   int64     `json:"revision"`
+	Parent     int64     `json:"parent_revision"`
+	Name       string    `json:"name"`
+	Hash       string    `json:"hash"`
+	CreatedBy  string    `json:"created_by"`
+	CreatedAt  time.Time `json:"created_at"`
+	Retired    bool      `json:"retired"`
+}
+
+// ListWorkflows lists every revision of one workflow, or of all workflows when id is empty.
+func (s *Store) ListWorkflows(ctx context.Context, id string) ([]WorkflowListing, error) {
+	rows, e := s.db.QueryContext(ctx, `SELECT w.workflow_id,w.revision,COALESCE(w.parent_revision,0),w.name,w.content_digest,w.created_by,w.created_at,st.retired_at FROM workflows w LEFT JOIN workflow_status st ON st.workflow_id=w.workflow_id WHERE (?='' OR w.workflow_id=?) ORDER BY w.workflow_id,w.revision LIMIT 10001`, id, id)
+	if e != nil {
+		return nil, e
+	}
+	defer rows.Close()
+	out := []WorkflowListing{}
+	for rows.Next() {
+		var r WorkflowListing
+		var retired sql.NullTime
+		if e = rows.Scan(&r.WorkflowID, &r.Revision, &r.Parent, &r.Name, &r.Hash, &r.CreatedBy, &r.CreatedAt, &retired); e != nil {
+			return nil, e
+		}
+		r.Retired = retired.Valid
+		if out = append(out, r); len(out) > 10000 {
+			return nil, errors.New("workflow listing bound exceeded")
+		}
+	}
+	return out, rows.Err()
+}
+
+// RecordArtifact stores canonical content once per task, content-addressed,
+// with an append-only provenance row naming the recording actor; the caller's
+// provenance document is kept verbatim on the artifact row.
 func (s *Store) RecordArtifact(ctx context.Context, a Audit, taskID, kind, schemaID string, version int, content, provenance json.RawMessage, validate func([]byte) error) (string, error) {
 	if taskID == "" || kind == "" || schemaID == "" || version < 1 || validate == nil {
 		return "", errors.New("artifact metadata and validator required")
@@ -127,11 +176,22 @@ func (s *Store) RecordArtifact(ctx context.Context, a Audit, taskID, kind, schem
 		return "", errors.New("provenance exceeds inline limit")
 	}
 	e = s.Mutate(ctx, a, func(ctx context.Context, tx *sql.Tx) error {
-		if e := s.putBlob(ctx, tx, b); e != nil {
+		var molecule string
+		if e := tx.QueryRowContext(ctx, `SELECT molecule_id FROM tasks WHERE task_id=?`, taskID).Scan(&molecule); e != nil && !errors.Is(e, sql.ErrNoRows) {
 			return e
 		}
-		_, e := tx.ExecContext(ctx, `INSERT INTO artifacts (artifact_id,task_id,kind,schema_id,schema_version,content_digest,provenance,created_at) VALUES (?,?,?,?,?,?,?,?)`, hash, taskID, kind, schemaID, version, hash, string(p), time.Now().UTC())
-		return e
+		now := time.Now().UTC()
+		var present int
+		if e := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM artifacts WHERE artifact_id=? AND task_id=?`, hash, taskID).Scan(&present); e != nil {
+			return e
+		}
+		if present == 0 {
+			if _, e := tx.ExecContext(ctx, `INSERT INTO artifacts (artifact_id,task_id,kind,schema_id,schema_version,content_digest,provenance,created_at) VALUES (?,?,?,?,?,?,?,?)`, hash, taskID, kind, schemaID, version, hash, string(p), now); e != nil {
+				return e
+			}
+		}
+		row := ProvenanceRecord{ArtifactID: hash, TaskID: taskID, MoleculeID: molecule, Kind: kind, DispatchID: a.Action, Stage: kind, Primitive: "Recorded", Role: a.Actor, ProducedAt: now}
+		return s.recordArtifactTx(ctx, tx, row, schemaID, int64(version), b, now)
 	})
 	return hash, e
 }
@@ -158,4 +218,8 @@ func (s *Store) GetWorkflow(ctx context.Context, id string, revision int64) (Rev
 	}
 	content, e := s.GetBlob(ctx, BlobRef{Digest: r.Hash, Size: size})
 	return r, content, e
+}
+
+func WorkflowFootprintKey(id string, revision int64) string {
+	return "workflow-footprint/" + Digest([]byte(id)) + "/" + strconv.FormatInt(revision, 10)
 }

@@ -1,0 +1,29 @@
+{
+  "provider": "claude",
+  "model": "claude-opus-5-5",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "2.1.308 (Claude Code)",
+  "adapter": "herdr",
+  "scratch": "/var/tmp/fhd-ozk7mdco",
+  "status": "failed",
+  "task_ids": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ],
+  "target_configs": {
+    "revision_1": {
+      "id": "dogfood-target",
+      "revision": 1,
+      "hash": "f391ea32d9b840604ba05c4f421a4ea05844696f1aa199a69f1e025697912083",
+      "retired": false
+    },
+    "revision_2": {
+      "id": "dogfood-target",
+      "revision": 2,
+      "hash": "6ee134a3d5694e4d729da5d8bf21efe9f7b764ec2560ad557cc18e994157de00",
+      "retired": false
+    },
+    "pinned_tasks": []
+  },
+  "error": "host admission: IOPressureHold\n"
+}

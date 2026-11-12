@@ -8,12 +8,15 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/engine"
 	agentruntime "github.com/xleelz/fae/runtime"
+	"github.com/xleelz/fae/scheduler"
 	"github.com/xleelz/fae/workflow"
 )
 
@@ -36,15 +39,19 @@ func TestLiveDaemonBridgeFixture(t *testing.T) {
 			time.Sleep(time.Second)
 		}
 	}
-	var brief []struct{ Kind, Stage string }
+	var brief []struct{ Kind, Stage, Template string }
 	if json.Unmarshal(c.Brief, &brief) != nil {
 		os.Exit(22)
 	}
-	stage := ""
+	stage, template := "", ""
 	for _, b := range brief {
 		if b.Kind == "stage" {
-			stage = b.Stage
+			stage, template = b.Stage, b.Template
 		}
+	}
+	// Live content must render a stage template and grant edits to change turns.
+	if template == "" || (stage == "test-first" || stage == "implement") && !slices.Contains(c.Profile.Allowed, "edit") {
+		os.Exit(28)
 	}
 	fixtures := defaults.HappyScript()
 	steps := fixtures[stage]
@@ -52,6 +59,16 @@ func TestLiveDaemonBridgeFixture(t *testing.T) {
 		os.Exit(23)
 	}
 	output := steps[0].Output
+	if stage == "spec" && os.Getenv("LIVE_DAEMON_NO_RED") == "1" {
+		output = []byte(strings.Replace(string(output), `"no_red":false`, `"no_red":true`, 1))
+	}
+	reworked := strings.Replace(liveTestSource, `"got 0 want 42"`, `"got 0 want 42 (reworked)"`, 1)
+	if stage == "oracle" && os.Getenv("LIVE_DAEMON_RED_REWORK") == "1" {
+		// The oracle rejects the first RED once, targeting the RED itself.
+		if tests, _ := os.ReadFile(filepath.Join(c.Worktree, "answer_test.go")); !strings.Contains(string(tests), "(reworked)") {
+			output = []byte(`{"approved":false,"findings":[{"finding":"the RED message is ambiguous","valid":true,"severity":"blocking","target":"RedTest","rationale":"rework the RED"}],"rationale":"rework the RED"}`)
+		}
+	}
 	if len(steps[0].Reviews) > 0 {
 		index := 0
 		switch c.Role {
@@ -77,13 +94,28 @@ func TestLiveDaemonBridgeFixture(t *testing.T) {
 				turnTestSource = strings.Replace(liveTestSource, "!= 42", "!= 43", 1)
 			}
 		}
+		if prior, _ := os.ReadFile(filepath.Join(c.Worktree, "answer.go")); os.Getenv("LIVE_DAEMON_RED_REWORK") == "1" && strings.Contains(string(prior), "return 42") {
+			// A replacement RED that already passes on the implemented tree.
+			turnTestSource = reworked
+		}
 		fields["source"] = turnTestSource
 		output, _ = json.Marshal(fields)
+		// A per-task variant authors its own RED and implementation files, so
+		// tasks of one instance can differ (LIVE_DAEMON_VARIANTS, keyed by task).
+		var variants map[string]struct{ TestFile, Test, ImplFile, Impl string }
+		_ = json.Unmarshal([]byte(os.Getenv("LIVE_DAEMON_VARIANTS")), &variants)
+		variant := variants[c.TaskID]
 		name, contents := "answer_test.go", turnTestSource
+		if variant.TestFile != "" {
+			name, contents = variant.TestFile, variant.Test
+		}
 		if stage == "implement" {
 			name, contents = "answer.go", "package sample\n\nfunc answer() int { return 42 }\n"
 			if strings.Contains(turnTestSource, "!= 43") {
 				contents = strings.Replace(contents, "return 42", "return 43", 1)
+			}
+			if variant.ImplFile != "" {
+				name, contents = variant.ImplFile, variant.Impl
 			}
 			prior, _ := os.ReadFile(filepath.Join(c.Worktree, name))
 			if strings.Contains(string(prior), "<<<<<<< ") {
@@ -98,6 +130,10 @@ func TestLiveDaemonBridgeFixture(t *testing.T) {
 			}
 		}
 		if os.WriteFile(filepath.Join(c.Worktree, name), []byte(contents), 0600) != nil {
+			os.Exit(25)
+		}
+		// A no-red task has no test-first turn: its implementation adds the test.
+		if stage == "implement" && os.Getenv("LIVE_DAEMON_NO_RED") == "1" && os.WriteFile(filepath.Join(c.Worktree, "answer_test.go"), []byte(turnTestSource), 0600) != nil {
 			os.Exit(25)
 		}
 	}
@@ -144,16 +180,7 @@ func TestDaemonLiveEffectsLifecycle(t *testing.T) {
 	}
 	defer func() { stop(t, d) }()
 	authorize(t, d)
-	doc := defaults.Workflow()
-	for id, stage := range doc.Stages {
-		if stage.Primitive == workflow.HostCommand && stage.TestRun {
-			stage.Command = cfg.Live.AllowedCommands[0]
-			doc.Stages[id] = stage
-		}
-	}
-	if _, err = call(t, d, "WorkflowInstall", InstallParams{ID: doc.ID, Document: doc, AuthorizingMessage: "message"}, ""); err != nil {
-		t.Fatal(err)
-	}
+	// The shipped default (installed at first start) runs unmodified.
 	if _, err = call(t, d, "Admit", AdmitParams{ID: "live-one", AuthorizingMessage: "message"}, "live-one"); err != nil {
 		t.Fatal(err)
 	}
@@ -201,7 +228,7 @@ func TestDaemonLiveEffectsLifecycle(t *testing.T) {
 		t.Fatal("completed live job replayed")
 	}
 }
-func TestDaemonLiveInterruptedTurnParks(t *testing.T) {
+func TestDaemonLivePlannedStopNeverChargesInterruptedTurn(t *testing.T) {
 	cfg, ctx, _ := liveDaemonFixture(t)
 	cfg.Live.Environment["LIVE_DAEMON_WAIT"] = "1"
 	d, err := Start(ctx, cfg)
@@ -223,19 +250,7 @@ func TestDaemonLiveInterruptedTurnParks(t *testing.T) {
 	if _, err = call(t, d, "Admit", AdmitParams{ID: "interrupted", AuthorizingMessage: "message"}, "interrupted"); err != nil {
 		t.Fatal(err)
 	}
-	deadline := time.Now().Add(10 * time.Second)
-	held := false
-	for time.Now().Before(deadline) {
-		pool, e := d.live.guard.host.Snapshot(ctx)
-		if e == nil && len(pool.Holders) > 0 {
-			held = true
-			break
-		}
-		time.Sleep(20 * time.Millisecond)
-	}
-	if !held {
-		t.Fatal("live turn never acquired host lease")
-	}
+	awaitLaunchedTurn(t, d)
 	stop(t, d)
 	d, err = Start(ctx, cfg)
 	if err != nil {
@@ -249,7 +264,79 @@ func TestDaemonLiveInterruptedTurnParks(t *testing.T) {
 	if err = json.Unmarshal(snapshot.Payload, &e); err != nil {
 		t.Fatal(err)
 	}
-	if e.Job.ExecutionKind != "live" || !e.Job.Parked || e.Job.Reason != "UncertainDispatch" {
-		t.Fatal("uncertain execution not held")
+	// FAE-ROB-011/-012: Close joins the cancelled turn, whose launch is
+	// retired with proof before the marker is written, so the planned stop
+	// deterministically replays the turn without charge.
+	assertPlannedReplay(t, e.Job)
+}
+
+func assertPlannedReplay(t *testing.T, j engine.Job) {
+	t.Helper()
+	replayed := false
+	for _, h := range j.History {
+		replayed = replayed || h.Kind == "graceful-replay"
+	}
+	// A replay that real host pressure deferred is parked
+	// infrastructure-deferred, still uncharged.
+	deferred := j.Parked && j.Reason == "infrastructure-deferred"
+	if j.ExecutionKind != "live" || !replayed || (j.Parked || j.Reason != "" || j.InFlight != nil) && !deferred || j.Failures["crash-recovery"] != 0 {
+		t.Fatal("planned stop did not replay the interrupted turn without charge", j.State, j.Parked, j.Reason, j.Failures)
+	}
+}
+
+// FAE-ROB-011/-016: a planned stop whose session retirement is genuinely
+// unproven (its lease proof survives with a live owner) parks the turn for
+// explicit resolution without charge; it is never replayed.
+func TestDaemonLivePlannedStopParksUnprovenRetirement(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	cfg.Live.Environment["LIVE_DAEMON_WAIT"] = "1"
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, d) }()
+	authorize(t, d)
+	if _, err = call(t, d, "Admit", AdmitParams{ID: "interrupted", AuthorizingMessage: "message"}, "interrupted"); err != nil {
+		t.Fatal(err)
+	}
+	awaitLaunchedTurn(t, d)
+	proofs, err := d.live.guard.journal.Entries()
+	if err != nil || len(proofs) != 1 || proofs[0].State != "launching" {
+		t.Fatal("launch proof", proofs, err)
+	}
+	stop(t, d)
+	journal, err := scheduler.OpenJournal(filepath.Join(d.layout.Run, "lease-proofs"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if entries, e := journal.Entries(); e != nil || len(entries) != 0 {
+		t.Fatal("graceful stop left the retired launch proof", entries, e)
+	}
+	// The workload's retirement could not be proven: its launch proof survives.
+	if err = journal.Put(proofs[0]); err != nil {
+		t.Fatal(err)
+	}
+	d, err = Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot, err := d.store.GetJob(ctx, "interrupted")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var e envelope
+	if err = json.Unmarshal(snapshot.Payload, &e); err != nil {
+		t.Fatal(err)
+	}
+	if !e.Job.Parked || e.Job.Reason != "UncertainDispatch" || e.Job.InFlight == nil || e.Job.Failures["crash-recovery"] != 0 {
+		t.Fatal("unproven retirement was not held without charge", e.Job.State, e.Job.Parked, e.Job.Reason, e.Job.Failures)
+	}
+	for _, h := range e.Job.History {
+		if h.Kind == "graceful-replay" {
+			t.Fatal("unproven turn replayed")
+		}
+	}
+	if entries, e := d.live.guard.journal.Entries(); e != nil || len(entries) != 1 {
+		t.Fatal("live owner's unproven lease proof reclaimed", entries, e)
 	}
 }

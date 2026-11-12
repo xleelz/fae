@@ -12,7 +12,7 @@ import (
 )
 
 func TestTargetCLI(t *testing.T) {
-	home := t.TempDir()
+	home := shortHome(t)
 	layout, err := daemon.Paths(home, "test")
 	if err != nil {
 		t.Fatal(err)

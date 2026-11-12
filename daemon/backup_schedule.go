@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/xleelz/fae/api"
@@ -60,6 +58,7 @@ func (d *Daemon) saveBackupSchedule(ctx context.Context, s BackupScheduleRecord,
 	if e != nil {
 		return e
 	}
+	defer d.wakeBackupSchedule()
 	return d.store.PutMarker(ctx, a, backupScheduleKey, raw)
 }
 func (d *Daemon) backupRecurrenceAuthority(ctx context.Context, message string) error {
@@ -116,7 +115,7 @@ func (d *Daemon) backupScheduleRPC(ctx context.Context, r api.Request) (any, err
 	if e != nil {
 		return nil, e
 	}
-	if !d.backupScheduleMu.TryLock() {
+	if !scheduleControlLock(ctx, &d.backupScheduleMu, &d.backupControls) {
 		return nil, errors.New("backup creation schedule running; retry control after current run")
 	}
 	defer d.backupScheduleMu.Unlock()
@@ -170,17 +169,13 @@ func (d *Daemon) tickBackupSchedule(ctx context.Context, now time.Time) error {
 	}
 	d.mu.Lock()
 	draining := d.draining
+	held, heldErr := d.maintenanceHeld()
 	d.mu.Unlock()
-	if draining {
-		return nil
-	}
-	if _, e := os.Stat(filepath.Join(d.layout.Root, "maintenance")); e == nil {
-		return nil
-	} else if !os.IsNotExist(e) {
-		return e
+	if draining || held {
+		return heldErr
 	}
 
-	if !d.backupScheduleMu.TryLock() {
+	if !scheduleRunLock(&d.backupScheduleMu, &d.backupControls) {
 		return nil
 	}
 	defer d.backupScheduleMu.Unlock()
@@ -197,6 +192,7 @@ func (d *Daemon) tickBackupSchedule(ctx context.Context, now time.Time) error {
 		s.LastError = fmt.Sprint(authErr)
 		return d.saveBackupSchedule(ctx, s, controlplane.Audit{Actor: "daemon", Action: "backup creation schedule authority", MessageID: s.AuthorizingMessage, Outcome: "blocked"})
 	}
+	unclaimed := s
 	s.Running = true
 	s.RunCount++
 	s.LastStarted = now.UTC()
@@ -208,6 +204,18 @@ func (d *Daemon) tickBackupSchedule(ctx context.Context, now time.Time) error {
 		return e
 	}
 	backup, runErr := d.backupPlane(context.WithValue(ctx, backupScheduleAuthorityKey{}, s.AuthorizingMessage))
+	var deferral interface{ AdmissionDeferred() bool }
+	if runErr != nil && backup.Path == "" && errors.As(runErr, &deferral) && deferral.AdmissionDeferred() {
+		// Host admission deferred the run before any write (FAE-HOST-002,
+		// -010). Like a park it consumes no run: the claim is withdrawn and a
+		// later tick retries, as the replication schedule does.
+		unclaimed.LastError = runErr.Error()
+		audit.Outcome = "deferred"
+		if e = d.saveBackupSchedule(ctx, unclaimed, audit); e != nil {
+			return e
+		}
+		return runErr
+	}
 	s.LastAttemptPath = backup.Path
 	if runErr == nil {
 		// Report only a backup that passed the offline restore and checksum checks.
@@ -218,6 +226,11 @@ func (d *Daemon) tickBackupSchedule(ctx context.Context, now time.Time) error {
 	}
 	s.Running = false
 	s.LastFinished = time.Now().UTC()
+	// The interval runs from completion as well: runs never follow each other
+	// back to back, so controls and status see the schedule idle between runs.
+	if next := s.LastFinished.Add(time.Duration(s.IntervalSeconds) * time.Second); next.After(s.NextAt) {
+		s.NextAt = next
+	}
 	audit.Outcome = "completed"
 	if runErr != nil {
 		s.LastError = runErr.Error()
@@ -228,19 +241,4 @@ func (d *Daemon) tickBackupSchedule(ctx context.Context, now time.Time) error {
 		return e
 	}
 	return runErr
-}
-func (d *Daemon) maintainBackupSchedule() {
-	defer d.workers.Done()
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-d.ctx.Done():
-			return
-		case now := <-ticker.C:
-			ctx, cancel := context.WithTimeout(d.ctx, 2*time.Minute)
-			_ = d.tickBackupSchedule(ctx, now)
-			cancel()
-		}
-	}
 }

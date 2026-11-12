@@ -1,0 +1,17 @@
+{
+  "result": {
+    "first_tombstone_preserved": true,
+    "new_bindings_refused": [
+      "write",
+      "target"
+    ],
+    "bound_task": "provider-beta",
+    "bound_task_completed_after_restart": true
+  },
+  "retirement": {
+    "actor": "operator",
+    "id": "dogfood-adapter",
+    "reason": "superseded by next operator configuration",
+    "retired_at": "2026-10-29T03:48:26.489738205Z"
+  }
+}

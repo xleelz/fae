@@ -23,7 +23,7 @@ type ProphetEntry struct {
 
 func prophetPrefix(task string) string { return "prophet/" + Digest([]byte(task)) + "/" }
 func (s *Store) AppendProphet(ctx context.Context, a Audit, entry ProphetEntry) (ProphetEntry, error) {
-	if entry.ID == "" || len(entry.ID) > 255 || len(entry.Task) > 255 || len(entry.Text) > 1<<20 || (entry.Author != "operator" && entry.Author != "prophet" && entry.Author != "system") {
+	if entry.ID == "" || len(entry.ID) > 255 || len(entry.Task) > MaxTaskIDBytes || len(entry.Text) > 1<<20 || (entry.Author != "operator" && entry.Author != "prophet" && entry.Author != "system") {
 		return entry, errors.New("invalid Prophet entry")
 	}
 	prefix := prophetPrefix(entry.Task)

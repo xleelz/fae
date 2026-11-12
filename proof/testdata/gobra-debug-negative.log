@@ -1,0 +1,15 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
+(c) Copyright ETH Zurich 2012 - 2026
+09:54:51.766 [main] INFO viper.gobra.Gobra - Verifying package .. - sample [09:54:51]
+09:54:52.004 [thread-3] DEBUG viper.gobra.Gobra - parser phase done, took 0.1s
+09:54:52.457 [thread-1] DEBUG viper.gobra.frontend.info.Info$ - type-checking done, took 0.2s (in mode Parallel)
+09:54:52.457 [thread-1] DEBUG viper.gobra.frontend.info.Info$ - type-checking individual packages took 0.2s. Overhead for tasks is thus 0.0s (2%)
+09:54:53.091 [thread-2] DEBUG viper.gobra.Gobra - desugaring done, took 0.6s
+09:54:53.102 [thread-2] DEBUG viper.gobra.Gobra - internal transformations done, took 0.0s
+09:54:53.800 [thread-2] DEBUG viper.gobra.Gobra - Viper encoding done, took 0.7s
+09:54:54.624 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <fixture/negative.go:2:9> Postcondition might not hold. 
+Assertion result == 2 might not hold.
+09:54:54.673 [thread-3] ERROR viper.gobra.Gobra - Gobra found 1 error.
+09:54:54.673 [main] DEBUG viper.gobra.Gobra - Gobra found 1 methods and functions.
+09:54:54.674 [main] DEBUG viper.gobra.Gobra - 1 member are explicitly specified.
+09:54:54.674 [main] DEBUG viper.gobra.Gobra - 0 specified members of the package under verification are trusted or abstract.

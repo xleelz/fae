@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -49,13 +49,13 @@ proctype LostPaneCompletion3(chan child) {
 	run receiver(child_muxLostPane161)->
 	run muxLostServer17(paneGone_ch,serverGone_ch,child_muxLostServer172)->
 	run receiver(child_muxLostServer172)->
-	registered_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:12:2 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:12:2 */->
+	registered_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:12:2 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:12:2 */->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:13:2 */
-	:: serverGone_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:13:2 */->
-	:: serverGone_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:13:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:13:2 */
+	:: serverGone_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:13:2 */->
+	:: serverGone_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:13:2 */ -> 
 		serverGone_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -69,22 +69,22 @@ proctype muxLostOwner15(Chandef registered_ch;Chandef permit_ch;Chandef complete
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:66 */
-	:: registered_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:66 */->
-	:: registered_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:66 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:66 */
+	:: registered_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:66 */->
+	:: registered_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:66 */ -> 
 		registered_ch.rcving!false
 	fi->
-	permit_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:79 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:79 */->
+	permit_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:79 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:79 */->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:93 */
-	:: completed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:93 */->
-	:: completed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:93 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:93 */
+	:: completed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:93 */->
+	:: completed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:93 */ -> 
 		completed_ch.rcving!false
 	fi->
-	paneGone_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:105 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:15:105 */->
+	paneGone_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:105 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:15:105 */->
 	stop_process: skip->
 	child!0
 }
@@ -96,9 +96,9 @@ proctype muxLostPane16(Chandef permit_ch;chan child) {
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:16:35 */
-	:: permit_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:16:35 */->
-	:: permit_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:16:35 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:16:35 */
+	:: permit_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:16:35 */->
+	:: permit_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:16:35 */ -> 
 		permit_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -112,13 +112,13 @@ proctype muxLostServer17(Chandef paneGone_ch;Chandef serverGone_ch;chan child) {
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:17:50 */
-	:: paneGone_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:17:50 */->
-	:: paneGone_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:17:50 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:17:50 */
+	:: paneGone_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:17:50 */->
+	:: paneGone_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:17:50 */ -> 
 		paneGone_ch.rcving!false
 	fi->
-	serverGone_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:17:61 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/multiplexer.go:17:61 */->
+	serverGone_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:17:61 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/multiplexer.go:17:61 */->
 	stop_process: skip->
 	child!0
 }

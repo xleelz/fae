@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
+(c) Copyright ETH Zurich 2012 - 2026
+18:43:40.015 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - controller [18:43:40]
+18:43:43.143 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/gate-pass-negative.go:7:9> Postcondition might not hold. 
+Assertion ok == (failures == 0 && (examined > 0 || !applicable)) might not hold.
+18:43:43.180 [thread-16] ERROR viper.gobra.Gobra - Gobra found 1 error.

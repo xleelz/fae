@@ -1,0 +1,42 @@
+ok  	github.com/xleelz/fae/api	(cached)
+ok  	github.com/xleelz/fae/cmd/fae	12.306s
+ok  	github.com/xleelz/fae/cmd/fae-claude-bridge	0.444s
+ok  	github.com/xleelz/fae/cmd/fae-codex-bridge	0.408s
+ok  	github.com/xleelz/fae/cmd/fae-tui	(cached)
+ok  	github.com/xleelz/fae/cmd/fae-ui	(cached)
+ok  	github.com/xleelz/fae/commandshim	(cached)
+ok  	github.com/xleelz/fae/controller	(cached)
+ok  	github.com/xleelz/fae/controlplane	0.132s
+ok  	github.com/xleelz/fae/cron	(cached)
+ok  	github.com/xleelz/fae/daemon	34.366s
+ok  	github.com/xleelz/fae/defaults	6.093s
+ok  	github.com/xleelz/fae/domain	(cached)
+ok  	github.com/xleelz/fae/effects	127.230s
+ok  	github.com/xleelz/fae/engine	120.177s
+ok  	github.com/xleelz/fae/execution	4.296s
+ok  	github.com/xleelz/fae/external	(cached)
+ok  	github.com/xleelz/fae/hostguard	(cached)
+ok  	github.com/xleelz/fae/kernel	(cached)
+ok  	github.com/xleelz/fae/loops	(cached)
+ok  	github.com/xleelz/fae/processowner	(cached)
+ok  	github.com/xleelz/fae/provider	10.337s
+ok  	github.com/xleelz/fae/providerhealth	(cached)
+ok  	github.com/xleelz/fae/runtime	(cached)
+--- FAIL: TestWorkflowSlotsCompetingProcessesNeverOvercommit (0.08s)
+    workflow_slots_test.go:309: invalid character '-' in numeric literal
+FAIL
+FAIL	github.com/xleelz/fae/scheduler	13.798s
+ok  	github.com/xleelz/fae/scratchfs	(cached)
+ok  	github.com/xleelz/fae/secretshape	(cached)
+ok  	github.com/xleelz/fae/symphony	(cached)
+ok  	github.com/xleelz/fae/tracker	(cached)
+ok  	github.com/xleelz/fae/tui	1.380s
+ok  	github.com/xleelz/fae/tui/client	(cached)
+ok  	github.com/xleelz/fae/tui/dag	(cached)
+ok  	github.com/xleelz/fae/ui	(cached)
+ok  	github.com/xleelz/fae/ui/server	(cached)
+ok  	github.com/xleelz/fae/verification/gomela	(cached)
+ok  	github.com/xleelz/fae/workflow	5.619s
+ok  	github.com/xleelz/fae/workspace	(cached)
+ok  	github.com/xleelz/fae/worktree	(cached)
+FAIL

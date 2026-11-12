@@ -15,7 +15,7 @@ import (
 )
 
 func TestCensusCLI(t *testing.T) {
-	home := t.TempDir()
+	home := shortHome(t)
 	layout, err := daemon.Paths(home, "test")
 	if err != nil {
 		t.Fatal(err)
@@ -88,7 +88,8 @@ func TestCensusCLI(t *testing.T) {
 	if execute(context.Background(), args, &bytes.Buffer{}) == nil || len(calls) != 0 {
 		t.Fatal("invalid artifact reached server")
 	}
-	for _, args := range [][]string{{"census", "apply"}, {"census", "apply", "--gap", "-1s"}, {"census", "apply", "--gap", "2m"}} {
+	// An out-of-range --gap falls back to 2 s (TestConfiguredValuesFallBackOnEveryVerb).
+	for _, args := range [][]string{{"census", "apply"}, {"census", "apply", "--gap", "soon"}} {
 		if execute(context.Background(), args, &bytes.Buffer{}) == nil {
 			t.Fatal(args)
 		}

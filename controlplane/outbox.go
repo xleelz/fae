@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 )
 
 // TicketEmission is the durable mutation boundary. Intent is immutable once set;
@@ -66,6 +67,9 @@ func (s *Store) EnqueueTicket(ctx context.Context, row TicketEmission) error {
 		if err != nil {
 			return err
 		}
+		if err = s.upsertOutboxTx(ctx, tx, row, time.Now().UTC()); err != nil {
+			return err
+		}
 		if err = lockEvents(ctx, tx); err != nil {
 			return err
 		}
@@ -116,6 +120,9 @@ func (s *Store) SaveTicket(ctx context.Context, before, after TicketEmission) er
 		if n != 1 {
 			return ErrConflict
 		}
+		if err = s.upsertOutboxTx(ctx, tx, after, time.Now().UTC()); err != nil {
+			return err
+		}
 		if err = lockEvents(ctx, tx); err != nil {
 			return err
 		}
@@ -133,33 +140,18 @@ func (s *Store) SaveTicket(ctx context.Context, before, after TicketEmission) er
 	}
 	return fmt.Errorf("ticket emission CAS: %w", ErrConflict)
 }
+
+// TicketStats counts the emissions not yet emitted (the depth) and, of
+// those, the started (uncertain) and the failed ones. It is one aggregate
+// over the ticket_outbox projection's pending rows, through its
+// (emitted,task_id) index, and reads no emission payload (FAE-CP-009): every
+// ticket_emissions write projects its row there in the same transaction
+// (upsertOutboxTx), last_error_digest being NULL exactly when the emission
+// has no last error.
 func (s *Store) TicketStats(ctx context.Context) (TicketOutboxStats, error) {
 	var stats TicketOutboxStats
-	rows, err := s.db.QueryContext(ctx, "SELECT payload FROM ticket_emissions")
-	if err != nil {
-		return stats, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var raw []byte
-		var r TicketEmission
-		if err = rows.Scan(&raw); err != nil {
-			return stats, err
-		}
-		if err = json.Unmarshal(raw, &r); err != nil {
-			return stats, err
-		}
-		if !r.Emitted {
-			stats.Depth++
-			if r.Started {
-				stats.Uncertain++
-			}
-			if r.LastError != "" {
-				stats.Failures++
-			}
-		}
-	}
-	return stats, rows.Err()
+	err := s.db.QueryRowContext(ctx, `SELECT COUNT(*),COALESCE(SUM(CASE WHEN started THEN 1 ELSE 0 END),0),COALESCE(SUM(CASE WHEN last_error_digest IS NULL THEN 0 ELSE 1 END),0) FROM ticket_outbox WHERE emitted=FALSE`).Scan(&stats.Depth, &stats.Uncertain, &stats.Failures)
+	return stats, err
 }
 
 func ticketOutcome(r TicketEmission) string {

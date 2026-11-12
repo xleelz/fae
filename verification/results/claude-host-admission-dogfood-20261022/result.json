@@ -1,0 +1,409 @@
+{
+  "provider": "claude",
+  "model": "claude-opus-5-5",
+  "herdr_version": "herdr 0.9.5",
+  "provider_version": "2.1.307 (Claude Code)",
+  "adapter": "herdr",
+  "scratch": "/var/tmp/fhd-6n4f6uem",
+  "status": "passed",
+  "task_ids": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ],
+  "target_configs": {
+    "revision_1": {
+      "id": "dogfood-target",
+      "revision": 1,
+      "hash": "1e64b81b95d1a5e83ccd158360c43aeab5f0c58ec6be3e5e2db67494b0a36843",
+      "retired": false
+    },
+    "revision_2": {
+      "id": "dogfood-target",
+      "revision": 2,
+      "hash": "8af4f9baed5327580da27acf0b13855b6d082a6917abd321b7abd813a14fecf6",
+      "retired": false
+    },
+    "pinned_tasks": [
+      "cron-7d533ed758e7c6b84e828429-0",
+      "provider-beta"
+    ]
+  },
+  "fleet_provisioning": {
+    "performed": 1,
+    "lost_ack_recovered_after_restart": true,
+    "duplicate_mutations": 0,
+    "baseline_after_receipt": true,
+    "idempotent_prepare": true
+  },
+  "dynamic_provisioning": {
+    "adapter_revision": {
+      "id": "dogfood-adapter",
+      "revision": 1,
+      "hash": "3dcc0e194a38772f0f62e630e7d8b056c3d4cbb93774a9485d844709262bf4ac"
+    },
+    "later_revision": {
+      "id": "dogfood-adapter",
+      "revision": 2,
+      "hash": "66b2ea509feb589002a5927126790625e0d123c826d80bd9e9b3624d8d58647f"
+    },
+    "workspace": "/var/tmp/fhd-6n4f6uem/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194",
+    "ready": true,
+    "idempotent_prepare": true
+  },
+  "crash_recovery": {
+    "signal": "SIGKILL",
+    "started_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/1/session/0"
+    ],
+    "uncertain_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/1/session/0"
+    ],
+    "resolutions": [
+      {
+        "action": "redispatch",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/1",
+        "id": "cron-7d533ed758e7c6b84e828429-0",
+        "version": 5
+      }
+    ],
+    "automatic_replay": false
+  },
+  "adapter_retirement": {
+    "first_tombstone_preserved": true,
+    "new_bindings_refused": [
+      "write",
+      "target"
+    ],
+    "bound_task": "provider-beta",
+    "bound_task_completed_after_restart": true
+  },
+  "independent_drive": {
+    "before": {
+      "BinaryHash": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+      "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:1317161",
+      "Workspace": "/var/tmp/fhd-6n4f6uem/repo",
+      "Holds": null,
+      "PID": 618835,
+      "DoltPID": 618864,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 1,
+      "DriveCause": "",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-22T03:05:09.183611339Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "394d2f059655393e926e7b78be82f9ce0009c4e0761b95dc6404cb20b5a995f4",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "stopped": {
+      "BinaryHash": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+      "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:1317161",
+      "Workspace": "/var/tmp/fhd-6n4f6uem/repo",
+      "Holds": null,
+      "PID": 618835,
+      "DoltPID": 618864,
+      "OldPID": 0,
+      "DriveAlive": false,
+      "DriveGeneration": 1,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-22T03:05:09.183611339Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "394d2f059655393e926e7b78be82f9ce0009c4e0761b95dc6404cb20b5a995f4",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "resumed": {
+      "BinaryHash": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+      "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:1317161",
+      "Workspace": "/var/tmp/fhd-6n4f6uem/repo",
+      "Holds": null,
+      "PID": 618835,
+      "DoltPID": 618864,
+      "OldPID": 0,
+      "DriveAlive": true,
+      "DriveGeneration": 2,
+      "DriveCause": "operator-stop",
+      "DriveRounds": 4,
+      "LastTransition": "2026-10-22T03:05:09.183611339Z",
+      "InFlight": 2,
+      "Maintenance": null,
+      "EnvironmentHash": "394d2f059655393e926e7b78be82f9ce0009c4e0761b95dc6404cb20b5a995f4",
+      "Consistent": true,
+      "Unsafe": null,
+      "QA": null,
+      "Overlap": null
+    },
+    "retained_dispatches": {
+      "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2",
+      "provider-beta": "provider-beta/82c4997667c4b7bc710647a36bec69260d93117daf185bac62be14bb0ab1c01d/1"
+    },
+    "daemon_and_plane_unchanged": true,
+    "retained_provider_sessions": [
+      "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2/session/0"
+    ],
+    "provider_start_evidence": [
+      {
+        "session_id": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2/session/0",
+        "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2",
+        "events": [
+          {
+            "type": "system",
+            "subtype": "init",
+            "session_id": "0930096b-62cd-4cab-8f19-088aeac38d12"
+          }
+        ]
+      }
+    ],
+    "deferred_before_execution": []
+  },
+  "dynamic_limits": {
+    "during_active_turns": {
+      "effective_pane_limit": 16,
+      "heavy_capacity": 1,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 16,
+      "tasks_in_flight": 1
+    },
+    "after_restart": {
+      "dynamic": {
+        "effective_pane_limit": 16,
+        "heavy_capacity": 1,
+        "host_thresholds": {
+          "Soft": 6442450944,
+          "Hard": 2147483648,
+          "HardNoSwap": 4294967296,
+          "PerPane": 751619276,
+          "IO": 10,
+          "MemoryPressure": 5,
+          "Load": 3.5,
+          "PaneLimit": 60
+        },
+        "pane_limit": 16,
+        "tasks_in_flight": 1
+      },
+      "fixed": {
+        "instance_root": "/var/tmp/fhd-6n4f6uem/i/dogfood",
+        "socket_path": "/var/tmp/fhd-6n4f6uem/i/dogfood/run/rpc.sock"
+      }
+    },
+    "raised": {
+      "effective_pane_limit": 24,
+      "heavy_capacity": 2,
+      "host_thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "pane_limit": 24,
+      "tasks_in_flight": 2
+    }
+  },
+  "restart_checkpoint": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "state": "intake-gate",
+      "version": 7,
+      "artifacts": 1
+    },
+    "provider-beta": {
+      "state": "intake-gate",
+      "version": 4,
+      "artifacts": 1
+    }
+  },
+  "controller_lifecycle": {
+    "roll": {
+      "accepted": true,
+      "binary_sha256": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+      "drive_rounds": 1,
+      "new_pid": 621822,
+      "old_pid": 618835,
+      "pid": 621822
+    },
+    "old_pid": 618835,
+    "maintenance_marker_cleared": true
+  },
+  "provider_loop": {
+    "iterations": 5,
+    "state": "completed",
+    "session_id": "loop-dogfood-loop",
+    "provider_thread_id": "11100bea-72b6-4817-9982-7952f5a3e2b7"
+  },
+  "cron_schedules": {
+    "completed": 1,
+    "admitted": 1,
+    "duplicate_occurrences": 0
+  },
+  "normal_targets": {
+    "local_task": "cron-7d533ed758e7c6b84e828429-0",
+    "live_task": "provider-beta",
+    "live_effects": 1,
+    "normal_revision": {
+      "id": "dogfood-normal",
+      "revision": 1,
+      "hash": "09568c3a67858b6660faeac7004547f3c8427220688f670c4e8b14c9896c0229",
+      "retired": false
+    },
+    "adapter": "disposable localhost fixture"
+  },
+  "prophet_sessions": {
+    "answered": 2,
+    "scopes": [
+      "task",
+      "global"
+    ],
+    "actions_enacted": 0,
+    "durable_health_observations": 2
+  },
+  "retirement": {
+    "transferred": {
+      "dependent_effect": "transferred",
+      "dependents": [
+        "retire-dependent"
+      ],
+      "held_dependents": [],
+      "id": "retire-old",
+      "reason_class": "superseded-by",
+      "reference": "retire-successor",
+      "state": "Retired",
+      "version": 3
+    },
+    "held": {
+      "dependent_effect": "held",
+      "held_dependents": [
+        "retire-dependent"
+      ]
+    },
+    "hidden_by_default": true,
+    "dependent_withheld": true
+  },
+  "census_cleanup": {
+    "applied": [
+      "retire-successor"
+    ],
+    "removed": [
+      "retire-old",
+      "retire-successor"
+    ],
+    "verified_backup": true,
+    "archives_verified": 2
+  },
+  "lease_audit": {
+    "capacity": 2,
+    "granted": 71,
+    "released": 70,
+    "recovered": 1,
+    "final_holders": 0
+  },
+  "pane_audit": {
+    "before_shutdown_reservations": 9,
+    "final_reservations": 0
+  },
+  "stall_recoveries": {
+    "cron-7d533ed758e7c6b84e828429-0": 0,
+    "provider-beta": 0
+  },
+  "tasks": {
+    "cron-7d533ed758e7c6b84e828429-0": {
+      "artifact_records": 22,
+      "version": 55
+    },
+    "provider-beta": {
+      "artifact_records": 36,
+      "version": 85
+    }
+  },
+  "integration_sha": "2e427f893c84a905f0a43de4b4136b86b6412462",
+  "base_sha": "53d74f91f7d24252ffc7d65ab725f8d44d38f73d",
+  "backup_policy": {
+    "lost_ack_recovered_after_restart": true,
+    "uploads": 1,
+    "remote_content_verified": true,
+    "remote_restore_fsck": true,
+    "idempotent_repeat": true,
+    "replication_pin_invalidated_preview": true,
+    "removed": 2,
+    "retained": 1
+  },
+  "retention_automation": {
+    "paused_across_restart": true,
+    "automatic_prune": true,
+    "newest_retained": true,
+    "replication_pin_retained": true,
+    "runs": 1,
+    "final_state": "paused",
+    "final_host_holders": 0
+  },
+  "backup_schedules": {
+    "paused_across_restart": true,
+    "automatic_creation_verified": true,
+    "automatic_replication_verified": true,
+    "pending_destination_change_refused": true,
+    "pending_survived_restart": true,
+    "duplicate_uploads": 0,
+    "scheduled_uploads": 2,
+    "final_creation_state": "paused",
+    "final_replication_state": "paused"
+  },
+  "backup_storage": {
+    "pending_unpin_refused": true,
+    "confirmed_unpin_verified": true,
+    "unpin_preserved_source": true,
+    "unpin_invalidated_retention_preview": true,
+    "unpin_uploads": 0,
+    "count_quota_refused_before_allocation": true,
+    "byte_quota_refused_before_allocation": true,
+    "quota_survived_restart": true,
+    "raised_quota_allowed_verified_backup": true
+  },
+  "crashed_completed_uncollected": [],
+  "resident_sessions": {
+    "audited_turns": 19,
+    "reused_panes": 4
+  },
+  "real_completed_turns": 36,
+  "persistent_sessions": {
+    "audited_turns": 18,
+    "resumed_turns": 9,
+    "resumed_after_restart": 2,
+    "cross_task_threads": 0,
+    "mixed_mode_isolation": true,
+    "task_bound_resumed_turns": 6
+  },
+  "scratch_cleanup": {
+    "completed": true,
+    "root_absent": true,
+    "backup_retained": true,
+    "backup_files_verified": 2152,
+    "archives_verified": 4,
+    "idempotent_repeat": true
+  },
+  "scratch_archive_cleanup": {
+    "redundant_removed": true,
+    "canonical_retained": true,
+    "uncovered_data_refused": true,
+    "idempotent_retry": true,
+    "scratch_cleanup_still_valid": true
+  }
+}

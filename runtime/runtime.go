@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/xleelz/fae/domain"
+	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -23,14 +25,170 @@ type Adapter interface {
 	Dispatch(context.Context, Turn) (<-chan Outcome, error)
 }
 type Script struct {
-	Output json.RawMessage
-	Delay  time.Duration
-	Class  string
+	ProviderStats *domain.ProviderSessionStats
+	Output        json.RawMessage
+	Delay         time.Duration
+	Class         string
 }
+
+// SessionAdapter is the FAE-RT-001 runtime adapter contract that the scripted,
+// direct and multiplexer adapters share (one conformance suite):
+//   - Run launches a session for the launch's binding in its worktree with its
+//     tool profile and environment policy, delivers the brief, observes
+//     readiness, activity (stall) and completion, and collects the handoff
+//     file (never a terminal scrape), a bounded output tail and the session's
+//     own log directory; the session's whole process tree is retired before
+//     Run returns (Collected.ProcessesRetired).
+//   - Live lists live sessions with their owners and readiness.
+//   - Retire stops one live session and its whole process tree.
+type SessionAdapter interface {
+	Run(context.Context, Launch) (Collected, error)
+	Live() []LiveSession
+	Retire(context.Context, string) error
+}
+
+// LiveSession is one live session as Live reports it.
+type LiveSession struct {
+	ID      string    `json:"id"`
+	Task    string    `json:"task"`
+	Role    string    `json:"role"`
+	Owner   string    `json:"owner"`
+	PID     int       `json:"pid,omitempty"`
+	Ready   bool      `json:"ready"`
+	Started time.Time `json:"started"`
+}
+
+// ErrUnknownSession is a Retire of a session that is not live.
+var ErrUnknownSession = errors.New("session is not live")
+
+type liveSession struct {
+	pid        int
+	task, role string
+	started    time.Time
+	ready      bool
+	cancel     context.CancelFunc
+	done       chan struct{}
+}
+
+func listLive(live map[string]*liveSession, owner string) []LiveSession {
+	out := make([]LiveSession, 0, len(live))
+	for id, s := range live {
+		out = append(out, LiveSession{ID: id, Task: s.task, Role: s.role, Owner: owner, PID: s.pid, Ready: s.ready, Started: s.started})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	return out
+}
+
+// retireLive cancels a live session's Run and waits until Run has retired it.
+func retireLive(ctx context.Context, s *liveSession) error {
+	if s == nil {
+		return ErrUnknownSession
+	}
+	s.cancel()
+	select {
+	case <-s.done:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+// Scripted is the scripted adapter: each role's queued Script is a turn's
+// handoff. Dispatch serves engine turns; Run, Live and Retire implement the
+// shared SessionAdapter contract (FAE-RT-001) with Root holding session log
+// directories and Owner naming the instance.
 type Scripted struct {
-	mu      sync.Mutex
-	Scripts map[string][]Script
-	seen    map[string]bool
+	mu        sync.Mutex
+	Scripts   map[string][]Script
+	Root      string
+	Owner     string
+	TailBytes int
+	seen      map[string]bool
+	live      map[string]*liveSession
+}
+
+func (s *Scripted) Live() []LiveSession {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return listLive(s.live, s.Owner)
+}
+func (s *Scripted) Retire(ctx context.Context, session string) error {
+	s.mu.Lock()
+	l := s.live[session]
+	s.mu.Unlock()
+	return retireLive(ctx, l)
+}
+
+// Run is the scripted session: identity and mode are required, a session
+// identity runs once, the script's class is the turn's typed failure and its
+// output must be a JSON handoff.
+func (s *Scripted) Run(ctx context.Context, l Launch) (result Collected, err error) {
+	result.ProcessesRetired = true
+	fail := func(class string, e error) (Collected, error) {
+		return result, &TurnError{class, "", l.Role, l.DispatchID, e}
+	}
+	if l.DispatchID == "" || l.SessionID == "" || l.TaskID == "" || l.Role == "" || (l.Mode != "local" && l.Mode != "normal") {
+		return fail(LaunchRefused, errors.New("complete identity and mode required"))
+	}
+	s.mu.Lock()
+	if s.seen == nil {
+		s.seen = map[string]bool{}
+	}
+	if s.live == nil {
+		s.live = map[string]*liveSession{}
+	}
+	if s.seen[l.SessionID] {
+		s.mu.Unlock()
+		return fail("uncertain-dispatch", errors.New("session already launched"))
+	}
+	s.seen[l.SessionID] = true
+	queue := s.Scripts[l.Role]
+	if len(queue) == 0 {
+		s.mu.Unlock()
+		result.NonExecution = true
+		return fail("startup-not-executed", fmt.Errorf("no scripted output for %s", l.Role))
+	}
+	step := queue[0]
+	result.ProviderStats = step.ProviderStats
+	s.Scripts[l.Role] = queue[1:]
+	dir, e := os.MkdirTemp(s.Root, "session-")
+	if e != nil {
+		s.mu.Unlock()
+		result.NonExecution = true
+		return fail(LaunchRefused, e)
+	}
+	result.LogDirectory = dir
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	session := &liveSession{task: l.TaskID, role: l.Role, started: time.Now(), ready: true, cancel: cancel, done: make(chan struct{})}
+	s.live[l.SessionID] = session
+	s.mu.Unlock()
+	defer func() {
+		s.mu.Lock()
+		delete(s.live, l.SessionID)
+		s.mu.Unlock()
+		close(session.done)
+	}()
+	tail := "scripted " + l.Role + " turn " + l.DispatchID
+	if s.TailBytes > 0 && len(tail) > s.TailBytes {
+		tail = tail[len(tail)-s.TailBytes:]
+	}
+	result.Tail = tail
+	timer := time.NewTimer(step.Delay)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return fail("interrupted", ctx.Err())
+	case <-timer.C:
+	}
+	if step.Class != "" {
+		return fail(step.Class, errors.New("scripted failure"))
+	}
+	if !json.Valid(step.Output) {
+		return fail("malformed-output", errors.New("handoff is not valid JSON"))
+	}
+	result.Output, result.ProducedAt = append(json.RawMessage(nil), step.Output...), time.Now()
+	return result, nil
 }
 
 func (s *Scripted) Dispatch(ctx context.Context, t Turn) (<-chan Outcome, error) {

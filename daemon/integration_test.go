@@ -17,6 +17,7 @@ import (
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
 	"github.com/xleelz/fae/engine"
+	"github.com/xleelz/fae/hostguard"
 )
 
 func fixture(t *testing.T) (Config, context.Context) {
@@ -29,11 +30,12 @@ func fixture(t *testing.T) (Config, context.Context) {
 	if runtime.GOOS == "darwin" {
 		base = "/private/tmp"
 	}
-	root, err := os.MkdirTemp(base, "fae-daemon-test-")
+	root, err := planeRoot(t, base)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
+		reapProcesses(t, root)
 		if err := os.RemoveAll(root); err != nil {
 			t.Error(err)
 		}
@@ -43,18 +45,21 @@ func fixture(t *testing.T) (Config, context.Context) {
 		t.Fatal(err)
 	}
 	t.Chdir(ws)
-	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	// A backstop for operations using ctx; waits are bounded by hangGuard,
+	// which a slow or pressured host extends up to 2 x 3 min + pressureAllowance.
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	t.Cleanup(cancel)
-	return Config{Root: filepath.Join(root, "instances"), Workspace: ws, Instance: "test", DoltBinary: binary, MaxInFlight: 2}, ctx
+	return Config{WorkflowLedgerPath: filepath.Join(root, "workflow-slots"), WorkflowSlotSample: func(context.Context) (hostguard.Sample, error) {
+		return hostguard.Sample{Memory: hostguard.Reading{Value: 1 << 50, Known: true}, IO10: hostguard.Reading{Known: true}, IO60: hostguard.Reading{Known: true}, Memory10: hostguard.Reading{Known: true}, Memory60: hostguard.Reading{Known: true}, LoadPerCore: hostguard.Reading{Known: true}}, nil
+	}, Root: filepath.Join(root, "instances"), Workspace: ws, Instance: "test", DoltBinary: binary, MaxInFlight: 2}, ctx
 }
+
+// call makes an authenticated RPC, retrying deferred host-admission refusals
+// (see admitted): they are made before any write, and a refusal-expecting
+// assertion must not pass on host pressure instead of the refusal it tests.
 func call(t *testing.T, d *Daemon, method string, p any, key string) (api.Response, error) {
 	t.Helper()
-	raw, _ := json.Marshal(p)
-	token, err := os.ReadFile(d.layout.Credential)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return api.Call(context.Background(), d.layout.Socket, token, api.Request{Version: 1, Method: method, Params: raw, Key: key})
+	return admitted(t, method, func() (api.Response, error) { return callOnce(t, d, method, p, key) })
 }
 func authorize(t *testing.T, d *Daemon) {
 	t.Helper()
@@ -72,28 +77,39 @@ func stop(t *testing.T, d *Daemon) {
 }
 func awaitState(t *testing.T, d *Daemon, id, state string) controlplane.JobSnapshot {
 	t.Helper()
-	// Native race-instrumented workflows now persist intent/start/result for
-	// every local effect. Allow their full pipeline to finish within the
-	// fixture's 90-second context, rather than a timing-sensitive 40s bound.
-	deadline := time.Now().Add(60 * time.Second)
-	for time.Now().Before(deadline) {
+	// Native race-instrumented workflows persist intent/start/result for every
+	// local effect and the default content runs fresh (-a) builds. This is a
+	// hang guard within the fixture's context, not a timing bound: it fails
+	// after three minutes without progress (see hangGuard).
+	guard := newHangGuard(3 * time.Minute)
+	version := int64(-1)
+	for {
 		j, err := d.store.GetJob(context.Background(), id)
 		if err == nil && j.State == state {
 			return j
+		}
+		if err == nil && j.Version != version {
+			version = j.Version
+			guard.progressed()
+		}
+		deferred := false
+		var env envelope
+		if err == nil && json.Unmarshal(j.Payload, &env) == nil {
+			deferred = deferredPark(env)
+			if env.Job.State.Terminal() {
+				t.Fatalf("task %s ended %s waiting for %s: %s", id, j.State, state, env.Job.Reason)
+			}
 		}
 		select {
 		case <-d.done:
 			t.Fatalf("daemon stopped: %v", d.err)
 		default:
 		}
+		if !guard.observe(deferred) {
+			t.Fatalf("task %s did not reach %s: state=%s err=%v payload=%s", id, state, j.State, err, j.Payload)
+		}
 		time.Sleep(30 * time.Millisecond)
 	}
-	j, err := d.store.GetJob(context.Background(), id)
-	if err == nil && j.State == state {
-		return j
-	}
-	t.Fatalf("task %s did not reach %s: state=%s err=%v payload=%s", id, state, j.State, err, j.Payload)
-	return j
 }
 func TestDaemonScriptedLifecycle(t *testing.T) {
 	cfg, ctx := fixture(t)
@@ -361,6 +377,17 @@ func TestDaemonDoltChildCrashRecovers(t *testing.T) {
 	}
 	if !recovered {
 		t.Fatal("owned Dolt child not recovered")
+	}
+	// FAE-API-020: the child's crash and restart are lifecycle events.
+	events, err := d.store.Events(ctx, 0, 100000)
+	kinds := ""
+	for _, ev := range events {
+		if len(ev.Kind) > 5 && ev.Kind[:5] == "dolt-" {
+			kinds += ev.Kind + ","
+		}
+	}
+	if err != nil || kinds != "dolt-started,dolt-crashed,dolt-restarted," {
+		t.Fatal("Dolt child lifecycle events", kinds, err)
 	}
 	if _, err = call(t, d, "Admit", AdmitParams{ID: "after-crash", Tree: "tree", AuthorizingMessage: "message"}, "after-crash"); err != nil {
 		t.Fatal(err)

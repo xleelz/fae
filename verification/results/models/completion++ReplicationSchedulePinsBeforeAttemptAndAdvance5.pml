@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,7 +30,7 @@ proctype ReplicationSchedulePinsBeforeAttemptAndAdvance5(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1363 = [1] of {int}->
+	chan child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1383 = [1] of {int}->
 	chan child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1262 = [1] of {int}->
 	chan child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1181 = [1] of {int}->
 	chan child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1060 = [1] of {int}->
@@ -48,13 +48,13 @@ proctype ReplicationSchedulePinsBeforeAttemptAndAdvance5(chan child) {
 	run receiver(child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1181)->
 	run AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance126(pinned_ch,attempted_ch,verified_ch,advanced_ch,child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1262)->
 	run receiver(child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1262)->
-	run AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance136(pinned_ch,attempted_ch,verified_ch,advanced_ch,child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1363)->
-	run receiver(child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1363)->
+	run AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance138(verified_ch,advanced_ch,pinned_ch,attempted_ch,child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1383)->
+	run receiver(child_AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance1383)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:14:2 */
-	:: advanced_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:14:2 */->
-	:: advanced_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:14:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:14:2 */
+	:: advanced_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:14:2 */->
+	:: advanced_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:14:2 */ -> 
 		advanced_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -68,12 +68,12 @@ proctype AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance106(Chandef pinn
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:10:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:10:14 */
 	:: pinned_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:10:14 */
 	:: pinned_ch.sync!false -> 
 		pinned_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:10:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -86,19 +86,19 @@ proctype AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance118(Chandef veri
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:11:14 */
-	:: pinned_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:11:14 */->
-	:: pinned_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:11:14 */
+	:: pinned_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:11:14 */->
+	:: pinned_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:11:14 */ -> 
 		pinned_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:11:24 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:11:24 */
 	:: attempted_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:11:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:11:24 */
 	:: attempted_ch.sync!false -> 
 		attempted_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:11:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:11:24 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -111,24 +111,24 @@ proctype AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance126(Chandef pinn
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:12:14 */
-	:: attempted_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:12:14 */->
-	:: attempted_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:12:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:12:14 */
+	:: attempted_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:12:14 */->
+	:: attempted_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:12:14 */ -> 
 		attempted_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:12:27 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:12:27 */
 	:: verified_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:12:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:12:27 */
 	:: verified_ch.sync!false -> 
 		verified_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:12:27 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:12:27 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance136(Chandef pinned_ch;Chandef attempted_ch;Chandef verified_ch;Chandef advanced_ch;chan child) {
+proctype AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance138(Chandef verified_ch;Chandef advanced_ch;Chandef pinned_ch;Chandef attempted_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -136,19 +136,19 @@ proctype AnonymousReplicationSchedulePinsBeforeAttemptAndAdvance136(Chandef pinn
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:13:14 */
-	:: verified_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:13:14 */->
-	:: verified_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:13:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:13:14 */
+	:: verified_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:13:14 */->
+	:: verified_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:13:14 */ -> 
 		verified_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:13:26 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:13:26 */
 	:: advanced_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:13:26 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:13:26 */
 	:: advanced_ch.sync!false -> 
 		advanced_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/replication_schedule.go:13:26 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/replication_schedule.go:13:26 */
 	fi->
 	stop_process: skip->
 	child!0

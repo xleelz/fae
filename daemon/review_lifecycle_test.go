@@ -10,6 +10,7 @@ import (
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/external"
 	"github.com/xleelz/fae/workflow"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -248,6 +249,17 @@ func testReviewLifecycleNative(t *testing.T, dynamic bool) {
 		selected.config.DisableReviewPublishMerge = false
 		selected.config.ReviewPolicies["review-task"] = missing
 	}
+	// FAE-EXT-010: a vendor flag no argument key maps fails closed when it
+	// would publish or merge.
+	create := selected.config.ExternalTools["create"]
+	flagged := create
+	flagged.Arguments = maps.Clone(create.Arguments)
+	flagged.Arguments["autoMergeOnGreen"] = "true"
+	selected.config.ExternalTools["create"] = flagged
+	if _, e = run("create"); e == nil || !strings.Contains(e.Error(), "implicit publication") {
+		t.Fatal("unmapped auto-merge flag accepted", e)
+	}
+	selected.config.ExternalTools["create"] = create
 	if _, e = run("create"); e != nil {
 		t.Fatal(e)
 	}

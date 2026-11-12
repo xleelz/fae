@@ -8,8 +8,6 @@ import (
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/external"
-	"os"
-	"path/filepath"
 )
 
 type AdapterBinding struct {
@@ -139,9 +137,10 @@ func (d *Daemon) liveForAdmission(ctx context.Context, p AdmitParams) (*liveExec
 	return d.liveForTarget(ctx, c)
 }
 func (d *Daemon) liveForTask(ctx context.Context, task string) (*liveExecutor, error) {
-	d.mu.Lock()
-	snapshot, ok := d.jobs[task]
-	d.mu.Unlock()
+	snapshot, ok, err := d.lockedStoredJob(ctx, task)
+	if err != nil {
+		return nil, err
+	}
 	if !ok {
 		return nil, errors.New("adapter task missing")
 	}
@@ -180,15 +179,10 @@ func (d *Daemon) adapterInstallRPC(ctx context.Context, r api.Request, principal
 		return nil, err
 	}
 	d.mu.Lock()
-	stopping := d.ctx.Err() != nil
+	refusal := d.mutationRefusal("AdapterPut", false)
 	d.mu.Unlock()
-	if stopping {
-		return nil, errors.New("shutting-down")
-	}
-	if _, err := os.Stat(filepath.Join(d.layout.Root, "maintenance")); err == nil {
-		return nil, errors.New("maintenance")
-	} else if !os.IsNotExist(err) {
-		return nil, err
+	if refusal != nil {
+		return nil, refusal
 	}
 	ctx, err := d.store.AuthorizeAction(ctx, p.AuthorizingMessage, principal.Actor, "AdapterPut", "governance", false, actionClasses())
 	if err != nil {

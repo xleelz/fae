@@ -14,6 +14,7 @@ import (
 	"syscall"
 
 	"github.com/xleelz/fae/processowner"
+	agentruntime "github.com/xleelz/fae/runtime"
 )
 
 // IPC has no recoverable byte stream. Its exact filesystem identity is retained
@@ -114,7 +115,7 @@ func scratchIPCUnused(ctx context.Context, paths []string) error {
 	}
 	// Darwin's pathname selection omits open FIFO descriptors. Enumerate the
 	// owner's descriptors instead and compare explicit pathname fields.
-	cmd := exec.CommandContext(ctx, "lsof", "-nP", "-a", "-u", strconv.Itoa(os.Getuid()), "-Fpn")
+	cmd := exec.CommandContext(ctx, "lsof", "-w", "-nP", "-a", "-u", strconv.Itoa(os.Getuid()), "-Fpn")
 	var diagnostic bytes.Buffer
 	cmd.Stderr = &diagnostic
 	out, err := cmd.Output()
@@ -126,7 +127,7 @@ func scratchIPCUnused(ctx context.Context, paths []string) error {
 		wanted[path] = true
 	}
 	for _, line := range strings.Split(string(out), "\n") {
-		if strings.HasPrefix(line, "n") && wanted[strings.TrimPrefix(line, "n")] {
+		if strings.HasPrefix(line, "n") && wanted[agentruntime.LsofName(strings.TrimPrefix(line, "n"))] {
 			return errors.New("scratch IPC still has open handles")
 		}
 	}

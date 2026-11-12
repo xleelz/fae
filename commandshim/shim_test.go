@@ -59,16 +59,28 @@ func TestParallelismClampAndActualInvocation(t *testing.T) {
 	if e := os.WriteFile(binary, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\"\n"), 0700); e != nil {
 		t.Fatal(e)
 	}
-	a, e := p.Prepare([]string{binary, "test", "-p", "999", "-parallel=999", "-count=1", "./..."})
-	if e != nil {
-		t.Fatal(e)
-	}
-	out, e := exec.Command(a[0], a[1:]...).CombinedOutput()
-	if e != nil {
-		t.Fatal(e)
-	}
-	if strings.Contains(string(out), "999") || !strings.Contains(string(out), "-p=2\n-parallel=2") {
-		t.Fatalf("uncapped %s", out)
+	// FAE-HOST-015: a whole-suite run (recursive targets, no -run filter) uses
+	// one thread; targeted runs and builds keep the clamp of 2.
+	for _, c := range []struct {
+		argv []string
+		want string
+	}{
+		{[]string{binary, "test", "-p", "999", "-parallel=999", "-count=1", "./..."}, "-p=1\n-parallel=1"},
+		{[]string{binary, "test", "-p", "999", "-parallel=999", "-count=1", "-run=TestX", "./..."}, "-p=2\n-parallel=2"},
+		{[]string{binary, "test", "-parallel=999", "-count=1", "./sub"}, "-p=2\n-parallel=2"},
+		{[]string{binary, "build", "-p=999", "./..."}, "-p=2\n./..."},
+	} {
+		a, e := p.Prepare(c.argv)
+		if e != nil {
+			t.Fatal(e)
+		}
+		out, e := exec.Command(a[0], a[1:]...).CombinedOutput()
+		if e != nil {
+			t.Fatal(e)
+		}
+		if strings.Contains(string(out), "999") || !strings.Contains(string(out), c.want) {
+			t.Fatalf("%v uncapped %s", c.argv, out)
+		}
 	}
 }
 func TestOutputAndSymlinkScope(t *testing.T) {

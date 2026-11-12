@@ -13,7 +13,6 @@ import (
 
 	"github.com/xleelz/fae/controller"
 	"github.com/xleelz/fae/controlplane"
-	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/processowner"
 	"github.com/xleelz/fae/workflow"
 )
@@ -25,14 +24,17 @@ func (d *Daemon) controllerHealth() controller.Health { return d.captureControll
 func (d *Daemon) captureControllerHealth(verifyExecutable bool) controller.Health {
 	h := controller.Health{Workspace: d.config.Workspace, PID: os.Getpid(), DoltPID: d.child.PID(), DriveAlive: d.driveAlive.Load(), DriveRounds: d.driveRounds.Load(), LastTransition: time.Unix(0, d.lastTransition.Load()).UTC(), EnvironmentHash: controller.EnvironmentHash(os.Environ()), Consistent: true}
 	h.InFlight = len(d.prophetActive)
+	if d.live != nil {
+		h.HostLedger = d.live.config.HostLedger
+	}
 	h.DriveGeneration = d.driveGeneration.Load()
 	h.DriveCause, _ = d.driveCause.Load().(string)
 	if d.pendingCheckpoint != nil || d.loopCheckpoint != nil || d.backlogUncertain {
 		h.Consistent = false
 	}
 	var markerErr error
-	h.Maintenance, markerErr = controller.ReadMarker(d.controllerMarkerPath())
-	if markerErr != nil {
+	h.Maintenance, markerErr = d.maintenanceMarker()
+	if _, uncertain := d.maintenanceHeld(); markerErr != nil || uncertain != nil {
 		h.Consistent = false
 	}
 	h.ProcessBirth, _ = processowner.Birth(os.Getpid())
@@ -43,23 +45,18 @@ func (d *Daemon) captureControllerHealth(verifyExecutable bool) controller.Healt
 		}
 	}
 	for id, snapshot := range d.jobs {
-		var e envelope
-		if decodeEnvelope(snapshot.Payload, &e) != nil || engine.Validate(e.Job) != nil {
+		row := d.healthRowOf(id, snapshot)
+		if !row.valid {
 			h.Consistent = false
 			continue
 		}
-		stage, allowed := e.Job.Document.Stages[string(e.Job.State)]
-		if allowed {
+		if row.allowed {
 			h.InFlight++
 		}
-		unsafe := allowed && maintenanceEffect(stage.Primitive)
-		if e.Job.InFlight != nil {
-			unsafe = unsafe || maintenanceEffect(e.Job.InFlight.Config.Primitive)
-		}
-		if unsafe {
+		if row.unsafe {
 			h.Unsafe = append(h.Unsafe, id)
 		}
-		if allowed && (strings.EqualFold(stage.Role, "qa") || strings.Contains(strings.ToLower(string(e.Job.State)), "qa")) {
+		if row.qa {
 			h.QA = append(h.QA, id)
 		}
 	}
@@ -73,9 +70,8 @@ func (d *Daemon) captureControllerHealth(verifyExecutable bool) controller.Healt
 				}
 			}
 		}
-		for _, snapshot := range d.jobs {
-			var e envelope
-			if decodeEnvelope(snapshot.Payload, &e) == nil && e.Job.InFlight != nil && !d.active[snapshot.ID] {
+		for id, snapshot := range d.jobs {
+			if d.healthRowOf(id, snapshot).inFlight && !d.active[snapshot.ID] {
 				h.InFlight++
 			}
 		}
@@ -92,7 +88,19 @@ func (d *Daemon) captureControllerHealth(verifyExecutable bool) controller.Healt
 		h.InFlight++
 		h.Unsafe = append(h.Unsafe, "backlog-commit-uncertain")
 	}
+	if d.landingActive() {
+		h.InFlight++
+		h.Unsafe = append(h.Unsafe, "landing")
+	}
 	return h
+}
+
+// faultAt is a test seam: a fault injected at a named point, or nil.
+func (d *Daemon) faultAt(point, id string) error {
+	if d.testFault == nil {
+		return nil
+	}
+	return d.testFault(point, id)
 }
 func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audit controlplane.Audit) (any, error) {
 	var p controller.Params
@@ -103,12 +111,29 @@ func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audi
 	path := d.controllerMarkerPath()
 	record := func(kind string, m *controller.Marker, alert bool) error {
 		audit.Action = kind
+		if e := d.sealMarker(m); e != nil {
+			return e
+		}
 		body, _ := json.Marshal(m)
-		if e := d.store.ControllerAction(ctx, audit, body, alert); e != nil {
+		e := d.faultAt("maintenance-commit", kind)
+		if e == nil {
+			e = d.store.ControllerAction(ctx, audit, body, alert)
+		}
+		if e != nil {
+			d.maintenanceUncertain(m, e)
+			return e
+		}
+		// The gate follows the committed plane marker at once (FAE-GEN-011);
+		// a failed mirror write below cannot reopen it.
+		if e = d.adoptMaintenance(body); e != nil {
 			return e
 		}
 		if m != nil {
-			if e := writePrivate(path, body); e != nil {
+			e := d.faultAt("maintenance-mirror", kind)
+			if e == nil {
+				e = writePrivate(path, body)
+			}
+			if e != nil {
 				return e
 			}
 		}
@@ -141,7 +166,7 @@ func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audi
 		if p.Marker != nil {
 			launcher = p.Marker.Launcher
 		}
-		m := &controller.Marker{ID: fmt.Sprintf("maintenance-%d", time.Now().UnixNano()), Owner: "operator", Reason: p.Note, Message: p.AuthorizingMessage, State: "preflight-failed", NextAction: "daemon remains running; inspect failure and retry authorized roll or maintenance stop", Started: time.Now().UTC(), OldPID: os.Getpid(), OldBirth: birth, Launcher: launcher, Launch: controller.LaunchSpec{Binary: executable, Arguments: append([]string(nil), os.Args[1:]...), Directory: d.config.Workspace, Environment: os.Environ(), SHA256: hash}}
+		m := &controller.Marker{ID: fmt.Sprintf("maintenance-%d", time.Now().UnixNano()), Owner: "operator", Reason: p.Note, Message: p.AuthorizingMessage, State: "preflight-failed", NextAction: "daemon remains running; inspect failure and retry authorized roll or maintenance stop", Started: time.Now().UTC(), OldPID: os.Getpid(), OldBirth: birth, Launcher: launcher, Launch: controller.LaunchSpec{Binary: executable, Arguments: RelaunchArgs(os.Args[1:]), Directory: d.config.Workspace, EnvironmentDigest: controller.EnvironmentHash(os.Environ()), SHA256: hash}}
 		if e = record("controller-maintenance-preflight-failed", m, true); e != nil {
 			return nil, e
 		}
@@ -187,7 +212,7 @@ func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audi
 		if !controller.CanEnterMaintenance(len(h.Unsafe) == 0, p.WhenClear, len(h.QA) == 0, len(h.Overlap) == 0, p.AckOverlap) {
 			return h, nil
 		}
-		m := &controller.Marker{ID: fmt.Sprintf("maintenance-%d", time.Now().UnixNano()), Owner: "operator", Reason: p.Note, Message: p.AuthorizingMessage, State: "draining", NextAction: "wait for graceful stop; start with the same authorization", Started: time.Now().UTC(), OldPID: os.Getpid(), Launcher: p.Marker.Launcher, AckOverlap: p.AckOverlap, Launch: controller.LaunchSpec{Binary: executable, Arguments: append([]string(nil), os.Args[1:]...), Directory: d.config.Workspace, Environment: os.Environ(), SHA256: hash}}
+		m := &controller.Marker{ID: fmt.Sprintf("maintenance-%d", time.Now().UnixNano()), Owner: "operator", Reason: p.Note, Message: p.AuthorizingMessage, State: "draining", NextAction: "wait for graceful stop; start with the same authorization", Started: time.Now().UTC(), OldPID: os.Getpid(), Launcher: p.Marker.Launcher, AckOverlap: p.AckOverlap, Launch: controller.LaunchSpec{Binary: executable, Arguments: RelaunchArgs(os.Args[1:]), Directory: d.config.Workspace, Environment: os.Environ(), SHA256: hash}}
 		m.OldBirth, e = processowner.Birth(os.Getpid())
 		if e != nil {
 			return nil, e
@@ -248,7 +273,7 @@ func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audi
 		if h.Maintenance.Replacement != nil && h.BinaryHash == h.Maintenance.Replacement.SHA256 {
 			authorized = *h.Maintenance.Replacement
 		}
-		if h.BinaryHash != authorized.SHA256 || h.EnvironmentHash != controller.EnvironmentHash(authorized.Environment) || h.ProcessBirth == h.Maintenance.OldBirth && h.PID == h.Maintenance.OldPID {
+		if h.BinaryHash != authorized.SHA256 || h.EnvironmentHash != authorized.Digest() || h.ProcessBirth == h.Maintenance.OldBirth && h.PID == h.Maintenance.OldPID {
 			return nil, errors.New("daemon binary, environment or replacement identity does not match authorization")
 		}
 		if !h.DriveAlive || h.DriveRounds == 0 || !h.Consistent {
@@ -260,11 +285,8 @@ func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audi
 			return nil, errors.Join(e, childErr, errors.New("daemon/Dolt native sandbox acceptance failed"))
 		}
 		if h.Maintenance.DeployedTip != "" && h.BinaryHash != h.Maintenance.Launch.SHA256 {
-			if e := controller.FastForward(ctx, d.config.Workspace, h.Maintenance.IntegrationRef, h.Maintenance.DeployedTip); e != nil {
-				m := h.Maintenance
-				m.State = "failed"
-				m.NextAction = "restore previous binary; reconcile divergent integration reference"
-				return nil, errors.Join(e, record("controller-maintenance-deployment-rejected", m, true))
+			if e := fastForwardDeployed(ctx, d.config.Workspace, h.Maintenance, record); e != nil {
+				return nil, e
 			}
 		}
 		accepted := *h.Maintenance
@@ -275,6 +297,11 @@ func (d *Daemon) controllerAction(ctx context.Context, raw json.RawMessage, audi
 		}
 		if e = os.Remove(path); e != nil {
 			return nil, e
+		}
+		// The relaunch consumed its sealed environment; a failed removal is
+		// retried by the next startup sweep and must not fail the acceptance.
+		if e = controller.DiscardEnvironments(d.layout.Root); e != nil && d.log != nil {
+			fmt.Fprintf(d.log, "controller launch environment removal deferred: %v\n", e)
 		}
 		d.draining = false
 		d.publishStatus()
@@ -358,12 +385,15 @@ func (d *Daemon) rollOverlap(ctx context.Context, binary, gated string, h *contr
 	if tip != next {
 		return errors.New("new binary differs from gated source revision")
 	}
-	changed, e := git("diff", "--name-only", old, next)
+	if e = d.verifyGatedTip(ctx, gated, tip); e != nil {
+		return e
+	}
+	changed, e := rollChangedNames(ctx, d.config.Workspace, old, next)
 	if e != nil {
 		return e
 	}
 	files := map[string]bool{}
-	for _, name := range strings.Split(changed, "\n") {
+	for _, name := range changed {
 		files[name] = true
 	}
 	for id, snapshot := range d.jobs {
@@ -385,16 +415,14 @@ func (d *Daemon) rollOverlap(ctx context.Context, binary, gated string, h *contr
 			h.Holds = append(h.Holds, controller.OverlapHold{Task: id, QueryFailed: true})
 			continue
 		}
-		touchedString, e := controller.Git(ctx, binding.Path, "diff", "--name-only", env.Job.Base)
-		touched := []byte(touchedString)
-		untracked, ue := controller.Git(ctx, binding.Path, "ls-files", "--others", "--exclude-standard")
+		touched, e := rollChangedNames(ctx, binding.Path, env.Job.Base)
+		untracked, ue := rollNulNames(controller.Git(ctx, binding.Path, "ls-files", "--others", "--exclude-standard", "-z"))
 		if e != nil || ue != nil {
 			h.Overlap = append(h.Overlap, id)
 			h.Holds = append(h.Holds, controller.OverlapHold{Task: id, QueryFailed: true})
 			continue
 		}
-		touched = append(touched, []byte("\n"+untracked)...)
-		for _, name := range strings.Split(strings.TrimSpace(string(touched)), "\n") {
+		for _, name := range append(touched, untracked...) {
 			if files[name] {
 				h.Overlap = append(h.Overlap, id)
 				break
@@ -404,35 +432,76 @@ func (d *Daemon) rollOverlap(ctx context.Context, binary, gated string, h *contr
 	return nil
 }
 
+// rollChangedNames lists the paths git diff names between the given
+// revisions (or between one and the worktree), for the roll's overlap guard
+// (FAE-CTL-001). A rename or copy is listed as both its paths, since a task
+// editing the old one overlaps the change (--no-renames), and the names are
+// NUL-separated, so a path git would otherwise quote is listed as itself.
+func rollChangedNames(ctx context.Context, dir string, revisions ...string) ([]string, error) {
+	return rollNulNames(controller.Git(ctx, dir, append([]string{"diff", "--name-only", "-z", "--no-renames"}, revisions...)...))
+}
+
+// rollNulNames splits git's NUL-separated output into names, passing a git
+// error through.
+func rollNulNames(out string, err error) ([]string, error) {
+	if err != nil {
+		return nil, err
+	}
+	var names []string
+	for _, name := range strings.Split(out, "\x00") {
+		if name != "" {
+			names = append(names, name)
+		}
+	}
+	return names, nil
+}
+
+// sealMarker keeps launch environment values out of the plane, events and the
+// marker mirror (FAE-SEC-003): they move to an owner-only file in the instance
+// root that the offline start resolves by digest.
+func (d *Daemon) sealMarker(m *controller.Marker) error {
+	if m == nil {
+		return nil
+	}
+	if e := controller.SealEnvironment(d.layout.Root, &m.Launch); e != nil {
+		return e
+	}
+	if m.Replacement != nil {
+		return controller.SealEnvironment(d.layout.Root, m.Replacement)
+	}
+	return nil
+}
+
 // Recover the atomic plane checkpoint before any drive round. The filesystem
 // mirror may be absent or partial after a crash; it never overrides the plane.
+// Sealed launch environments outlive only the maintenance that references them.
 func (d *Daemon) restoreControllerMarker(ctx context.Context) error {
+	var keep []string
+	e := d.restoreControllerMarkerMirror(ctx, &keep)
+	if e == nil {
+		e = controller.DiscardEnvironments(d.layout.Root, keep...)
+	}
+	return e
+}
+func (d *Daemon) restoreControllerMarkerMirror(ctx context.Context, keep *[]string) error {
 	raw, e := d.store.GetMarker(ctx, "controller-maintenance")
 	if errors.Is(e, sql.ErrNoRows) {
+		raw, e = nil, nil
+	}
+	if e != nil {
+		return e
+	}
+	if e = d.adoptMaintenance(raw); e != nil {
+		return e
+	}
+	marker, _ := decodeMaintenance(raw)
+	if marker == nil {
 		if _, stat := os.Lstat(d.controllerMarkerPath()); stat == nil {
 			return errors.New("maintenance mirror lacks durable plane authorization")
 		} else if !os.IsNotExist(stat) {
 			return stat
 		}
 		return nil
-	}
-	if e != nil {
-		return e
-	}
-	var marker *controller.Marker
-	if e = json.Unmarshal(raw, &marker); e != nil {
-		return e
-	}
-	if marker == nil {
-		if _, e := os.Lstat(d.controllerMarkerPath()); e == nil {
-			return errors.New("maintenance mirror lacks durable plane authorization")
-		} else if !os.IsNotExist(e) {
-			return e
-		}
-		return nil
-	}
-	if marker.ID == "" || marker.Message == "" {
-		return errors.New("invalid durable maintenance marker")
 	}
 	if marker.State == "accepted" {
 		existing, e := controller.ReadMarker(d.controllerMarkerPath())
@@ -452,12 +521,19 @@ func (d *Daemon) restoreControllerMarker(ctx context.Context) error {
 	if e = writePrivate(d.controllerMarkerPath(), raw); e != nil {
 		return e
 	}
+	*keep = append(*keep, marker.Launch.EnvironmentDigest)
+	if marker.Replacement != nil {
+		*keep = append(*keep, marker.Replacement.EnvironmentDigest)
+	}
 	d.draining = marker.State != "preflight-failed"
 	return nil
 }
 
 func (d *Daemon) publicMaintenance() map[string]any {
-	marker, e := controller.ReadMarker(d.controllerMarkerPath())
+	marker, e := d.maintenanceMarker()
+	if _, uncertain := d.maintenanceHeld(); e == nil && uncertain != nil && marker == nil {
+		return map[string]any{"state": "uncertain", "next_action": "retry the maintenance action or restart to read the plane marker"}
+	}
 	if e != nil {
 		return map[string]any{"state": "unreadable", "next_action": "inspect private maintenance marker"}
 	}

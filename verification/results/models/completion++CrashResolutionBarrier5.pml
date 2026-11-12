@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,7 +30,7 @@ proctype CrashResolutionBarrier5(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousCrashResolutionBarrier1172 = [1] of {int}->
+	chan child_AnonymousCrashResolutionBarrier1162 = [1] of {int}->
 	chan child_AnonymousCrashResolutionBarrier1061 = [1] of {int}->
 	chan child_AnonymousCrashResolutionBarrier960 = [1] of {int}->
 	Chandef committed_ch->
@@ -43,13 +43,13 @@ proctype CrashResolutionBarrier5(chan child) {
 	run receiver(child_AnonymousCrashResolutionBarrier960)->
 	run AnonymousCrashResolutionBarrier106(retired_ch,authority_ch,committed_ch,child_AnonymousCrashResolutionBarrier1061)->
 	run receiver(child_AnonymousCrashResolutionBarrier1061)->
-	run AnonymousCrashResolutionBarrier117(authority_ch,committed_ch,retired_ch,child_AnonymousCrashResolutionBarrier1172)->
-	run receiver(child_AnonymousCrashResolutionBarrier1172)->
+	run AnonymousCrashResolutionBarrier116(retired_ch,authority_ch,committed_ch,child_AnonymousCrashResolutionBarrier1162)->
+	run receiver(child_AnonymousCrashResolutionBarrier1162)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:12:2 */
-	:: committed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:12:2 */->
-	:: committed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:12:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:12:2 */
+	:: committed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:12:2 */->
+	:: committed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:12:2 */ -> 
 		committed_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -63,12 +63,12 @@ proctype AnonymousCrashResolutionBarrier96(Chandef retired_ch;Chandef authority_
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:9:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:9:14 */
 	:: retired_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:9:14 */
 	:: retired_ch.sync!false -> 
 		retired_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:9:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -81,17 +81,17 @@ proctype AnonymousCrashResolutionBarrier106(Chandef retired_ch;Chandef authority
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:10:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:10:14 */
 	:: authority_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:10:14 */
 	:: authority_ch.sync!false -> 
 		authority_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:10:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousCrashResolutionBarrier117(Chandef authority_ch;Chandef committed_ch;Chandef retired_ch;chan child) {
+proctype AnonymousCrashResolutionBarrier116(Chandef retired_ch;Chandef authority_ch;Chandef committed_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -99,26 +99,26 @@ proctype AnonymousCrashResolutionBarrier117(Chandef authority_ch;Chandef committ
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:14 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:14 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:14 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:14 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:14 */ -> 
 		retired_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:25 */
-	:: authority_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:25 */->
-	:: authority_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:25 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:25 */
+	:: authority_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:25 */->
+	:: authority_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:25 */ -> 
 		authority_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:38 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:38 */
 	:: committed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:38 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:38 */
 	:: committed_ch.sync!false -> 
 		committed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/uncertain.go:11:38 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/uncertain.go:11:38 */
 	fi->
 	stop_process: skip->
 	child!0

@@ -1,0 +1,947 @@
+{
+  "Version": 1,
+  "Pool": {
+    "Capacity": 2,
+    "AdmissionLimit": 2,
+    "TTL": 21600000000000,
+    "WarnAfter": 300000000000,
+    "MaxWait": 1800000000000,
+    "Holders": [],
+    "Waiting": []
+  },
+  "Audit": [
+    {
+      "At": "2026-10-26T10:07:45.488109858Z",
+      "Action": "host-limits-configured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365396,
+        "Started": 1793009264
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:15.766021449Z",
+      "Action": "queued",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365396,
+        "Started": 1793009264
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:15.77162351Z",
+      "Action": "granted",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365396,
+        "Started": 1793009264
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:15.808204619Z",
+      "Action": "released",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1365396,
+        "Started": 1793009264
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:15.858343606Z",
+      "Action": "host-limits-unconfigured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365396,
+        "Started": 1793009264
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:16.243074991Z",
+      "Action": "host-limits-configured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:46.431069831Z",
+      "Action": "queued",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:46.436534714Z",
+      "Action": "granted",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:46.469281093Z",
+      "Action": "released",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:46.507208559Z",
+      "Action": "queued",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:46.514167939Z",
+      "Action": "granted",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:46.531074416Z",
+      "Action": "released",
+      "ID": "7f2f058fdfbd6b63a325e1f84f23b013e5526a5905f0b68866c598e5bca94691",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1365839,
+        "Started": 1793009295
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:52.803253884Z",
+      "Action": "host-limits-configured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1366677,
+        "Started": 1793009332
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:08:55.183202123Z",
+      "Action": "host-limits-configured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1366677,
+        "Started": 1793009332
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:01.475557536Z",
+      "Action": "host-limits-unconfigured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1366677,
+        "Started": 1793009332
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:01.869533424Z",
+      "Action": "host-limits-configured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:02.087920147Z",
+      "Action": "host-limits-configured",
+      "ID": "/var/tmp/fhd-cqi6q_z3/i/dogfood",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:48.708215355Z",
+      "Action": "queued",
+      "ID": "4c679546aee0f234cd14387fbaf60dc81b6b23188ca1687330ef40fbdccca7b5",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:48.71411802Z",
+      "Action": "granted",
+      "ID": "4c679546aee0f234cd14387fbaf60dc81b6b23188ca1687330ef40fbdccca7b5",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:50.904623498Z",
+      "Action": "queued",
+      "ID": "b4ee60431a09c3c1477349003595466942ce365427e3fdb3f0ed336880de5520",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:50.910467354Z",
+      "Action": "granted",
+      "ID": "b4ee60431a09c3c1477349003595466942ce365427e3fdb3f0ed336880de5520",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:53.445187688Z",
+      "Action": "released",
+      "ID": "4c679546aee0f234cd14387fbaf60dc81b6b23188ca1687330ef40fbdccca7b5",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:54.236427871Z",
+      "Action": "queued",
+      "ID": "b83cbbd8747ace955e37c26b7b04d006eb191ce91e336400544293813a88b395",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:54.242844867Z",
+      "Action": "granted",
+      "ID": "b83cbbd8747ace955e37c26b7b04d006eb191ce91e336400544293813a88b395",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:54.326890516Z",
+      "Action": "released",
+      "ID": "b83cbbd8747ace955e37c26b7b04d006eb191ce91e336400544293813a88b395",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:55.567572593Z",
+      "Action": "released",
+      "ID": "b4ee60431a09c3c1477349003595466942ce365427e3fdb3f0ed336880de5520",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:56.25943051Z",
+      "Action": "queued",
+      "ID": "977bbf4b545af9c242dce39640373847d2a571b59145a4c315b89d50fccbd752",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:56.264895864Z",
+      "Action": "granted",
+      "ID": "977bbf4b545af9c242dce39640373847d2a571b59145a4c315b89d50fccbd752",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:09:56.335138817Z",
+      "Action": "released",
+      "ID": "977bbf4b545af9c242dce39640373847d2a571b59145a4c315b89d50fccbd752",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:01.139040601Z",
+      "Action": "queued",
+      "ID": "8601dd120d36e024ffa55aaa0af478eb8b75b4fa9aaa4923a6ca8a2cdf7c8156",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:01.144919857Z",
+      "Action": "granted",
+      "ID": "8601dd120d36e024ffa55aaa0af478eb8b75b4fa9aaa4923a6ca8a2cdf7c8156",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:03.549852216Z",
+      "Action": "queued",
+      "ID": "5be127c16ff5c86cd972f41fe2bcba04d3fc7bc0389418dcfb575645e7353fbe",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:03.556366895Z",
+      "Action": "granted",
+      "ID": "5be127c16ff5c86cd972f41fe2bcba04d3fc7bc0389418dcfb575645e7353fbe",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:05.921777702Z",
+      "Action": "released",
+      "ID": "8601dd120d36e024ffa55aaa0af478eb8b75b4fa9aaa4923a6ca8a2cdf7c8156",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:06.320251971Z",
+      "Action": "queued",
+      "ID": "c87c3b7f50dc5fb697130cc0f2a4eb6e3cbf80087474df228feaf3c409962b06",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:06.325968658Z",
+      "Action": "granted",
+      "ID": "c87c3b7f50dc5fb697130cc0f2a4eb6e3cbf80087474df228feaf3c409962b06",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:06.432022569Z",
+      "Action": "released",
+      "ID": "c87c3b7f50dc5fb697130cc0f2a4eb6e3cbf80087474df228feaf3c409962b06",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:07.166036268Z",
+      "Action": "queued",
+      "ID": "923980827e0a3a8daee7420e26ef25f897388ffbae1f2c12e13536bcbfa6d589",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:07.172064896Z",
+      "Action": "granted",
+      "ID": "923980827e0a3a8daee7420e26ef25f897388ffbae1f2c12e13536bcbfa6d589",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:07.401020092Z",
+      "Action": "released",
+      "ID": "923980827e0a3a8daee7420e26ef25f897388ffbae1f2c12e13536bcbfa6d589",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:08.225657939Z",
+      "Action": "released",
+      "ID": "5be127c16ff5c86cd972f41fe2bcba04d3fc7bc0389418dcfb575645e7353fbe",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:08.653228576Z",
+      "Action": "queued",
+      "ID": "44b7c13dcf46799e82c53650fd9a72a53ea74c26982fdd4253543146612a2776",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:08.66001276Z",
+      "Action": "granted",
+      "ID": "44b7c13dcf46799e82c53650fd9a72a53ea74c26982fdd4253543146612a2776",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:08.751721137Z",
+      "Action": "released",
+      "ID": "44b7c13dcf46799e82c53650fd9a72a53ea74c26982fdd4253543146612a2776",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:09.341726788Z",
+      "Action": "queued",
+      "ID": "00fb7a5ea9d2885eca1c2acb55e09ffd5e2053b28b16de1b0d45c7a0a174f640",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:09.34765831Z",
+      "Action": "granted",
+      "ID": "00fb7a5ea9d2885eca1c2acb55e09ffd5e2053b28b16de1b0d45c7a0a174f640",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:09.512224554Z",
+      "Action": "released",
+      "ID": "00fb7a5ea9d2885eca1c2acb55e09ffd5e2053b28b16de1b0d45c7a0a174f640",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:40.547399434Z",
+      "Action": "queued",
+      "ID": "62e5f073e7fef593bb171abdfbca2e84ecdda0fdee98f6342d4e8b15dbf2e319",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:40.555196822Z",
+      "Action": "granted",
+      "ID": "62e5f073e7fef593bb171abdfbca2e84ecdda0fdee98f6342d4e8b15dbf2e319",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:47.173033726Z",
+      "Action": "released",
+      "ID": "62e5f073e7fef593bb171abdfbca2e84ecdda0fdee98f6342d4e8b15dbf2e319",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:47.907624877Z",
+      "Action": "queued",
+      "ID": "0f5019e0a77a480bbd61b05d8a0fd599a6bf0fae5796ddf440e4f9c22de82ae4",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:47.913562896Z",
+      "Action": "granted",
+      "ID": "0f5019e0a77a480bbd61b05d8a0fd599a6bf0fae5796ddf440e4f9c22de82ae4",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:47.997329674Z",
+      "Action": "released",
+      "ID": "0f5019e0a77a480bbd61b05d8a0fd599a6bf0fae5796ddf440e4f9c22de82ae4",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:48.596072318Z",
+      "Action": "queued",
+      "ID": "cb07f0469d52fac65086bdfd8fd8e8fb04ecf64bd0e4def773b39ff29d8373d9",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:48.601244881Z",
+      "Action": "granted",
+      "ID": "cb07f0469d52fac65086bdfd8fd8e8fb04ecf64bd0e4def773b39ff29d8373d9",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:53.216355386Z",
+      "Action": "queued",
+      "ID": "768477636896d3a881ac9195b5540cf47d04c1bde60e02bfd4f257ce8e00c063",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:55.147973535Z",
+      "Action": "released",
+      "ID": "cb07f0469d52fac65086bdfd8fd8e8fb04ecf64bd0e4def773b39ff29d8373d9",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:55.177136934Z",
+      "Action": "granted",
+      "ID": "768477636896d3a881ac9195b5540cf47d04c1bde60e02bfd4f257ce8e00c063",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:10:55.946014978Z",
+      "Action": "queued",
+      "ID": "1e24c9f9cfcd2048282d9fc11ebef84a8e5aac68fc36cc980b2e93eb582329fd",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:01.608488011Z",
+      "Action": "released",
+      "ID": "768477636896d3a881ac9195b5540cf47d04c1bde60e02bfd4f257ce8e00c063",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:01.644993773Z",
+      "Action": "granted",
+      "ID": "1e24c9f9cfcd2048282d9fc11ebef84a8e5aac68fc36cc980b2e93eb582329fd",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:01.859591161Z",
+      "Action": "released",
+      "ID": "1e24c9f9cfcd2048282d9fc11ebef84a8e5aac68fc36cc980b2e93eb582329fd",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:02.320305328Z",
+      "Action": "queued",
+      "ID": "269aa2a8380fb4bad7e6f9da08138845ac21334100620912d14d0aa1cfb1da10",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:02.326926143Z",
+      "Action": "granted",
+      "ID": "269aa2a8380fb4bad7e6f9da08138845ac21334100620912d14d0aa1cfb1da10",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:02.470152895Z",
+      "Action": "released",
+      "ID": "269aa2a8380fb4bad7e6f9da08138845ac21334100620912d14d0aa1cfb1da10",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:12.26465931Z",
+      "Action": "queued",
+      "ID": "5ba119c5ef115389c51729104be462a2078bc1a5df753b2cf5e8b9c1ba796208",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:12.271996842Z",
+      "Action": "granted",
+      "ID": "5ba119c5ef115389c51729104be462a2078bc1a5df753b2cf5e8b9c1ba796208",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:12.444434325Z",
+      "Action": "released",
+      "ID": "5ba119c5ef115389c51729104be462a2078bc1a5df753b2cf5e8b9c1ba796208",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:13.053435814Z",
+      "Action": "queued",
+      "ID": "49596352b4ed53c632f494f25c9d87cbdf752b427b922f5f1e9b286758d27c1c",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:13.059602889Z",
+      "Action": "granted",
+      "ID": "49596352b4ed53c632f494f25c9d87cbdf752b427b922f5f1e9b286758d27c1c",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:19.410993538Z",
+      "Action": "released",
+      "ID": "49596352b4ed53c632f494f25c9d87cbdf752b427b922f5f1e9b286758d27c1c",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:20.037600284Z",
+      "Action": "queued",
+      "ID": "185fee79a3e18d25f07407ebb55d4af011ce50b84835897d692c82dab40c8936",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:20.046275179Z",
+      "Action": "granted",
+      "ID": "185fee79a3e18d25f07407ebb55d4af011ce50b84835897d692c82dab40c8936",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:20.233304025Z",
+      "Action": "released",
+      "ID": "185fee79a3e18d25f07407ebb55d4af011ce50b84835897d692c82dab40c8936",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:20.592135138Z",
+      "Action": "queued",
+      "ID": "49964b1e4bd0ce4b0e0361b13e8a8bed841ebffe1d1750f91d374d040c8de6c3",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:20.600355105Z",
+      "Action": "granted",
+      "ID": "49964b1e4bd0ce4b0e0361b13e8a8bed841ebffe1d1750f91d374d040c8de6c3",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:20.737620069Z",
+      "Action": "released",
+      "ID": "49964b1e4bd0ce4b0e0361b13e8a8bed841ebffe1d1750f91d374d040c8de6c3",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:21.401317811Z",
+      "Action": "queued",
+      "ID": "fdd3a6e1b16685ea2492832243a031ebe56735059b38a9c02c5249abb8060cdf",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:21.409460918Z",
+      "Action": "granted",
+      "ID": "fdd3a6e1b16685ea2492832243a031ebe56735059b38a9c02c5249abb8060cdf",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:21.529783121Z",
+      "Action": "released",
+      "ID": "fdd3a6e1b16685ea2492832243a031ebe56735059b38a9c02c5249abb8060cdf",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:57.68533003Z",
+      "Action": "queued",
+      "ID": "2c94ff46959ac627127f193e4dc98e12393f65234aae5f1ff94a612a4f3873da",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:57.691101798Z",
+      "Action": "granted",
+      "ID": "2c94ff46959ac627127f193e4dc98e12393f65234aae5f1ff94a612a4f3873da",
+      "Reason": "",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    },
+    {
+      "At": "2026-10-26T10:11:58.84564228Z",
+      "Action": "released",
+      "ID": "2c94ff46959ac627127f193e4dc98e12393f65234aae5f1ff94a612a4f3873da",
+      "Reason": "operation completed",
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Events": null
+    }
+  ],
+  "HostLimits": {
+    "/var/tmp/fhd-cqi6q_z3/i/dogfood": {
+      "Capacity": 2,
+      "Thresholds": {
+        "Soft": 6442450944,
+        "Hard": 2147483648,
+        "HardNoSwap": 4294967296,
+        "PerPane": 751619276,
+        "IO": 10,
+        "MemoryPressure": 5,
+        "Load": 3.5,
+        "PaneLimit": 60
+      },
+      "Owner": {
+        "PID": 1368865,
+        "Started": 1793009341
+      },
+      "Birth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:38420524"
+    }
+  }
+}

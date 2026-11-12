@@ -1,0 +1,261 @@
+{
+ "description": "No route is ever eligible; the route-exhaustion bound escalates ProviderUnavailable.",
+ "disposition": {
+  "live": false,
+  "mode": "Local"
+ },
+ "document": "local",
+ "execution": "scripted",
+ "expected": {
+  "detail": "no eligible route for role spec since TIME",
+  "dispatches": [],
+  "gates": [],
+  "kind": "ProviderUnavailable",
+  "state": "Escalated",
+  "transitions": [
+   {
+    "from": "Pending",
+    "to": "intake"
+   },
+   {
+    "from": "intake",
+    "kind": "ProviderUnavailable",
+    "to": "Escalated"
+   }
+  ]
+ },
+ "name": "routes-exhausted",
+ "no_route": true,
+ "script": {
+  "commit": [
+   {
+    "output": {
+     "files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "compare-red": [
+   {
+    "output": {}
+   }
+  ],
+  "format": [
+   {
+    "output": {
+     "new_debt": 0
+    }
+   }
+  ],
+  "freeze-red": [
+   {
+    "output": {}
+   }
+  ],
+  "implement": [
+   {
+    "output": {
+     "changed_files": [
+      "answer.go"
+     ],
+     "hunks": [
+      "return 42"
+     ],
+     "proof": "scripted fixture",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior"
+    }
+   }
+  ],
+  "intake": [
+   {
+    "output": {
+     "accepted": true
+    }
+   }
+  ],
+  "integrate": [
+   {
+    "output": {
+     "landed": true,
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "merge": [
+   {
+    "output": {
+     "patch_identical": true,
+     "result": "clean"
+    }
+   }
+  ],
+  "oracle": [
+   {
+    "output": {
+     "approved": true,
+     "findings": [],
+     "rationale": "all fixture findings resolved"
+    }
+   }
+  ],
+  "plan": [
+   {
+    "output": {
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "steps": [
+      "test",
+      "implement"
+     ],
+     "test_placement": "answer_test.go"
+    }
+   }
+  ],
+  "post-merge-qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "reviews": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "dimension": "correctness",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "quality",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "security",
+      "findings": [],
+      "guidance": [],
+      "sensitive_domains": []
+     },
+     {
+      "approved": true,
+      "dimension": "architecture",
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "run-red": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 1,
+     "expected_failure": true,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": false,
+     "test_in_source": true
+    }
+   }
+  ],
+  "run-tests": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "spec": [
+   {
+    "output": {
+     "acceptance": [
+      "answer is 42"
+     ],
+     "contracts": [
+      "answer() int"
+     ],
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "no_red": false,
+     "required_tests": [
+      "TestBehavior"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "scope": "scripted rehearsal"
+    }
+   }
+  ],
+  "spec-review": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "findings": []
+     },
+     {
+      "approved": true,
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "test-first": [
+   {
+    "output": {
+     "declared_files": [
+      "answer_test.go"
+     ],
+     "expected_failure": "got 0 want 42",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior",
+     "test_shape": "go-unit"
+    }
+   }
+  ]
+ }
+}

@@ -8,18 +8,18 @@ claimed complete here.
 | Specification phase | Implemented foundation | Still needed for phase acceptance |
 |---|---|---|
 | 0 Foundations | Pure types, canonical hashes, kernel transition graph, gate evaluator, validator, exhaustive/generated tests | Full check-to-firing-control census and all phase exit criteria |
-| 1 Control plane | Forward v1→v6 migration, audited whole-transaction retry, chunked snapshots, immutable job bindings, CAS, idempotent admission, ordered events, messages/markers, real child-crash recovery tests, verified offline backup/restore | Complete database immutability, all outage/uncertain-commit cases and full lifecycle reconciliation |
-| 2 Daemon/API | Runnable singleton, physical workspace binding, private credentialed Dolt child, authenticated Unix RPC, cached Status, bounded reads, resumable NDJSON events, graceful scripted restart, exact owned-process startup recovery and parent-death watchdogs | Physical event archive compaction, richer complete API schema, complete orphan/crash matrix and all drain bounds |
-| 3 Workflow engine | Durable Prepare/Complete engine, task/token/tree/session provenance, real JSON Schema validation with external references disabled, local default scripted pipeline including RED/remediation/review/QA/protected commit/integration, revision pinning, generated/restart/mutation tests | Complete Appendix C branches and per-finding semantics, FanOut/FanIn/SubWorkflow, revision migration/diff, full parity corpus; scripted effects remain fixtures; live direct path uses measured trees and guarded real effects |
-| 4 Scheduler/host | Ready-set decisions, scoped SQL role leases, host-shared durable weighted FIFO ledger, live launch admission, host telemetry, durable session-linked recovery, live Herdr census and pane/memory reservations, scoped Go command policy and nested-denial shims, dynamic shared pane/heavy/pressure/task limits, opt-in owned idle-session shedding | Complete cross-user host inventory, brokered interactive agent tools, reconciliation of unsupported/ambiguous effects and full inventory, role cap reconfiguration and full scheduler wiring |
-| 5 Worktrees | Deterministic isolated creation, registration checks, declared-file/whole-tree snapshots, exact reviewed-byte commit, immutable own-hunk-preserving three-way reconcile, retryable task-tree application, bounded automatic text-conflict remediation, current-tree gate revalidation, atomic dedicated-ref integration with ancestry/patch/blob/empty containment | Unsupported conflict classes and uncertain-effect adoption, full integration queue/dependency acceptance and stuck detector |
-| 6 Runtime | Scripted, direct and private-Herdr trusted-bridge adapters; strict fresh handoffs, bounded diagnostics, durable gated process ownership; restricted real Codex bridge, durable provider health and ordered route failover, bounded structured session-log reader, positive-liveness stall detection, durable proved-safe retry, bounded nonexecution startup recovery persistent provider context, resident Herdr workers and audited provider-neutral loops | General CLI log discovery and broader authenticated-provider conformance |
-| 7 Recovery | Durable completed-stage preservation, same-token scripted restart, planned-stop counters, uncertain non-replayable parks, explicit durable drain-and-restart, bounded Dolt-child restart, owned-group parent-SIGKILL tests, exact-identity startup recovery, retirement receipts and audited uncertain-turn resolution | Full daemon-SIGKILL matrix, stopped-launch and escaped/ambiguous-process limits, operator resolution of unsupported retained leases and effect-producing uncertain results |
-| 8 Operator | Foreground scripted/direct/multiplexer serve with pinned live target configuration, status, board, history, provider-health/provider-log, runtime-config, events/follow, message, workflow installation, local admission and shutdown via RPC; usage/refusal/unreachable codes | Remaining lifecycle verbs, complete Prophet sessions, target configs, full status surface |
-| 9 Controllers | Authorized native launcher, guarded roll/rollback, maintenance stop/start, watchdog grants and independent drive rearm, gated isolated deployment builds and protected overlap holds, reviewed census, archived retired cleanup and marked scratch cleanup with external backups | Landing, salvage, admission-gate CLI and broader changed-build crash coverage |
-| 10 Normal mode | Runtime schema-discovered configurable adapters, Normal live/dry-run grants and pins, durable effect recovery, draft/revision/publish/merge lifecycle with bounded polling/remediation, ordered audited ticket outbox, immutable dynamic adapter registry, explicit owned review-workspace preparation and native restart fixtures | Native vendor transport/authentication and authenticated third-party review/ticket conformance; adapters currently normalize vendor protocols |
-| 11 UI/observability | Unary transport foundation | UI supervision, metrics, alerts, correlation, read models and stream |
-| 12 Dogfood | Two genuine Codex tasks through resident Herdr workers, five same-context loop prompts, provider-turn SIGKILL with audited resolution, drained mid-run restart, immutable checkpoint chains, real RED/GREEN and landed contributions; integration-race revalidation exercised | Broader sustained workloads, other provider/OS combinations and broader crash/effect recovery coverage |
+| 1 Control plane | Forward v1→v11 migration (v7: message threads; v8: molecules and relational records with an interrupted-replay backfill; v9: a production writer for every record family; v10: lease-pool rows spilled to blobs; v11: finished-task Board columns), audited whole-transaction retry, chunked snapshots, immutable job bindings, CAS, idempotent admission, molecules bound in the admission transaction, task/transition/decision/artifact/provenance rows written in every checkpoint transaction with Dolt triggers refusing updates and deletes of the last four, topology and provenance-chain reads, ordered events, messages/markers, real child-crash recovery tests, verified offline backup/restore | Whole-table reads on backlog admission, `backlog show` and landing, `TaskHeads` and a supersession retirement's edge transfer; all outage/uncertain-commit cases and full lifecycle reconciliation |
+| 2 Daemon/API | Runnable singleton, physical workspace binding, private credentialed Dolt child, authenticated Unix RPC, cached Status, bounded reads, resumable NDJSON events, graceful restart with a 120 s commit/integrate drain bound and deterministic proved planned replay, per-task fault isolation and quarantine with `quarantine inspect/release/retire`, housekeeping step-fault isolation, deadline-driven idle (no plane round trips), exact owned-process startup recovery and parent-death watchdogs | Physical event archive compaction, richer complete API schema, live-mode crash-matrix boundaries; a loop-collection error still ends a drive generation |
+| 3 Workflow engine | Durable Prepare/Complete engine, task/token/tree/session provenance, real JSON Schema validation with external references disabled, local default scripted pipeline including RED/remediation/review/QA/protected commit/integration, revision pinning, generated/restart/mutation tests, typed per-finding Oracle routing, closed Appendix B escalation kinds, live-runnable default content, revision diff and audited task migration; the full FAE-WF-030 primitive library (HumanDecision, FanOut/FanIn, SubWorkflow and the configuration fields) with replayable content-addressed gate records; the Normal-only code-review sub-workflow in the shipped default with a Local projection and audited default upgrade; typed command placeholders, target-config required tests and compile check, test shapes, no-red classifier, task classes, scope-widen/RED-rework requests, carry-forward; the shipped default's request judge and no-red route; a 42-run recorded parity corpus; on a live instance with no pinned files, each task's scope and RED identity come from its admission, Spec and RedReport, every brief carries a `task_scope` block, and rework turns get failed runs' output as `engine_feedback` | QA verdict turn; policy hooks; FanOut branches run sequentially; scripted effects remain fixtures; live direct path uses measured trees and guarded real effects |
+| 4 Scheduler/host | Ready-set decisions, scoped SQL role leases, host-shared durable weighted FIFO ledger, live launch admission, host telemetry, durable session-linked recovery, live Herdr census and pane/memory reservations, scoped Go command policy and nested-denial shims (opt-in nested accounting, FAE-HOST-014), dynamic shared pane/heavy/pressure/task limits (tasks in flight unbounded by default), agent sessions without heavy-op units, newest-live-revision role caps and molecule-scoped pools, withheld-task reporting, dead-owner reclaim, opt-in owned idle-session shedding, role shims through `heavy-op run`, a Linux child subreaper, a per-run process cap (`systemd-run` TasksMax) | Complete cross-user host inventory, the process cap on hosts without delegated cgroup pids, brokered interactive agent tools, reconciliation of unsupported/ambiguous effects |
+| 5 Worktrees | Deterministic isolated creation, registration checks, declared-file/whole-tree snapshots, exact reviewed-byte commit, immutable own-hunk-preserving three-way reconcile, retryable task-tree application, bounded automatic text-conflict remediation, current-tree gate revalidation, atomic dedicated-ref integration with ancestry/patch/blob/empty containment, stuck commit/integrate alert, automatic adoption of completed, exactly remeasured local effect receipts | Unsupported conflict classes, adoption of effects without a completed receipt, full integration queue/dependency acceptance |
+| 6 Runtime | Scripted, direct and private-Herdr trusted-bridge adapters; strict fresh handoffs, bounded diagnostics, durable gated process ownership; restricted real Claude Code (default) and Codex bridges, durable provider health and ordered route failover, bounded structured session-log reader, positive-liveness stall detection, durable proved-safe retry, bounded nonexecution startup recovery, one provider-failure route rotation per turn, persistent provider context, resident Herdr workers and audited provider-neutral loops; bridges that take scope from the brief unless pinned, list the repository and accept exact-replacement edits | General CLI log discovery and broader authenticated-provider conformance |
+| 7 Recovery | Durable completed-stage preservation, same-token scripted restart, planned-stop counters, uncertain non-replayable parks, explicit durable drain-and-restart, bounded Dolt-child restart, owned-group parent-SIGKILL tests, exact-identity startup recovery, retirement receipts and audited uncertain-turn resolution, a scripted every-boundary SIGKILL/graceful crash matrix | Live-mode crash-matrix boundaries, stopped-launch and escaped/ambiguous-process limits, operator resolution of unsupported retained leases and effect-producing uncertain results |
+| 8 Operator | Detached or foreground scripted/direct/multiplexer serve with pinned live target configuration, status, board, history, show, provider-health/provider-log, runtime-config, events/follow, threaded messages/replies/inbox, workflow get/latest/list/retire/diff/simulate, run/start-work-item/resume, migrate, attach-design-doc, reclaim, analyze-session, doctor, decide, quarantine, topology, provenance, `history --records`, `ui token`, `run --task-class/--carry-from/--declared-file` and shutdown; scope-widen and RED-rework requests; one 0/1/2/3 exit-code contract with `fae help --json` | import-legacy (CLI-051) |
+| 9 Controllers | Authorized native launcher, guarded roll/rollback, maintenance stop/start, watchdog grants and independent drive rearm, gated isolated deployment builds under the heavy-op lease and protected overlap holds, landing/salvage/batch/then-roll with durable gated proofs, `gates self-test` and `gate run`, reviewed census, archived retired cleanup and marked scratch cleanup with external backups | Conflict resolution during landing (conflicts hold), non-Go gates, landing lease journal and broader changed-build crash coverage |
+| 10 Normal mode | Runtime schema-discovered configurable adapters, Normal live/dry-run grants and pins, durable effect recovery, draft/revision/publish/merge lifecycle with bounded polling/remediation, ordered audited ticket outbox, immutable dynamic adapter registry, explicit owned review-workspace preparation and native restart fixtures; the shipped default's Normal review sub-workflow binding installed subjects, with dry runs recording intents only | Native vendor transport/authentication and authenticated third-party review/ticket conformance; adapters currently normalize vendor protocols |
+| 11 UI/observability | Unary transport foundation, optional supervised loopback token-gated UI child (`ui/`), rotating structured supervision log with one line per park/escalation, plane alerts with `alerts.log` mirror and acknowledgement, derived/host metrics, daemon process-tree leak census, lease-wait task events, session transcript references in provenance | Repeat-grant and restart-time metrics |
+| 12 Dogfood | Two genuine provider tasks (Codex, later Claude Code) through resident Herdr workers, five same-context loop prompts, provider-turn SIGKILL with audited resolution, drained mid-run restart, immutable checkpoint chains, real RED/GREEN and landed contributions; integration-race revalidation exercised | Broader sustained workloads, other provider/OS combinations and broader crash/effect recovery coverage |
 
 ## Evidence limits
 
@@ -79,11 +79,12 @@ claimed complete here.
   unsupported. Operator reads use `fae provider-health` and `fae provider-log`.
 - Go host commands retain literal allowlisting, scoped paths, capped parallelism
   and durable broker admission. Role processes and command descendants receive
-  PATH-first refusal shims. The Codex bridge disables command tools entirely;
+  PATH-first refusal shims (superseded in wave 2: role shims run permitted heavy
+  commands through `heavy-op run`). The Codex bridge disables command tools entirely;
   arbitrary executable containment and interactive agent-to-broker command RPC
   remain outside the supported trust boundary. Rust module traversal/overrides
   and unsupported wrapper grammars refuse rather than execute unchecked.
-- Herdr admission counts live panes across discovered servers/workspaces and
+- Herdr admission counts live panes (`herdr-core ls --json` over discovered `HC_SOCKET` servers) and
   adds pending reservations under a cross-process lock. Memory estimates remain
   reserved through startup and a 180-second warmup. Unreadable inventory refuses;
   exact dead owners are audited on access and surviving panes still count live.
@@ -111,7 +112,7 @@ original source hashes. The runtime-recovery increment records a separate rerun.
   effects contract. Recovery counters survive durable checkpoints and restart;
   two retries precede typed exhaustion. Unknown activity or effect ownership
   remains conservative. Startup nonexecution now has its own bounded durable recovery; a complete
-  crash matrix remains separate work.
+  crash matrix remains separate work (wave 2 added the scripted every-boundary matrix).
 
 Validation for this increment: 494 race-enabled test cases, vet and scratch census
 passed (77.7% statement coverage). Gobra checked 15 predicates with 15 rejected
@@ -133,11 +134,20 @@ a drained restart and 58 released host leases. See
   concurrency updates on the next round. Existing work survives reductions. Status
   distinguishes requested from effective pane limits. Supported task limits are
   1–256; complete default-unbounded scheduler semantics remain phase work.
+  (Superseded: tasks in flight now default to -1, unbounded; a configured limit
+  is -1 or 1..1,000,000.)
 - Transport startup defaults to 180 seconds and three total attempts. Only proven
   nonexecution, retirement and unchanged tree permit replay. Per-stage counters
   survive restart, fresh IDs prevent duplicate launches, and no task/stage budget
   is charged. Pre-execution failures retain diagnostics without penalizing a
   provider that never ran. Launched work without acknowledgment stays uncertain.
+  (Superseded in part, wave 10: a bridge whose provider executable did not
+  start, or whose provider exited on its own before writing anything, records
+  `provider-not-started`, a nonexecution retried within this bound; see
+  provider/README.md. Wave 11: a later review session's start failure reruns
+  every reviewer, charged, within the same bound, and a provider that
+  acknowledged and then failed records `provider-failed`, a bounded stage
+  retry, not an uncertain park.)
 
 Final validation: 530 race-enabled cases, vet and scratch census passed with
 77.8% coverage; 18 Gobra predicates/mutations and 19 positive/17 negative bounded
@@ -159,7 +169,8 @@ and validate output and unchanged repository state. Cron is covered by the subse
 Opt-in resident Herdr workers execute multiple distinct bridge processes in one
 pane. Every turn refreshes its profile and configuration and owns separate
 process groups. Heavy/role leases end after turn retirement; pane reservations
-last until exact resident retirement. Reviews remain fresh. Task-bound contexts
+last until exact resident retirement. (Since wave 1, agent turns take no heavy-op
+unit; only the role slot and pane/host admission apply.) Reviews remain fresh. Task-bound contexts
 and panes never cross tasks; global roles may reuse across tasks. TTL and eligible
 idle shedding retire only owned, inactive residents. Provider conversation history
 persists separately from the worker process.
@@ -201,7 +212,8 @@ durable maintenance markers constrain lifecycle actions. The independent watchdo
 suppresses maintenance death/stall alerts, persists pending alerts and enforces a
 bounded rearm budget. Changed builds require clean VCS metadata and a gated ref.
 Build-from-ref, critical-task indefinite overlap policy, deployed integration-tip
-fast-forward and in-process recovery of a stopped drive remain follow-up work.
+fast-forward and in-process recovery of a stopped drive remain follow-up work
+(superseded by the deployment increment below).
 
 Local effects now retain immutable intent, start and completion checkpoints with
 audit/event references. VCS commit preparation fixes the exact object before CAS;
@@ -639,3 +651,70 @@ Durable byte/count policies account actual owned backup and spool files, includi
 1,352 race-enabled test cases across 26 packages passed, with 73.6% statement coverage, vet and scratch census. Gobra verified 56 production predicates and rejected 56 mutations; Gomela/SPIN passed 57 positive models and observed 55 firing negative controls. Real-provider acceptance completed 36 turns, exercised pending-claim refusal, successful unpin without upload/deletion, stale retention preview refusal, quota persistence across restart, byte/count refusal without allocation, and successful verified backup after raising quota. All prior provider/Herdr/restart/schedule/cleanup checks remain enabled. [Evidence](verification/results/backup-storage.json).
 
 Remaining scope includes remote retention/credentials, calendar/multiple policies, automatic grant renewal, hard filesystem quotas, unique incomplete/orphan archive cleanup, and other requirements described elsewhere.
+
+## Wave-1 integration round — 2026-10-22
+
+Security: `--live-config` must be an owner-only file outside every repository and
+worktree; controller relaunch environments are sealed by digest; resident worker
+sockets authenticate; maintenance and shutdown refusals are typed; the Dolt port
+probe connects rather than binds. Workflow: the default content runs live
+unpatched, with typed per-finding Oracle routing, bound rework evidence, validator
+error paths and offline whole-workflow simulation. Scheduler: tasks in flight are
+unbounded by default, agent turns take no heavy-op unit, no wait holds scarce
+capacity, role caps follow the newest live revision and withheld tasks are
+reported. Robustness: every escalation carries a closed Appendix B kind, per-task
+faults are isolated, graceful stop drains commit/integrate within 120 s, live
+planned replay requires retirement proof and a stuck commit/integrate stage raises
+an alert. CLI: one exit-code contract, `help --json`, detached serve, run
+dispositions, workflow governance, threaded messages and inbox, attach-design-doc,
+reclaim, analyze-session, doctor, migrate and the hidden `heavy-op run`.
+Controller: land/salvage/batch/then-roll with gated proofs, `gates self-test` and
+`gate run`; controller builds take the heavy-op lease. Observability: rotating
+structured supervision log, alerts with an `alerts.log` mirror, metrics, host
+metrics and a process-tree leak census.
+
+Still open: import-legacy (CLI-051); scope-widen and RED-rework (OPS-001/WF-078);
+no-red classification, the Normal-mode code-review sub-workflow and QA checks from
+target configuration; a per-run process limit (HOST-015); a generic reaper
+(HOST-023); session correlation (OBS-007) and park/escalation pairing (OBS-006);
+role shims calling `heavy-op run` (HOST-011). Non-transient cron, loop and
+runtime-config errors still end a drive generation, and completed host-effect
+receipts are not adopted automatically. Landing conflicts always hold and a
+landing has no lease journal. An existing instance keeps its stored default
+workflow revision. Dolt history and backups written before the environment
+sealing may still contain launch-environment values. Results: [TESTING.md](TESTING.md).
+(Wave 2 closed most of these; see below. Still open from this list: import-legacy,
+landing conflicts and lease journal, the pre-sealing Dolt history, and a
+loop-collection error ending a drive generation.)
+
+## Wave-2 integration round — 2026-10-23
+
+Data model: molecules bound at admission, relational task, transition, decision,
+artifact and provenance rows in each checkpoint transaction, trigger-enforced
+immutability, transcript references in provenance, topology and provenance-chain
+reads, molecule limits (schema 8). Primitives: HumanDecision with `fae decide`,
+FanOut/FanIn, SubWorkflow, the WF-030 configuration fields and replayable gate
+records. Target policy: typed command placeholders, target schema 4 required tests
+and compile check, test shapes, no-red classifier, task classes, governed
+scope-widen/RED-rework requests, base-checked replacement RED, progress-aware
+loops and carry-forward. Normal content: the shipped default's Normal-only review
+sub-workflow, Local projection, audited default upgrade, a 33-run parity corpus
+and a 101-of-284 ledger. UI: an optional supervised loopback token-gated child.
+Runtime: role shims through `heavy-op run`, park/escalation log lines, process
+roles, a child subreaper, an idle daemon without plane polling, build-workspace
+detection, `SessionAdapter` conformance, scratch-archive cleanup through the
+daemon and a per-run process cap. Recovery: deterministic planned replay,
+`fae quarantine`, automatic adoption of completed local receipts, housekeeping
+step-fault isolation and a scripted every-boundary crash matrix. Tests: real host
+pressure by default.
+
+Still open: writers for sessions, external_effects, code_reviews, schedules and
+engine_runs; startup loads every job snapshot; live-mode crash-matrix boundaries;
+a loop-collection error ends a drive generation; legacy rows without a disposition are
+driven as Local; the shipped default has no no-red route or request judge; landing
+runs templated QA stages literally; FanOut branches run sequentially; the process
+cap needs delegated cgroup pids; eight newer pure guards are not in `verify.sh`.
+Results: [TESTING.md](TESTING.md). (Closed since: a writer for every record family
+(migration 9), startup loading only the tasks the drive may act on, and the shipped
+default's request judge and no-red route (generation 3). See HANDOFF.md for later
+rounds.)

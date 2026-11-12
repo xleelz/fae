@@ -136,6 +136,7 @@ func TestReviewWorkflowActualRemediationAndRevision(t *testing.T) {
 	doc.Artifacts["ReviewReceipt"] = workflow.ArtifactType{Version: 1, Schema: json.RawMessage(`{"type":"object"}`)}
 	role := doc.Roles["planner"]
 	role.Outputs = append(role.Outputs, "ReviewReceipt")
+	role.Profile.Effects = []string{"review_create", "review_read", "review_revision", "review_publish", "review_merge"}
 	doc.Roles["planner"] = role
 	for id, s := range doc.Stages {
 		if s.Primitive == workflow.HostCommand && s.TestRun {
@@ -164,15 +165,9 @@ func TestReviewWorkflowActualRemediationAndRevision(t *testing.T) {
 	if _, e = call(t, d, "Admit", AdmitParams{ID: "review-delivery", RunID: "review-run", Mode: "Normal", CommitExternal: true, Destination: "main", PushNamespace: "fae/", AuthorizingMessage: "review-live"}, "review-delivery"); e != nil {
 		t.Fatal(e)
 	}
-	var snapshot controlplane.JobSnapshot
-	deadline := time.Now().Add(150 * time.Second)
-	for time.Now().Before(deadline) {
-		snapshot, e = d.store.GetJob(ctx, "review-delivery")
-		if e == nil && (snapshot.State == "Done" || snapshot.State == "Escalated") {
-			break
-		}
-		time.Sleep(50 * time.Millisecond)
-	}
+	snapshot, _ := awaitJob(t, d, "review-delivery", 150*time.Second, func(s controlplane.JobSnapshot, _ envelope) bool {
+		return s.State == "Done" || s.State == "Escalated"
+	})
 	var env envelope
 	if e = json.Unmarshal(snapshot.Payload, &env); e != nil {
 		t.Fatal(e)

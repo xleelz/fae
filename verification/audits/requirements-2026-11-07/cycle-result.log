@@ -1,0 +1,15 @@
+validation a []
+validation b []
+validation c []
+validation d []
+err <nil> state Escalated
+node 1 a root HumanDecisionRequired: child failed
+node 2 b root.call.1 HumanDecisionRequired: child failed
+node 3 c root.call.1.call.1 HumanDecisionRequired: child failed
+node 4 d root.call.1.call.1.call.1 HumanDecisionRequired: child failed
+node 5 a root.call.1.call.1.call.1.call.1 HumanDecisionRequired: child failed
+node 6 b root.call.1.call.1.call.1.call.1.call.1 HumanDecisionRequired: child failed
+child-failed <nil> history 5
+actual_event kind="sub-workflow-failed" cause="recursion_budget: max_descendants exceeded" tree_filter_matches=false
+actual_event kind="failure-route" cause="recursion_budget: recursion_budget: max_descendants exceeded" tree_filter_matches=false
+actual_event kind="transition" cause="failure recursion_budget" tree_filter_matches=false

@@ -53,7 +53,7 @@ func TestDynamicHostConfigurationAuditedRestart(t *testing.T) {
 	if d.effectiveTasksInFlight() != 3 || d.live.guard.dynamicHeavy.Load() != 2 {
 		t.Fatal("round did not refresh")
 	}
-	for _, bad := range []RuntimeConfig{{HeavyCapacity: -1}, {TasksInFlight: 257}, {HostThresholds: &hostguard.Config{}}} {
+	for _, bad := range []RuntimeConfig{{HeavyCapacity: -1}, {TasksInFlight: -2}, {TasksInFlight: 1000001}, {HostThresholds: &hostguard.Config{}}} {
 		bad.AuthorizingMessage = "message"
 		if _, e = call(t, d, "RuntimeConfig", bad, ""); e == nil {
 			t.Fatal("invalid config", bad)

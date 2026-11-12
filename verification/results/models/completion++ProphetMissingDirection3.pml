@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,24 +30,24 @@ proctype ProphetMissingDirection3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousProphetMissingDirection650 = [1] of {int}->
+	chan child_AnonymousProphetMissingDirection640 = [1] of {int}->
 	Chandef reply_ch->
 	Chandef direction_ch->
 	run sync_monitor(direction_ch)->
 	run sync_monitor(reply_ch)->
-	run AnonymousProphetMissingDirection65(reply_ch,direction_ch,child_AnonymousProphetMissingDirection650)->
-	run receiver(child_AnonymousProphetMissingDirection650)->
+	run AnonymousProphetMissingDirection64(direction_ch,reply_ch,child_AnonymousProphetMissingDirection640)->
+	run receiver(child_AnonymousProphetMissingDirection640)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:7:2 */
-	:: reply_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:7:2 */->
-	:: reply_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:7:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:7:2 */
+	:: reply_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:7:2 */->
+	:: reply_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:7:2 */ -> 
 		reply_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousProphetMissingDirection65(Chandef reply_ch;Chandef direction_ch;chan child) {
+proctype AnonymousProphetMissingDirection64(Chandef direction_ch;Chandef reply_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -55,19 +55,19 @@ proctype AnonymousProphetMissingDirection65(Chandef reply_ch;Chandef direction_c
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:6:13 */
-	:: direction_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:6:13 */->
-	:: direction_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:6:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:6:13 */
+	:: direction_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:6:13 */->
+	:: direction_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:6:13 */ -> 
 		direction_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:6:26 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:6:26 */
 	:: reply_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:6:26 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:6:26 */
 	:: reply_ch.sync!false -> 
 		reply_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet.go:6:26 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet.go:6:26 */
 	fi->
 	stop_process: skip->
 	child!0

@@ -9,9 +9,6 @@ import (
 
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controlplane"
-	"github.com/xleelz/fae/engine"
-	"github.com/xleelz/fae/execution"
-	"github.com/xleelz/fae/workflow"
 )
 
 type BackupReplicationUnpinParams struct {
@@ -52,7 +49,7 @@ func (d *Daemon) backupReplicationUnpinRPC(ctx context.Context, r api.Request) (
 func (d *Daemon) backupReplicationUnpin(ctx context.Context, p BackupReplicationUnpinParams, a controlplane.Audit, authorize func() error) (BackupReplicationUnpinResult, error) {
 	result := BackupReplicationUnpinResult{Backup: p.Backup}
 	// The scheduler uses this same lock order. Hold both through proof and pin mutation.
-	if !d.replicationScheduleMu.TryLock() {
+	if !scheduleControlLock(ctx, &d.replicationScheduleMu, &d.replicationControls) {
 		return result, errors.New("replication schedule busy")
 	}
 	defer d.replicationScheduleMu.Unlock()
@@ -62,7 +59,7 @@ func (d *Daemon) backupReplicationUnpin(ctx context.Context, p BackupReplication
 	defer d.backupMu.Unlock()
 	if d.live != nil && d.live.guard != nil {
 		sid := "replication-unpin/" + time.Now().UTC().Format("20060102150405.000000000")
-		release, err := d.live.guard.Acquire(ctx, engine.Dispatch{ID: sid, TaskID: sid, Config: workflow.Stage{Weight: 1}}, execution.Binding{}, engine.Session{ID: sid})
+		release, err := d.live.guard.AcquireHostIO(ctx, sid)
 		if err != nil {
 			return result, err
 		}

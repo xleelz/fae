@@ -12,6 +12,12 @@ import (
 	"github.com/xleelz/fae/daemon"
 )
 
+// censusDefaults: census apply's pacing between retirements is an Appendix A
+// configurable default (2 s, FAE-CTL-041); zero is allowed.
+var censusDefaults = map[string]valueRange{
+	"gap": {"0s..1m0s", func(v any) bool { d := v.(time.Duration); return d >= 0 && d <= time.Minute }},
+}
+
 func censusCommand(ctx context.Context, args []string, c common, out io.Writer) error {
 	apply := len(args) > 0 && args[0] == "apply"
 	if apply {
@@ -20,13 +26,12 @@ func censusCommand(ctx context.Context, args []string, c common, out io.Writer) 
 	f, opts := flags("census", c)
 	file := f.String("file", "", "proposal JSON for census; reviewed artifact JSON for apply")
 	blocked := f.Bool("include-blocked", false, "include Blocked tasks in classification")
-	gap := f.Duration("gap", 2*time.Second, "gap between retirement requests")
+	gap := f.Duration("gap", 2*time.Second, "gap between retirement requests (0s..1m0s)")
+	fallBack := configurableFlags(f, censusDefaults)
 	if err := parse(f, args); err != nil {
 		return err
 	}
-	if *gap < 0 || *gap > time.Minute {
-		return usage("census gap must be between zero and one minute")
-	}
+	fallBack()
 	if !apply {
 		p := daemon.CensusParams{IncludeBlocked: *blocked}
 		if *file != "" {
@@ -40,8 +45,11 @@ func censusCommand(ctx context.Context, args []string, c common, out io.Writer) 
 		}
 		return rpc(ctx, *opts, "Census", "", p, out)
 	}
-	if *file == "" || opts.message == "" {
-		return usage("census apply requires --file and --authorizing-message")
+	if *file == "" {
+		return usage("census apply requires --file")
+	}
+	if err := requireMessage("census apply", opts); err != nil {
+		return err
 	}
 	raw, err := os.ReadFile(*file)
 	if err != nil {

@@ -1,0 +1,21 @@
+{
+  "result": {
+    "redundant_removed": true,
+    "canonical_retained": true,
+    "uncovered_data_refused": true,
+    "idempotent_retry": true,
+    "scratch_cleanup_still_valid": true
+  },
+  "plan": {
+    "source": "/var/tmp/fhd-lu04hciv/i/.scratch-archive/b390e110b54a7b84f5d10cd3b843e96c-redundant",
+    "survivor": "/var/tmp/fhd-lu04hciv/i/.scratch-archive/b390e110b54a7b84f5d10cd3b843e96c-3659456334",
+    "plan_digest": "aea01eb3e7d82106d6546bcaea5334f28d7b90fe92666455fdea7ab6979a9667",
+    "completed": false
+  },
+  "cleanup": {
+    "source": "/var/tmp/fhd-lu04hciv/i/.scratch-archive/b390e110b54a7b84f5d10cd3b843e96c-redundant",
+    "survivor": "/var/tmp/fhd-lu04hciv/i/.scratch-archive/b390e110b54a7b84f5d10cd3b843e96c-3659456334",
+    "plan_digest": "aea01eb3e7d82106d6546bcaea5334f28d7b90fe92666455fdea7ab6979a9667",
+    "completed": true
+  }
+}

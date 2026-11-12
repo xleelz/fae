@@ -8,6 +8,7 @@ import (
 	"github.com/xleelz/fae/runtime"
 	"github.com/xleelz/fae/workflow"
 	"testing"
+	"time"
 )
 
 type stubRuntime struct {
@@ -26,11 +27,15 @@ type deferred struct{}
 func (deferred) Error() string           { return "pane cap" }
 func (deferred) AdmissionDeferred() bool { return true }
 
-type denyNth struct{ count, n int }
+// denyNth defers the nth admission, and every later one when onward is set.
+type denyNth struct {
+	count, n int
+	onward   bool
+}
 
 func (a *denyNth) Acquire(context.Context, engine.Dispatch, Binding, engine.Session) (func() error, error) {
 	a.count++
-	if a.count == a.n {
+	if a.count == a.n || a.onward && a.count > a.n {
 		return nil, deferred{}
 	}
 	return func() error { return nil }, nil
@@ -80,13 +85,22 @@ func TestProviderObservationAndPinnedRoute(t *testing.T) {
 		t.Fatal("accepted without durable health", r, e)
 	}
 }
+
+// FAE-HOST-006, FAE-RT-004: an admission deferral concerns only the session
+// it kept from launching. The first session's defers the dispatch with
+// nothing run, at once; a later review session's asks for admission again
+// within the executor's wait and, still deferred past it, defers the
+// dispatch carrying the review that ran (the engine parks it without a
+// charge and runs every reviewer again).
 func TestDeferredAdmissionBeforeLaunchOnly(t *testing.T) {
 	for _, n := range []int{1, 2} {
 		t.Run(string(rune('0'+n)), func(t *testing.T) {
 			x, d, _ := fixture(t)
 			d.Config.Primitive = workflow.Review
 			d.Sessions = append(d.Sessions, engine.Session{ID: "two", Role: "reviewer"})
-			x.Admission = &denyNth{n: n}
+			a := &denyNth{n: n, onward: true}
+			x.Admission = a
+			x.LaterSessionAdmissionWait, x.LaterSessionAdmissionRetry = 50*time.Millisecond, 5*time.Millisecond
 			run := &stubRuntime{output: runtime.Collected{Output: []byte(`{"pass":true}`), ProcessesRetired: true}}
 			x.Runtime = run
 			observed := 0
@@ -94,13 +108,15 @@ func TestDeferredAdmissionBeforeLaunchOnly(t *testing.T) {
 				observed++
 				return nil
 			}
+			started := time.Now()
 			r, e := x.Execute(context.Background(), d)
-			want := "infrastructure-deferred"
-			if n == 2 {
-				want = "uncertain"
-			}
-			if e == nil || r.Class != want || len(run.launches) != n-1 || observed != n-1 {
+			if e == nil || r.Class != "infrastructure-deferred" || len(run.launches) != n-1 || observed != n-1 || len(r.Reviews) != n-1 {
 				t.Fatal(r, e, len(run.launches), observed)
+			}
+			// A first session's deferral is not retried; a later session's
+			// is, within the wait, and reviewer a is not run again.
+			if n == 1 && (a.count != 1 || time.Since(started) > 40*time.Millisecond) || n == 2 && (a.count < 4 || time.Since(started) < 40*time.Millisecond) {
+				t.Fatalf("session %d: %d admissions asked in %s", n, a.count, time.Since(started))
 			}
 		})
 	}

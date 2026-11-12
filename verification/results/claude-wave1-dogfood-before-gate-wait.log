@@ -1,0 +1,75 @@
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+SIGKILL during actual provider turn; retired uncertain dispatches explicitly resolved
+watchdog rearmed stopped drive; daemon, Dolt and active dispatch identities preserved
+cron-7d533ed758e7c6b84e828429-0 stage: intake
+provider-beta stage: intake
+provider-beta stage: intake-gate
+drained mid-run restart completed; dynamic limit preserved and raised
+cron-7d533ed758e7c6b84e828429-0 stage: spec
+provider-beta stage: spec
+cron-7d533ed758e7c6b84e828429-0 stage: spec-review
+provider-beta stage: spec-review
+provider-beta stage: plan
+cron-7d533ed758e7c6b84e828429-0 stage: spec-gate
+cron-7d533ed758e7c6b84e828429-0 stage: plan
+cron-7d533ed758e7c6b84e828429-0 stage: red-loop
+provider-beta stage: test-first
+cron-7d533ed758e7c6b84e828429-0 stage: test-first
+provider-beta stage: run-red
+cron-7d533ed758e7c6b84e828429-0 stage: run-red
+provider-beta stage: red-gate
+provider-beta stage: implement
+cron-7d533ed758e7c6b84e828429-0 stage: implement-loop
+cron-7d533ed758e7c6b84e828429-0 stage: implement
+provider-beta stage: run-tests
+cron-7d533ed758e7c6b84e828429-0 stage: run-tests
+provider-beta stage: green-gate
+provider-beta stage: format-gate
+cron-7d533ed758e7c6b84e828429-0 stage: green-gate
+provider-beta stage: reviews
+cron-7d533ed758e7c6b84e828429-0 stage: reviews
+provider-beta stage: reviews-gate
+provider-beta stage: oracle
+cron-7d533ed758e7c6b84e828429-0 stage: oracle
+provider-beta stage: qa
+provider-beta stage: qa-gate
+provider-beta stage: post-merge-qa
+cron-7d533ed758e7c6b84e828429-0 stage: verdict
+provider-beta stage: post-merge-gate
+cron-7d533ed758e7c6b84e828429-0 stage: qa
+provider-beta stage: commit
+cron-7d533ed758e7c6b84e828429-0 stage: merge
+cron-7d533ed758e7c6b84e828429-0 stage: post-merge-qa
+provider-beta stage: integrate
+provider-beta stage: external
+cron-7d533ed758e7c6b84e828429-0 stage: commit
+provider-beta stage: Done
+cron-7d533ed758e7c6b84e828429-0 stage: integration-retry-loop
+cron-7d533ed758e7c6b84e828429-0 stage: run-tests
+cron-7d533ed758e7c6b84e828429-0 stage: green-gate
+cron-7d533ed758e7c6b84e828429-0 stage: reviews
+cron-7d533ed758e7c6b84e828429-0 stage: oracle
+cron-7d533ed758e7c6b84e828429-0 stage: qa
+cron-7d533ed758e7c6b84e828429-0 stage: qa-gate
+cron-7d533ed758e7c6b84e828429-0 stage: post-merge-qa
+cron-7d533ed758e7c6b84e828429-0 stage: integrate
+cron-7d533ed758e7c6b84e828429-0 stage: Done
+{"provider": "claude", "model": "claude-opus-5-5", "herdr_version": "herdr 0.9.5", "provider_version": "2.1.308 (Claude Code)", "adapter": "herdr", "scratch": "/var/tmp/fhd-klqxhqbl", "status": "failed", "task_ids": ["cron-7d533ed758e7c6b84e828429-0", "provider-beta"], "target_configs": {"revision_1": {"id": "dogfood-target", "revision": 1, "hash": "2ce7f2492fd87fb55ea7d7da4fa595cd5303d4bc4bc254b990d1eb8f86d32846", "retired": false}, "revision_2": {"id": "dogfood-target", "revision": 2, "hash": "60abe2f2f1c0143b66aea882956418940daa50f5381a26ed996ccb969e7b0920", "retired": false}, "pinned_tasks": ["cron-7d533ed758e7c6b84e828429-0", "provider-beta"]}, "fleet_provisioning": {"performed": 1, "lost_ack_recovered_after_restart": true, "duplicate_mutations": 0, "baseline_after_receipt": true, "idempotent_prepare": true}, "dynamic_provisioning": {"adapter_revision": {"id": "dogfood-adapter", "revision": 1, "hash": "98ad40acd76d184c627ef7759f40be6f6f957826bc7d7bc07dad4b2cdc6d661d"}, "later_revision": {"id": "dogfood-adapter", "revision": 2, "hash": "6f4f3dc2270f1fd40f1a2f39a0d4ea4a3c6b68afe4083b91fec2a02e175a1180"}, "workspace": "/var/tmp/fhd-klqxhqbl/i/dogfood/worktrees/4ec77128e435ae601351c40a29476c6a35206fa9e0868f42db0c807a9679f194", "ready": true, "idempotent_prepare": true}, "crash_recovery": {"signal": "SIGKILL", "started_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/1/session/0"], "uncertain_sessions": ["cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/1/session/0"], "resolutions": [{"action": "redispatch", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/1", "id": "cron-7d533ed758e7c6b84e828429-0", "version": 5}], "automatic_replay": false}, "adapter_retirement": {"first_tombstone_preserved": true, "new_bindings_refused": ["write", "target"], "bound_task": "provider-beta"}, "independent_drive": {"before": {"BinaryHash": "79284b83bc613de9f54c8352087fd10125c3a7ae2a7dfa6b029321f355d28d3a", "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:7205856", "Workspace": "/var/tmp/fhd-klqxhqbl/repo", "HostLedger": "/var/tmp/fhd-klqxhqbl/host-leases", "Holds": null, "PID": 4039833, "DoltPID": 4039861, "OldPID": 0, "DriveAlive": true, "DriveGeneration": 1, "DriveCause": "", "DriveRounds": 3, "LastTransition": "2026-10-22T19:26:36.194662402Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "d706ca0d6982bc31774420408116200d247c4a86cdbda1edeabd3e6d01f56d93", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "stopped": {"BinaryHash": "79284b83bc613de9f54c8352087fd10125c3a7ae2a7dfa6b029321f355d28d3a", "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:7205856", "Workspace": "/var/tmp/fhd-klqxhqbl/repo", "HostLedger": "/var/tmp/fhd-klqxhqbl/host-leases", "Holds": null, "PID": 4039833, "DoltPID": 4039861, "OldPID": 0, "DriveAlive": false, "DriveGeneration": 1, "DriveCause": "operator-stop", "DriveRounds": 3, "LastTransition": "2026-10-22T19:26:36.194662402Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "d706ca0d6982bc31774420408116200d247c4a86cdbda1edeabd3e6d01f56d93", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "resumed": {"BinaryHash": "79284b83bc613de9f54c8352087fd10125c3a7ae2a7dfa6b029321f355d28d3a", "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:7205856", "Workspace": "/var/tmp/fhd-klqxhqbl/repo", "HostLedger": "/var/tmp/fhd-klqxhqbl/host-leases", "Holds": null, "PID": 4039833, "DoltPID": 4039861, "OldPID": 0, "DriveAlive": true, "DriveGeneration": 2, "DriveCause": "operator-stop", "DriveRounds": 3, "LastTransition": "2026-10-22T19:26:36.194662402Z", "InFlight": 2, "Maintenance": null, "EnvironmentHash": "d706ca0d6982bc31774420408116200d247c4a86cdbda1edeabd3e6d01f56d93", "Consistent": true, "Unsafe": null, "QA": null, "Overlap": null}, "retained_dispatches": {"cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2", "provider-beta": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/1"}, "daemon_and_plane_unchanged": true, "retained_provider_sessions": ["cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2/session/0"], "provider_start_evidence": [{"session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2/session/0", "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2", "events": [{"type": "system", "subtype": "init", "session_id": "8dce0ca1-2ca8-414f-b3ee-20b3303746f9"}]}], "deferred_before_execution": []}, "dynamic_limits": {"during_active_turns": {"effective_pane_limit": 16, "heavy_capacity": 1, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 16, "tasks_in_flight": 1}, "after_restart": {"dynamic": {"effective_pane_limit": 16, "heavy_capacity": 1, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 16, "tasks_in_flight": 1}, "fixed": {"instance_root": "/var/tmp/fhd-klqxhqbl/i/dogfood", "socket_path": "/var/tmp/fhd-klqxhqbl/i/dogfood/run/rpc.sock"}}, "raised": {"effective_pane_limit": 24, "heavy_capacity": 2, "host_thresholds": {"Soft": 6442450944, "Hard": 2147483648, "HardNoSwap": 4294967296, "PerPane": 751619276, "IO": 10, "MemoryPressure": 5, "Load": 3.5, "PaneLimit": 60}, "pane_limit": 24, "tasks_in_flight": 2}}, "restart_checkpoint": {"cron-7d533ed758e7c6b84e828429-0": {"state": "intake-gate", "version": 7, "artifacts": 1}, "provider-beta": {"state": "intake-gate", "version": 4, "artifacts": 1}}, "controller_lifecycle": {"roll": {"accepted": true, "binary_sha256": "79284b83bc613de9f54c8352087fd10125c3a7ae2a7dfa6b029321f355d28d3a", "drive_rounds": 1, "holds": null, "new_pid": 4042111, "old_pid": 4039833, "pid": 4042111, "watchdog": "not running"}, "old_pid": 4039833, "maintenance_marker_cleared": true}, "provider_loop": {"iterations": 5, "state": "completed", "session_id": "loop-dogfood-loop"}, "cron_schedules": {"completed": 1, "admitted": 1, "duplicate_occurrences": 0}, "normal_targets": {"local_task": "cron-7d533ed758e7c6b84e828429-0", "live_task": "provider-beta", "live_effects": 1, "normal_revision": {"id": "dogfood-normal", "revision": 1, "hash": "f93ac9dd758b1f32a686860749a4052fd30b2ef9ba5b2098833e37cfb68bf58e", "retired": false}, "adapter": "disposable localhost fixture"}, "prophet_sessions": {"answered": 2, "scopes": ["task", "global"], "actions_enacted": 0, "durable_health_observations": 2}, "retirement": {"transferred": {"dependent_effect": "transferred", "dependents": ["retire-dependent"], "held_dependents": [], "id": "retire-old", "reason_class": "superseded-by", "reference": "retire-successor", "state": "Retired", "version": 3}, "held": {"dependent_effect": "held", "held_dependents": ["retire-dependent"]}, "hidden_by_default": true, "dependent_withheld": true}, "census_cleanup": {"applied": ["retire-successor"], "removed": ["retire-old", "retire-successor"], "verified_backup": true, "archives_verified": 2}, "lease_audit": {"capacity": 2, "granted": 34, "released": 34, "recovered": 0, "final_holders": 0}, "pane_audit": {"before_shutdown_reservations": 9}, "stall_recoveries": {"cron-7d533ed758e7c6b84e828429-0": 0, "provider-beta": 0}, "tasks": {"cron-7d533ed758e7c6b84e828429-0": {"artifact_records": 35, "version": 86}, "provider-beta": {"artifact_records": 23, "version": 54}}, "integration_sha": "8a997d3bc51b0ce7b070900ccb54df3fcc898a56", "base_sha": "a8d427cd981c83bbb8b8fec4e1f830a38dcdb3a1", "backup_policy": {"lost_ack_recovered_after_restart": true, "uploads": 1, "remote_content_verified": true, "remote_restore_fsck": true, "idempotent_repeat": true, "replication_pin_invalidated_preview": true, "removed": 2, "retained": 1}, "error": "automatic retention did not prune redundant backup"}
+Traceback (most recent call last):
+  File "/home/lbethay/workplace/fae/scripts/dogfood.py", line 701, in <module>
+    else:raise RuntimeError('automatic retention did not prune redundant backup')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: automatic retention did not prune redundant backup
+dogfood exit=1

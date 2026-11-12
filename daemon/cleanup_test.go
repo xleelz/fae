@@ -2,7 +2,9 @@ package daemon
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"github.com/xleelz/fae/controller"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
 	"github.com/xleelz/fae/engine"
@@ -11,6 +13,23 @@ import (
 	"path/filepath"
 	"testing"
 )
+
+func planeCounts(t *testing.T, d *Daemon) (events, audits, commits int) {
+	t.Helper()
+	err := d.store.Mutate(context.Background(), controlplane.Audit{Actor: "test", Action: "inspect plane counts", Outcome: "ok"}, func(ctx context.Context, tx *sql.Tx) error {
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM events`).Scan(&events); err != nil {
+			return err
+		}
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM audit WHERE action<>'inspect plane counts'`).Scan(&audits); err != nil {
+			return err
+		}
+		return tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM dolt_log WHERE message<>'inspect plane counts by test'`).Scan(&commits)
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return events, audits, commits
+}
 
 func TestCleanupNativeBackupRetiredAndRestart(t *testing.T) {
 	cfg, ctx, _ := liveDaemonFixture(t)
@@ -104,6 +123,7 @@ func TestCleanupNativeBackupRetiredAndRestart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	eventsBefore, auditsBefore, commitsBefore := planeCounts(t, d)
 	items, err := d.cleanupRetired(ctx, CleanupParams{Apply: true, Backup: b.Path})
 	if err != nil || len(items) != 1 || !items[0].Removed {
 		t.Fatal(items, err)
@@ -117,6 +137,11 @@ func TestCleanupNativeBackupRetiredAndRestart(t *testing.T) {
 	if string(a) != string(z) {
 		t.Fatal("cleanup changed plane jobs")
 	}
+	// FAE-CTL-042: cleanup performs only git operations and plane reads, so an
+	// applied removal writes no events, audit rows or Dolt commits.
+	if gotEvents, gotAudits, gotCommits := planeCounts(t, d); gotEvents != eventsBefore || gotAudits != auditsBefore || gotCommits != commitsBefore {
+		t.Fatalf("cleanup wrote to the plane: events %d->%d, audits %d->%d, commits %d->%d", eventsBefore, gotEvents, auditsBefore, gotAudits, commitsBefore, gotCommits)
+	}
 	if err = d.Close(ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -124,9 +149,15 @@ func TestCleanupNativeBackupRetiredAndRestart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// The archive ref and removed worktree and branch in git record the
+	// cleanup, so after a restart a repeat run passes over the task without
+	// planning it again or writing to the plane (FAE-CTL-042, FAE-CP-009).
 	items, err = d.cleanupRetired(ctx, CleanupParams{Apply: true, Backup: b.Path})
-	if err != nil || len(items) != 1 || !items[0].Plan.AlreadyRemoved {
-		t.Fatal(items, err)
+	if err != nil || len(items) != 0 {
+		t.Fatal("a cleaned task was planned again:", items, err)
+	}
+	if n := countRows(t, d, `SELECT COUNT(*) FROM events WHERE kind='`+worktreeCleanedEvent+`'`); n != 0 {
+		t.Fatalf("cleanup wrote %d %s events, want 0", n, worktreeCleanedEvent)
 	}
 	if err = os.WriteFile(filepath.Join(b.Path, "remote", "foreign"), []byte("changed"), 0600); err != nil {
 		t.Fatal(err)
@@ -147,5 +178,12 @@ func TestCleanupBackupOwnershipAndPacing(t *testing.T) {
 	}
 	if _, err := d.cleanupRetired(context.Background(), CleanupParams{Apply: true, DryRun: true}); err == nil {
 		t.Fatal("conflicting flags")
+	}
+	raw, _ := json.Marshal(controller.Marker{ID: "m1", State: "prepared", Message: "msg"})
+	if err := d.adoptMaintenance(raw); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := d.cleanupRetired(context.Background(), CleanupParams{}); err == nil {
+		t.Fatal("cleanup accepted under maintenance marker")
 	}
 }

@@ -79,12 +79,13 @@ func TestPositiveGateChecks(t *testing.T) {
 }
 func FuzzGateBounded(f *testing.F) {
 	f.Add([]byte(`{"op":"literal","value":true}`))
+	f.Add([]byte(`{"op":"count","stage":"fixture","path":["items"],"args":[{"op":"gt","args":[{"op":"count","stage":"fixture","path":["items"],"args":[{"op":"eq","args":[{"op":"item","path":["id"]},{"op":"item","item_depth":1,"path":["id"]}]}]},{"op":"literal","value":0}]}]}`))
 	f.Fuzz(func(t *testing.T, raw []byte) {
 		var x Expr
 		if json.Unmarshal(raw, &x) != nil {
 			return
 		}
-		r := Eval(x, nil)
+		r := Eval(x, []Evidence{{ID: "fixture", Stage: "fixture", Provenance: true, Fields: map[string]any{"items": []any{map[string]any{"id": "a"}, map[string]any{"id": "b"}}}}})
 		if r.Steps > 10100 {
 			t.Fatal("unbounded", r.Steps)
 		}

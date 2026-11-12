@@ -27,16 +27,26 @@ type LeaseAudit struct {
 	Events             []Event
 }
 type ledgerState struct {
-	Version    int
-	Pool       Pool
-	Audit      []LeaseAudit
-	Panes      []PaneReservation          `json:",omitempty"`
-	PaneLimits map[string]PaneLimitRecord `json:",omitempty"`
-	HostLimits map[string]HostLimitRecord `json:",omitempty"`
+	Readers             map[string]LedgerReader `json:",omitempty"`
+	WorkflowSlots       *WorkflowSlotState      `json:",omitempty"`
+	Version             int
+	Pool                Pool
+	ProviderPools       map[string]Pool               `json:",omitempty"`
+	ProviderPoolConfigs map[string]ProviderPoolConfig `json:",omitempty"`
+	ProviderPoolQuotas  map[string]ProviderPoolQuota  `json:",omitempty"`
+	ProviderPoolPauses  map[string]ProviderPoolPause  `json:",omitempty"`
+	Audit               []LeaseAudit
+	Panes               []PaneReservation          `json:",omitempty"`
+	PaneLimits          map[string]PaneLimitRecord `json:",omitempty"`
+	HostLimits          map[string]HostLimitRecord `json:",omitempty"`
+	Launches            []LaunchReservation        `json:",omitempty"`
 }
 
 func OpenLedger(path string, capacity int) (*Ledger, error) { return openLedger(path, capacity, false) }
 func openLedger(path string, capacity int, dynamic bool) (*Ledger, error) {
+	return openLedgerContext(context.Background(), path, capacity, dynamic)
+}
+func openLedgerContext(initialContext context.Context, path string, capacity int, dynamic bool) (*Ledger, error) {
 	if !filepath.IsAbs(path) || capacity <= 0 {
 		return nil, errors.New("absolute host ledger path and positive capacity required")
 	}
@@ -64,19 +74,15 @@ func openLedger(path string, capacity int, dynamic bool) (*Ledger, error) {
 		return nil, errors.New("ledger directory must have mode 0700")
 	}
 	l := &Ledger{path: path, capacity: capacity, dynamic: dynamic}
-	e = l.transact(context.Background(), true, func(s *ledgerState) error { return nil })
+	e = l.transact(initialContext, true, func(s *ledgerState) error { return nil })
 	return l, e
 }
 func (l *Ledger) transact(ctx context.Context, write bool, fn func(*ledgerState) error) error {
-	fd, e := syscall.Open(filepath.Join(l.path, "lock"), syscall.O_CREAT|syscall.O_EXCL|syscall.O_RDWR|syscall.O_NOFOLLOW, 0600)
-	fresh := e == nil
-	if e == syscall.EEXIST {
-		fd, e = syscall.Open(filepath.Join(l.path, "lock"), syscall.O_RDWR|syscall.O_NOFOLLOW, 0600)
-	}
+	lock, fresh, e := openLedgerLock(l.path)
 	if e != nil {
 		return e
 	}
-	lock := os.NewFile(uintptr(fd), "ledger lock")
+	fd := int(lock.Fd())
 	defer lock.Close()
 	if info, e := lock.Stat(); e != nil {
 		return e
@@ -138,7 +144,7 @@ func (l *Ledger) transact(ctx context.Context, write bool, fn func(*ledgerState)
 	} else if !write || !fresh {
 		return errors.New("lease ledger missing")
 	}
-	if state.Version != 1 || (!l.dynamic && state.Pool.Capacity != l.capacity) {
+	if (state.Version != 1 && state.Version != 2) || (state.Version == 2 && state.WorkflowSlots == nil) || (!l.dynamic && state.Pool.Capacity != l.capacity) {
 		return errors.New("lease ledger version/capacity conflict")
 	}
 	if len(state.HostLimits) > 0 {
@@ -146,14 +152,30 @@ func (l *Ledger) transact(ctx context.Context, write bool, fn func(*ledgerState)
 			return err
 		}
 	}
+	if e = reconcileWorkflowSlots(&state); e != nil {
+		return e
+	}
 	if e = state.Pool.Validate(); e != nil {
 		return e
+	}
+	for _, pp := range state.ProviderPools {
+		if e = pp.Validate(); e != nil {
+			return e
+		}
+	}
+	if write {
+		recordLedgerReader(&state)
 	}
 	if e = fn(&state); e != nil {
 		return e
 	}
 	if !write {
 		return nil
+	}
+	if state.Version == 1 && state.WorkflowSlots != nil {
+		if e := upgradeWorkflowSchema(&state); e != nil {
+			return e
+		}
 	}
 	b, e := json.Marshal(state)
 	if e != nil {
@@ -193,7 +215,7 @@ func (l *Ledger) Enqueue(ctx context.Context, r Request) error {
 	return l.transact(ctx, true, func(s *ledgerState) error {
 		for _, w := range s.Pool.Waiting {
 			if w.ID == r.ID {
-				if w.Owner == r.Owner && w.Weight == r.Weight && w.Class == r.Class && w.Queued.Equal(r.Queued) {
+				if w.Owner == r.Owner && w.Weight == r.Weight && w.Class == r.Class && w.Priority == r.Priority && w.Queued.Equal(r.Queued) {
 					return nil
 				}
 				return errors.New("request identity conflict")
@@ -201,7 +223,7 @@ func (l *Ledger) Enqueue(ctx context.Context, r Request) error {
 		}
 		for _, h := range s.Pool.Holders {
 			if h.ID == r.ID {
-				if h.Owner == r.Owner && h.Weight == r.Weight && h.Class == r.Class && h.Queued.Equal(r.Queued) {
+				if h.Owner == r.Owner && h.Weight == r.Weight && h.Class == r.Class && h.Priority == r.Priority && h.Queued.Equal(r.Queued) {
 					return nil
 				}
 				return errors.New("request identity conflict")
@@ -283,9 +305,58 @@ func (l *Ledger) Recover(ctx context.Context, proof OperationProof, ownerDead bo
 		if e != nil {
 			return e
 		}
+		for poolID, pp := range s.ProviderPools {
+			if proof.ProviderPool != "" && proof.ProviderPool != poolID {
+				continue
+			}
+			pChanged, pErr := pp.RecoverProof(proof, ownerDead)
+			if pErr != nil {
+				return pErr
+			}
+			if pChanged {
+				s.ProviderPools[poolID] = pp
+				changed = true
+			}
+		}
 		if changed {
 			s.Audit = append(s.Audit, LeaseAudit{At: time.Now().UTC(), Action: "recovered", ID: proof.ID, Owner: proof.Owner, Reason: "durable " + proof.State + " proof and exact owner death"})
 		}
 		return nil
 	})
+}
+
+// Publish a newly created lock only after locking its private inode. Publishing
+// an unlocked O_EXCL file lets a second opener win flock before the creator
+// writes state.json, mistaking concurrent bootstrap for lost durable state.
+// Established lock files are never replaced or renamed.
+func openLedgerLock(directory string) (*os.File, bool, error) {
+	path := filepath.Join(directory, "lock")
+	openExisting := func() (*os.File, bool, error) {
+		fd, err := syscall.Open(path, syscall.O_RDWR|syscall.O_NOFOLLOW, 0600)
+		if err != nil {
+			return nil, false, err
+		}
+		return os.NewFile(uintptr(fd), "ledger lock"), false, nil
+	}
+	if file, fresh, err := openExisting(); err == nil || !errors.Is(err, syscall.ENOENT) {
+		return file, fresh, err
+	}
+	file, err := os.CreateTemp(directory, ".ledger-lock-")
+	if err != nil {
+		return nil, false, err
+	}
+	temporary := file.Name()
+	defer os.Remove(temporary)
+	if err = syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); err != nil {
+		file.Close()
+		return nil, false, err
+	}
+	if err = os.Link(temporary, path); err != nil {
+		file.Close()
+		if errors.Is(err, os.ErrExist) {
+			return openExisting()
+		}
+		return nil, false, err
+	}
+	return file, true, nil
 }

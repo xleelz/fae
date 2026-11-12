@@ -167,15 +167,25 @@ func TestCensusNativeTenAuditedRowsAndStaleRefusal(t *testing.T) {
 
 }
 
+// FAE-ROB-020: a census reads the drive's tasks as the writer last published
+// them, so it needs no writer lock, and a change the writer has not yet
+// published (it still holds the lock) is not in it.
 func TestCensusReadSnapshotIndependent(t *testing.T) {
 	d := &Daemon{jobs: map[string]controlplane.JobSnapshot{"t": {ID: "t", State: "Escalated", Version: 1}}}
-	jobs := d.censusSnapshots()
-	if !d.mu.TryLock() {
-		t.Fatal("census snapshot retained writer mutex")
-	}
+	d.mu.Lock()
+	d.storeStatus()
 	d.jobs["t"] = controlplane.JobSnapshot{ID: "t", State: "Done", Version: 2}
+	published, err := d.publishedTasks()
+	if err != nil || published.driveJobs["t"].Version != 1 || published.driveJobs["t"].State != "Escalated" {
+		d.mu.Unlock()
+		t.Fatal("census view follows the writer's unpublished state", published.driveJobs, err)
+	}
+	d.storeStatus()
 	d.mu.Unlock()
-	if jobs["t"].Version != 1 || jobs["t"].State != "Escalated" {
+	if published.driveJobs["t"].Version != 1 {
 		t.Fatal("mutable census view")
+	}
+	if published, err = d.publishedTasks(); err != nil || published.driveJobs["t"].Version != 2 {
+		t.Fatal("published change not read", published.driveJobs, err)
 	}
 }

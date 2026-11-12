@@ -155,11 +155,11 @@ func TestBackupRetentionNativeVerifiedBackups(t *testing.T) {
 	if _, e = call(t, d, "BackupRetention", BackupRetentionParams{Keep: 1, Apply: true, PlanDigest: controlplane.Digest(nil)}, ""); e == nil {
 		t.Fatal("unauthorized retention")
 	}
-	first, e := d.backupPlane(ctx)
+	first, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
-	second, e := d.backupPlane(ctx)
+	second, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -190,7 +190,7 @@ func TestBackupRetentionSerialization(t *testing.T) {
 	if _, e := d.backupRetention(context.Background(), BackupRetentionParams{Keep: 1}); e == nil {
 		t.Fatal("concurrent retention")
 	}
-	if _, e := d.backupPlane(context.Background()); e == nil {
+	if _, e := backupAdmitted(t, context.Background(), d); e == nil {
 		t.Fatal("concurrent backup")
 	}
 	if _, e := d.cleanupRetired(context.Background(), CleanupParams{}); e == nil {
@@ -216,7 +216,7 @@ func TestBackupRetentionNativeHistoricalCoverage(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	oldest, e := d.backupPlane(ctx)
+	oldest, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -227,11 +227,11 @@ func TestBackupRetentionNativeHistoricalCoverage(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	duplicate, e := d.backupPlane(ctx)
+	duplicate, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
-	newest, e := d.backupPlane(ctx)
+	newest, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}

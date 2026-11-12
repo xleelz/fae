@@ -43,8 +43,11 @@ with tempfile.TemporaryDirectory(prefix='fae-cli-smoke-', dir=base) as scratch:
     try:
         with log_path.open('w+') as log:
             process = launch(log)
-            call('message', '--id', 'authorization', '--text',
-                 'Run local scripted smoke work and shut down this disposable instance.')
+            # A plain-text message authorizes only the first class it is used for;
+            # the run (task) and the later shutdowns (runtime) need both classes.
+            call('message', '--id', 'authorization', '--text', json.dumps({
+                'text': 'Run local scripted smoke work and shut down this disposable instance.',
+                'authorize': {'classes': ['task', 'runtime']}}))
             admitted = call('run', '--id', 'smoke-task', '--prompt', 'Scripted smoke rehearsal',
                             '--authorizing-message', 'authorization')
             assert admitted['version'] == 1, admitted
@@ -59,6 +62,9 @@ with tempfile.TemporaryDirectory(prefix='fae-cli-smoke-', dir=base) as scratch:
                 raise RuntimeError('task did not finish')
             board = call('board', '--limit', '1')
             assert [item['id'] for item in board['items']] == ['smoke-task'], board
+            shown = call('show', '--task', 'smoke-task')
+            assert shown['tasks'][0]['state'] == 'Done', shown
+            assert [w['workflow_id'] for w in call('template', 'workflow-list')] == ['default']
             cursor, seen, refs = 0, [], []
             while True:
                 page = call('history', '--task', 'smoke-task', '--summary',

@@ -16,7 +16,7 @@ import (
 )
 
 func TestDaemonOrphanSubprocess(t *testing.T) {
-	path := os.Getenv("FAE_DAEMON_ORPHAN_FIXTURE")
+	path := os.Getenv("DAEMON_ORPHAN_FIXTURE")
 	if path == "" {
 		return
 	}
@@ -42,7 +42,7 @@ func TestDaemonOrphanSubprocess(t *testing.T) {
 		t.Fatal(e)
 	}
 	ready, _ := json.Marshal([]int{d.child.PID(), r.PID})
-	if e = os.WriteFile(path+".ready", ready, 0600); e != nil {
+	if e = writeReady(path+".ready", ready); e != nil {
 		t.Fatal(e)
 	}
 	select {}
@@ -66,7 +66,7 @@ func TestDaemonSIGKILLOrphansRecoveredAndForeignInstancePreserved(t *testing.T) 
 	}
 	exe, _ := os.Executable()
 	parent := exec.Command(exe, "-test.run=^TestDaemonOrphanSubprocess$")
-	parent.Env = append(os.Environ(), "FAE_DAEMON_ORPHAN_FIXTURE="+cfgPath)
+	parent.Env = append(os.Environ(), "DAEMON_ORPHAN_FIXTURE="+cfgPath)
 	log, e := os.Create(cfgPath + ".log")
 	if e != nil {
 		t.Fatal(e)
@@ -104,7 +104,8 @@ func TestDaemonSIGKILLOrphansRecoveredAndForeignInstancePreserved(t *testing.T) 
 		t.Fatal(e)
 	}
 	parent.Wait()
-	deadline = time.Now().Add(8 * time.Second)
+	// FAE-CP-002: no Dolt process for the data directory within 5 s.
+	deadline = time.Now().Add(5 * time.Second)
 	for {
 		alive := false
 		out, probeErr := exec.Command("ps", "-axo", "pgid=,stat=").Output()

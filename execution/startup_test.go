@@ -77,13 +77,18 @@ func (s *partialStartupRuntime) Run(context.Context, runtime.Launch) (runtime.Co
 	}
 	return runtime.Collected{NonExecution: true, ProcessesRetired: true}, errors.New("startup failed")
 }
+
+// A partly executed review is never a refunded startup retry: its later
+// session's start failure keeps the review that ran and is the charged
+// later-reviewer class, on which the engine runs every reviewer again
+// (FAE-RT-004, FAE-WF-033).
 func TestStartupCannotReplayPartlyExecutedReview(t *testing.T) {
 	x, d, a := fixture(t)
 	x.Runtime = &partialStartupRuntime{}
 	d.Config.Primitive = workflow.Review
 	d.Sessions = append(d.Sessions, engine.Session{ID: "two", Role: "reviewer"})
 	r, e := x.Execute(context.Background(), d)
-	if e == nil || r.Class != "uncertain" || a.released != 2 {
+	if e == nil || r.Class == "startup-retry" || r.Class != "later-reviewer-not-started" || len(r.Reviews) != 1 || r.Reviews[0].Session != "one" || a.released != 2 {
 		t.Fatalf("%+v %v %+v", r, e, a)
 	}
 }

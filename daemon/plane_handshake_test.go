@@ -26,7 +26,7 @@ func TestPlaneHandshakeBounded(t *testing.T) {
 	cfg.Addr = listener.Addr().String()
 	cfg.Timeout = time.Second
 	started := time.Now()
-	store, e := openPlaneAttempt(context.Background(), cfg.FormatDSN(), 100*time.Millisecond, 24*time.Hour)
+	store, e := openPlaneAttempt(context.Background(), cfg.FormatDSN(), 100*time.Millisecond, 24*time.Hour, 0)
 	if store != nil {
 		store.Close()
 		t.Fatal("silent listener accepted as SQL")

@@ -27,18 +27,18 @@ func conflictPlanKey(task, dispatch string) string {
 	h, _ := domain.ContentHash(raw)
 	return "conflict-plan/" + h
 }
-func (x *liveExecutor) resolveConflict(ctx context.Context, d engine.Dispatch, w worktree.Binding, plan effects.ReconcileEvidence, conflict *effects.ReconcileError, r engine.Result) (engine.Result, error) {
+func (x *liveExecutor) resolveConflict(ctx context.Context, d engine.Dispatch, w worktree.Binding, plan effects.ReconcileEvidence, conflict *effects.ReconcileError, r engine.Result, scope liveTaskScope) (engine.Result, error) {
 	// The original intent remains authoritative; only regular, declared production
 	// paths may enter automated remediation. Frozen tests are never marked up.
 	allowed := map[string]bool{}
-	for _, p := range x.config.Files {
+	for _, p := range scope.Files {
 		allowed[p] = true
 	}
 	if d.Config.Reverify == "" || len(conflict.Paths) == 0 {
 		return r, fmt.Errorf("conflict remediation requires bounded reconciliation route")
 	}
 	for _, path := range conflict.Paths {
-		if path == x.config.TestFile || !allowed[path] {
+		if path == scope.TestFile || !allowed[path] {
 			return r, fmt.Errorf("automatic conflict remediation refuses protected or undeclared path %s", path)
 		}
 	}

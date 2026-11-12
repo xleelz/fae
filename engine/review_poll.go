@@ -1,6 +1,10 @@
 package engine
 
-import "time"
+import (
+	"time"
+
+	"github.com/xleelz/fae/domain"
+)
 
 const DefaultReviewPollSeconds = 30
 const DefaultReviewMaxPolls = 120
@@ -22,7 +26,7 @@ func parkReviewPoll(j *Job, d Dispatch, detail string, events *[]Event) {
 	}
 	j.InFlight = nil
 	if j.ReviewPollCount >= limit {
-		stop(j, "ReviewPollCap: pending review observation budget exhausted", events)
+		stop(j, domain.ReviewGateFailed, "ReviewPollCap: pending review observation budget exhausted", events)
 		return
 	}
 	j.Parked = true

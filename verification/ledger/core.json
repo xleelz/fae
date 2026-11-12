@@ -1,0 +1,914 @@
+[
+  {
+    "id": "gobra:capacity",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "scheduler/capacity.go"
+    },
+    "requirements": [
+      "FAE-SCH-005",
+      "FAE-SCH-011",
+      "FAE-VER-009",
+      "FAE-SCH-001",
+      "FAE-SCH-003",
+      "FAE-SCH-004",
+      "FAE-SCH-006",
+      "FAE-SCH-008",
+      "FAE-SCH-009",
+      "FAE-SCH-010"
+    ],
+    "production": {
+      "path": "scheduler/capacity.go",
+      "function": "CanAcquire",
+      "call_sites": [
+        {
+          "path": "scheduler/scheduler.go",
+          "function": "Advance"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCapacityExhaustive",
+        "TestFIFOWeightedAndOwnership"
+      ],
+      "note": "Exhaustive capacity/weight table; Pool.Advance retains live weighted holders and grants FIFO."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return weight > 0 && weight <= capacity-used",
+        "weakened": "return weight > 0"
+      },
+      "refusal_tests": [
+        "TestCapacityExhaustive"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle",
+        "TestLiveAdmissionDurableRoleScopesAndCancellation"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute -> liveAdmission.Acquire -> scheduler.Ledger.Advance / Store.AdvanceLeases -> Pool.AdvanceObserved -> Pool.Advance -> CanAcquire; asserts no leaked host/role leases, and a workflow-global cap of 1 blocks a second holder"
+    },
+    "status": "native-evidenced",
+    "limits": "In current source CanAcquire re-validates retained live holders inside Pool.Advance (corrupt-capacity refusal); new grants use CanAcquireDynamic (gobra:dynamic-host). Native tests exercise the accept path only. FIFO/priority fairness is tested, not proved."
+  },
+  {
+    "id": "gobra:completion",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/completion.go"
+    },
+    "requirements": [
+      "FAE-WF-023",
+      "FAE-WF-053"
+    ],
+    "production": {
+      "path": "kernel/completion.go",
+      "function": "CanComplete",
+      "call_sites": [
+        {
+          "path": "engine/engine.go",
+          "function": "complete"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanCompleteExhaustive",
+        "TestCompletionIdentityRefusals"
+      ],
+      "note": "Truth table; engine.Complete accepts a matching envelope for the in-flight dispatch."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !terminal && pending && tokenMatches && evidenceValid",
+        "weakened": "return !terminal && pending && evidenceValid"
+      },
+      "refusal_tests": [
+        "TestCanCompleteExhaustive",
+        "TestCompletionIdentityRefusals"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonFaultyTaskDoesNotStopSibling",
+        "TestDaemonScriptedLifecycle"
+      ],
+      "path": "Start -> Admit RPC -> drive collect -> engine.Complete -> complete -> CanComplete; a foreign-session envelope is refused (completion-rejected, task Escalated) while the sibling reaches Done"
+    },
+    "status": "native-evidenced",
+    "limits": "Proves the boolean admission only; envelope derivation, schema validation and provenance are tested, not proved."
+  },
+  {
+    "id": "gobra:release",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "scheduler/release.go"
+    },
+    "requirements": [
+      "FAE-HOST-031",
+      "FAE-SCH-011"
+    ],
+    "production": {
+      "path": "scheduler/release.go",
+      "function": "CanRelease",
+      "call_sites": [
+        {
+          "path": "scheduler/scheduler.go",
+          "function": "Release"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanReleaseExhaustiveIdentity",
+        "TestFIFOWeightedAndOwnership"
+      ],
+      "note": "Exhaustive pid/start-time table; Pool.Release frees the exact owner and refuses PID reuse."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return pid > 0 && started > 0 && pid == holderPID && started == holderStarted",
+        "weakened": "return pid > 0 && started > 0 && pid == holderPID"
+      },
+      "refusal_tests": [
+        "TestCanReleaseExhaustiveIdentity",
+        "TestFIFOWeightedAndOwnership"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle",
+        "TestLiveAdmissionDurableRoleScopesAndCancellation"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute -> liveAdmission.Acquire release (checkedRelease) -> scheduler.Ledger.Release / Store.ReleaseLease -> Pool.Release -> CanRelease; asserts zero host and role holders after Done"
+    },
+    "status": "native-evidenced",
+    "limits": "Native tests cover the accept path; PID-reuse refusal is unit-level only. OS identity collection and ledger locking are outside the proof."
+  },
+  {
+    "id": "gobra:orphan",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "processowner/guard.go"
+    },
+    "requirements": [
+      "FAE-CP-003",
+      "FAE-HOST-021"
+    ],
+    "production": {
+      "path": "processowner/guard.go",
+      "function": "CanTerminate",
+      "call_sites": [
+        {
+          "path": "processowner/process.go",
+          "function": "terminate"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestGuardExhaustive",
+        "TestSIGKILLParentWatchdogAndForeignIsolation"
+      ],
+      "note": "Truth table; parent SIGKILL lets the owned watchdog terminate only its recorded group."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return ownerMatches && identityMatches && groupMatches && privateRecord",
+        "weakened": "return ownerMatches && groupMatches && privateRecord"
+      },
+      "refusal_tests": [
+        "TestGuardExhaustive",
+        "TestIdentityMismatchRefusesSignal",
+        "TestRecoverLiveParentRefused"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonSIGKILLOrphansRecoveredAndForeignInstancePreserved"
+      ],
+      "path": "Start foreign + SIGKILLed parent daemon -> owned watcher (--fae-internal-process-watch) -> processowner.terminate -> CanTerminate; restart Start -> plane processowner.Recover; asserts owned leaders gone, Dolt retirement receipt, foreign instance still answers Status"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test exercises the accept path; identity-mismatch refusal is unit-level only. OS identity observation and escaped descendants are not proved. Requirement mapping is limited to the named predicate and cited tests; no complete requirement acceptance is claimed."
+  },
+  {
+    "id": "gobra:reconcile",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/reconcile.go"
+    },
+    "requirements": [
+      "FAE-VCS-004"
+    ],
+    "production": {
+      "path": "kernel/reconcile.go",
+      "function": "CanApplyReconcile",
+      "call_sites": [
+        {
+          "path": "effects/reconcile.go",
+          "function": "applyKnownReconcile"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanApplyReconcileExhaustive",
+        "TestReconcileUnrelatedUpstreamAndIdempotentApply"
+      ],
+      "note": "Truth table; ApplyReconcile applies a persisted plan and is idempotent."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return tipMatches && knownHead && knownTree && evidenceValid",
+        "weakened": "return tipMatches && knownHead && evidenceValid"
+      },
+      "refusal_tests": [
+        "TestCanApplyReconcileExhaustive",
+        "TestReconcileInterruptedApplyAndEditedTree",
+        "TestReconcileAlreadyUpstreamAndEvidenceTampering"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonChangedBaseReverifiesBeforeLanding"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute (reconcile stage, plan.Changed) -> effects.Broker.ApplyReconcile -> applyKnownReconcile -> CanApplyReconcile; asserts tree-reconciled event, rerun stages, own implementation and upstream bytes both landed"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test covers the accept path; edited-tree refusal is unit-level only. Git transactions and hunk measurement are tested, not proved."
+  },
+  {
+    "id": "gobra:drain",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/drain.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Operator Drain/drained-status predicate for planned restarts. FAE-ROB-010/-011 specify graceful shutdown and restart budgets but no drained-status condition, so no requirement is claimed.",
+    "production": {
+      "path": "kernel/drain.go",
+      "function": "CanFinishDrain",
+      "call_sites": [
+        {
+          "path": "daemon/status.go",
+          "function": "storeStatus"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestDrainGuardExhaustive",
+        "TestDrainPersistsTwoActiveTurnsAndResumesAfterRestart"
+      ],
+      "note": "Truth table; status reports drained only after both active turns are durably collected."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return draining && active == 0 && pending == 0",
+        "weakened": "return draining && active == 0"
+      },
+      "refusal_tests": [
+        "TestDrainGuardExhaustive"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDrainPersistsTwoActiveTurnsAndResumesAfterRestart"
+      ],
+      "path": "Start -> Drain RPC -> drive collect -> publishStatus -> storeStatus -> CanFinishDrain; asserts Draining with Active=2, then Drained after durable collection, no dispatch while draining, restart resumes"
+    },
+    "status": "native-evidenced",
+    "limits": "Status predicate only; it does not itself stop dispatch (the draining flag does)."
+  },
+  {
+    "id": "gobra:conflict",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/conflict.go"
+    },
+    "requirements": [
+      "FAE-VCS-004"
+    ],
+    "production": {
+      "path": "kernel/conflict.go",
+      "function": "CanKeepOwnHunk",
+      "call_sites": [
+        {
+          "path": "effects/conflict.go",
+          "function": "VerifyConflictResolution"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanKeepOwnHunkExhaustive",
+        "TestConflictPlanResolutionPreservesOriginalHunks"
+      ],
+      "note": "Truth table; a resolution retaining original additions and deletions is accepted."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return additionsRetained && deletionsRetained",
+        "weakened": "return deletionsRetained"
+      },
+      "refusal_tests": [
+        "TestCanKeepOwnHunkExhaustive",
+        "TestConflictPlanResolutionPreservesOriginalHunks",
+        "TestConflictPlanRefusesForgeryAndPreservesIndependentFile"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonConflictRemediationRefreshesApprovals"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute -> liveExecutor.checkChange/verifyActiveConflict -> effects.Broker.VerifyConflictResolution -> CanKeepOwnHunk; asserts own hunk landed after remediation, and on the started daemon verifyActiveConflict refuses own-hunk-loss without moving the target"
+    },
+    "status": "native-evidenced",
+    "limits": "Hunk parsing and diff measurement are integration-tested, not proved."
+  },
+  {
+    "id": "gobra:recovery",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "scheduler/recovery.go"
+    },
+    "requirements": [
+      "FAE-ROB-014"
+    ],
+    "production": {
+      "path": "scheduler/recovery.go",
+      "function": "CanRecoverLease",
+      "call_sites": [
+        {
+          "path": "daemon/lease_recovery.go",
+          "function": "recoverProofs"
+        },
+        {
+          "path": "scheduler/recovery_pool.go",
+          "function": "RecoverProof"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestRecoveryPredicateExhaustive",
+        "TestRecoverProofNoForeignOrPartialRelease",
+        "TestSIGKILLRetiredLeaseRecoversCapacityPreservesForeign"
+      ],
+      "note": "Truth table; proof-based recovery frees only a dead owner with complete linkage."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return ownerDead && linkageMatches && (neverLaunched || retired)",
+        "weakened": "return linkageMatches && (neverLaunched || retired)"
+      },
+      "refusal_tests": [
+        "TestRecoveryPredicateExhaustive",
+        "TestRecoverProofNoForeignOrPartialRelease"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestSIGKILLLinkedWorkloadRecoversBothLeasePools",
+        "TestSIGKILLAfterProcessRetirementBeforeJournalAck"
+      ],
+      "path": "SIGKILL helper daemon mid-workload -> watchdog retirement proof -> Start -> newLiveAdmission -> recoverProofs -> CanRecoverLease (and Ledger.Recover -> Pool.RecoverProof); asserts own host/role leases recovered, foreign holder retained, journal emptied"
+    },
+    "status": "native-evidenced",
+    "limits": "Journal persistence and OS identity observation are outside the proof."
+  },
+  {
+    "id": "gobra:integration",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/integration.go"
+    },
+    "requirements": [
+      "FAE-VCS-009"
+    ],
+    "production": {
+      "path": "kernel/integration.go",
+      "function": "CanRetryIntegration",
+      "call_sites": [
+        {
+          "path": "daemon/live.go",
+          "function": "Execute"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanRetryIntegrationExhaustive",
+        "TestKnownIntegrationTargetMoveRerunsQA"
+      ],
+      "note": "Truth table; the engine consumes the target-moved result the accepted branch emits, re-reconciles and re-runs QA on the new tree (FAE-VCS-005a)."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return noWrite && tipAdvanced && ownCommitKnown && boundedRoute",
+        "weakened": "return tipAdvanced && ownCommitKnown && boundedRoute"
+      },
+      "refusal_tests": [
+        "TestCanRetryIntegrationExhaustive",
+        "TestTargetMovedClassCannotForgeOtherTransitions"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveIntegrationTargetMovedRetries"
+      ],
+      "path": "Start -> RPC Admit -> drive -> liveExecutor.Execute (Integrate) -> broker.Integrate returns TargetMovedError after the integration ref moved during post-merge QA -> kernel.CanRetryIntegration -> class target-moved -> integration-retry-loop -> reconcile and land on the moved tip"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is the retry (accept) branch for a known no-write move; unknown-write and unbounded-route refusals are unit-only."
+  },
+  {
+    "id": "gobra:index",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "effects/index_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Post-commit Git index reconciliation (stale-index defect found in dogfood). No requirement text covers index state after commit; FAE-VCS-006 concerns committed bytes, which this guard does not decide.",
+    "production": {
+      "path": "effects/index_guard.go",
+      "function": "CanReconcileCommitIndex",
+      "call_sites": [
+        {
+          "path": "effects/commit_index.go",
+          "function": "applyCommitIndex"
+        },
+        {
+          "path": "effects/reconcile_index.go",
+          "function": "applyReconcileIndex"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCommitIndexGuard",
+        "TestCommitIndexCleanAndRecovery"
+      ],
+      "note": "Truth table; commit and interrupted-commit recovery reconcile the trusted index under the Git lock."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return trustedIndex && expectedHead",
+        "weakened": "return expectedHead"
+      },
+      "refusal_tests": [
+        "TestCommitIndexGuard",
+        "TestCommitIndexForeignStagingAndLockPreserved",
+        "TestCommitIndexCrashLockRefusesRecovery"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle",
+        "TestDaemonChangedBaseReverifiesBeforeLanding"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute (VcsCommit) -> effects.Broker.ApplyCommit -> applyCommitIndex -> CanReconcileCommitIndex; reconcile stage -> applyKnownReconcile -> applyReconcileIndex; asserts landed bytes and untouched primary checkout"
+    },
+    "status": "native-evidenced",
+    "limits": "Native tests cover the accept path; foreign-staging refusal is unit-level only."
+  },
+  {
+    "id": "gomela:completion",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/completion.go",
+      "functions": [
+        "Completion",
+        "complete",
+        "AbandonedCollection",
+        "abandoned"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Models runtime.Scripted.Dispatch, which no production daemon path calls (the daemon scripted path is engine.Scripted); no requirement is claimed.",
+    "production": {
+      "path": "runtime/runtime.go",
+      "function": "Dispatch"
+    },
+    "positive": {
+      "tests": [
+        "TestAsynchronousAndMalformed"
+      ],
+      "note": "runtime.Scripted.Dispatch: a slow turn does not block a sibling; cancellation yields interrupted."
+    },
+    "firing": {
+      "negative_model": "verification/negative/deadlock.go.txt",
+      "functions": [
+        "AbandonedWithoutBuffer",
+        "send"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestControllerFinishesDrainAtQueuedEffectCheckpoint",
+        "TestLoopDispatchCheckpointSurvivesWriteAndReadFailure",
+        "TestLoopCollectionCheckpointRetainsOwnership"
+      ],
+      "path": "controller.Loop dispatch/collection checkpoints -> runtime.Dispatch completion and abandoned collection handling"
+    },
+    "status": "native-evidenced",
+    "limits": "The negative model (unbuffered abandonment) fires only for AbandonedCollection; Completion has no dedicated negative. Timer/context are abstracted."
+  },
+  {
+    "id": "gomela:daemon",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/daemon.go",
+      "functions": [
+        "PersistBeforeDispatch",
+        "durableWriter",
+        "durableWorker",
+        "ShutdownWithTwoWorkers",
+        "cancelledWorker"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-010",
+      "FAE-WF-032"
+    ],
+    "production": {
+      "path": "daemon/drive.go",
+      "function": "dispatch"
+    },
+    "positive": {
+      "tests": [
+        "TestDaemonScriptedRestartInFlight",
+        "TestDaemonScriptedLifecycle"
+      ],
+      "note": "Dispatch is durable before the worker launches; workers deliver into the MaxInFlight-buffered results channel or exit on shutdown; restart completes the in-flight task."
+    },
+    "firing": {
+      "negative_model": "verification/negative/daemon.go.txt",
+      "functions": [
+        "ShutdownWithInsufficientBuffer",
+        "worker"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonScriptedRestartInFlight"
+      ],
+      "path": "Start -> Admit RPC -> drive dispatch (persist then go worker -> d.results) -> stop with turn in flight -> Start -> Done; asserts the durable in-flight dispatch existed before shutdown"
+    },
+    "status": "native-evidenced",
+    "limits": "The negative fires only for ShutdownWithTwoWorkers; PersistBeforeDispatch has no dedicated negative. SQL commit is abstracted as an acknowledgment; fixed worker count."
+  },
+  {
+    "id": "gomela:lease",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/lease.go",
+      "functions": [
+        "LeaseRelease",
+        "leasedProcess",
+        "leaseChild"
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-014",
+      "FAE-SCH-011"
+    ],
+    "production": {
+      "path": "daemon/lease_recovery.go",
+      "function": "checkedRelease"
+    },
+    "positive": {
+      "tests": [
+        "TestDurableAdmissionBoundaryOrder",
+        "TestFIFOWeightedAndOwnership"
+      ],
+      "note": "Executor orders acquire -> launching -> retired -> release; a released token is granted to the next waiter."
+    },
+    "firing": {
+      "negative_model": "verification/negative/lease.go.txt",
+      "functions": [
+        "LeaseReleaseMissing",
+        "missingRelease"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute -> liveAdmission.Acquire -> checkedRelease after Retired; asserts zero host/role holders after Done"
+    },
+    "status": "native-evidenced",
+    "limits": "Persistence and process execution are abstracted; identity is covered by gobra:release. The retained-while-launching branch is exercised natively only through crash recovery (gobra:recovery)."
+  },
+  {
+    "id": "gomela:orphan",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/orphan.go",
+      "functions": [
+        "ParentDeathRetirement",
+        "orphanWatch",
+        "orphanReclaim",
+        "orphanNext"
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-021",
+      "FAE-ROB-014"
+    ],
+    "production": {
+      "path": "processowner/process.go",
+      "function": "Retire"
+    },
+    "positive": {
+      "tests": [
+        "TestSIGKILLParentWatchdogAndForeignIsolation",
+        "TestLinkedRetirementRequiresCompleteExactReceipts",
+        "TestLeaderlessGroupIsAmbiguous"
+      ],
+      "note": "Watchdog terminates the owned group on parent death; reclamation requires complete exact retirement receipts; ambiguous groups refuse."
+    },
+    "firing": {
+      "negative_model": "verification/negative/orphan.go.txt",
+      "functions": [
+        "ParentDeathMissingAcknowledgement",
+        "orphanLost",
+        "orphanBlocked",
+        "orphanWaiting"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestSIGKILLLinkedWorkloadRecoversBothLeasePools"
+      ],
+      "path": "SIGKILL helper daemon -> watchdog -> processowner.LinkedRetirement complete -> Start -> recoverProofs; asserts capacity reused only after complete retirement proof"
+    },
+    "status": "native-evidenced",
+    "limits": "OS process groups, census and watchdog scheduling are abstract inputs."
+  },
+  {
+    "id": "gomela:multiplexer",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/multiplexer.go",
+      "functions": [
+        "OwnedPaneLifecycle",
+        "muxOwner",
+        "muxPane",
+        "muxServer"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-011",
+      "FAE-RT-012"
+    ],
+    "production": {
+      "path": "runtime/multiplexer.go",
+      "function": "Run"
+    },
+    "positive": {
+      "tests": [
+        "TestMultiplexerConformance",
+        "TestMultiplexerAmbientAndCancellation",
+        "TestMultiplexerOwnerSIGKILL"
+      ],
+      "note": "Herdr pane registered before permit, completion before pane retirement, pane retirement before private server stop."
+    },
+    "firing": {
+      "negative_model": "verification/negative/multiplexer.go.txt",
+      "functions": [
+        "LostPaneCompletion",
+        "muxLostOwner",
+        "muxLostPane",
+        "muxLostServer"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonMultiplexerEffectsLifecycle"
+      ],
+      "path": "Start(live, HerdrBinary) -> Admit RPC -> drive -> Executor.Execute -> runtime.Multiplexer.Run; asserts Done, zero pane reservations and leases, no replay after restart"
+    },
+    "status": "native-evidenced",
+    "limits": "Requires herdr on PATH (tests skip otherwise). Channel model, not a verification of Herdr or OS process groups."
+  },
+  {
+    "id": "gomela:drain",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/drain.go",
+      "functions": [
+        "DrainBeforeRestart",
+        "drainedWorker",
+        "drainedWriter",
+        "drainedCollector"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Operator drain-before-restart protocol. FAE-ROB-010/-011 specify graceful shutdown and restart budgets but not a drained barrier, so no requirement is claimed.",
+    "production": {
+      "path": "daemon/drive.go",
+      "function": "dispatch"
+    },
+    "positive": {
+      "tests": [
+        "TestDrainPersistsTwoActiveTurnsAndResumesAfterRestart",
+        "TestControllerFinishesDrainAtQueuedEffectCheckpoint"
+      ],
+      "note": "Draining closes launch admission; both active turns are durably collected before the drained restart."
+    },
+    "firing": {
+      "negative_model": "verification/negative/drain.go.txt",
+      "functions": [
+        "DrainMissingAcknowledgment",
+        "lostDrainWorker",
+        "lostDrainWriter",
+        "lostDrainCollector"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDrainPersistsTwoActiveTurnsAndResumesAfterRestart"
+      ],
+      "path": "Start -> Drain RPC -> drive dispatch refuses launch while draining -> collect -> Drained -> Start; asserts no admission/dispatch during drain and resume after restart"
+    },
+    "status": "native-evidenced",
+    "limits": "Two-turn bounded model; arbitrary worker counts are not modelled."
+  },
+  {
+    "id": "gomela:conflict",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/conflict.go",
+      "functions": [
+        "ConflictRemediation",
+        "conflictResolver",
+        "conflictFreshGates",
+        "conflictLanding"
+      ]
+    },
+    "requirements": [
+      "FAE-VCS-004",
+      "FAE-VCS-005"
+    ],
+    "production": {
+      "path": "daemon/live_conflict.go",
+      "function": "resolveConflict"
+    },
+    "positive": {
+      "tests": [
+        "TestDaemonConflictRemediationRefreshesApprovals",
+        "TestConflictPlanResolutionPreservesOriginalHunks"
+      ],
+      "note": "Original evidence and own-hunk check precede fresh approvals and landing."
+    },
+    "firing": {
+      "negative_model": "verification/negative/conflict.go.txt",
+      "functions": [
+        "ConflictMissingFreshApproval",
+        "conflictBadResolver",
+        "conflictBadGates",
+        "conflictBadLanding"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonConflictRemediationRefreshesApprovals"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute -> liveExecutor.resolveConflict -> re-dispatch implementation -> fresh reviews/QA -> land; asserts repeated approvals, named conflict artifact and retained own hunk"
+    },
+    "status": "native-evidenced",
+    "limits": "Git, schema and predicate measurements are abstracted as messages."
+  },
+  {
+    "id": "gomela:recovery",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/recovery.go",
+      "functions": [
+        "DurableLeaseRecovery",
+        "recoveryWatch",
+        "recoveryLease",
+        "recoveryWaiter"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-014"
+    ],
+    "production": {
+      "path": "daemon/lease_recovery.go",
+      "function": "recoverProofs"
+    },
+    "positive": {
+      "tests": [
+        "TestRecoverProofNoForeignOrPartialRelease",
+        "TestSIGKILLRetiredLeaseRecoversCapacityPreservesForeign"
+      ],
+      "note": "Capacity returns only after an immutable complete retirement proof for a dead owner; foreign holders retained."
+    },
+    "firing": {
+      "negative_model": "verification/negative/recovery.go.txt",
+      "functions": [
+        "MissingLeaseRecoveryProof",
+        "recoveryBlocked",
+        "recoveryWaiting"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestSIGKILLLinkedWorkloadRecoversBothLeasePools",
+        "TestSIGKILLAfterProcessRetirementBeforeJournalAck"
+      ],
+      "path": "SIGKILL helper daemon -> Start -> newLiveAdmission -> recoverProofs; asserts own leases recovered and foreign holder kept"
+    },
+    "status": "native-evidenced",
+    "limits": "Persistence and OS observation are abstracted."
+  },
+  {
+    "id": "gomela:index",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/index.go",
+      "functions": [
+        "CommitReceiptAfterIndexReconciliation"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Post-commit Git index reconciliation ordering (dogfood stale-index fix); no requirement text covers it.",
+    "production": {
+      "path": "effects/broker.go",
+      "function": "ApplyCommit"
+    },
+    "positive": {
+      "tests": [
+        "TestCommitIndexCleanAndRecovery",
+        "TestCommitIndexForeignStagingAndLockPreserved"
+      ],
+      "note": "Commit evidence is returned only after the branch update and index reconciliation; index errors are not reported as a completed commit."
+    },
+    "firing": {
+      "negative_model": "verification/negative/index.go.txt",
+      "functions": [
+        "CommitReceiptSkipsIndexReconciliation"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch -> execution.Executor.Execute (VcsCommit) -> effects.Broker.ApplyCommit -> applyCommitIndex; asserts landed bytes"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test covers the accept path only."
+  },
+  {
+    "id": "gobra:default-upgrade",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/default_upgrade_guard.go"
+    },
+    "requirements": [
+      "FAE-WF-080"
+    ],
+    "production": {
+      "path": "daemon/default_upgrade_guard.go",
+      "function": "MayInstallShippedDefault",
+      "call_sites": [
+        {
+          "path": "daemon/default_workflow.go",
+          "function": "defaultUpgrade"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestMayInstallShippedDefaultTruthTable",
+        "TestDefaultUpgradeDecision",
+        "TestDefaultWorkflowUpgradeOnStoredPlane"
+      ],
+      "note": "truth table; decision table over retired, current, invalid, older builtin, newer builtin and operator revisions; real plane upgrade"
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !retired && differs && (invalid || (builtin && older))",
+        "weakened": "return differs && (invalid || (builtin && older))"
+      },
+      "refusal_tests": [
+        "TestMayInstallShippedDefaultTruthTable",
+        "TestDefaultUpgradeDecision",
+        "TestDefaultWorkflowUpgradeOnStoredPlane"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDefaultWorkflowUpgradeOnStoredPlane"
+      ],
+      "path": "Start -> installDefault -> defaultUpgrade -> MayInstallShippedDefault: an invalid legacy builtin is replaced (audited, status default_workflow), a valid operator revision is kept on the next start"
+    },
+    "status": "native-evidenced",
+    "limits": "The retired case is unit-only; WriteWorkflow also refuses a retired id independently."
+  }
+]

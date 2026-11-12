@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -31,28 +31,28 @@ proctype ProphetUnknownObservationRefusesFailover3(chan child) {
 	bool state = true->
 	int num_msgs->
 	chan child_AnonymousProphetUnknownObservationRefusesFailover841 = [1] of {int}->
-	chan child_AnonymousProphetUnknownObservationRefusesFailover760 = [1] of {int}->
+	chan child_AnonymousProphetUnknownObservationRefusesFailover740 = [1] of {int}->
 	Chandef next_ch->
 	Chandef retired_ch->
 	Chandef observed_ch->
 	run sync_monitor(observed_ch)->
 	run sync_monitor(retired_ch)->
 	run sync_monitor(next_ch)->
-	run AnonymousProphetUnknownObservationRefusesFailover76(next_ch,observed_ch,retired_ch,child_AnonymousProphetUnknownObservationRefusesFailover760)->
-	run receiver(child_AnonymousProphetUnknownObservationRefusesFailover760)->
+	run AnonymousProphetUnknownObservationRefusesFailover74(observed_ch,retired_ch,next_ch,child_AnonymousProphetUnknownObservationRefusesFailover740)->
+	run receiver(child_AnonymousProphetUnknownObservationRefusesFailover740)->
 	run AnonymousProphetUnknownObservationRefusesFailover84(observed_ch,retired_ch,next_ch,child_AnonymousProphetUnknownObservationRefusesFailover841)->
 	run receiver(child_AnonymousProphetUnknownObservationRefusesFailover841)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:9:2 */
-	:: next_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:9:2 */->
-	:: next_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:9:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:9:2 */
+	:: next_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:9:2 */->
+	:: next_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:9:2 */ -> 
 		next_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousProphetUnknownObservationRefusesFailover76(Chandef next_ch;Chandef observed_ch;Chandef retired_ch;chan child) {
+proctype AnonymousProphetUnknownObservationRefusesFailover74(Chandef observed_ch;Chandef retired_ch;Chandef next_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -60,12 +60,12 @@ proctype AnonymousProphetUnknownObservationRefusesFailover76(Chandef next_ch;Cha
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:7:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:7:14 */
 	:: retired_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:7:14 */
 	:: retired_ch.sync!false -> 
 		retired_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:7:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:7:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -78,26 +78,26 @@ proctype AnonymousProphetUnknownObservationRefusesFailover84(Chandef observed_ch
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:14 */
-	:: observed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:14 */->
-	:: observed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:14 */
+	:: observed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:14 */->
+	:: observed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:14 */ -> 
 		observed_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:26 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:26 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:26 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:26 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:26 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:26 */ -> 
 		retired_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:37 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:37 */
 	:: next_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:37 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:37 */
 	:: next_ch.sync!false -> 
 		next_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/prophet_route.go:8:37 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/prophet_route.go:8:37 */
 	fi->
 	stop_process: skip->
 	child!0

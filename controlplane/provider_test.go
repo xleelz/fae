@@ -45,6 +45,7 @@ func TestProviderObservationAtomicAndIdempotent(t *testing.T) {
 				} else {
 					m.ExpectExec("INSERT INTO audit").WillReturnResult(sqlmock.NewResult(0, 1))
 					m.ExpectQuery("SELECT sequence").WillReturnRows(sqlmock.NewRows([]string{"sequence"}).AddRow(1))
+					expectTaskEventMetadata(m)
 					if mode == "event-fails" {
 						m.ExpectExec("INSERT INTO events").WillReturnError(errors.New("disk full"))
 						m.ExpectRollback()

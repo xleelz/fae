@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,10 +30,10 @@ proctype RetentionScheduleDropsDurableClaim3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousRetentionScheduleDropsDurableClaim1163 = [1] of {int}->
-	chan child_AnonymousRetentionScheduleDropsDurableClaim1042 = [1] of {int}->
-	chan child_AnonymousRetentionScheduleDropsDurableClaim971 = [1] of {int}->
-	chan child_AnonymousRetentionScheduleDropsDurableClaim850 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleDropsDurableClaim1143 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleDropsDurableClaim1072 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleDropsDurableClaim941 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleDropsDurableClaim840 = [1] of {int}->
 	Chandef pruned_ch->
 	Chandef planned_ch->
 	Chandef claimed_ch->
@@ -42,25 +42,25 @@ proctype RetentionScheduleDropsDurableClaim3(chan child) {
 	run sync_monitor(claimed_ch)->
 	run sync_monitor(planned_ch)->
 	run sync_monitor(pruned_ch)->
-	run AnonymousRetentionScheduleDropsDurableClaim85(claimed_ch,planned_ch,pruned_ch,authorized_ch,child_AnonymousRetentionScheduleDropsDurableClaim850)->
-	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim850)->
-	run AnonymousRetentionScheduleDropsDurableClaim97(pruned_ch,authorized_ch,claimed_ch,planned_ch,child_AnonymousRetentionScheduleDropsDurableClaim971)->
-	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim971)->
-	run AnonymousRetentionScheduleDropsDurableClaim104(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleDropsDurableClaim1042)->
-	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim1042)->
-	run AnonymousRetentionScheduleDropsDurableClaim116(planned_ch,pruned_ch,authorized_ch,claimed_ch,child_AnonymousRetentionScheduleDropsDurableClaim1163)->
-	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim1163)->
+	run AnonymousRetentionScheduleDropsDurableClaim84(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleDropsDurableClaim840)->
+	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim840)->
+	run AnonymousRetentionScheduleDropsDurableClaim94(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleDropsDurableClaim941)->
+	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim941)->
+	run AnonymousRetentionScheduleDropsDurableClaim107(pruned_ch,authorized_ch,claimed_ch,planned_ch,child_AnonymousRetentionScheduleDropsDurableClaim1072)->
+	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim1072)->
+	run AnonymousRetentionScheduleDropsDurableClaim114(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleDropsDurableClaim1143)->
+	run receiver(child_AnonymousRetentionScheduleDropsDurableClaim1143)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:12:2 */
-	:: pruned_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:12:2 */->
-	:: pruned_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:12:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:12:2 */
+	:: pruned_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:12:2 */->
+	:: pruned_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:12:2 */ -> 
 		pruned_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleDropsDurableClaim85(Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;Chandef authorized_ch;chan child) {
+proctype AnonymousRetentionScheduleDropsDurableClaim84(Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -68,17 +68,17 @@ proctype AnonymousRetentionScheduleDropsDurableClaim85(Chandef claimed_ch;Chande
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:8:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:8:12 */
 	:: authorized_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:8:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:8:12 */
 	:: authorized_ch.sync!false -> 
 		authorized_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:8:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:8:12 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleDropsDurableClaim97(Chandef pruned_ch;Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;chan child) {
+proctype AnonymousRetentionScheduleDropsDurableClaim94(Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -86,24 +86,24 @@ proctype AnonymousRetentionScheduleDropsDurableClaim97(Chandef pruned_ch;Chandef
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:9:12 */
-	:: authorized_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:9:12 */->
-	:: authorized_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:9:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:9:12 */
+	:: authorized_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:9:12 */->
+	:: authorized_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:9:12 */ -> 
 		authorized_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:9:26 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:9:26 */
 	:: claimed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:9:26 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:9:26 */
 	:: claimed_ch.sync!false -> 
 		claimed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:9:26 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:9:26 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleDropsDurableClaim104(Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;chan child) {
+proctype AnonymousRetentionScheduleDropsDurableClaim107(Chandef pruned_ch;Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -111,17 +111,17 @@ proctype AnonymousRetentionScheduleDropsDurableClaim104(Chandef authorized_ch;Ch
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:10:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:10:12 */
 	:: planned_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:10:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:10:12 */
 	:: planned_ch.sync!false -> 
 		planned_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:10:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:10:12 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleDropsDurableClaim116(Chandef planned_ch;Chandef pruned_ch;Chandef authorized_ch;Chandef claimed_ch;chan child) {
+proctype AnonymousRetentionScheduleDropsDurableClaim114(Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -129,19 +129,19 @@ proctype AnonymousRetentionScheduleDropsDurableClaim116(Chandef planned_ch;Chand
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:11:12 */
-	:: planned_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:11:12 */->
-	:: planned_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:11:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:11:12 */
+	:: planned_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:11:12 */->
+	:: planned_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:11:12 */ -> 
 		planned_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:11:23 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:11:23 */
 	:: pruned_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:11:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:11:23 */
 	:: pruned_ch.sync!false -> 
 		pruned_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retention_schedule.go:11:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retention_schedule.go:11:23 */
 	fi->
 	stop_process: skip->
 	child!0

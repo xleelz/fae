@@ -117,19 +117,18 @@ func TestIndependentDriveRetainsInFlightAndDurableBudget(t *testing.T) {
 
 func TestFailedCollectionRemainsOwnedByNextDrive(t *testing.T) {
 	c := completion{id: "missing", dispatch: "exact-token"}
-	d := &Daemon{ctx: context.Background(), jobs: map[string]controlplane.JobSnapshot{}, pendingCompletion: &c}
-	if err := d.driveRoundLoop(); err == nil {
-		t.Fatal("expected failed collection")
-	}
-	if d.pendingCompletion == nil || d.pendingCompletion.dispatch != "exact-token" {
-		t.Fatal("completion forgotten on generation failure")
-	}
+	d := &Daemon{ctx: context.Background(), jobs: map[string]controlplane.JobSnapshot{}, active: map[string]bool{"missing": true}, pendingCompletion: &c}
 	d.driveStop.Store(true)
 	if err := d.driveRoundLoop(); err != nil {
 		t.Fatal(err)
 	}
-	if d.pendingCompletion == nil {
+	if d.pendingCompletion == nil || d.pendingCompletion.dispatch != "exact-token" {
 		t.Fatal("explicit stop consumed pending result")
+	}
+	// A completion for a task the drive no longer holds is stale: it is
+	// isolated and dropped, never a generation failure (FAE-ROB-001).
+	if err := d.collect(); err != nil || d.pendingCompletion != nil || d.active["missing"] || d.lastTaskFault.Outcome != outcomeStale {
+		t.Fatal("stale completion not isolated", err, d.lastTaskFault)
 	}
 }
 
@@ -142,24 +141,45 @@ func TestIndependentDriveFailureKeepsRPCAndRequiresConsistentCheckpoint(t *testi
 	t.Cleanup(func() { stop(t, d) })
 	authorize(t, d)
 	awaitDrive(t, d, true, 1)
+	quarantined := func(id string) {
+		t.Helper()
+		deadline := time.Now().Add(10 * time.Second)
+		for time.Now().Before(deadline) {
+			d.mu.Lock()
+			reason := d.quarantined[id]
+			_, cached := d.jobs[id]
+			d.mu.Unlock()
+			if reason != "" && !cached {
+				return
+			}
+			d.signal()
+			time.Sleep(10 * time.Millisecond)
+		}
+		t.Fatal("corrupt row not quarantined", id)
+	}
+	// FAE-ROB-001: a corrupt cached row is isolated to its task; the drive
+	// generation never exits and RPC keeps serving.
 	d.mu.Lock()
 	d.jobs["broken"] = controlplane.JobSnapshot{ID: "broken", Payload: json.RawMessage(`{"wrong":true}`)}
 	d.mu.Unlock()
 	d.signal()
-	h := awaitDrive(t, d, false, 1)
-	if h.Consistent {
-		t.Fatal("invalid plane reported consistent")
+	quarantined("broken")
+	if h := awaitDrive(t, d, true, 1); !h.Consistent || h.DriveGeneration != 1 {
+		t.Fatal("per-task corruption stopped or poisoned the drive", h)
 	}
-	if _, e = controllerCall(t, d, controller.Params{Action: "rearm", AuthorizingMessage: "message"}); e == nil {
-		t.Fatal("rearmed inconsistent checkpoint")
+	// An independently stopped drive re-arms; re-arm still validates every
+	// cached row and isolates an inconsistent one rather than refusing everyone.
+	if _, e = controllerCall(t, d, controller.Params{Action: "stop-drive", AuthorizingMessage: "message"}); e != nil {
+		t.Fatal(e)
 	}
-	// Removing the injected non-durable cache corruption restores consistency.
+	awaitDrive(t, d, false, 1)
 	d.mu.Lock()
-	delete(d.jobs, "broken")
+	d.jobs["broken-again"] = controlplane.JobSnapshot{ID: "broken-again", Payload: json.RawMessage(`{"wrong":true}`)}
 	d.mu.Unlock()
 	if _, e = controllerCall(t, d, controller.Params{Action: "rearm", AuthorizingMessage: "message"}); e != nil {
 		t.Fatal(e)
 	}
+	quarantined("broken-again")
 	awaitDrive(t, d, true, 2)
 }
 
@@ -196,17 +216,21 @@ func TestDrivePersistReconcilesExactLostAcknowledgement(t *testing.T) {
 		t.Fatal(e)
 	}
 	proposal.Admission.Priority++
+	// persist is a writer step: hold the lock the status keeper also takes.
+	d.mu.Lock()
 	committed, e := d.persist(ctx, original, proposal, nil)
+	// The caller retained the old version after an imaginary lost response.
+	recovered, e2 := d.persist(ctx, original, proposal, nil)
+	proposal.Admission.Priority++
+	_, e3 := d.persist(ctx, original, proposal, nil)
+	d.mu.Unlock()
 	if e != nil {
 		t.Fatal(e)
 	}
-	// The caller retained the old version after an imaginary lost response.
-	recovered, e := d.persist(ctx, original, proposal, nil)
-	if e != nil || recovered.Version != committed.Version {
-		t.Fatal(recovered.Version, committed.Version, e)
+	if e2 != nil || recovered.Version != committed.Version {
+		t.Fatal(recovered.Version, committed.Version, e2)
 	}
-	proposal.Admission.Priority++
-	if _, e = d.persist(ctx, original, proposal, nil); e == nil {
+	if e3 == nil {
 		t.Fatal("different proposed checkpoint adopted")
 	}
 	actual, e := d.store.GetJob(ctx, original.ID)

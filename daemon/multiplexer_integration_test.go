@@ -1,14 +1,12 @@
 package daemon
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
 	"github.com/xleelz/fae/workflow"
-	"os/exec"
 	"strings"
 	"testing"
 	"time"
@@ -18,10 +16,7 @@ import (
 // the provider subprocess is explicitly a protocol fixture, not dogfood.
 func TestDaemonMultiplexerEffectsLifecycle(t *testing.T) {
 	cfg, ctx, base := liveDaemonFixture(t)
-	herdr, lookupErr := exec.LookPath("herdr")
-	if lookupErr != nil {
-		t.Skip("herdr not installed")
-	}
+	herdr := testHerdr(t)
 	cfg.Live.Adapter = "multiplexer"
 	cfg.Live.HerdrBinary = herdr
 	d, err := Start(ctx, cfg)
@@ -92,12 +87,11 @@ func TestDaemonMultiplexerEffectsLifecycle(t *testing.T) {
 	}
 }
 
-func TestDaemonMultiplexerInterruptedTurnParks(t *testing.T) {
+// FAE-ROB-011/-012: a graceful stop lists the interrupted Herdr turn. Close
+// joins its retirement, so restart deterministically replays it without charge.
+func TestDaemonMultiplexerPlannedStopNeverChargesInterruptedTurn(t *testing.T) {
 	cfg, ctx, _ := liveDaemonFixture(t)
-	herdr, lookupErr := exec.LookPath("herdr")
-	if lookupErr != nil {
-		t.Skip("herdr not installed")
-	}
+	herdr := testHerdr(t)
 	cfg.Live.Adapter = "multiplexer"
 	cfg.Live.HerdrBinary = herdr
 	cfg.Live.Environment["LIVE_DAEMON_WAIT"] = "1"
@@ -120,19 +114,7 @@ func TestDaemonMultiplexerInterruptedTurnParks(t *testing.T) {
 	if _, err = call(t, d, "Admit", AdmitParams{ID: "interrupted", AuthorizingMessage: "message"}, "interrupted"); err != nil {
 		t.Fatal(err)
 	}
-	deadline := time.Now().Add(10 * time.Second)
-	held := false
-	for time.Now().Before(deadline) {
-		pool, e := d.live.guard.host.Snapshot(ctx)
-		if e == nil && len(pool.Holders) > 0 {
-			held = true
-			break
-		}
-		time.Sleep(20 * time.Millisecond)
-	}
-	if !held {
-		t.Fatal("live turn never acquired host lease")
-	}
+	awaitLaunchedTurn(t, d)
 	stop(t, d)
 	d, err = Start(ctx, cfg)
 	if err != nil {
@@ -146,33 +128,10 @@ func TestDaemonMultiplexerInterruptedTurnParks(t *testing.T) {
 	if err = json.Unmarshal(snapshot.Payload, &e); err != nil {
 		t.Fatal(err)
 	}
-	if e.Job.ExecutionKind != "live" || !e.Job.Parked || e.Job.Reason != "UncertainDispatch" {
-		t.Fatal("uncertain execution not held")
-	}
+	assertPlannedReplay(t, e.Job)
 }
 
 func awaitMultiplexerState(t *testing.T, d *Daemon, id, state string) controlplane.JobSnapshot {
 	t.Helper()
-	deadline := time.Now().Add(120 * time.Second)
-	for time.Now().Before(deadline) {
-		j, e := d.store.GetJob(context.Background(), id)
-		if e == nil && j.State == state {
-			return j
-		}
-		if e == nil {
-			var env envelope
-			if json.Unmarshal(j.Payload, &env) == nil && ((env.Job.Parked && env.Job.Reason != "infrastructure-deferred") || j.State == "Escalated") {
-				t.Fatalf("task %s stopped in %s: %s", id, j.State, env.Job.Reason+fmt.Sprintf(" history=%+v", env.Job.History))
-			}
-		}
-		select {
-		case <-d.done:
-			t.Fatalf("daemon stopped: %v", d.err)
-		default:
-		}
-		time.Sleep(30 * time.Millisecond)
-	}
-	j, e := d.store.GetJob(context.Background(), id)
-	t.Fatalf("task %s did not reach %s: state=%s err=%v", id, state, j.State, e)
-	return j
+	return awaitThroughDeferred(t, d, id, state, 120*time.Second)
 }

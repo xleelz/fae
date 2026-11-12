@@ -1,0 +1,122 @@
+{
+  "schema_version": 2,
+  "id": "formal-example",
+  "start": "verify",
+  "limits": {
+    "attempts": 4,
+    "test_runs": 1,
+    "scope_widens": 1
+  },
+  "target_requirements": {
+    "commands": [
+      [
+        "my-proof-adapter",
+        "verify",
+        "model.spec"
+      ]
+    ]
+  },
+  "roles": {},
+  "artifacts": {
+    "ProofReceipt": {
+      "version": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "passed",
+          "outcome",
+          "obligations",
+          "verified",
+          "failed",
+          "unknown",
+          "skipped"
+        ],
+        "properties": {
+          "passed": {
+            "type": "boolean"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "obligations": {
+            "type": "integer"
+          },
+          "verified": {
+            "type": "integer"
+          },
+          "failed": {
+            "type": "integer"
+          },
+          "unknown": {
+            "type": "integer"
+          },
+          "skipped": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "stages": {
+    "verify": {
+      "primitive": "HostCommand",
+      "command": [
+        "my-proof-adapter",
+        "verify",
+        "model.spec"
+      ],
+      "weight": 1,
+      "timeout_seconds": 120,
+      "output": "ProofReceipt",
+      "formal": {
+        "tool": "my-checker",
+        "parser": "normalized-json",
+        "kind": "deductive",
+        "sources": [
+          "model.spec"
+        ],
+        "min_obligations": 1
+      }
+    },
+    "proof-gate": {
+      "primitive": "Gate",
+      "name": "formal obligations discharged",
+      "expression": {
+        "op": "eq",
+        "args": [
+          {
+            "op": "field",
+            "stage": "verify",
+            "path": [
+              "passed"
+            ]
+          },
+          {
+            "op": "literal",
+            "value": true
+          }
+        ]
+      },
+      "failure": "stop"
+    },
+    "stop": {
+      "primitive": "Escalate",
+      "kind": "HumanDecisionRequired",
+      "reason": "formal obligations were not discharged"
+    }
+  },
+  "edges": [
+    {
+      "from": "verify",
+      "to": "proof-gate"
+    },
+    {
+      "from": "proof-gate",
+      "to": "Done"
+    },
+    {
+      "from": "proof-gate",
+      "to": "stop"
+    }
+  ]
+}

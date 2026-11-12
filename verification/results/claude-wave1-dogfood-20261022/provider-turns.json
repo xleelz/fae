@@ -1,0 +1,254 @@
+[
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/3/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/13/session/1",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/12/session/1",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "loop-dogfood-loop-1-attempt-1",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/2/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "prophet-c4f99256c4d2c3c4155ccd6cf06cd14f",
+    "task_id": "global",
+    "workflow_id": "fae-prophet",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/13/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/5/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/3/session/1",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "loop-dogfood-loop-5-attempt-5",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/24/session/1",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "loop-dogfood-loop-2-attempt-2",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/4/session/1",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/8/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/12/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/13/session/3",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/4/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/24/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/3/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/13/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/13/session/2",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/5/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/24/session/3",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "loop-dogfood-loop-3-attempt-3",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/25/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/4/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/12/session/2",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/2/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/14/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/1/session/0",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/6/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "prophet-72e4031076a18dbe82ca0c336b178df1",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "fae-prophet",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/24/session/2",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "loop-dogfood-loop-4-attempt-4",
+    "task_id": "loop-dogfood-loop",
+    "workflow_id": "fae-loop:dogfood-loop",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "provider-beta/f09aa70f361467853ca8563698b35ff4137ad6a649eecc5f31344aec19015e45/12/session/3",
+    "task_id": "provider-beta",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "session_id": "cron-7d533ed758e7c6b84e828429-0/fc0df1e0c7c3d49444e124811d902b5649d5a0853cddb662d7f61f4d23ddee91/9/session/0",
+    "task_id": "cron-7d533ed758e7c6b84e828429-0",
+    "workflow_id": "default",
+    "provider": "claude",
+    "model": "claude-opus-5-5"
+  }
+]

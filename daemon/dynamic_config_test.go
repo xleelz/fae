@@ -5,9 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/domain"
 	"github.com/xleelz/fae/engine"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -16,10 +15,7 @@ import (
 
 func TestDynamicPaneConfigurationAuditedRestart(t *testing.T) {
 	cfg, ctx, _ := liveDaemonFixture(t)
-	binary := filepath.Join(os.Getenv("HOME"), ".local/bin/herdr")
-	if _, err := os.Stat(binary); err != nil {
-		t.Skip("Herdr required")
-	}
+	binary := testHerdr(t)
 	cfg.Live.Adapter = "multiplexer"
 	cfg.Live.HerdrBinary = binary
 	cfg.Live.PaneLimit = 60
@@ -123,10 +119,7 @@ func TestDynamicPaneConfigurationAuditedRestart(t *testing.T) {
 
 func TestRestartValidatesDurablePaneFloorAndReleasesRegistration(t *testing.T) {
 	cfg, ctx, _ := liveDaemonFixture(t)
-	binary := filepath.Join(os.Getenv("HOME"), ".local/bin/herdr")
-	if _, err := os.Stat(binary); err != nil {
-		t.Skip("Herdr required")
-	}
+	binary := testHerdr(t)
 	cfg.Live.Adapter = "multiplexer"
 	cfg.Live.HerdrBinary = binary
 	cfg.Live.PaneLimit = 200
@@ -170,6 +163,7 @@ func TestRestartValidatesDurablePaneFloorAndReleasesRegistration(t *testing.T) {
 	}
 	job.Parked = true
 	job.Reason = "infrastructure-deferred"
+	job.Disposition = domain.Disposition{Mode: domain.Local}
 	raw, _ = json.Marshal(envelope{Job: job})
 	snapshot, err := d.store.AdmitJob(ctx, controlplane.Audit{Actor: "test", Action: "admit custom", Outcome: "ok"}, "custom-task", controlplane.JobSnapshot{ID: job.TaskID, WorkflowID: doc.ID, WorkflowRevision: 1, TargetID: cfg.Workspace, TargetRevision: 1, State: string(job.State), Payload: raw})
 	if err != nil {

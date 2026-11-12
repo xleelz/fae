@@ -165,7 +165,7 @@ func (p *PaneLedger) Snapshot(ctx context.Context) ([]PaneReservation, error) {
 	return out, err
 }
 
-// Bind links an already-reserved launch to its private API socket before Herdr
+// Bind links an already-reserved launch to its private API socket before herdr-core
 // starts. No interval can expose a live pane without its durable reservation.
 func (p *PaneLedger) Bind(ctx context.Context, id string, owner Owner, birth, socket string) error {
 	if !filepath.IsAbs(socket) {

@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go#L2
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go#L2
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -39,23 +39,23 @@ proctype ScratchRemovalDropsBackupAck2(chan child) {
 	run sync_monitor(stopped_ch)->
 	run sync_monitor(backup_ch)->
 	run sync_monitor(removed_ch)->
-	run AnonymousScratchRemovalDropsBackupAck22(backup_ch,removed_ch,stopped_ch,child_AnonymousScratchRemovalDropsBackupAck220)->
+	run AnonymousScratchRemovalDropsBackupAck22(stopped_ch,backup_ch,removed_ch,child_AnonymousScratchRemovalDropsBackupAck220)->
 	run receiver(child_AnonymousScratchRemovalDropsBackupAck220)->
-	run AnonymousScratchRemovalDropsBackupAck22(removed_ch,stopped_ch,backup_ch,child_AnonymousScratchRemovalDropsBackupAck221)->
+	run AnonymousScratchRemovalDropsBackupAck22(stopped_ch,backup_ch,removed_ch,child_AnonymousScratchRemovalDropsBackupAck221)->
 	run receiver(child_AnonymousScratchRemovalDropsBackupAck221)->
 	run AnonymousScratchRemovalDropsBackupAck22(stopped_ch,backup_ch,removed_ch,child_AnonymousScratchRemovalDropsBackupAck222)->
 	run receiver(child_AnonymousScratchRemovalDropsBackupAck222)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go:2:189 */
-	:: removed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go:2:189 */->
-	:: removed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go:2:189 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go:2:189 */
+	:: removed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go:2:189 */->
+	:: removed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go:2:189 */ -> 
 		removed_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousScratchRemovalDropsBackupAck22(Chandef backup_ch;Chandef removed_ch;Chandef stopped_ch;chan child) {
+proctype AnonymousScratchRemovalDropsBackupAck22(Chandef stopped_ch;Chandef backup_ch;Chandef removed_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -63,12 +63,12 @@ proctype AnonymousScratchRemovalDropsBackupAck22(Chandef backup_ch;Chandef remov
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go:2:118 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go:2:118 */
 	:: stopped_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go:2:118 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go:2:118 */
 	:: stopped_ch.sync!false -> 
 		stopped_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/scratch.go:2:118 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/scratch.go:2:118 */
 	fi->
 	stop_process: skip->
 	child!0

@@ -1,0 +1,29 @@
+{
+  "dispatches": 5,
+  "spec": {
+    "id": "dogfood-loop",
+    "kind": "loop",
+    "role": "oracle",
+    "prompt": "Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.",
+    "binding": {
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "medium"
+    },
+    "max_iterations": 5,
+    "expires_at": "2026-10-23T08:53:33.430268172Z"
+  },
+  "session_id": "loop-dogfood-loop",
+  "state": "completed",
+  "iterations": 5,
+  "in_flight": false,
+  "next": "2026-10-23T08:38:48.729808874Z",
+  "context": {
+    "iterations": 5,
+    "scope_revision": "b741ddc2504f4d3a17147b48caacff60996bf744d53256ff397eed7cd8e73eeb",
+    "session": "loop-dogfood-loop"
+  },
+  "last_output": {
+    "message": "Iteration 5 (provider-loop stage, attempt 5): The marker is still fae-loop-dogfood, the same as in iterations 1\u20134. As instructed, I didn't edit any files or run any tools."
+  }
+}

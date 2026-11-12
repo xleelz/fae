@@ -88,7 +88,7 @@ func TestDynamicAdapterExternalExecution(t *testing.T) {
 			if _, e = call(t, d, "TargetConfigPut", TargetPutParams{ID: "normal", Document: target, AuthorizingMessage: "message"}, ""); e != nil {
 				t.Fatal(e)
 			}
-			admission := AdmitParams{ID: j.TaskID, RunID: "external-run", Mode: "Normal", TargetConfig: "normal", Destination: "main", PushNamespace: "fae/fixture", TicketRoom: "fixture", CommitExternal: mode != "dry-run"}
+			admission := AdmitParams{ID: j.TaskID, RunID: "external-run", Mode: "Normal", TargetConfig: "normal", Destination: "main", PushNamespace: "fae/fixture", TicketRoom: "fixture", CommitExternal: mode != "dry-run", DryRun: mode == "dry-run"}
 			if e = d.pinTarget(ctx, &admission, j.Document); e != nil {
 				t.Fatal(e)
 			}
@@ -117,7 +117,7 @@ func TestDynamicAdapterExternalExecution(t *testing.T) {
 			d.mu.Lock()
 			d.jobs[j.TaskID] = saved
 			d.mu.Unlock()
-			r, e := d.live.Execute(ctx, *j.InFlight)
+			r, e := executeAdmitted(t, ctx, d.live, *j.InFlight)
 			if mode == "malformed" {
 				if e == nil {
 					t.Fatal("accepted malformed response")

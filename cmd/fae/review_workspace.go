@@ -26,8 +26,11 @@ func reviewWorkspaceCommand(ctx context.Context, args []string, c common, out io
 	}
 	method := "ReviewWorkspacePlan"
 	if action == "review-prepare" {
-		if p.Adapter.ID == "" || opts.message == "" {
-			return usage("review-prepare requires adapter and authorizing-message")
+		if p.Adapter.ID == "" {
+			return usage("review-prepare requires --adapter")
+		}
+		if err := requireMessage("workspace review-prepare", opts); err != nil {
+			return err
 		}
 		method = "ReviewWorkspacePrepare"
 		p.AuthorizingMessage = opts.message

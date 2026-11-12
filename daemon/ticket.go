@@ -135,6 +135,7 @@ func (d *Daemon) startTicketOutbox() {
 	d.workers.Add(1)
 	go func() {
 		defer d.workers.Done()
+		defer d.statusChanged()
 		defer d.ticketActive.Store(false)
 		ctx, cancel := context.WithTimeout(d.ctx, 15*time.Second)
 		defer cancel()
@@ -471,7 +472,8 @@ func managedTicket(c LiveConfig, j engine.Job, alias string) bool {
 }
 
 func validateTicketAdmission(c LiveConfig, doc workflow.Document, p AdmitParams) error {
-	if c.TicketWorkflow == nil {
+	// Local tasks never mirror tickets and pin no Normal-only ticket stage.
+	if c.TicketWorkflow == nil || p.Mode == "Local" {
 		return nil
 	}
 	enabled := false
@@ -483,8 +485,8 @@ func validateTicketAdmission(c LiveConfig, doc workflow.Document, p AdmitParams)
 	if !enabled {
 		return nil
 	}
-	if p.CommitExternal && (p.TicketRoom == "" || p.Destination == "" || p.PushNamespace == "") {
-		return errors.New("live ticket workflow requires ticket room, destination and push namespace")
+	if missing := missingLiveValues(p, true); p.CommitExternal && len(missing) > 0 {
+		return missingLiveError(missing)
 	}
 	for _, action := range c.TicketWorkflow.Actions {
 		tool := c.ExternalTools[action.Tool]

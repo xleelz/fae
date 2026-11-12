@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -31,7 +31,7 @@ proctype AuthorityMissingPermission3(chan child) {
 	bool state = true->
 	int num_msgs->
 	chan child_AnonymousAuthorityMissingPermission942 = [1] of {int}->
-	chan child_AnonymousAuthorityMissingPermission861 = [1] of {int}->
+	chan child_AnonymousAuthorityMissingPermission841 = [1] of {int}->
 	chan child_AnonymousAuthorityMissingPermission740 = [1] of {int}->
 	Chandef committed_ch->
 	Chandef permitted_ch->
@@ -41,15 +41,15 @@ proctype AuthorityMissingPermission3(chan child) {
 	run sync_monitor(committed_ch)->
 	run AnonymousAuthorityMissingPermission74(authenticated_ch,permitted_ch,committed_ch,child_AnonymousAuthorityMissingPermission740)->
 	run receiver(child_AnonymousAuthorityMissingPermission740)->
-	run AnonymousAuthorityMissingPermission86(committed_ch,authenticated_ch,permitted_ch,child_AnonymousAuthorityMissingPermission861)->
-	run receiver(child_AnonymousAuthorityMissingPermission861)->
+	run AnonymousAuthorityMissingPermission84(authenticated_ch,permitted_ch,committed_ch,child_AnonymousAuthorityMissingPermission841)->
+	run receiver(child_AnonymousAuthorityMissingPermission841)->
 	run AnonymousAuthorityMissingPermission94(authenticated_ch,permitted_ch,committed_ch,child_AnonymousAuthorityMissingPermission942)->
 	run receiver(child_AnonymousAuthorityMissingPermission942)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:10:2 */
-	:: committed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:10:2 */->
-	:: committed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:10:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:10:2 */
+	:: committed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:10:2 */->
+	:: committed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:10:2 */ -> 
 		committed_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -63,17 +63,17 @@ proctype AnonymousAuthorityMissingPermission74(Chandef authenticated_ch;Chandef 
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:7:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:7:12 */
 	:: authenticated_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:7:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:7:12 */
 	:: authenticated_ch.sync!false -> 
 		authenticated_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:7:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:7:12 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousAuthorityMissingPermission86(Chandef committed_ch;Chandef authenticated_ch;Chandef permitted_ch;chan child) {
+proctype AnonymousAuthorityMissingPermission84(Chandef authenticated_ch;Chandef permitted_ch;Chandef committed_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -81,9 +81,9 @@ proctype AnonymousAuthorityMissingPermission86(Chandef committed_ch;Chandef auth
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:8:12 */
-	:: authenticated_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:8:12 */->
-	:: authenticated_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:8:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:8:12 */
+	:: authenticated_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:8:12 */->
+	:: authenticated_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:8:12 */ -> 
 		authenticated_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -97,19 +97,19 @@ proctype AnonymousAuthorityMissingPermission94(Chandef authenticated_ch;Chandef 
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:9:12 */
-	:: permitted_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:9:12 */->
-	:: permitted_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:9:12 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:9:12 */
+	:: permitted_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:9:12 */->
+	:: permitted_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:9:12 */ -> 
 		permitted_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:9:24 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:9:24 */
 	:: committed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:9:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:9:24 */
 	:: committed_ch.sync!false -> 
 		committed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/authority.go:9:24 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/authority.go:9:24 */
 	fi->
 	stop_process: skip->
 	child!0

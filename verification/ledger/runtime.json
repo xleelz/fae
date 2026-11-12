@@ -1,0 +1,1339 @@
+[
+  {
+    "id": "gobra:provider",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "providerhealth/eligibility.go"
+    },
+    "requirements": [
+      "FAE-RT-009",
+      "FAE-RT-010",
+      "FAE-RT-018",
+      "FAE-SCH-015",
+      "FAE-WF-082"
+    ],
+    "production": {
+      "path": "providerhealth/eligibility.go",
+      "function": "Eligible",
+      "call_sites": [
+        {
+          "path": "providerhealth/health.go",
+          "function": "Eligible"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestPenaltiesAndDecay",
+        "TestDaemonProviderRoutesPersistParkRestartAndFailover",
+        "TestProviderPoolsReadySetOrderAndCap",
+        "TestProviderPoolResizeDownAndUp",
+        "TestProviderPoolCrashRecoveryAndDeadOwnerReclamation"
+      ],
+      "note": "Score thresholds via Health.Eligible; daemon selects the decayed-eligible fallback route and reaches Done."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return score >= 50000 && score <= 100000",
+        "weakened": "return score <= 100000"
+      },
+      "refusal_tests": [
+        "TestPenaltiesAndDecay",
+        "TestDaemonProviderRoutesPersistParkRestartAndFailover"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonProviderRoutesPersistParkRestartAndFailover",
+        "TestProviderConcurrencyPoolCrossWorkflowAndReadySetOrder",
+        "TestProviderConcurrencyPoolIncludesProphet",
+        "TestProviderConcurrencyPoolLiveAuditedResize",
+        "TestProviderConcurrencyPoolDeadOwnerReclamation",
+        "TestUsageLimitWithResetTimeParks12TasksZeroChargeNoEscalationAndCutOffFirstAtT",
+        "TestRateLimitWithoutResetTimeExponentialBackoff",
+        "TestQuotaSetAndClearAuditedVerbs",
+        "TestDurableScopedDispatchPauseAndUnpauseAcrossRestart"
+      ],
+      "path": "Start(live) -> Admit RPC -> drive dispatch route selector -> providerhealth.Health.Eligible -> Eligible; asserts all-routes-unavailable park without attempt charge, restart, then fallback selection"
+    },
+    "status": "native-evidenced",
+    "limits": "Proof covers the integer threshold only; float decay and SQL health persistence are tested, not proved."
+  },
+  {
+    "id": "gobra:shim",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "commandshim/guard.go"
+    },
+    "requirements": [
+      "FAE-HOST-011",
+      "FAE-SEC-002"
+    ],
+    "production": {
+      "path": "commandshim/guard.go",
+      "function": "CanExecute",
+      "call_sites": [
+        {
+          "path": "commandshim/shim.go",
+          "function": "Prepare"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestGuardTruthTable",
+        "TestParallelismClampAndActualInvocation"
+      ],
+      "note": "Admitted code-role, in-worktree, leased, non-nested go invocation is prepared with clamped parallelism."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return roleAllowed && scopeValid && outputSafe && leaseHeld && !nested",
+        "weakened": "return roleAllowed && scopeValid && outputSafe && !nested"
+      },
+      "refusal_tests": [
+        "TestGuardTruthTable",
+        "TestPolicyRefusalMatrix"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start(live) -> drive -> liveExecutor.Execute HostCommand -> effects.Broker.Run -> commandshim.Policy.Prepare -> CanExecute (accept path)"
+    },
+    "status": "native-evidenced",
+    "limits": "The broker passes constant CodeRole/LeaseHeld/!Nested, so role/lease/nested refusals are unit-only; no OS containment proof. Maps no part of FAE-HOST-014: no production caller sets Nested, a nested call in refuse mode meets the InstallDenials stubs and one in account mode goes through PrepareAccounted, neither of which calls CanExecute."
+  },
+  {
+    "id": "gobra:pane",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "scheduler/pane_guard.go"
+    },
+    "requirements": [
+      "FAE-SCH-012",
+      "FAE-RT-002"
+    ],
+    "production": {
+      "path": "scheduler/pane_guard.go",
+      "function": "CanReservePane",
+      "call_sites": [
+        {
+          "path": "scheduler/panes.go",
+          "function": "Reserve"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanReservePaneBoundaries",
+        "TestPaneConcurrentReservationsAndLiveReplacement"
+      ],
+      "note": "Reservation admitted below the cap counting live plus pending; exactly cap-many concurrent reservations succeed."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return live < limit && pending < limit-live",
+        "weakened": "return live < limit"
+      },
+      "refusal_tests": [
+        "TestCanReservePaneBoundaries",
+        "TestPaneLiveInventoryOverridesEmptyLedger"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonMultiplexerEffectsLifecycle"
+      ],
+      "path": "Start(multiplexer) -> drive -> liveExecutor.Execute -> liveAdmission.Acquire -> PaneLedger.Reserve -> CanReservePane (accept path); asserts no leaked pane reservations"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test skips without herdr and exercises only admission, not a native cap refusal; live Herdr inventory is not proved."
+  },
+  {
+    "id": "gobra:dynamic-pane",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "scheduler/dynamic_panes.go"
+    },
+    "requirements": [
+      "FAE-SCH-012",
+      "FAE-ROB-041"
+    ],
+    "production": {
+      "path": "scheduler/dynamic_panes.go",
+      "function": "TightenPaneLimit",
+      "call_sites": [
+        {
+          "path": "scheduler/panes.go",
+          "function": "paneLimit"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestTightenPaneLimit",
+        "TestDynamicPaneSharedLimitsCannotOverwriteOtherInstance"
+      ],
+      "note": "Effective shared pane cap is the minimum of live instance requests and follows a raised own request."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return current",
+        "weakened": "return requested"
+      },
+      "refusal_tests": [
+        "TestTightenPaneLimit",
+        "TestDynamicPaneSharedLimitsCannotOverwriteOtherInstance"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDynamicPaneConfigurationAuditedRestart"
+      ],
+      "path": "Start(multiplexer) -> RuntimeConfig RPC / dispatch -> applyRuntimeConfig -> PaneLedger.Configure/Limit -> paneLimit -> TightenPaneLimit; asserts effective 20 under requested 30 and persisted limit across restart"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test skips without herdr."
+  },
+  {
+    "id": "gobra:idle",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/idle.go"
+    },
+    "requirements": [
+      "FAE-SCH-013",
+      "FAE-SCH-014"
+    ],
+    "production": {
+      "path": "kernel/idle.go",
+      "function": "CanShedIdle",
+      "call_sites": [
+        {
+          "path": "runtime/idle.go",
+          "function": "Round"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanShedIdleExhaustive",
+        "TestIdleShedsOneAndRetainsHandoff"
+      ],
+      "note": "One idle sheddable pre-code global session is shed after saturation rounds with its handoff retained."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return global && preCode && !protected && !active && inflight == 0",
+        "weakened": "return global && preCode && !protected && inflight == 0"
+      },
+      "refusal_tests": [
+        "TestCanShedIdleExhaustive",
+        "TestIdleProtectedSaturationEscalates",
+        "TestIdleReservedRoleProtectionAndInFlightReset"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonIdleMaintenanceAuditAndStarvation"
+      ],
+      "path": "Start(multiplexer) -> Daemon.maintainIdleSessions (drive round hook) -> OwnedIdleSessions.Round -> CanShedIdle; asserts sheddable shed, protected PaneCapStarvation, pending turn retained"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test skips without herdr and calls the drive hook directly on a started daemon."
+  },
+  {
+    "id": "gobra:stall",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/stall.go"
+    },
+    "requirements": [
+      "FAE-RT-005",
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "kernel/stall.go",
+      "function": "CanRetryStall",
+      "call_sites": [
+        {
+          "path": "execution/executor.go",
+          "function": "Execute"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanRetryStallAllProofs",
+        "TestStallReplayRequiresContractRetirementAndTree"
+      ],
+      "note": "Stalled turn with restricted-effects contract, retirement and unchanged tree is classified stall-retry."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return restrictedContract && retired && unchanged && firstSession",
+        "weakened": "return restrictedContract && unchanged && firstSession"
+      },
+      "refusal_tests": [
+        "TestCanRetryStallAllProofs",
+        "TestStallReplayRequiresContractRetirementAndTree",
+        "TestStallHealthFailureCannotAuthorizeReplay"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonStallCounterSurvivesDrainRestart"
+      ],
+      "path": "Start(live, StallSafeReplay) -> drive -> execution.Executor.Execute -> CanRetryStall; asserts durable stall counter across drain/restart and StallExhausted after 3"
+    },
+    "status": "native-evidenced",
+    "limits": "Inputs (retirement, tree equality, contract) are assumed correct by the proof."
+  },
+  {
+    "id": "gobra:provider-session",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/provider_session.go"
+    },
+    "requirements": [
+      "FAE-WF-033",
+      "FAE-WF-040",
+      "FAE-OPS-033",
+      "FAE-OPS-034"
+    ],
+    "production": {
+      "path": "kernel/provider_session.go",
+      "function": "CanResumeProvider",
+      "call_sites": [
+        {
+          "path": "provider/sessions.go",
+          "function": "openProviderSession"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanResumeProvider",
+        "TestPersistentScopeAndRecovery",
+        "TestTaskBoundPersistentScope",
+        "TestEngineNotifyNextTurnAndInFlightAndHistory",
+        "TestQuotedNotificationsBriefAndEscape",
+        "TestFreshRoleNeverReusesSessionAndRefusesFollowUp"
+      ],
+      "note": "Scoped persistent provider context resumes across tasks/restart (global) and within one task (task-bound)."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return enabled && scopedPolicy && !fresh",
+        "weakened": "return enabled && scopedPolicy"
+      },
+      "refusal_tests": [
+        "TestCanResumeProvider",
+        "TestPersistentFreshReviewAndFailedTurnRotation",
+        "TestTaskBoundPersistentScope",
+        "TestFreshRoleNeverReusesSessionAndRefusesFollowUp"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonClaudeProviderPath",
+        "TestTaskNotificationsNextTurnInFlightHistoryAndControllerRelay",
+        "TestFollowUpDoneTaskImmutabilitySessionTransferAndFreshRoleRefusal"
+      ],
+      "path": "Start -> drive -> dispatchTask -> liveExecutor.Execute -> runtime Direct launches the bridge (this test binary running the production provider.Run with the Claude protocol over a scripted CLI) with a session root -> openProviderSession -> kernel.CanResumeProvider: the second task's workflow-global turn resumes the first turn's provider session (--resume with the same session id)"
+    },
+    "status": "native-evidenced",
+    "limits": "Workflow-global accept path only; fresh-context and task-bound refusals are unit-level. The provider is a scripted CLI."
+  },
+  {
+    "id": "gobra:dynamic-host",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "scheduler/dynamic_capacity.go"
+    },
+    "requirements": [
+      "FAE-SCH-011",
+      "FAE-ROB-041"
+    ],
+    "production": {
+      "path": "scheduler/dynamic_capacity.go",
+      "function": "CanAcquireDynamic",
+      "call_sites": [
+        {
+          "path": "scheduler/scheduler.go",
+          "function": "Advance"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestDynamicAdmissionGuard",
+        "TestDynamicHeavyDrainPreservesHoldersAndQueue"
+      ],
+      "note": "Heavy lease granted within a lowered admission limit; raising the limit resumes FIFO admission."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return used <= limit && weight > 0 && weight <= limit-used",
+        "weakened": "return weight > 0"
+      },
+      "refusal_tests": [
+        "TestDynamicAdmissionGuard",
+        "TestDynamicHeavyDrainPreservesHoldersAndQueue"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDynamicHostThresholdsAffectAdmission"
+      ],
+      "path": "Start(live) -> RuntimeConfig RPC -> liveAdmission.Acquire -> scheduler.Ledger.Advance -> Pool.AdvanceObserved -> Pool.Advance -> CanAcquireDynamic (grant path)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native path does not lower capacity under a live holder; drain-under-lowered-cap is scheduler-level only."
+  },
+  {
+    "id": "gobra:startup",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/startup.go"
+    },
+    "requirements": [
+      "FAE-RT-004",
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "kernel/startup.go",
+      "function": "CanRetryStartup",
+      "call_sites": [
+        {
+          "path": "execution/executor.go",
+          "function": "Execute"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestStartupProofTruthTable",
+        "TestStartupRequiresPositiveProofAndRelease"
+      ],
+      "note": "Proven nonexecution with retirement and unchanged tree is classified startup-retry."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return notExecuted && retired && firstSession",
+        "weakened": "return notExecuted && firstSession"
+      },
+      "refusal_tests": [
+        "TestStartupProofTruthTable",
+        "TestStartupRequiresPositiveProofAndRelease",
+        "TestStartupCannotReplayPartlyExecutedReview"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonStartupRetrySurvivesDrainRestart"
+      ],
+      "path": "Start(live, missing agent executable) -> drive -> execution.Executor.Execute -> CanRetryStartup; asserts 3 startup recoveries, zero attempts charged, health unpenalized, drive alive"
+    },
+    "status": "native-evidenced",
+    "limits": "Classifying nonexecution correctly is tested, not proved. A later review session's proven non-execution is classed outside this guard, as the charged rerun of every reviewer (engine.ClassLaterReviewerNotStarted); no Gobra spec covers that rule."
+  },
+  {
+    "id": "gobra:loop",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "loops/admission.go"
+    },
+    "requirements": [
+      "FAE-RT-014"
+    ],
+    "production": {
+      "path": "loops/admission.go",
+      "function": "CanDispatch",
+      "call_sites": [
+        {
+          "path": "loops/loops.go",
+          "function": "Due"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestDispatchPredicate",
+        "TestFivePersistentIterations"
+      ],
+      "note": "Active, due, unexpired, below-maximum, not-in-flight loop iterations dispatch until the maximum."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return active && !inFlight && beforeExpiry && due && belowMaximum",
+        "weakened": "return active && beforeExpiry && due && belowMaximum"
+      },
+      "refusal_tests": [
+        "TestDispatchPredicate",
+        "TestBoundsAndRecovery"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestLoopFiveIterationsAuditedAndRestart",
+        "TestLoopUncertainRestartNeverReplays"
+      ],
+      "path": "Start -> Schedule RPC -> drive dispatchLoops -> loops.Schedule.Due -> CanDispatch; asserts 5-iteration completion across restart and no replay of an uncertain in-flight iteration"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:uncertain",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/uncertain.go"
+    },
+    "requirements": [
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "kernel/uncertain.go",
+      "function": "CanResolveUncertain",
+      "call_sites": [
+        {
+          "path": "daemon/uncertain.go",
+          "function": "resolveUncertain"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestUncertaintyGuardTruthTable",
+        "TestCrashDuringLiveTurnExplicitResolution"
+      ],
+      "note": "Authorized resolution of a matching retired uncertain dispatch on an unchanged tree (redispatch/accept/escalate)."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return authorized && uncertain && matching && retired && unchanged",
+        "weakened": "return authorized && uncertain && matching && unchanged"
+      },
+      "refusal_tests": [
+        "TestUncertaintyGuardTruthTable",
+        "TestCrashDuringLiveTurnExplicitResolution"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCrashDuringLiveTurnExplicitResolution"
+      ],
+      "path": "SIGKILL helper daemon, Start -> ResolveUncertain RPC -> resolveUncertain -> CanResolveUncertain; asserts stale identity, changed worktree and duplicate resolution refused"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:resident",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "runtime/resident_guard.go"
+    },
+    "requirements": [
+      "FAE-WF-033",
+      "FAE-WF-040"
+    ],
+    "production": {
+      "path": "runtime/resident_guard.go",
+      "function": "CanReuseResident",
+      "call_sites": [
+        {
+          "path": "runtime/resident.go",
+          "function": "acquire"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanReuseResident",
+        "TestResidentTwoTurnsSamePaneFreshConfig",
+        "TestResidentGlobalReuseAcrossTasks"
+      ],
+      "note": "Live resident worker with matching identity is reused for a non-fresh turn."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return identityMatches && live && !fresh",
+        "weakened": "return identityMatches && !fresh"
+      },
+      "refusal_tests": [
+        "TestCanReuseResident",
+        "TestResidentDeadIdentityDoesNotLeakNewTurn"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonResidentSessionsReusePanes"
+      ],
+      "path": "Start (multiplexer adapter, resident_sessions) -> RPC Admit -> drive -> execution.Executor -> ResidentMultiplexer.Run; a second turn of the same role and scope finds its resident entry and passes CanReuseResident, so the Local run of the shipped default keeps fewer resident panes than it ran resident turns"
+    },
+    "status": "native-evidenced",
+    "limits": "Herdr-dependent (skips without herdr); native evidence is the reuse (accept) path, the retirement-required refusal is unit-only."
+  },
+  {
+    "id": "gobra:effect",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/effect.go"
+    },
+    "requirements": [
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "kernel/effect.go",
+      "function": "CanAdoptEffect",
+      "call_sites": [
+        {
+          "path": "daemon/effect_receipts.go",
+          "function": "recordedEffect"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestEffectGuardTruthTable",
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ],
+      "note": "Operator accept adopts a local effect only from the daemon's trusted receipt with exact postconditions."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return authorized && retired && exactPostcondition && trustedReceipt",
+        "weakened": "return authorized && retired && exactPostcondition"
+      },
+      "refusal_tests": [
+        "TestEffectGuardTruthTable",
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ],
+      "path": "SIGKILL at effect boundaries, Start -> ResolveUncertain(accept) RPC -> resolveUncertain -> recordedEffect -> CanAdoptEffect; asserts changed tree/ref, foreign intent and fabricated result refused"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:drive",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "kernel/drive_rearm.go"
+    },
+    "requirements": [
+      "FAE-ROB-001"
+    ],
+    "production": {
+      "path": "kernel/drive_rearm.go",
+      "function": "CanRearmDrive",
+      "call_sites": [
+        {
+          "path": "daemon/drive_lifecycle.go",
+          "function": "requestDriveRearm"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestDriveRearmAllStates",
+        "TestIndependentDriveRetainsInFlightAndDurableBudget"
+      ],
+      "note": "Stopped drive is rearmed once within the durable budget."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !alive && !pending && budget && running",
+        "weakened": "return !alive && budget && running"
+      },
+      "refusal_tests": [
+        "TestDriveRearmAllStates",
+        "TestIndependentDriveRetainsInFlightAndDurableBudget"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestIndependentDriveRetainsInFlightAndDurableBudget"
+      ],
+      "path": "Start -> Controller(rearm/stop-drive) RPC -> controllerAction -> requestDriveRearm -> CanRearmDrive; asserts no duplicate generation, budget refusal, budget durable across restart"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:provider",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/provider.go",
+      "functions": [
+        "ProviderObservationBeforeDispatch"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-009",
+      "FAE-RT-010"
+    ],
+    "production": {
+      "path": "daemon/drive.go",
+      "function": "dispatch"
+    },
+    "positive": {
+      "tests": [
+        "TestProviderObservationAndPinnedRoute",
+        "TestDaemonProviderRoutesPersistParkRestartAndFailover"
+      ],
+      "note": "Results are refused without a durable health observation; route selection reads persisted health."
+    },
+    "firing": {
+      "negative_model": "verification/negative/provider.go.txt",
+      "functions": [
+        "MissingProviderObservationAcknowledgment"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonProviderRoutesPersistParkRestartAndFailover"
+      ],
+      "path": "Start(live) -> drive dispatch reads store.ProviderHealth before route selection; asserts one provider-observation event per provider turn"
+    },
+    "status": "native-evidenced",
+    "limits": "Receipt ordering only; scores, SQL atomicity and decay are not modeled."
+  },
+  {
+    "id": "gomela:shim",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/shim.go",
+      "functions": [
+        "ShimLeaseRetirement"
+      ]
+    },
+    "requirements": [
+      "FAE-HOST-014"
+    ],
+    "production": {
+      "path": "effects/broker.go",
+      "function": "Run"
+    },
+    "positive": {
+      "tests": [
+        "TestBrokerNestedHeavyCommandRefused",
+        "TestNestedWrappersActuallyRefuse",
+        "TestBrokerAccountsNestedCommands",
+        "TestBrokerAccountedNestedCallsAreClampedAndConfined"
+      ],
+      "note": "A nested heavy command inside a brokered run is refused with exit 77 by the denial shims (default), or in opt-in account mode recorded and passed through the nested-command policy (fae heavy-op run --shim-policy, PrepareAccounted: clamped go, formatter limits, no git push or remote change), then run in the run's own process group under no lease of its own before Run returns."
+    },
+    "firing": {
+      "negative_model": "verification/negative/shim.go.txt",
+      "functions": [
+        "ShimMissingRetirement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle",
+        "TestLiveAccountModeRecordsNestedCommandsDurably"
+      ],
+      "path": "Start(live) -> liveExecutor.Execute (host lease acquired) -> effects.Broker.Run -> release; asserts no leaked host leases, and in account mode a durable nested-commands record per engine run (keyed by dispatch, command and start) and a nested git push refused with 78 in the Local task"
+    },
+    "status": "native-evidenced",
+    "limits": "Natively a nested command runs only in account mode; nested refusal is effects/commandshim unit-level. The model treats the nested call as refused and does not model account mode: an accounted call takes no lease, runs in the parent run's process group under its task cap, and is retired with it. Concurrent accounted calls in one run are bounded by the run's own parallelism and task cap, not counted against the lease weight. PATH/OS containment not modeled."
+  },
+  {
+    "id": "gomela:panes",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/panes.go",
+      "functions": [
+        "PaneReservationLifecycle"
+      ]
+    },
+    "requirements": [
+      "FAE-SCH-012",
+      "FAE-RT-002"
+    ],
+    "production": {
+      "path": "scheduler/panes.go",
+      "function": "Reserve"
+    },
+    "positive": {
+      "tests": [
+        "TestPaneConcurrentReservationsAndLiveReplacement",
+        "TestPaneOwnerRecoveryAndCorruptionFailClosed"
+      ],
+      "note": "Serialized reservations admit exactly the cap; a released slot is reusable."
+    },
+    "firing": {
+      "negative_model": "verification/negative/panes.go.txt",
+      "functions": [
+        "MissingPaneRetirement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonMultiplexerEffectsLifecycle"
+      ],
+      "path": "Start(multiplexer) -> liveAdmission.Acquire -> PaneLedger.Reserve/Release; asserts zero pane reservations after Done"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test skips without herdr; Herdr API and OS visibility not modeled."
+  },
+  {
+    "id": "gomela:dynamic_panes",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/dynamic_panes.go",
+      "functions": [
+        "DynamicPaneLimitUpdate"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-041"
+    ],
+    "production": {
+      "path": "daemon/dynamic_config.go",
+      "function": "applyRuntimeConfig"
+    },
+    "positive": {
+      "tests": [
+        "TestDynamicPaneReductionPreservesReservationsAndResumes",
+        "TestDynamicPaneConfigurationAuditedRestart"
+      ],
+      "note": "Lowered cap refuses new reservations while preserving existing ones; durable update applies at the next round and after restart."
+    },
+    "firing": {
+      "negative_model": "verification/negative/dynamic_panes.go.txt",
+      "functions": [
+        "MissingPaneUpdateAcknowledgment"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDynamicPaneConfigurationAuditedRestart"
+      ],
+      "path": "Start(multiplexer) -> RuntimeConfig RPC / dispatch -> refreshRuntimeConfig/applyRuntimeConfig -> PaneLedger.Configure; asserts next-round and restart reread"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test skips without herdr."
+  },
+  {
+    "id": "gomela:provider_session",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/provider_session.go",
+      "functions": [
+        "PersistentProviderCommit"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Commit-before-reuse of persistent provider contexts is an implementation protocol; no REQUIREMENTS.md text requires it (session freshness is mapped on gobra:provider-session).",
+    "production": {
+      "path": "provider/sessions.go",
+      "function": "openProviderSession"
+    },
+    "positive": {
+      "tests": [
+        "TestPersistentLockCancellationAndValidation",
+        "TestPersistentScopeAndRecovery",
+        "TestPersistentFreshReviewAndFailedTurnRotation"
+      ],
+      "note": "Concurrent turns on one scope are serialized; uncertain or failed contexts are not reused."
+    },
+    "firing": {
+      "negative_model": "verification/negative/provider_session.go.txt",
+      "functions": [
+        "PersistentProviderMissingCommit"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonClaudeProviderPath"
+      ],
+      "path": "Start -> drive -> dispatchTask -> liveExecutor.Execute -> runtime Direct launches the bridge (this test binary running the production provider.Run with the Claude protocol over a scripted CLI) with a session root -> openProviderSession: the persistent context is committed after the first accepted turn and reused by the next task's turn"
+    },
+    "status": "native-evidenced",
+    "limits": "One sequential reuse; concurrent turns on one scope and uncertain-context rotation are shown only by provider tests and the model."
+  },
+  {
+    "id": "gomela:dynamic_host",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/dynamic_host.go",
+      "functions": [
+        "DynamicHostDrain"
+      ]
+    },
+    "requirements": [
+      "FAE-SCH-011",
+      "FAE-ROB-041"
+    ],
+    "production": {
+      "path": "scheduler/scheduler.go",
+      "function": "Advance"
+    },
+    "positive": {
+      "tests": [
+        "TestDynamicHeavyDrainPreservesHoldersAndQueue"
+      ],
+      "note": "Lowering heavy capacity keeps the overweight holder and FIFO waiter; admission resumes after release/raise."
+    },
+    "firing": {
+      "negative_model": "verification/negative/dynamic_host.go.txt",
+      "functions": [
+        "DynamicHostMissingRetirement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDynamicHostThresholdsAffectAdmission"
+      ],
+      "path": "Start(live) -> liveAdmission.Acquire -> Ledger.Advance -> Pool.Advance (grant then release)"
+    },
+    "status": "native-evidenced",
+    "limits": "Native path does not exercise a lowered cap with a live holder."
+  },
+  {
+    "id": "gomela:startup",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/startup.go",
+      "functions": [
+        "StartupProofBeforeRetry"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-004"
+    ],
+    "production": {
+      "path": "execution/executor.go",
+      "function": "Execute"
+    },
+    "positive": {
+      "tests": [
+        "TestStartupRequiresPositiveProofAndRelease",
+        "TestStartupReleaseFailureCannotAuthorizeReplay"
+      ],
+      "note": "Replacement launch only after nonexecution proof, retirement and lease release."
+    },
+    "firing": {
+      "negative_model": "verification/negative/startup.go.txt",
+      "functions": [
+        "StartupMissingProof"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonStartupRetrySurvivesDrainRestart"
+      ],
+      "path": "Start(live, missing agent) -> drive -> execution.Executor.Execute; asserts durable startup counter and fresh dispatch IDs across drain/restart"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:loop",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/loop.go",
+      "functions": [
+        "LoopCheckpointBeforePrompt"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-014"
+    ],
+    "production": {
+      "path": "daemon/loops.go",
+      "function": "dispatchLoops"
+    },
+    "positive": {
+      "tests": [
+        "TestLoopDispatchCheckpointSurvivesWriteAndReadFailure",
+        "TestLoopFiveIterationsAuditedAndRestart"
+      ],
+      "note": "No loop prompt launches before its dispatch checkpoint commits; lost acknowledgement reconciles to exactly one launch."
+    },
+    "firing": {
+      "negative_model": "verification/negative/loop.go.txt",
+      "functions": [
+        "LoopMissingCheckpoint"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestLoopDispatchCheckpointSurvivesWriteAndReadFailure"
+      ],
+      "path": "stoppedLoopFixture(Start) -> Daemon.dispatchLoops -> prepareLoopCheckpoint before launch; asserts no launch on failed checkpoint write"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:uncertain",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/uncertain.go",
+      "functions": [
+        "CrashResolutionBarrier"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "daemon/uncertain.go",
+      "function": "resolveUncertain"
+    },
+    "positive": {
+      "tests": [
+        "TestCrashDuringLiveTurnExplicitResolution",
+        "TestUncertainResolutionBudgetIdentityAndEvidence"
+      ],
+      "note": "Replacement dispatch only after retirement and an audited operator resolution (engine.ResolveUncertain is the downstream transition called by resolveUncertain)."
+    },
+    "firing": {
+      "negative_model": "verification/negative/uncertain.go.txt",
+      "functions": [
+        "CrashMissingAuthority"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCrashDuringLiveTurnExplicitResolution"
+      ],
+      "path": "SIGKILL helper daemon, Start -> ResolveUncertain RPC -> resolveUncertain; asserts unaudited and stale resolutions refused"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:effect",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/effect.go",
+      "functions": [
+        "EffectReceiptBeforeAdoption"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "daemon/effect_receipts.go",
+      "function": "recordedEffect"
+    },
+    "positive": {
+      "tests": [
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ],
+      "note": "Adoption only from a persisted daemon receipt plus operator authority after SIGKILL at seven boundaries."
+    },
+    "firing": {
+      "negative_model": "verification/negative/effect.go.txt",
+      "functions": [
+        "EffectMissingReceipt"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ],
+      "path": "SIGKILL helper, Start -> ResolveUncertain(accept) -> recordedEffect; asserts fabricated/missing receipts refused"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:drive",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/drive.go",
+      "functions": [
+        "SerializedDriveGenerations"
+      ]
+    },
+    "requirements": [
+      "FAE-ROB-001"
+    ],
+    "production": {
+      "path": "daemon/drive_lifecycle.go",
+      "function": "requestDriveRearm"
+    },
+    "positive": {
+      "tests": [
+        "TestIndependentDriveRetainsInFlightAndDurableBudget",
+        "TestDriveRearmAllStates"
+      ],
+      "note": "A new drive generation is admitted only when no generation is alive or pending."
+    },
+    "firing": {
+      "negative_model": "verification/negative/drive.go.txt",
+      "functions": [
+        "DriveRearmBeforeRetirement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestIndependentDriveRetainsInFlightAndDurableBudget"
+      ],
+      "path": "Start -> Controller(rearm) RPC -> requestDriveRearm; asserts alive rearm does not duplicate a generation"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:resident",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/resident.go",
+      "functions": [
+        "ResidentTurns"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-011"
+    ],
+    "production": {
+      "path": "runtime/resident.go",
+      "function": "Run"
+    },
+    "positive": {
+      "tests": [
+        "TestResidentTwoTurnsSamePaneFreshConfig",
+        "TestResidentInterruptedTurnRetiresOnlyTurn"
+      ],
+      "note": "Each resident turn's process group is retired before the next turn while the worker stays alive."
+    },
+    "firing": {
+      "negative_model": "verification/negative/resident_missing_retirement.go.txt",
+      "functions": [
+        "ResidentMissingRetirement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonResidentSessionsReusePanes"
+      ],
+      "path": "Start (multiplexer adapter, resident_sessions) -> RPC Admit -> drive -> execution.Executor -> ResidentMultiplexer.Run; a second turn of the same role and scope finds its resident entry and passes CanReuseResident, so the Local run of the shipped default keeps fewer resident panes than it ran resident turns"
+    },
+    "status": "native-evidenced",
+    "limits": "Herdr-dependent (skips without herdr); native evidence is the reuse (accept) path, the retirement-required refusal is unit-only."
+  },
+  {
+    "id": "gomela:idle",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/idle.go",
+      "functions": [
+        "IdleRetirement"
+      ]
+    },
+    "requirements": [
+      "FAE-SCH-013",
+      "FAE-SCH-014"
+    ],
+    "production": {
+      "path": "runtime/idle.go",
+      "function": "Round"
+    },
+    "positive": {
+      "tests": [
+        "TestIdleShedsOneAndRetainsHandoff",
+        "TestIdleRetirementFailureRetainsOwnershipAndContext"
+      ],
+      "note": "Handoff persists before retirement; failed retirement keeps ownership and context."
+    },
+    "firing": {
+      "negative_model": "verification/negative/idle_missing_handoff.go.txt",
+      "functions": [
+        "IdleMissingHandoff"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonIdleMaintenanceAuditAndStarvation"
+      ],
+      "path": "Start(multiplexer) -> maintainIdleSessions -> OwnedIdleSessions.Round; asserts handoff retained after shed"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test skips without herdr."
+  },
+  {
+    "id": "gomela:stall",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/stall.go",
+      "functions": [
+        "StallRetirementBeforeRetry"
+      ]
+    },
+    "requirements": [
+      "FAE-RT-005",
+      "FAE-ROB-017"
+    ],
+    "production": {
+      "path": "execution/executor.go",
+      "function": "Execute"
+    },
+    "positive": {
+      "tests": [
+        "TestStallReplayRequiresContractRetirementAndTree",
+        "TestStallRecordsTimeoutHealth"
+      ],
+      "note": "Replacement only after old worker retirement; retry class recorded with timeout health."
+    },
+    "firing": {
+      "negative_model": "verification/negative/stall.go.txt",
+      "functions": [
+        "StallMissingRetirement"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonStallCounterSurvivesDrainRestart"
+      ],
+      "path": "Start(live) -> drive -> Executor.Execute; asserts durable stall-recovery counter and no leaked leases"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:claude-turn",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "provider/claude_guard.go"
+    },
+    "requirements": [
+      "FAE-SEC-002"
+    ],
+    "production": {
+      "path": "provider/claude_guard.go",
+      "function": "CanAcceptClaudeTurn",
+      "call_sites": [
+        {
+          "path": "provider/claude.go",
+          "function": "finish"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestClaudeBridgeSubprocess",
+        "TestClaudeStreamChunkingAndBounds",
+        "TestClaudePersistentSessionResumeAndRotation"
+      ],
+      "note": "A Claude Code turn is accepted only with one announced session, a StructuredOutput-only tool surface, no MCP servers and one successful structured result for that session."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return identity && surface && outcome",
+        "weakened": "return identity && outcome"
+      },
+      "refusal_tests": [
+        "TestClaudeBridgeRefusesUnsafeOrIncompleteTurns"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonClaudeProviderPath"
+      ],
+      "path": "Start -> drive -> dispatchTask -> liveExecutor.Execute -> runtime Direct launches the bridge (this test binary running the production provider.Run with the Claude protocol over a scripted CLI) -> claude turn finish -> CanAcceptClaudeTurn: two workflow-global intake turns are accepted and the tasks reach Done; a turn whose CLI announces a Bash tool is not accepted, the task parks UncertainDispatch with no evidence"
+    },
+    "status": "native-evidenced",
+    "limits": "The daemon test uses a scripted Claude CLI behind the production provider code, not the fae-claude-bridge binary or a real provider. The native refusal shows only the outcome (a failed bridge, parked turn); the refusal reason is asserted by the bridge-level tests. Tool-surface acceptance checks the CLI's announced init record, not an OS sandbox."
+  },
+  {
+    "id": "gobra:pressure-hold",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "hostguard/hold_guard.go"
+    },
+    "requirements": [
+      "FAE-HOST-005",
+      "FAE-HOST-010"
+    ],
+    "production": {
+      "path": "hostguard/hold_guard.go",
+      "function": "CanLiftPressureHold",
+      "call_sites": [
+        {
+          "path": "hostguard/hold.go",
+          "function": "Record"
+        },
+        {
+          "path": "hostguard/guard.go",
+          "function": "PressureClear"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestIOGateChainContinuity",
+        "TestLiveAdmissionPressureHoldLiftsOnlyOnTwoReadings",
+        "TestHoldPolicyValidationAndGuard"
+      ],
+      "note": "A pressure hold or I/O gate lifts only after two strictly-below readings at least the policy window apart with no disqualifying reading or over-long silence between them."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return firstBelow && secondBelow && spaced && unbroken",
+        "weakened": "return firstBelow && secondBelow && unbroken"
+      },
+      "refusal_tests": [
+        "TestPressureHoldSecondReadingAboveThresholdKeepsHold",
+        "TestPressureHoldReadingsUnderThirtySecondsDoNotLift"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start -> drive -> liveExecutor HostCommand/VcsCommit/Integrate -> liveAdmission.Acquire -> waitIOGate -> hostguard.Wait -> Hold.Record -> CanLiftPressureHold -> CanEnqueueHeavyLease -> heavy lease Enqueue"
+    },
+    "status": "native-evidenced",
+    "limits": "The daemon test binary scales the policy window to 30 ms (live_admission_pressure_test.go init); production uses the 30 s default asserted by TestPressureGuardAndProductionPolicy. Native path is accept-only with low real PSI; refusal is unit-level and injected-clock daemon-level."
+  },
+  {
+    "id": "gobra:heavy-lease",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/pressure_guard.go"
+    },
+    "requirements": [
+      "FAE-HOST-010"
+    ],
+    "production": {
+      "path": "daemon/pressure_guard.go",
+      "function": "CanEnqueueHeavyLease",
+      "call_sites": [
+        {
+          "path": "daemon/live_admission.go",
+          "function": "acquire"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestLiveAdmissionIOGatePassesBeforeHeavyLeaseEnqueue",
+        "TestPressureGuardAndProductionPolicy"
+      ],
+      "note": "Host-heavy primitives (HostCommand, VcsCommit, Integrate) join the heavy-op lease queue only after the two-reading I/O gate passed; other primitives are unaffected."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !hostHeavy || ioGatePassed",
+        "weakened": "return true"
+      },
+      "refusal_tests": [
+        "TestLiveAdmissionIOGatePressureAndWaitingRefusalsTakeNoLease"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDaemonLiveEffectsLifecycle"
+      ],
+      "path": "Start -> drive -> liveExecutor HostCommand/VcsCommit/Integrate -> liveAdmission.Acquire -> waitIOGate -> hostguard.Wait -> Hold.Record -> CanLiftPressureHold -> CanEnqueueHeavyLease -> heavy lease Enqueue"
+    },
+    "status": "native-evidenced",
+    "limits": "In production the gate refusal returns before the guard is reached, so the guard is a defense-in-depth ordering check; the weakened mutation is caught formally and by the guard truth-table test, not by a behavioural daemon test."
+  }
+]

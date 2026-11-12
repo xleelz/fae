@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,24 +30,24 @@ proctype MissingPaneUpdateAcknowledgment3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousMissingPaneUpdateAcknowledgment650 = [1] of {int}->
+	chan child_AnonymousMissingPaneUpdateAcknowledgment640 = [1] of {int}->
 	Chandef done_ch->
 	Chandef updated_ch->
 	run sync_monitor(updated_ch)->
 	run sync_monitor(done_ch)->
-	run AnonymousMissingPaneUpdateAcknowledgment65(done_ch,updated_ch,child_AnonymousMissingPaneUpdateAcknowledgment650)->
-	run receiver(child_AnonymousMissingPaneUpdateAcknowledgment650)->
+	run AnonymousMissingPaneUpdateAcknowledgment64(updated_ch,done_ch,child_AnonymousMissingPaneUpdateAcknowledgment640)->
+	run receiver(child_AnonymousMissingPaneUpdateAcknowledgment640)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:7:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:7:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:7:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:7:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:7:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:7:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousMissingPaneUpdateAcknowledgment65(Chandef done_ch;Chandef updated_ch;chan child) {
+proctype AnonymousMissingPaneUpdateAcknowledgment64(Chandef updated_ch;Chandef done_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -55,19 +55,19 @@ proctype AnonymousMissingPaneUpdateAcknowledgment65(Chandef done_ch;Chandef upda
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:6:13 */
-	:: updated_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:6:13 */->
-	:: updated_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:6:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:6:13 */
+	:: updated_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:6:13 */->
+	:: updated_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:6:13 */ -> 
 		updated_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:6:23 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:6:23 */
 	:: done_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:6:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:6:23 */
 	:: done_ch.sync!false -> 
 		done_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/dynamic_panes.go:6:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/dynamic_panes.go:6:23 */
 	fi->
 	stop_process: skip->
 	child!0

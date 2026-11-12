@@ -25,7 +25,7 @@ func TestLeaseValidationBeforeSQL(t *testing.T) {
 func TestCorruptSQLLeaseLedgerFailsClosed(t *testing.T) {
 	s, m := fixture(t, 1)
 	m.ExpectBegin()
-	m.ExpectQuery("SELECT version,payload").WillReturnRows(sqlmock.NewRows([]string{"version", "payload"}).AddRow(1, `{"Capacity":-1}`))
+	m.ExpectQuery("SELECT version,payload").WillReturnRows(sqlmock.NewRows([]string{"version", "payload", "kind"}).AddRow(1, `{"Capacity":-1}`, "role"))
 	m.ExpectRollback()
 	if _, e := s.AdvanceLeases(context.Background(), audit(), "x", time.Now(), map[scheduler.Owner]scheduler.Liveness{}); e == nil {
 		t.Fatal("corrupt pool admitted")
@@ -36,7 +36,7 @@ func TestLeaseSQLCASFailureRollsBackAudit(t *testing.T) {
 	p, _ := scheduler.NewPool(2)
 	b, _ := json.Marshal(p)
 	m.ExpectBegin()
-	m.ExpectQuery("SELECT version,payload").WillReturnRows(sqlmock.NewRows([]string{"version", "payload"}).AddRow(1, string(b)))
+	m.ExpectQuery("SELECT version,payload").WillReturnRows(sqlmock.NewRows([]string{"version", "payload", "kind"}).AddRow(1, string(b), "role"))
 	m.ExpectExec("UPDATE resource_pools").WillReturnResult(sqlmock.NewResult(0, 0))
 	m.ExpectRollback()
 	if e := s.EnqueueLease(context.Background(), audit(), "x", scheduler.Request{ID: "r", Owner: scheduler.Owner{PID: 1, Started: 1}, Weight: 1, Queued: time.Now()}); e != ErrConflict {

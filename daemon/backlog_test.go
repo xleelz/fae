@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/xleelz/fae/controller"
 	"github.com/xleelz/fae/controlplane"
@@ -12,6 +13,8 @@ import (
 	"github.com/xleelz/fae/domain"
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/workflow"
+	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -189,6 +192,7 @@ func TestBacklogNativeDoneReconcileNoopDryRunAndMissingSHA(t *testing.T) {
 		s := d.jobs[id]
 		var e envelope
 		_ = decodeEnvelope(s.Payload, &e)
+		e.Job.History = append(e.Job.History, engine.Event{Kind: "transition", Stage: "Pending", From: domain.Pending, To: domain.Done, Attempt: 1, Cause: "fixture"})
 		e.Job.State = domain.Done
 		e.Job.ExecutionKind = "live"
 		s.State = "Done"
@@ -285,7 +289,7 @@ func TestBacklogUncertainReadbackBarrier(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	d := &Daemon{store: controlplane.New(db, controlplane.Options{}), backlogUncertain: true, jobs: map[string]controlplane.JobSnapshot{"old": {ID: "old"}}}
+	d := &Daemon{store: controlplane.New(db, controlplane.Options{}), backlogUncertain: true, backlogUncertainIDs: []string{"old"}, jobs: map[string]controlplane.JobSnapshot{"old": {ID: "old"}}}
 	m.ExpectQuery("SELECT job_id").WillReturnError(errors.New("plane unavailable"))
 	if err = d.reconcileBacklogCheckpoint(context.Background()); err == nil || !d.backlogUncertain || len(d.jobs) != 1 {
 		t.Fatal("unknown checkpoint escaped barrier", err)
@@ -413,4 +417,138 @@ func TestBacklogUnknownCommitBlocksDrainAndDeployment(t *testing.T) {
 	if !d.status.Load().(statusSnapshot).Drained {
 		t.Fatal("resolved empty daemon not drained")
 	}
+}
+
+// FAE-CLI-014/-015/-016: structured item fields are validated and pinned; an
+// edge edit reports its computed readiness effect; backlog show reports a
+// dead edge with its prerequisite's outcome.
+func TestBacklogStructuredFieldsReadinessEffectAndDeadEdges(t *testing.T) {
+	cfg, ctx := fixture(t)
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, d) }()
+	authorize(t, d)
+	awaitDrive(t, d, true, 1)
+	d.driveStop.Store(true)
+	d.signal()
+	awaitDrive(t, d, false, 1)
+	item := func(id string) BacklogItemParams {
+		return BacklogItemParams{AdmitParams: AdmitParams{ID: id, Tree: "tree", Priority: 10, Content: "accept " + id}}
+	}
+	dep := item("dep")
+	dep.DeclaredFiles, dep.TestFilter, dep.TestShape = []string{"pkg/a.go", "pkg/a_test.go"}, "^TestA$", "go-unit"
+	for _, bad := range []func(*BacklogItemParams){
+		func(i *BacklogItemParams) { i.DeclaredFiles = []string{"../escape.go"} },
+		func(i *BacklogItemParams) { i.DeclaredFiles = []string{"/abs.go"} },
+		func(i *BacklogItemParams) { i.DeclaredFiles = []string{"a.go", "a.go"} },
+		func(i *BacklogItemParams) { i.TestFilter = "(" },
+		func(i *BacklogItemParams) { i.TestShape = "bogus" },
+	} {
+		wrong := dep
+		bad(&wrong)
+		if _, err = call(t, d, "BacklogAdmit", BacklogParams{Items: []BacklogItemParams{item("p"), wrong}, AuthorizingMessage: "message"}, ""); err == nil || len(d.jobs) != 0 {
+			t.Fatalf("invalid structured fields accepted: %+v %v", wrong, err)
+		}
+	}
+	if _, err = call(t, d, "BacklogAdmit", BacklogParams{Items: []BacklogItemParams{item("p"), dep}, AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	var e envelope
+	if err = decodeEnvelope(d.jobs["dep"].Payload, &e); err != nil || !reflect.DeepEqual(e.Admission.DeclaredFiles, dep.DeclaredFiles) || e.Admission.TestFilter != "^TestA$" || e.Admission.TestShape != "go-unit" {
+		t.Fatal("structured fields not pinned", e.Admission, err)
+	}
+	edge := controlplane.BacklogEdge{From: "p", To: "dep", Kind: "blocking"}
+	effect := func(remove bool) map[string]any {
+		t.Helper()
+		r, err := call(t, d, "BacklogEdge", BacklogEdgeParams{BacklogEdge: edge, Remove: remove, AuthorizingMessage: "message"}, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		var out struct {
+			Effect map[string]any `json:"readiness_effect"`
+		}
+		if err = json.Unmarshal(r.Result, &out); err != nil {
+			t.Fatal(err)
+		}
+		return out.Effect
+	}
+	if got := effect(false); got["effect"] != "dependent now withheld" || got["dependent"] != "dep" || got["before"].(map[string]any)["ready"] != true || len(got["after"].(map[string]any)["withheld_by"].([]any)) != 1 {
+		t.Fatal("add effect", got)
+	}
+	if got := effect(true); got["effect"] != "dependent now releasable" || got["after"].(map[string]any)["ready"] != true {
+		t.Fatal("remove effect", got)
+	}
+	if got := effect(false); got["effect"] != "dependent now withheld" {
+		t.Fatal(got)
+	}
+	if _, err = call(t, d, "Cancel", TaskControlParams{ID: "p", Reason: "dropped", AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	r, err := call(t, d, "BacklogShow", map[string]string{}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var shown struct {
+		Ready    []string            `json:"ready"`
+		Withheld map[string][]string `json:"withheld"`
+		Dead     []struct {
+			Edge    controlplane.BacklogEdge `json:"edge"`
+			Outcome string                   `json:"prerequisite_outcome"`
+		} `json:"dead_edges"`
+	}
+	if err = json.Unmarshal(r.Result, &shown); err != nil || len(shown.Dead) != 1 || shown.Dead[0].Edge != edge || shown.Dead[0].Outcome != "Cancelled" || len(shown.Withheld["dep"]) != 1 || slices.Contains(shown.Ready, "dep") {
+		t.Fatalf("dead edge %s %v", r.Result, err)
+	}
+}
+
+// FAE-ROB-040 acceptance: an acceptance edit through the audited backlog verb
+// reaches the next composed brief, with its digest, without a restart; the
+// turn already in flight keeps the text it was dispatched with.
+func TestAcceptanceEditReachesNextBriefOnly(t *testing.T) {
+	cfg, ctx := fixture(t)
+	cfg.Executor = engine.NewScripted(map[string][]engine.ScriptStep{"work": {{Output: json.RawMessage(`{"ok":true}`), Delay: 2 * time.Second}}})
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, d) }()
+	authorize(t, d)
+	doc := shortWorkflow()
+	if _, err = call(t, d, "WorkflowInstall", InstallParams{ID: doc.ID, Document: doc, AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	admit := func(content string) error {
+		_, err := call(t, d, "BacklogAdmit", BacklogParams{Items: []BacklogItemParams{{AdmitParams: AdmitParams{ID: "edited", WorkflowID: doc.ID, Tree: "tree", Priority: 10, Content: content}}}, AuthorizingMessage: "message"}, "")
+		return err
+	}
+	if err = admit("first acceptance"); err != nil {
+		t.Fatal(err)
+	}
+	awaitInFlight(t, d, "edited", "work")
+	if err = admit("second acceptance"); err != nil {
+		t.Fatal("acceptance edit after dispatch refused", err)
+	}
+	d.mu.Lock()
+	var e envelope
+	err = decodeEnvelope(d.jobs["edited"].Payload, &e)
+	d.mu.Unlock()
+	if err != nil || e.Job.InFlight == nil || e.Admission.Content != "second acceptance" {
+		t.Fatal("edit not durable", err, e.Admission.Content)
+	}
+	if flight := acceptanceContext(e, *e.Job.InFlight); !strings.Contains(flight, "first acceptance") || strings.Contains(flight, "second") {
+		t.Fatal("in-flight turn saw the edit", flight)
+	}
+	next := *e.Job.InFlight
+	next.ID = fmt.Sprintf("%s/%s/%d", e.Job.TaskID, e.Job.WorkflowHash, e.Job.Sequence+1)
+	digest := controlplane.Digest([]byte("second acceptance"))
+	if brief := acceptanceContext(e, next); !strings.Contains(brief, "second acceptance") || !strings.Contains(brief, digest) || strings.Contains(brief, "first") {
+		t.Fatal("next brief lacks the edited acceptance and its digest", brief)
+	}
+	g, err := d.store.Backlog(ctx)
+	if err != nil || len(g.Items) != 1 || g.Items[0].AcceptanceDigest != digest {
+		t.Fatal("backlog acceptance digest", g.Items, err)
+	}
+	awaitState(t, d, "edited", "Done")
 }

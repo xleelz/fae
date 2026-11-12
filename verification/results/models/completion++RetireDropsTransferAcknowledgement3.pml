@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,7 +30,7 @@ proctype RetireDropsTransferAcknowledgement3(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousRetireDropsTransferAcknowledgement841 = [1] of {int}->
+	chan child_AnonymousRetireDropsTransferAcknowledgement861 = [1] of {int}->
 	chan child_AnonymousRetireDropsTransferAcknowledgement740 = [1] of {int}->
 	Chandef retired_ch->
 	Chandef ack_ch->
@@ -40,13 +40,13 @@ proctype RetireDropsTransferAcknowledgement3(chan child) {
 	run sync_monitor(retired_ch)->
 	run AnonymousRetireDropsTransferAcknowledgement74(edges_ch,ack_ch,retired_ch,child_AnonymousRetireDropsTransferAcknowledgement740)->
 	run receiver(child_AnonymousRetireDropsTransferAcknowledgement740)->
-	run AnonymousRetireDropsTransferAcknowledgement84(edges_ch,ack_ch,retired_ch,child_AnonymousRetireDropsTransferAcknowledgement841)->
-	run receiver(child_AnonymousRetireDropsTransferAcknowledgement841)->
+	run AnonymousRetireDropsTransferAcknowledgement86(retired_ch,edges_ch,ack_ch,child_AnonymousRetireDropsTransferAcknowledgement861)->
+	run receiver(child_AnonymousRetireDropsTransferAcknowledgement861)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:9:2 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:9:2 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:9:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:9:2 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:9:2 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:9:2 */ -> 
 		retired_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -60,26 +60,26 @@ proctype AnonymousRetireDropsTransferAcknowledgement74(Chandef edges_ch;Chandef 
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:7:13 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:7:13 */
 	:: edges_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:7:13 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:7:13 */
 	:: edges_ch.sync!false -> 
 		edges_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:7:13 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:7:13 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:7:23 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:7:23 */
 	:: retired_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:7:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:7:23 */
 	:: retired_ch.sync!false -> 
 		retired_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:7:23 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:7:23 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetireDropsTransferAcknowledgement84(Chandef edges_ch;Chandef ack_ch;Chandef retired_ch;chan child) {
+proctype AnonymousRetireDropsTransferAcknowledgement86(Chandef retired_ch;Chandef edges_ch;Chandef ack_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -87,19 +87,19 @@ proctype AnonymousRetireDropsTransferAcknowledgement84(Chandef edges_ch;Chandef 
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:8:13 */
-	:: edges_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:8:13 */->
-	:: edges_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:8:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:8:13 */
+	:: edges_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:8:13 */->
+	:: edges_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:8:13 */ -> 
 		edges_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:8:22 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:8:22 */
 	:: ack_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:8:22 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:8:22 */
 	:: ack_ch.sync!false -> 
 		ack_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/retirement.go:8:22 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/retirement.go:8:22 */
 	fi->
 	stop_process: skip->
 	child!0

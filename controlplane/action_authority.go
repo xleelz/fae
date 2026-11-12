@@ -60,6 +60,9 @@ func (s *Store) AuthorizeAction(ctx context.Context, id, actor, verb, class stri
 	if actor != "operator" && !directed {
 		return ctx, errors.New("operator message does not explicitly direct this action")
 	}
+	if class == "capacity" && actor != "operator" && (actor != "controller" || !includes(msg.Authorize.Classes, "capacity")) {
+		return ctx, errors.New("workflow limit requires an explicit capacity class grant")
+	}
 	consumption := msg.Authorize
 	if len(verbClasses) > 0 {
 		for _, v := range msg.Authorize.Verbs {

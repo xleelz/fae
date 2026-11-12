@@ -1,0 +1,1224 @@
+[
+  {
+    "id": "gobra:census",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/census_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-041"
+    ],
+    "production": {
+      "path": "daemon/census_guard.go",
+      "function": "CanApplyCensus",
+      "call_sites": [
+        {
+          "path": "daemon/task_controls.go",
+          "function": "taskControl"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCensusArtifactRefusalControls",
+        "TestCensusNativeTenAuditedRowsAndStaleRefusal"
+      ],
+      "note": "Truth table; ten unchanged census rows retire exactly once through the audited Retire path."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return versionMatches && digestMatches",
+        "weakened": "return versionMatches"
+      },
+      "refusal_tests": [
+        "TestCensusArtifactRefusalControls",
+        "TestCensusNativeTenAuditedRowsAndStaleRefusal"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCensusNativeTenAuditedRowsAndStaleRefusal"
+      ],
+      "path": "Start -> RPC CensusApply -> handleDirect -> censusApply -> handleDirect(Retire) -> taskControl -> CanApplyCensus; stale row version refused"
+    },
+    "status": "native-evidenced",
+    "limits": "Checks snapshot version/digest only; classification evidence (FAE-CTL-040) is validated elsewhere."
+  },
+  {
+    "id": "gobra:cleanup",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "worktree/cleanup_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-042",
+      "FAE-CP-013"
+    ],
+    "production": {
+      "path": "worktree/cleanup_guard.go",
+      "function": "CanCleanupArchived",
+      "call_sites": [
+        {
+          "path": "worktree/cleanup.go",
+          "function": "archiveCleanup"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCleanupGuardTruthTable",
+        "TestCleanupArchivesEveryCommitAndRepeats",
+        "TestCleanupNativeBackupRetiredAndRestart"
+      ],
+      "note": "Truth table; archive ref covering every commit is verified before worktree/branch removal."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return archiveMatches && backupVerified",
+        "weakened": "return archiveMatches"
+      },
+      "refusal_tests": [
+        "TestCleanupGuardTruthTable",
+        "TestCleanupFailuresPreserveWorktreeAndBranch"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCleanupNativeBackupRetiredAndRestart"
+      ],
+      "path": "Start -> Daemon.cleanupRetired (direct call on started daemon) -> worktree.Manager.ArchiveCleanup/Cleanup -> archiveCleanup -> CanCleanupArchived; accept path removes retired worktree"
+    },
+    "status": "native-evidenced",
+    "limits": "Native test reaches the guard on the accept path; its backup-failure refusal is decided by the verify callback before the guard."
+  },
+  {
+    "id": "gobra:adapter",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/adapter_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-002"
+    ],
+    "production": {
+      "path": "daemon/adapter_guard.go",
+      "function": "AdapterBindingValid",
+      "call_sites": [
+        {
+          "path": "daemon/adapter.go",
+          "function": "resolveAdapter"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestAdapterGuard",
+        "TestAdapterNativeInstallRestartAndFailures"
+      ],
+      "note": "Truth table; exact installed revision/hash resolves before and after restart."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return revisionMatches && hashMatches",
+        "weakened": "return revisionMatches"
+      },
+      "refusal_tests": [
+        "TestAdapterGuard",
+        "TestAdapterNativeInstallRestartAndFailures"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestAdapterNativeInstallRestartAndFailures",
+        "TestDynamicAdapterExternalExecution"
+      ],
+      "path": "Start -> Daemon.resolveAdapter (direct; wrong hash refused); TestDynamicAdapterExternalExecution: Start -> liveExecutor.Execute -> liveForTask -> liveForTarget -> resolveAdapter -> AdapterBindingValid"
+    },
+    "status": "native-evidenced",
+    "limits": "Supports EXT-002 only as pinning of the installed tool descriptor (endpoint, tool, static arguments); role-argument validation is elsewhere."
+  },
+  {
+    "id": "gobra:review-workspace",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/review_workspace_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-015",
+      "FAE-EXT-016"
+    ],
+    "production": {
+      "path": "daemon/review_workspace_guard.go",
+      "function": "CanPrepareReviewWorkspace",
+      "call_sites": [
+        {
+          "path": "daemon/review_workspace.go",
+          "function": "prepareReviewWorkspace"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestReviewWorkspaceGuard",
+        "TestReviewWorkspaceNativePrepareRestartAndEffects"
+      ],
+      "note": "Truth table; approved package policy with exact planned workspace/branch binding reaches ready."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return approvedPackage && exactBinding",
+        "weakened": "return approvedPackage"
+      },
+      "refusal_tests": [
+        "TestReviewWorkspaceGuard",
+        "TestReviewWorkspaceNativePrepareRestartAndEffects"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReviewWorkspaceNativePrepareRestartAndEffects"
+      ],
+      "path": "Start -> RPC ReviewWorkspacePrepare -> handleDirect -> reviewWorkspaceRPC -> prepareReviewWorkspace -> CanPrepareReviewWorkspace; foreign run binding refused before adapter read, exact binding reaches ready"
+    },
+    "status": "native-evidenced",
+    "limits": "Guard checks the operator-approved baseline flag and exact binding; red/green baseline evaluation is in checkReviewTarget, not this predicate."
+  },
+  {
+    "id": "gobra:scratch",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/scratch_guard.go"
+    },
+    "requirements": [
+      "FAE-CTL-043",
+      "FAE-CP-013"
+    ],
+    "production": {
+      "path": "daemon/scratch_guard.go",
+      "function": "CanRemoveScratch",
+      "call_sites": [
+        {
+          "path": "daemon/scratch_cleanup.go",
+          "function": "CleanupScratch"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestScratchGuardAndOwnership",
+        "TestScratchNativeStopBackupCleanupAndRepeat"
+      ],
+      "note": "Truth table; marked scratch instance is stopped, backed up and removed, and the repeat is idempotent."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return marked && backedUp",
+        "weakened": "return marked"
+      },
+      "refusal_tests": [
+        "TestScratchGuardAndOwnership",
+        "TestScratchNativeFailedBackupDoesNotDelete"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestScratchNativeStopBackupCleanupAndRepeat"
+      ],
+      "path": "Start (scratch instance) -> CleanupScratch (operator path used by cmd/fae cleanup) -> CanRemoveScratch; root removed only after verified backup"
+    },
+    "status": "native-evidenced",
+    "limits": "Call site passes marked=true (marker checked earlier); failed-backup refusal is decided before the predicate."
+  },
+  {
+    "id": "gobra:adapter-retirement",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "controlplane/adapter_retirement_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Adapter-registry tombstones extend configurable Normal adapters; FAE-WF-002 specifies tombstone semantics for workflow revisions only and no requirement covers adapter retirement.",
+    "production": {
+      "path": "controlplane/adapter_retirement_guard.go",
+      "function": "AdapterAcceptsBinding",
+      "call_sites": [
+        {
+          "path": "controlplane/adapter_retirement.go",
+          "function": "adapterActiveTx"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestAdapterRetirementGuard",
+        "TestAdapterRetirementNativeTombstone"
+      ],
+      "note": "Truth table; an active adapter accepts install/bindings until tombstoned."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !retired",
+        "weakened": "return true"
+      },
+      "refusal_tests": [
+        "TestAdapterRetirementGuard",
+        "TestAdapterRetiredInstallRefused",
+        "TestNewJobAdapterRetirementAtTransactionBoundary"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestAdapterRetirementNativeTombstone",
+        "TestAdapterRetirementNativeDiscoveryRaceAndBoundRestart"
+      ],
+      "path": "Start -> RPC AdapterRetire, then RPC AdapterPut -> handleDirect -> adapterInstallRPC -> putAdapter -> Store.WriteAdapter -> adapterActiveTx -> AdapterAcceptsBinding; retired install refused"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:fleet-provision",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/fleet_provision_guard.go"
+    },
+    "requirements": [
+      "FAE-EXT-016"
+    ],
+    "production": {
+      "path": "daemon/fleet_provision_guard.go",
+      "function": "CanFinishFleetProvision",
+      "call_sites": [
+        {
+          "path": "daemon/review_workspace.go",
+          "function": "prepareReviewWorkspace"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestFleetProvisionGuard",
+        "TestFleetProvisionNativeLostAckRetireRestartAdopt"
+      ],
+      "note": "Truth table; ready is published only after the adopted provisioning receipt and green baseline."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return attemptRecorded && receiptMatched && baselineGreen",
+        "weakened": "return attemptRecorded && baselineGreen"
+      },
+      "refusal_tests": [
+        "TestFleetProvisionGuard",
+        "TestFleetProvisionPinsAndReceipt"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestFleetProvisionNativeLostAckRetireRestartAdopt"
+      ],
+      "path": "Start -> RPC ReviewWorkspacePrepare -> handleDirect -> reviewWorkspaceRPC -> prepareReviewWorkspace -> CanFinishFleetProvision; ready only after receipt adoption"
+    },
+    "status": "native-evidenced",
+    "limits": "baselineGreen is err==nil after an earlier error return, so red baselines are refused before the predicate; receipt protocol is an operator-requested extension."
+  },
+  {
+    "id": "gobra:backup-retention",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/backup_retention_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Plane-backup pruning is an operator-requested extension of the FAE-CP-013 backup prerequisite (daemon/BACKUPS.md); no requirement specifies backup retention.",
+    "production": {
+      "path": "daemon/backup_retention_guard.go",
+      "function": "CanPruneBackup",
+      "call_sites": [
+        {
+          "path": "daemon/backup_retention.go",
+          "function": "backupRetention"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestBackupRetentionGuardAndBounds",
+        "TestBackupRetentionCoverageAndApply",
+        "TestBackupRetentionNativeVerifiedBackups"
+      ],
+      "note": "Truth table; reviewed plan prunes only verified unprotected backups."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return verified && !protected && planMatches",
+        "weakened": "return verified && planMatches"
+      },
+      "refusal_tests": [
+        "TestBackupRetentionGuardAndBounds",
+        "TestBackupRetentionFailClosed"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupRetentionNativeVerifiedBackups",
+        "TestBackupRetentionNativeHistoricalCoverage"
+      ],
+      "path": "Start -> RPC BackupRetention (apply) -> handleDirect -> backupRetentionRPC -> backupRetention -> CanPruneBackup"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:backup-replication",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/backup_replication_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Remote backup replication is an operator-requested extension (daemon/BACKUPS.md); no requirement specifies it.",
+    "production": {
+      "path": "daemon/backup_replication_guard.go",
+      "function": "CanConfirmBackupReplication",
+      "call_sites": [
+        {
+          "path": "daemon/backup_replication.go",
+          "function": "backupReplicate"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestBackupReplicationGuardAndEndpoint",
+        "TestBackupReplicationNativeLostAckRestartAndProofs"
+      ],
+      "note": "Truth table; matching receipt plus fetched content confirms replication."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return identityMatched && contentMatched",
+        "weakened": "return identityMatched"
+      },
+      "refusal_tests": [
+        "TestBackupReplicationGuardAndEndpoint",
+        "TestBackupReplicationNativeLostAckRestartAndProofs"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupReplicationNativeLostAckRestartAndProofs"
+      ],
+      "path": "Start -> RPC BackupReplicate -> handleDirect -> backupReplicateRPC -> backupReplicate -> CanConfirmBackupReplication; corrupt/oversized remote content refused, valid proof confirmed"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:retention-schedule",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/retention_schedule_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Recurring backup retention is an operator-requested extension; FAE-CLI-022 schedules cover cron/loop work items, not backup maintenance.",
+    "production": {
+      "path": "daemon/retention_schedule_guard.go",
+      "function": "CanRunRetentionSchedule",
+      "call_sites": [
+        {
+          "path": "daemon/retention_schedule.go",
+          "function": "tickRetentionSchedule"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestRetentionScheduleGuard",
+        "TestRetentionScheduleNativeLifecycleAndRestart"
+      ],
+      "note": "Truth table; active, due, authorized schedule runs exactly one prune per occurrence."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return active && due && authorized",
+        "weakened": "return active && due"
+      },
+      "refusal_tests": [
+        "TestRetentionScheduleGuard",
+        "TestRetentionScheduleNativeAuthorityAndBusy"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestRetentionScheduleNativeBackground",
+        "TestRetentionScheduleNativeAuthorityAndBusy"
+      ],
+      "path": "Start -> maintainRetentionSchedule goroutine -> tickRetentionSchedule -> CanRunRetentionSchedule; AuthorityAndBusy calls tickRetentionSchedule on a started daemon and asserts expired/missing grant blocks without deletion"
+    },
+    "status": "native-evidenced",
+    "limits": "Call site pre-checks active/due; only the authority input varies at the predicate."
+  },
+  {
+    "id": "gobra:scratch-archive",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/scratch_archive_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Removal of redundant duplicate scratch archives is an operator-requested extension after FAE-CTL-043 cleanup; no requirement specifies archive deduplication.",
+    "production": {
+      "path": "daemon/scratch_archive_guard.go",
+      "function": "CanRemoveScratchArchive",
+      "call_sites": [
+        {
+          "path": "daemon/scratch_archive.go",
+          "function": "scratchArchiveJournal"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestScratchArchiveGuard",
+        "TestScratchArchiveNativeBackupPreservationAndRestart"
+      ],
+      "note": "Truth table; a redundant duplicate archive is removed while the canonical journal copy survives."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return completedJournal && exactSurvivor && unreferencedSource",
+        "weakened": "return completedJournal && exactSurvivor"
+      },
+      "refusal_tests": [
+        "TestScratchArchiveGuard",
+        "TestScratchArchiveRefusalsAndStalePlan"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestScratchArchiveNativeBackupPreservationAndRestart"
+      ],
+      "path": "Start (scratch instance) -> CleanupScratch -> CleanupScratchArchive (operator path used by cmd/fae) -> scratchArchiveJournal -> CanRemoveScratchArchive"
+    },
+    "status": "native-evidenced",
+    "limits": "Archive removal is an offline operator function run after the native scratch daemon is stopped."
+  },
+  {
+    "id": "gobra:backup-schedule",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/backup_schedule_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Recurring backup creation is an operator-requested extension; FAE-CLI-022 schedules cover cron/loop work items, not backup maintenance.",
+    "production": {
+      "path": "daemon/backup_schedule_guard.go",
+      "function": "CanRunBackupSchedule",
+      "call_sites": [
+        {
+          "path": "daemon/backup_schedule.go",
+          "function": "tickBackupSchedule"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestBackupScheduleGuard",
+        "TestBackupScheduleNativeLifecycleRestart"
+      ],
+      "note": "Truth table; due authorized schedule creates one verified backup per occurrence."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return active && due && authorized",
+        "weakened": "return active && due"
+      },
+      "refusal_tests": [
+        "TestBackupScheduleGuard"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupScheduleNativeBackground",
+        "TestBackupScheduleNativeLifecycleRestart"
+      ],
+      "path": "Start -> maintainBackupSchedule goroutine -> tickBackupSchedule -> CanRunBackupSchedule; LifecycleRestart calls tickBackupSchedule on a started daemon"
+    },
+    "status": "native-evidenced",
+    "limits": "Call site pre-checks active/due; no native test identified that asserts an authority refusal at this predicate."
+  },
+  {
+    "id": "gobra:replication-schedule",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/replication_schedule_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Recurring backup replication is an operator-requested extension; FAE-CLI-022 schedules cover cron/loop work items, not backup maintenance.",
+    "production": {
+      "path": "daemon/replication_schedule_guard.go",
+      "function": "CanRunReplicationSchedule",
+      "call_sites": [
+        {
+          "path": "daemon/replication_schedule.go",
+          "function": "tickReplicationSchedule"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestReplicationScheduleGuard",
+        "TestReplicationScheduleNativeUncertainRestartFairness"
+      ],
+      "note": "Truth table; due authorized schedule claims and replicates the oldest eligible backup."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return active && due && authorized",
+        "weakened": "return active && due"
+      },
+      "refusal_tests": [
+        "TestReplicationScheduleGuard"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReplicationScheduleNativeUncertainRestartFairness"
+      ],
+      "path": "Start -> tickReplicationSchedule (direct call on started daemon) -> CanRunReplicationSchedule"
+    },
+    "status": "native-evidenced",
+    "limits": "Call site pre-checks active/due; no native test identified that asserts an authority refusal at this predicate."
+  },
+  {
+    "id": "gobra:backup-quota",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/backup_quota_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Backup storage quotas are an operator-requested extension (HANDOFF.md); no requirement specifies backup quotas.",
+    "production": {
+      "path": "daemon/backup_quota_guard.go",
+      "function": "CanAdmitBackupStorage",
+      "call_sites": [
+        {
+          "path": "daemon/backup_quota.go",
+          "function": "backupQuotaAdmission"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestBackupQuotaGuardAndAccounting",
+        "TestBackupQuotaNativeCountRestartAndAuthority"
+      ],
+      "note": "Truth table; backup admitted while byte and count limits fit, and after a limit is raised."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return bytesFit && countFit",
+        "weakened": "return bytesFit"
+      },
+      "refusal_tests": [
+        "TestBackupQuotaGuardAndAccounting",
+        "TestBackupQuotaNativeCountRestartAndAuthority",
+        "TestBackupQuotaNativeExportOverrunPreserved"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupQuotaNativeCountRestartAndAuthority",
+        "TestBackupQuotaNativeExportOverrunPreserved"
+      ],
+      "path": "Start -> Daemon.backupPlane (direct call on started daemon) -> backupQuotaAdmission -> CanAdmitBackupStorage; count limit and overrun refuse further backups"
+    },
+    "status": "native-evidenced",
+    "limits": "Admission plus checkpoint enforcement, not a filesystem quota; replication spool bytes use backupQuotaRemaining, not this predicate."
+  },
+  {
+    "id": "gobra:replication-unpin",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/replication_unpin_guard.go"
+    },
+    "requirements": [],
+    "unmapped_reason": "Replication pin release is an operator-requested extension (daemon/BACKUPS.md); no requirement specifies it.",
+    "production": {
+      "path": "daemon/replication_unpin_guard.go",
+      "function": "CanUnpinReplication",
+      "call_sites": [
+        {
+          "path": "daemon/replication_unpin.go",
+          "function": "backupReplicationUnpin"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestReplicationUnpinNativeProofRestartAndClaims"
+      ],
+      "note": "Caller-level only (no direct predicate test): confirmed, remotely verified, unclaimed pin is released without deleting data."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return allConfirmed && remoteVerified && noPendingClaim",
+        "weakened": "return allConfirmed && remoteVerified"
+      },
+      "refusal_tests": [
+        "TestReplicationUnpinNativeProofRestartAndClaims"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReplicationUnpinNativeProofRestartAndClaims"
+      ],
+      "path": "Start -> RPC BackupReplicationUnpin -> handleDirect -> backupReplicationUnpinRPC -> backupReplicationUnpin -> CanUnpinReplication (accept path)"
+    },
+    "status": "native-evidenced",
+    "limits": "No truth-table test. Call site passes remoteVerified=true and reaches the predicate only after earlier refusals (empty outbox, pending claim, bad remote proof); the test's refusals are decided by those checks."
+  },
+  {
+    "id": "gomela:census",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/census.go",
+      "functions": [
+        "CensusSnapshotBeforeRetirement"
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-041"
+    ],
+    "production": {
+      "path": "daemon/census.go",
+      "function": "censusApply"
+    },
+    "positive": {
+      "tests": [
+        "TestCensusNativeTenAuditedRowsAndStaleRefusal"
+      ],
+      "note": "Each reviewed row is snapshot-checked before its audited retirement; stale rows refused."
+    },
+    "firing": {
+      "negative_model": "verification/negative/census.go.txt",
+      "functions": [
+        "CensusRetirementWithoutSnapshot"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCensusNativeTenAuditedRowsAndStaleRefusal"
+      ],
+      "path": "Start -> RPC CensusApply -> censusApply -> handleDirect(Retire) -> taskControl"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:cleanup",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/cleanup.go",
+      "functions": [
+        "CleanupWaitsForBackupAndArchive"
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-042",
+      "FAE-CP-013"
+    ],
+    "production": {
+      "path": "worktree/cleanup.go",
+      "function": "Cleanup"
+    },
+    "positive": {
+      "tests": [
+        "TestCleanupAllArchivesBeforeDeletion",
+        "TestCleanupFailuresPreserveWorktreeAndBranch",
+        "TestCleanupNativeBackupRetiredAndRestart"
+      ],
+      "note": "Every archive is verified before any removal; backup/archive failure deletes nothing."
+    },
+    "firing": {
+      "negative_model": "verification/negative/cleanup.go.txt",
+      "functions": [
+        "CleanupDropsArchiveAcknowledgment"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestCleanupNativeBackupRetiredAndRestart"
+      ],
+      "path": "Start -> Daemon.cleanupRetired -> worktree.Manager.ArchiveCleanup (all) then Cleanup"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:adapter",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/adapter.go",
+      "functions": [
+        "AdapterPinBeforeEffect"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-002"
+    ],
+    "production": {
+      "path": "daemon/adapter.go",
+      "function": "liveForTarget"
+    },
+    "positive": {
+      "tests": [
+        "TestDynamicAdapterExternalExecution",
+        "TestAdapterNativeInstallRestartAndFailures"
+      ],
+      "note": "Effect execution resolves the target's pinned adapter revision before using its tools."
+    },
+    "firing": {
+      "negative_model": "verification/negative/adapter.go.txt",
+      "functions": [
+        "AdapterEffectWithoutPin"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestDynamicAdapterExternalExecution"
+      ],
+      "path": "Start -> liveExecutor.Execute -> liveForTask -> liveForTarget -> resolveAdapter before the external effect"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:review_workspace",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/review_workspace.go",
+      "functions": [
+        "WorkspaceReadyAfterBaseline"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-016"
+    ],
+    "production": {
+      "path": "daemon/review_workspace.go",
+      "function": "prepareReviewWorkspace"
+    },
+    "positive": {
+      "tests": [
+        "TestReviewWorkspaceNativePrepareRestartAndEffects"
+      ],
+      "note": "Red baseline refused; ready published only with green baseline health."
+    },
+    "firing": {
+      "negative_model": "verification/negative/review_workspace.go.txt",
+      "functions": [
+        "WorkspaceReadyWithoutBaseline"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReviewWorkspaceNativePrepareRestartAndEffects"
+      ],
+      "path": "Start -> RPC ReviewWorkspacePrepare -> reviewWorkspaceRPC -> prepareReviewWorkspace"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:scratch",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/scratch.go",
+      "functions": [
+        "ScratchRemovalWaitsForStopAndBackup"
+      ]
+    },
+    "requirements": [
+      "FAE-CTL-043",
+      "FAE-CP-013"
+    ],
+    "production": {
+      "path": "daemon/scratch_cleanup.go",
+      "function": "CleanupScratch"
+    },
+    "positive": {
+      "tests": [
+        "TestScratchNativeStopBackupCleanupAndRepeat",
+        "TestScratchNativeFailedBackupDoesNotDelete"
+      ],
+      "note": "Daemon stop and verified backup precede removal; failed backup deletes nothing."
+    },
+    "firing": {
+      "negative_model": "verification/negative/scratch.go.txt",
+      "functions": [
+        "ScratchRemovalDropsBackupAck"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestScratchNativeStopBackupCleanupAndRepeat",
+        "TestScratchNativeFailedBackupDoesNotDelete"
+      ],
+      "path": "Start (scratch instance) -> CleanupScratch"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:adapter_retirement",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/adapter_retirement.go",
+      "functions": [
+        "AdapterRetirementSerialized"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Adapter-registry tombstones extend configurable Normal adapters; FAE-WF-002 specifies tombstone semantics for workflow revisions only and no requirement covers adapter retirement.",
+    "production": {
+      "path": "controlplane/adapter_retirement.go",
+      "function": "RetireAdapter"
+    },
+    "positive": {
+      "tests": [
+        "TestAdapterRetirementNativeDiscoveryRaceAndBoundRestart",
+        "TestNewJobAdapterRetirementAtTransactionBoundary"
+      ],
+      "note": "Install racing retirement cannot commit a revision after the tombstone; admission rechecks retirement in its transaction."
+    },
+    "firing": {
+      "negative_model": "verification/negative/adapter_retirement.go.txt",
+      "functions": [
+        "AdapterRetirementLeaksBoundary"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestAdapterRetirementNativeDiscoveryRaceAndBoundRestart"
+      ],
+      "path": "Start -> concurrent RPC AdapterPut (blocked in discovery) and RPC AdapterRetire -> Store.RetireAdapter / Store.WriteAdapter -> adapterActiveTx"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:fleet_provision",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/fleet_provision.go",
+      "functions": [
+        "FleetReceiptBeforeBaselineReady"
+      ]
+    },
+    "requirements": [
+      "FAE-EXT-016"
+    ],
+    "production": {
+      "path": "daemon/review_workspace.go",
+      "function": "prepareReviewWorkspace"
+    },
+    "positive": {
+      "tests": [
+        "TestFleetProvisionNativeLostAckRetireRestartAdopt",
+        "TestFleetProvisionPinsAndReceipt"
+      ],
+      "note": "Durable intent and matched receipt precede baseline and ready; lost acknowledgment recovers by query without replay."
+    },
+    "firing": {
+      "negative_model": "verification/negative/fleet_provision.go.txt",
+      "functions": [
+        "FleetReadyWithoutReceipt"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestFleetProvisionNativeLostAckRetireRestartAdopt"
+      ],
+      "path": "Start -> RPC ReviewWorkspacePrepare -> prepareReviewWorkspace -> provisionReviewWorkspace -> checkReviewTarget"
+    },
+    "status": "native-evidenced",
+    "limits": "Fleet provisioning receipts are an operator-requested configurable-adapter extension."
+  },
+  {
+    "id": "gomela:backup_retention",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/backup_retention.go",
+      "functions": [
+        "BackupRetentionRequiresSurvivorAndIdentity"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Plane-backup pruning is an operator-requested extension of the FAE-CP-013 backup prerequisite (daemon/BACKUPS.md); no requirement specifies backup retention.",
+    "production": {
+      "path": "daemon/backup_retention.go",
+      "function": "backupRetention"
+    },
+    "positive": {
+      "tests": [
+        "TestBackupRetentionCoverageAndApply",
+        "TestBackupRetentionFailClosed",
+        "TestBackupRetentionNativeVerifiedBackups"
+      ],
+      "note": "Pruning requires a verified survivor and an unchanged reviewed plan/identity; drift refuses."
+    },
+    "firing": {
+      "negative_model": "verification/negative/backup_retention.go.txt",
+      "functions": [
+        "BackupRetentionDropsSurvivorProof"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupRetentionNativeVerifiedBackups"
+      ],
+      "path": "Start -> RPC BackupRetention -> backupRetentionRPC -> backupRetention"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:backup_replication",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/backup_replication.go",
+      "functions": [
+        "BackupReplicationVerifiesBeforeReceipt"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Remote backup replication is an operator-requested extension (daemon/BACKUPS.md); no requirement specifies it.",
+    "production": {
+      "path": "daemon/backup_replication.go",
+      "function": "backupReplicate"
+    },
+    "positive": {
+      "tests": [
+        "TestBackupReplicationNativeLostAckRestartAndProofs"
+      ],
+      "note": "Durable intent precedes upload; confirmation consumes receipt and fetched content; lost ack recovers by query."
+    },
+    "firing": {
+      "negative_model": "verification/negative/backup_replication.go.txt",
+      "functions": [
+        "BackupReplicationDropsDestinationVerification"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupReplicationNativeLostAckRestartAndProofs"
+      ],
+      "path": "Start -> RPC BackupReplicate -> backupReplicateRPC -> backupReplicate"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:retention_schedule",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/retention_schedule.go",
+      "functions": [
+        "RetentionScheduleClaimsBeforePruning"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Recurring backup retention is an operator-requested extension; FAE-CLI-022 schedules cover cron/loop work items, not backup maintenance.",
+    "production": {
+      "path": "daemon/retention_schedule.go",
+      "function": "tickRetentionSchedule"
+    },
+    "positive": {
+      "tests": [
+        "TestRetentionScheduleNativeLifecycleAndRestart",
+        "TestRetentionScheduleNativeAuthorityAndBusy"
+      ],
+      "note": "Authorized durable claim precedes pruning; an interrupted claim blocks rather than replays."
+    },
+    "firing": {
+      "negative_model": "verification/negative/retention_schedule.go.txt",
+      "functions": [
+        "RetentionScheduleDropsDurableClaim"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestRetentionScheduleNativeLifecycleAndRestart"
+      ],
+      "path": "Start -> tickRetentionSchedule (direct on started daemon), restart with a persisted claim"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:scratch_archive",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/scratch_archive.go",
+      "functions": [
+        "ScratchArchiveRequiresSurvivorAndJournalProof"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Removal of redundant duplicate scratch archives is an operator-requested extension after FAE-CTL-043 cleanup; no requirement specifies archive deduplication.",
+    "production": {
+      "path": "daemon/scratch_archive.go",
+      "function": "CleanupScratchArchive"
+    },
+    "positive": {
+      "tests": [
+        "TestScratchArchiveNativeBackupPreservationAndRestart",
+        "TestScratchArchivePartialRecoveryAndReceiptTamper"
+      ],
+      "note": "Survivor and completed journal proof precede duplicate deletion; partial removal recovers."
+    },
+    "firing": {
+      "negative_model": "verification/negative/scratch_archive.go.txt",
+      "functions": [
+        "ScratchArchiveDropsJournalProtection"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestScratchArchiveNativeBackupPreservationAndRestart"
+      ],
+      "path": "Start (scratch instance) -> CleanupScratch -> CleanupScratchArchive"
+    },
+    "status": "native-evidenced",
+    "limits": "Offline operator function after the scratch daemon is stopped."
+  },
+  {
+    "id": "gomela:backup_schedule",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/backup_schedule.go",
+      "functions": [
+        "BackupScheduleClaimsBeforeCreation"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Recurring backup creation is an operator-requested extension; FAE-CLI-022 schedules cover cron/loop work items, not backup maintenance.",
+    "production": {
+      "path": "daemon/backup_schedule.go",
+      "function": "tickBackupSchedule"
+    },
+    "positive": {
+      "tests": [
+        "TestBackupScheduleNativeLifecycleRestart"
+      ],
+      "note": "Authorized durable occurrence claim precedes creation; an interrupted claim blocks without replay."
+    },
+    "firing": {
+      "negative_model": "verification/negative/backup_schedule.go.txt",
+      "functions": [
+        "BackupScheduleDropsOccurrenceClaim"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupScheduleNativeLifecycleRestart"
+      ],
+      "path": "Start -> tickBackupSchedule (direct on started daemon), restart with a persisted claim"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:replication_schedule",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/replication_schedule.go",
+      "functions": [
+        "ReplicationSchedulePinsBeforeAttemptAndAdvance"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Recurring backup replication is an operator-requested extension; FAE-CLI-022 schedules cover cron/loop work items, not backup maintenance.",
+    "production": {
+      "path": "daemon/replication_schedule.go",
+      "function": "tickReplicationSchedule"
+    },
+    "positive": {
+      "tests": [
+        "TestReplicationScheduleNativeUncertainRestartFairness",
+        "TestReplicationScheduleNativeSelectedBeforeOutboxAndFreshAuthority"
+      ],
+      "note": "Selected source/destination pinned before upload attempt; pending claim survives restart and advances only after proof."
+    },
+    "firing": {
+      "negative_model": "verification/negative/replication_schedule.go.txt",
+      "functions": [
+        "ReplicationScheduleDropsReceiptBeforeAdvance"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReplicationScheduleNativeUncertainRestartFairness",
+        "TestReplicationScheduleNativeSelectedBeforeOutboxAndFreshAuthority"
+      ],
+      "path": "Start -> tickReplicationSchedule (direct on started daemon) -> backupReplicate"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:backup_unpin",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/backup_unpin.go",
+      "functions": [
+        "BackupUnpinWaitsForProofAndNoPendingClaim"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Replication pin release is an operator-requested extension (daemon/BACKUPS.md); no requirement specifies it.",
+    "production": {
+      "path": "daemon/replication_unpin.go",
+      "function": "backupReplicationUnpin"
+    },
+    "positive": {
+      "tests": [
+        "TestReplicationUnpinNativeProofRestartAndClaims"
+      ],
+      "note": "Pending schedule claim and failed remote proof refuse; pin released after fresh proof."
+    },
+    "firing": {
+      "negative_model": "verification/negative/backup_unpin.go.txt",
+      "functions": [
+        "BackupUnpinDropsPendingClaimCheck"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestReplicationUnpinNativeProofRestartAndClaims"
+      ],
+      "path": "Start -> RPC BackupReplicationUnpin -> backupReplicationUnpinRPC -> backupReplicationUnpin"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gomela:backup_quota",
+    "kind": "gomela-model",
+    "check": {
+      "model": "verification/gomela/backup_quota.go",
+      "functions": [
+        "BackupQuotaSerializesStorageWriters"
+      ]
+    },
+    "requirements": [],
+    "unmapped_reason": "Backup storage quotas are an operator-requested extension (HANDOFF.md); no requirement specifies backup quotas.",
+    "production": {
+      "path": "daemon/cleanup.go",
+      "function": "backupPlane"
+    },
+    "positive": {
+      "tests": [
+        "TestBackupRetentionSerialization",
+        "TestBackupQuotaNativeCountRestartAndAuthority"
+      ],
+      "note": "Backup creation and quota reconfiguration are refused while the shared backup lock is held."
+    },
+    "firing": {
+      "negative_model": "verification/negative/backup_quota.go.txt",
+      "functions": [
+        "BackupQuotaDropsCapacityRelease"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestBackupQuotaNativeCountRestartAndAuthority"
+      ],
+      "path": "Start -> RPC BackupQuota configure while Daemon.backupMu held -> backupQuotaRPC refuses"
+    },
+    "status": "native-evidenced",
+    "limits": "Model abstracts the shared Daemon.backupMu reservation (also taken in backupReplicate); it does not model byte accounting."
+  }
+]

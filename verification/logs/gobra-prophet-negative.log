@@ -1,6 +1,6 @@
-Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
 (c) Copyright ETH Zurich 2012 - 2026
-17:16:30.922 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - daemon [17:16:30]
-17:16:33.099 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/prophet-negative.go:4:9> Postcondition might not hold. 
+18:40:36.451 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - daemon [18:40:36]
+18:40:39.328 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/prophet-negative.go:4:9> Postcondition might not hold. 
 Assertion res == (directed && supported) might not hold.
-17:16:33.113 [thread-3] ERROR viper.gobra.Gobra - Gobra found 1 error.
+18:40:39.366 [thread-6] ERROR viper.gobra.Gobra - Gobra found 1 error.

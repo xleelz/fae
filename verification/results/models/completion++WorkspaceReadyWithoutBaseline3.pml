@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go#L3
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go#L3
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -31,26 +31,26 @@ proctype WorkspaceReadyWithoutBaseline3(chan child) {
 	bool state = true->
 	int num_msgs->
 	chan child_AnonymousWorkspaceReadyWithoutBaseline741 = [1] of {int}->
-	chan child_AnonymousWorkspaceReadyWithoutBaseline650 = [1] of {int}->
+	chan child_AnonymousWorkspaceReadyWithoutBaseline640 = [1] of {int}->
 	Chandef ready_ch->
 	Chandef approved_ch->
 	run sync_monitor(approved_ch)->
 	run sync_monitor(ready_ch)->
-	run AnonymousWorkspaceReadyWithoutBaseline65(ready_ch,approved_ch,child_AnonymousWorkspaceReadyWithoutBaseline650)->
-	run receiver(child_AnonymousWorkspaceReadyWithoutBaseline650)->
+	run AnonymousWorkspaceReadyWithoutBaseline64(approved_ch,ready_ch,child_AnonymousWorkspaceReadyWithoutBaseline640)->
+	run receiver(child_AnonymousWorkspaceReadyWithoutBaseline640)->
 	run AnonymousWorkspaceReadyWithoutBaseline74(approved_ch,ready_ch,child_AnonymousWorkspaceReadyWithoutBaseline741)->
 	run receiver(child_AnonymousWorkspaceReadyWithoutBaseline741)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:8:2 */
-	:: ready_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:8:2 */->
-	:: ready_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:8:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:8:2 */
+	:: ready_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:8:2 */->
+	:: ready_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:8:2 */ -> 
 		ready_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousWorkspaceReadyWithoutBaseline65(Chandef ready_ch;Chandef approved_ch;chan child) {
+proctype AnonymousWorkspaceReadyWithoutBaseline64(Chandef approved_ch;Chandef ready_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -58,12 +58,12 @@ proctype AnonymousWorkspaceReadyWithoutBaseline65(Chandef ready_ch;Chandef appro
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:6:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:6:12 */
 	:: approved_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:6:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:6:12 */
 	:: approved_ch.sync!false -> 
 		approved_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:6:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:6:12 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -76,12 +76,12 @@ proctype AnonymousWorkspaceReadyWithoutBaseline74(Chandef approved_ch;Chandef re
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:7:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:7:12 */
 	:: ready_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:7:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:7:12 */
 	:: ready_ch.sync!false -> 
 		ready_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/review_workspace.go:7:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/review_workspace.go:7:12 */
 	fi->
 	stop_process: skip->
 	child!0

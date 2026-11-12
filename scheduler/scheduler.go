@@ -90,10 +90,73 @@ type Owner struct {
 type Request struct {
 	ID            string
 	Owner         Owner
+	TaskID        string `json:",omitempty"`
 	Weight, Class int
-	Queued        time.Time
-	Warned        bool
+	// Priority is the task priority. Like Class it only breaks ties between
+	// equal waits (FAE-SCH-008); it never overtakes an older waiter.
+	Priority           int       `json:",omitempty"`
+	Admitted           time.Time `json:",omitempty"`
+	CutOffByQuota      bool      `json:",omitempty"`
+	CredentialIdentity string    `json:",omitempty"`
+	Queued             time.Time
+	Warned             bool
+	// Unbounded waiters (role queues, FAE-SCH-008) keep their place until
+	// granted, cancelled or their owner dies. MaxWait refuses only bounded
+	// requests: heavy-op leases are never run unleased (FAE-SCH-011.5).
+	Unbounded bool `json:",omitempty"`
 }
+
+// ProviderPoolMatch identifies the (provider, credential_identity) key of a
+// host-scoped provider concurrency pool (FAE-SCH-015).
+type ProviderPoolMatch struct {
+	Provider           string `json:"provider"`
+	CredentialIdentity string `json:"credential_identity,omitempty"`
+}
+
+// ProviderPoolConfig configures one host-scoped provider concurrency pool
+// (FAE-SCH-005, FAE-SCH-015).
+type ProviderPoolConfig struct {
+	ID    string            `json:"id"`
+	Match ProviderPoolMatch `json:"match"`
+	Cap   int               `json:"cap"`
+}
+
+// ReadySetRequestLess orders waiting requests in FAE-SCH-003 ready-set order,
+// with quota cut-off turns first per FAE-RT-018, then priority descending,
+// admission timestamp ascending, and task ID ascending.
+func ReadySetRequestLess(a, b Request) bool {
+	if a.CutOffByQuota != b.CutOffByQuota {
+		return a.CutOffByQuota
+	}
+	if a.Priority != b.Priority {
+		return a.Priority > b.Priority
+	}
+	aAdmitted, bAdmitted := a.Admitted, b.Admitted
+	if aAdmitted.IsZero() {
+		aAdmitted = a.Queued
+	}
+	if bAdmitted.IsZero() {
+		bAdmitted = b.Queued
+	}
+	if !aAdmitted.Equal(bAdmitted) {
+		return aAdmitted.Before(bAdmitted)
+	}
+	aTask, bTask := a.TaskID, b.TaskID
+	if aTask == "" {
+		aTask = a.ID
+	}
+	if bTask == "" {
+		bTask = b.ID
+	}
+	if aTask != bTask {
+		return aTask < bTask
+	}
+	if !a.Queued.Equal(b.Queued) {
+		return a.Queued.Before(b.Queued)
+	}
+	return a.ID < b.ID
+}
+
 type Lease struct {
 	Request
 	Expires time.Time
@@ -102,7 +165,8 @@ type Pool struct {
 	// Capacity is the historical validation ceiling. AdmissionLimit, when set,
 	// is the current ceiling for new grants; lowering it never invalidates a holder.
 	Capacity                int
-	AdmissionLimit          int `json:",omitempty"`
+	AdmissionLimit          int  `json:",omitempty"`
+	ReadySetOrder           bool `json:",omitempty"`
 	TTL, WarnAfter, MaxWait time.Duration
 	Holders                 []Lease
 	Waiting                 []Request
@@ -188,7 +252,7 @@ func (p *Pool) Advance(now time.Time, alive func(Owner) bool) ([]Lease, []Event,
 			events = append(events, Event{RequestID: w.ID, Kind: "OwnerDead"})
 			continue
 		}
-		if wait >= p.MaxWait {
+		if wait >= p.MaxWait && !w.Unbounded {
 			events = append(events, Event{RequestID: w.ID, Kind: "Timeout", Wait: wait})
 			continue
 		}
@@ -203,13 +267,22 @@ func (p *Pool) Advance(now time.Time, alive func(Owner) bool) ([]Lease, []Event,
 		waiters = append(waiters, w)
 	}
 	p.Waiting = waiters
-	sort.SliceStable(p.Waiting, func(i, j int) bool {
-		a, b := p.Waiting[i], p.Waiting[j]
-		if !a.Queued.Equal(b.Queued) {
-			return a.Queued.Before(b.Queued)
-		}
-		return a.Class > b.Class
-	})
+	if p.ReadySetOrder {
+		sort.SliceStable(p.Waiting, func(i, j int) bool {
+			return ReadySetRequestLess(p.Waiting[i], p.Waiting[j])
+		})
+	} else {
+		sort.SliceStable(p.Waiting, func(i, j int) bool {
+			a, b := p.Waiting[i], p.Waiting[j]
+			if !a.Queued.Equal(b.Queued) {
+				return a.Queued.Before(b.Queued)
+			}
+			if a.Class != b.Class {
+				return a.Class > b.Class
+			}
+			return a.Priority > b.Priority
+		})
+	}
 	var granted []Lease
 	for len(p.Waiting) > 0 {
 		w := p.Waiting[0]
@@ -244,8 +317,10 @@ type RoleRevision struct {
 	Global, Live             bool
 }
 
+// RolePool resolves a role's lease pool key and cap; a cap of -1 is
+// unbounded (FAE-WF-040) and the caller then takes no role slot.
 func RolePool(r RoleRevision, live []RoleRevision) (string, int, error) {
-	if r.Workflow == "" || r.Role == "" || r.Molecule == "" || r.Cap <= 0 {
+	if r.Workflow == "" || r.Role == "" || r.Molecule == "" || !validCap(r.Cap) {
 		return "", 0, fmt.Errorf("invalid role")
 	}
 	cap := r.Cap
@@ -253,7 +328,7 @@ func RolePool(r RoleRevision, live []RoleRevision) (string, int, error) {
 	if r.Global {
 		for _, x := range live {
 			if x.Workflow == r.Workflow && x.Role == r.Role && x.Global && x.Live && x.Revision > rev {
-				if x.Cap <= 0 {
+				if !validCap(x.Cap) {
 					return "", 0, fmt.Errorf("invalid live cap")
 				}
 				cap = x.Cap
@@ -264,6 +339,7 @@ func RolePool(r RoleRevision, live []RoleRevision) (string, int, error) {
 	}
 	return r.Workflow + "/" + r.Molecule + "/" + r.Role, cap, nil
 }
+func validCap(c int) bool { return c > 0 || c == -1 }
 func WithinLimit(current, limit int) bool {
 	return current >= 0 && (limit == -1 || (limit > 0 && current < limit))
 }

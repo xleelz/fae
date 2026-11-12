@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,10 +30,10 @@ proctype RetentionScheduleClaimsBeforePruning5(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousRetentionScheduleClaimsBeforePruning1363 = [1] of {int}->
-	chan child_AnonymousRetentionScheduleClaimsBeforePruning1262 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleClaimsBeforePruning1373 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleClaimsBeforePruning1272 = [1] of {int}->
 	chan child_AnonymousRetentionScheduleClaimsBeforePruning1161 = [1] of {int}->
-	chan child_AnonymousRetentionScheduleClaimsBeforePruning1090 = [1] of {int}->
+	chan child_AnonymousRetentionScheduleClaimsBeforePruning1070 = [1] of {int}->
 	Chandef pruned_ch->
 	Chandef planned_ch->
 	Chandef claimed_ch->
@@ -42,25 +42,25 @@ proctype RetentionScheduleClaimsBeforePruning5(chan child) {
 	run sync_monitor(claimed_ch)->
 	run sync_monitor(planned_ch)->
 	run sync_monitor(pruned_ch)->
-	run AnonymousRetentionScheduleClaimsBeforePruning109(pruned_ch,authorized_ch,claimed_ch,planned_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1090)->
-	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1090)->
+	run AnonymousRetentionScheduleClaimsBeforePruning107(claimed_ch,planned_ch,pruned_ch,authorized_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1070)->
+	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1070)->
 	run AnonymousRetentionScheduleClaimsBeforePruning116(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1161)->
 	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1161)->
-	run AnonymousRetentionScheduleClaimsBeforePruning126(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1262)->
-	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1262)->
-	run AnonymousRetentionScheduleClaimsBeforePruning136(authorized_ch,claimed_ch,planned_ch,pruned_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1363)->
-	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1363)->
+	run AnonymousRetentionScheduleClaimsBeforePruning127(claimed_ch,planned_ch,pruned_ch,authorized_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1272)->
+	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1272)->
+	run AnonymousRetentionScheduleClaimsBeforePruning137(claimed_ch,planned_ch,pruned_ch,authorized_ch,child_AnonymousRetentionScheduleClaimsBeforePruning1373)->
+	run receiver(child_AnonymousRetentionScheduleClaimsBeforePruning1373)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:14:2 */
-	:: pruned_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:14:2 */->
-	:: pruned_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:14:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:14:2 */
+	:: pruned_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:14:2 */->
+	:: pruned_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:14:2 */ -> 
 		pruned_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleClaimsBeforePruning109(Chandef pruned_ch;Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;chan child) {
+proctype AnonymousRetentionScheduleClaimsBeforePruning107(Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;Chandef authorized_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -68,12 +68,12 @@ proctype AnonymousRetentionScheduleClaimsBeforePruning109(Chandef pruned_ch;Chan
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:10:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:10:14 */
 	:: authorized_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:10:14 */
 	:: authorized_ch.sync!false -> 
 		authorized_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:10:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -86,24 +86,24 @@ proctype AnonymousRetentionScheduleClaimsBeforePruning116(Chandef authorized_ch;
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:11:14 */
-	:: authorized_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:11:14 */->
-	:: authorized_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:11:14 */
+	:: authorized_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:11:14 */->
+	:: authorized_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:11:14 */ -> 
 		authorized_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:11:28 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:11:28 */
 	:: claimed_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:11:28 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:11:28 */
 	:: claimed_ch.sync!false -> 
 		claimed_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:11:28 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:11:28 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleClaimsBeforePruning126(Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;chan child) {
+proctype AnonymousRetentionScheduleClaimsBeforePruning127(Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;Chandef authorized_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -111,24 +111,24 @@ proctype AnonymousRetentionScheduleClaimsBeforePruning126(Chandef authorized_ch;
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:12:14 */
-	:: claimed_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:12:14 */->
-	:: claimed_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:12:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:12:14 */
+	:: claimed_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:12:14 */->
+	:: claimed_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:12:14 */ -> 
 		claimed_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:12:25 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:12:25 */
 	:: planned_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:12:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:12:25 */
 	:: planned_ch.sync!false -> 
 		planned_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:12:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:12:25 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousRetentionScheduleClaimsBeforePruning136(Chandef authorized_ch;Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;chan child) {
+proctype AnonymousRetentionScheduleClaimsBeforePruning137(Chandef claimed_ch;Chandef planned_ch;Chandef pruned_ch;Chandef authorized_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -136,19 +136,19 @@ proctype AnonymousRetentionScheduleClaimsBeforePruning136(Chandef authorized_ch;
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:13:14 */
-	:: planned_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:13:14 */->
-	:: planned_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:13:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:13:14 */
+	:: planned_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:13:14 */->
+	:: planned_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:13:14 */ -> 
 		planned_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:13:25 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:13:25 */
 	:: pruned_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:13:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:13:25 */
 	:: pruned_ch.sync!false -> 
 		pruned_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/retention_schedule.go:13:25 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/retention_schedule.go:13:25 */
 	fi->
 	stop_process: skip->
 	child!0

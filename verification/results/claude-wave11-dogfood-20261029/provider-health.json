@@ -1,0 +1,181 @@
+{
+  "at": "2026-10-29T22:36:16.764418547Z",
+  "bindings": [
+    {
+      "effective_score": 100,
+      "eligible": true,
+      "health": {
+        "provider": "claude",
+        "model": "claude-opus-5-5",
+        "outcome": "ok",
+        "score": 100,
+        "failures": 0,
+        "last_ok": "2026-10-29T22:36:14.834466Z",
+        "last_failure": "0001-01-01T00:00:00Z",
+        "hold_until": "0001-01-01T00:00:00Z"
+      }
+    }
+  ],
+  "series": {
+    "claude/claude-opus-5-5": [
+      {
+        "at": "2026-10-29T22:32:28.821849Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 37
+      },
+      {
+        "at": "2026-10-29T22:32:32.553928Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 41
+      },
+      {
+        "at": "2026-10-29T22:32:45.33481Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 67
+      },
+      {
+        "at": "2026-10-29T22:32:46.428271Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 76
+      },
+      {
+        "at": "2026-10-29T22:32:54.073689Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 85
+      },
+      {
+        "at": "2026-10-29T22:32:56.260296Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 89
+      },
+      {
+        "at": "2026-10-29T22:33:04.471326Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 93
+      },
+      {
+        "at": "2026-10-29T22:33:06.616543Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 104
+      },
+      {
+        "at": "2026-10-29T22:33:16.824699Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 115
+      },
+      {
+        "at": "2026-10-29T22:33:16.970842Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 119
+      },
+      {
+        "at": "2026-10-29T22:33:21.825789Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 137
+      },
+      {
+        "at": "2026-10-29T22:33:22.000739Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 141
+      },
+      {
+        "at": "2026-10-29T22:33:34.349561Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 187
+      },
+      {
+        "at": "2026-10-29T22:33:34.396969Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 188
+      },
+      {
+        "at": "2026-10-29T22:33:50.219525Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 263
+      },
+      {
+        "at": "2026-10-29T22:33:53.196332Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 267
+      },
+      {
+        "at": "2026-10-29T22:33:54.574006Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 271
+      },
+      {
+        "at": "2026-10-29T22:33:57.758703Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 275
+      },
+      {
+        "at": "2026-10-29T22:33:57.819419Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 277
+      },
+      {
+        "at": "2026-10-29T22:34:01.225313Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 283
+      },
+      {
+        "at": "2026-10-29T22:34:04.488811Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 287
+      },
+      {
+        "at": "2026-10-29T22:34:08.019902Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 300
+      },
+      {
+        "at": "2026-10-29T22:34:15.096072Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 312
+      },
+      {
+        "at": "2026-10-29T22:34:30.179728Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 329
+      },
+      {
+        "at": "2026-10-29T22:36:07.51048Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 458
+      },
+      {
+        "at": "2026-10-29T22:36:14.838385Z",
+        "outcome": "ok",
+        "score": 100,
+        "sequence": 459
+      }
+    ]
+  },
+  "series_truncated": false,
+  "window_seconds": 900
+}

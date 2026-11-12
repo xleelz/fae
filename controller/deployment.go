@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 )
@@ -50,12 +51,26 @@ func Git(ctx context.Context, workspace string, args ...string) (string, error) 
 		}
 	}
 	b, e := cmd.Output()
+	if slices.Contains(args, "-z") {
+		return string(b), e
+	}
 	return strings.TrimSpace(string(b)), e
 }
 
 // BuildGated compiles a detached clone, leaving the operator checkout untouched.
-// The caller owns the returned directory until deployment and rollback finish.
-func BuildGated(ctx context.Context, workspace, ref, gated string, storage ...string) (binary, directory, tip string, err error) {
+// The compile passes host admission and holds the host heavy-op lease; it runs
+// with clamped build jobs and its scratch on disk under storage, never in the
+// RAM-backed system temporary directory (FAE-HOST-020). The caller owns the
+// returned directory until deployment and rollback finish.
+func BuildGated(ctx context.Context, lease BuildLease, workspace, ref, gated string, storage ...string) (binary, directory, tip string, err error) {
+	if !filepath.IsAbs(lease.Ledger) {
+		err = errors.New("controller build requires the instance's host heavy-op ledger")
+		return
+	}
+	if len(storage) == 0 || !filepath.IsAbs(storage[0]) {
+		err = errors.New("controller build requires on-disk deployment storage")
+		return
+	}
 	if !strings.HasPrefix(gated, "refs/fae/gated/") {
 		err = errors.New("build requires refs/fae/gated reference")
 		return
@@ -73,12 +88,9 @@ func BuildGated(ctx context.Context, workspace, ref, gated string, storage ...st
 		err = errors.New("build ref is not gated tip")
 		return
 	}
-	root := ""
-	if len(storage) > 0 {
-		root = storage[0]
-		if err = os.MkdirAll(root, 0700); err != nil {
-			return
-		}
+	root := storage[0]
+	if err = os.MkdirAll(root, 0700); err != nil {
+		return
 	}
 	directory, err = os.MkdirTemp(root, "fae-deployment-")
 	if err != nil {
@@ -99,19 +111,27 @@ func BuildGated(ctx context.Context, workspace, ref, gated string, storage ...st
 		return
 	}
 	binary = filepath.Join(directory, "fae")
-	cmd := exec.CommandContext(ctx, "go", "build", "-buildvcs=true", "-o", binary, "./cmd/fae")
+	scratch := filepath.Join(directory, "tmp")
+	if err = os.Mkdir(scratch, 0700); err != nil {
+		return
+	}
+	cmd := exec.CommandContext(ctx, "go", "build", "-p", fmt.Sprint(packageBuildJobs), "-buildvcs=true", "-o", binary, "./cmd/fae")
 	cmd.Dir = checkout
 	for _, v := range os.Environ() {
-		if !strings.HasPrefix(v, "GIT_") && !strings.HasPrefix(v, "CGO_") && !strings.HasPrefix(v, "GOFLAGS=") && !strings.HasPrefix(v, "GOWORK=") && !strings.HasPrefix(v, "GOENV=") {
+		if !strings.HasPrefix(v, "GIT_") && !strings.HasPrefix(v, "CGO_") && !strings.HasPrefix(v, "GOFLAGS=") && !strings.HasPrefix(v, "GOWORK=") && !strings.HasPrefix(v, "GOENV=") && !strings.HasPrefix(v, "TMPDIR=") && !strings.HasPrefix(v, "GOTMPDIR=") {
 			cmd.Env = append(cmd.Env, v)
 		}
 	}
-	cmd.Env = append(cmd.Env, "GOENV=off", "GOWORK=off", "GOFLAGS=")
-	if b, e := cmd.CombinedOutput(); e != nil {
-		err = fmt.Errorf("build gated source: %w: %s", e, b)
+	cmd.Env = append(cmd.Env, "GOENV=off", "GOWORK=off", "GOFLAGS=", "TMPDIR="+scratch, "GOTMPDIR="+scratch)
+	if err = lease.hold(ctx, "build", func() error {
+		if b, e := cmd.CombinedOutput(); e != nil {
+			return fmt.Errorf("build gated source: %w: %s", e, b)
+		}
+		return nil
+	}); err != nil {
 		return
 	}
-	if err = os.RemoveAll(checkout); err != nil {
+	if err = errors.Join(os.RemoveAll(checkout), os.RemoveAll(scratch)); err != nil {
 		return
 	}
 	revision, e := SourceRevision(binary)

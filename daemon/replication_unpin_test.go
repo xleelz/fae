@@ -27,7 +27,7 @@ func TestReplicationUnpinNativeProofRestartAndClaims(t *testing.T) {
 		}
 	}()
 	authorize(t, d)
-	backup, e := d.backupPlane(ctx)
+	backup, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}

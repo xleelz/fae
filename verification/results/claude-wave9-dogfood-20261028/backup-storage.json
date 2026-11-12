@@ -1,0 +1,41 @@
+{
+  "result": {
+    "pending_unpin_refused": true,
+    "confirmed_unpin_verified": true,
+    "unpin_preserved_source": true,
+    "unpin_invalidated_retention_preview": true,
+    "unpin_uploads": 0,
+    "count_quota_refused_before_allocation": true,
+    "byte_quota_refused_before_allocation": true,
+    "quota_survived_restart": true,
+    "raised_quota_allowed_verified_backup": true
+  },
+  "unpin_preview": {
+    "backup": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-1682629775",
+    "plan_digest": "daa0d6e9c33c6122fe0983fb82665a8c3e3f0b7631c86423de25a75933210c17",
+    "outboxes": 1,
+    "completed": false
+  },
+  "unpinned": {
+    "backup": "/var/tmp/fhd-lu04hciv/i/dogfood/backup/plane-1682629775",
+    "plan_digest": "daa0d6e9c33c6122fe0983fb82665a8c3e3f0b7631c86423de25a75933210c17",
+    "outboxes": 1,
+    "completed": true
+  },
+  "persisted_quota": {
+    "max_bytes": 0,
+    "max_backups": 3,
+    "usage_bytes": 56729759,
+    "backup_count": 3,
+    "exceeded": false,
+    "enforcement": "Apparent regular-file bytes, including incomplete backups and replication spools. Backup admission and post-export/verification checkpoints; unknown Dolt export size is not a hard filesystem limit. No automatic deletion."
+  },
+  "final_quota": {
+    "max_bytes": 0,
+    "max_backups": 5,
+    "usage_bytes": 77846533,
+    "backup_count": 4,
+    "exceeded": false,
+    "enforcement": "Apparent regular-file bytes, including incomplete backups and replication spools. Backup admission and post-export/verification checkpoints; unknown Dolt export size is not a hard filesystem limit. No automatic deletion."
+  }
+}

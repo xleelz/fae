@@ -6,11 +6,39 @@ import (
 	r "github.com/xleelz/fae/runtime"
 	"github.com/xleelz/fae/workflow"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 )
+
+// gitRepository makes dir a Git repository, as every task worktree is, so the
+// bridge can list it; tracked names existing files to add to the index.
+func gitRepository(t *testing.T, dir string, tracked ...string) {
+	t.Helper()
+	git := func(args ...string) {
+		cmd := exec.Command("git", append([]string{"-C", dir}, args...)...)
+		cmd.Env = append(os.Environ(), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=/dev/null")
+		if out, e := cmd.CombinedOutput(); e != nil {
+			t.Fatal(e, string(out))
+		}
+	}
+	git("init", "-q")
+	if len(tracked) > 0 {
+		git(append([]string{"add", "--"}, tracked...)...)
+	}
+}
+
+// decodeResponse decodes a provider answer the way a test states it.
+func decodeResponse(t *testing.T, raw string) Response {
+	t.Helper()
+	var response Response
+	if e := json.Unmarshal([]byte(raw), &response); e != nil {
+		t.Fatal(e)
+	}
+	return response
+}
 
 func TestEditPolicy(t *testing.T) {
 	root := t.TempDir()
@@ -20,13 +48,13 @@ func TestEditPolicy(t *testing.T) {
 		stage, path string
 		ok          bool
 	}{{"test-first", "answer_test.go", true}, {"test-first", "answer.go", false}, {"implement", "answer.go", true}, {"implement", "answer_test.go", false}, {"review", "answer.go", false}, {"implement", "../escape", false}} {
-		err := validateEdits(c, l, tc.stage, Response{Edits: []Edit{{Path: tc.path, Content: "x"}}})
+		err := validateEdits(c, l, tc.stage, decodeResponse(t, `{"edits":[{"path":"`+tc.path+`","content":"x"}]}`))
 		if (err == nil) != tc.ok {
 			t.Fatalf("%+v %v", tc, err)
 		}
 	}
 	l.Profile.Denied = []string{"edit"}
-	if validateEdits(c, l, "implement", Response{Edits: []Edit{{Path: "answer.go"}}}) == nil {
+	if validateEdits(c, l, "implement", decodeResponse(t, `{"edits":[{"path":"answer.go","content":""}]}`)) == nil {
 		t.Fatal("denied edit accepted")
 	}
 	l.Profile.Build = true
@@ -60,6 +88,7 @@ func TestBridgeSubprocess(t *testing.T) {
 		t.Fatal(e)
 	}
 	root = physical
+	gitRepository(t, root)
 	schema := json.RawMessage(`{"type":"object","properties":{"accepted":{"type":"boolean"}},"required":["accepted"],"additionalProperties":false}`)
 	brief, _ := json.Marshal([]any{map[string]any{"kind": "stage", "stage": "implement"}, map[string]any{"kind": "kernel_contract", "output_schema": schema}})
 	l := r.BridgeConfig{Protocol: "fae-agent-v1", Launch: r.Launch{DispatchID: "d", SessionID: "s", TaskID: "t", Worktree: root, Binding: workflow.Binding{Provider: "codex", Model: "configured-model"}, Profile: workflow.Profile{Allowed: []string{"handoff", "edit"}}, Brief: brief}, Handoff: filepath.Join(root, "handoff.json"), LogDirectory: root}
@@ -104,6 +133,7 @@ func providerFixture(t *testing.T, extra string) (Config, string, r.BridgeConfig
 	if e != nil {
 		t.Fatal(e)
 	}
+	gitRepository(t, root)
 	brief := json.RawMessage(`[{"kind":"stage","stage":"implement"},{"kind":"kernel_contract","output_schema":{"type":"object","properties":{"accepted":{"type":"boolean"}},"required":["accepted"],"additionalProperties":false}}]`)
 	l := r.BridgeConfig{Protocol: "fae-agent-v1", Launch: r.Launch{DispatchID: "d", SessionID: "s", TaskID: "t", Worktree: root, Binding: workflow.Binding{Provider: "codex", Model: "configured-model"}, Profile: workflow.Profile{Allowed: []string{"handoff", "edit"}}, Brief: brief}, Handoff: filepath.Join(root, "handoff.json"), LogDirectory: root}
 	raw, _ := json.Marshal(l)

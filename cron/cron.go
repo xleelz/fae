@@ -2,7 +2,9 @@
 package cron
 
 import (
+	"bytes"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
@@ -46,12 +48,21 @@ type Schedule struct {
 	Error     string `json:"error,omitempty"`
 }
 
+func (t *Template) UnmarshalJSON(raw []byte) error {
+	type plain Template
+	p := plain{Priority: 10}
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&p); err != nil {
+		return err
+	}
+	*t = Template(p)
+	return nil
+}
+
 func New(spec Spec) (Schedule, error) {
 	if spec.CatchUpLimit == 0 {
 		spec.CatchUpLimit = DefaultCatchUp
-	}
-	if spec.Template.Priority == 0 {
-		spec.Template.Priority = 10
 	}
 	if spec.Template.Mode == "" {
 		spec.Template.Mode = "Local"

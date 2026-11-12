@@ -2,10 +2,10 @@ package daemon
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 	"time"
 
+	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/workflow"
@@ -13,11 +13,11 @@ import (
 
 func TestDaemonStallCounterSurvivesDrainRestart(t *testing.T) {
 	cfg, ctx, _ := liveDaemonFixture(t)
-	// This explicitly trusted fixture does nothing except wait. No worktree or
-	// external effects are possible, and the real process is retired on a stall.
+	// This fixture does nothing except wait, and the real process is retired on
+	// a stall. FAE-RT-005: with no stall_safe_replay assertion, the shipped
+	// roles' restricted profiles alone prove the default replay safe.
 	cfg.Live.Command = []string{"/bin/sh", "-c", "exec /bin/sleep 60", "{config}"}
 	cfg.Live.StallSeconds = 1
-	cfg.Live.StallSafeReplay = true
 	cfg.Live.TimeoutSeconds = 60
 	d, err := Start(ctx, cfg)
 	if err != nil {
@@ -38,17 +38,7 @@ func TestDaemonStallCounterSurvivesDrainRestart(t *testing.T) {
 	}
 	wait := func(check func(engine.Job) bool) engine.Job {
 		t.Helper()
-		deadline := time.Now().Add(25 * time.Second)
-		var env envelope
-		for time.Now().Before(deadline) {
-			env = envelope{} // Omitted in_flight must clear the prior polling snapshot.
-			s, err := d.store.GetJob(ctx, "stall-work")
-			if err == nil && json.Unmarshal(s.Payload, &env) == nil && check(env.Job) {
-				return env.Job
-			}
-			time.Sleep(20 * time.Millisecond)
-		}
-		t.Fatalf("stall wait: state=%s reason=%s failures=%v", env.Job.State, env.Job.Reason, env.Job.Failures)
+		_, env := awaitJob(t, d, "stall-work", 25*time.Second, func(_ controlplane.JobSnapshot, env envelope) bool { return check(env.Job) })
 		return env.Job
 	}
 	wait(func(j engine.Job) bool { return j.InFlight != nil })
@@ -61,8 +51,9 @@ func TestDaemonStallCounterSurvivesDrainRestart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	final := wait(func(j engine.Job) bool { return j.Reason == "StallExhausted" })
-	if final.Failures["stall-recovery"] != 3 || final.Sequence != 3 || final.Tree != checkpoint.Tree || len(final.Provenance) != 0 || final.InFlight != nil {
+	// The third stall escalates; that ends the turn and clears its counter.
+	final := wait(func(j engine.Job) bool { return j.EscalationKind == "StallExhausted" })
+	if final.Failures["stall-recovery"] != 0 || final.Sequence != 3 || final.Tree != checkpoint.Tree || len(final.Provenance) != 0 || final.InFlight != nil {
 		t.Fatalf("unsafe/bypassed bounded recovery: %+v", final)
 	}
 	pool, err := d.live.guard.host.Snapshot(context.Background())

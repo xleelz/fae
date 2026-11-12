@@ -20,6 +20,10 @@ type ScheduleParams struct {
 	ID                 string      `json:"id,omitempty"`
 	Spec               *loops.Spec `json:"spec,omitempty"`
 	AuthorizingMessage string      `json:"authorizing_message,omitempty"`
+	// ExpiresInSeconds sets a loop's expiry from the daemon clock at creation
+	// when the specification states no explicit expires_at; with neither, the
+	// daemon clock plus the default expiry applies (FAE-CLI-002).
+	ExpiresInSeconds int64 `json:"expires_in_seconds,omitempty"`
 }
 type loopCompletion struct {
 	id     string
@@ -40,7 +44,7 @@ func (d *Daemon) saveLoops(ctx context.Context, a controlplane.Audit) error {
 func (d *Daemon) loadLoops(ctx context.Context) error {
 	d.loops = map[string]loops.Schedule{}
 	d.loopActive = map[string]context.CancelFunc{}
-	d.loopResults = make(chan loopCompletion, d.config.MaxInFlight)
+	d.loopResults = make(chan loopCompletion, completionBuffer(d.config.MaxInFlight))
 	raw, e := d.store.GetMarker(ctx, "provider-loops")
 	if errors.Is(e, sql.ErrNoRows) {
 		return nil
@@ -105,7 +109,14 @@ func (d *Daemon) schedule(ctx context.Context, p ScheduleParams, a controlplane.
 		if _, ok := d.crons[p.Spec.ID]; ok {
 			return nil, errors.New("schedule already exists")
 		}
-		s, e := loops.New(*p.Spec, time.Now().UTC())
+		now := time.Now().UTC()
+		if p.ExpiresInSeconds != 0 && !p.Spec.ExpiresAt.IsZero() || p.ExpiresInSeconds < 0 {
+			return nil, errors.New("a loop states at most one of an explicit expires_at or a positive expires_in_seconds")
+		}
+		if p.ExpiresInSeconds > 0 {
+			p.Spec.ExpiresAt = now.Add(time.Duration(p.ExpiresInSeconds) * time.Second)
+		}
+		s, e := loops.New(*p.Spec, now)
 		if e != nil {
 			return nil, e
 		}
@@ -270,10 +281,19 @@ func (d *Daemon) launchLoop(id string, s loops.Schedule) {
 		}
 	}(id)
 }
+
+// errStaleLoop marks a completion for no in-flight loop: it is dropped.
+var errStaleLoop = errors.New("unexpected loop completion")
+
 func (d *Daemon) collectLoop(c loopCompletion) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	defer d.publishStatus()
+	if d.testFault != nil {
+		if e := d.testFault("step", "loop-collect"); e != nil {
+			return e
+		}
+	}
 	if p := d.loopCheckpoint; p != nil {
 		if p.Kind == "collect" {
 			if _, e := d.consumeLoopCheckpoint(d.ctx, "collect", c.id); e != nil {
@@ -297,7 +317,7 @@ func (d *Daemon) collectLoop(c loopCompletion) error {
 	}
 	s, ok := d.loops[c.id]
 	if !ok || !s.InFlight {
-		return fmt.Errorf("unexpected loop completion %s", c.id)
+		return fmt.Errorf("%w %s", errStaleLoop, c.id)
 	}
 	state := s.State
 	s.Complete(c.result, c.err, time.Now().UTC())

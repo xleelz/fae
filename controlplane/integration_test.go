@@ -215,13 +215,16 @@ func exerciseDurableJobs(t *testing.T, ctx context.Context, s *Store) {
 	t.Helper()
 	j := jobFixture()
 	a := audit()
-	a.Inputs = json.RawMessage(`{"id":"job"}`)
-	admitted, e := s.AdmitJob(ctx, a, "admission-key", j)
-	if e != nil {
+	if _, e := s.WriteWorkflow(ctx, a, "wf", "wf", json.RawMessage(`{"id":"wf"}`), func([]byte) error { return nil }); e != nil {
 		t.Fatal(e)
 	}
+	a.Inputs = json.RawMessage(`{"id":"job"}`)
+	admitted, e := s.AdmitJob(ctx, a, "admission-key", j)
+	if e != nil || admitted.MoleculeID == "" {
+		t.Fatal(admitted, e)
+	}
 	admitted.State = "Doing"
-	admitted.Payload = json.RawMessage(`{"stage":1}`)
+	admitted.Payload = taskPayload("job", "Doing", map[string]any{"kind": "transition", "stage": "Pending", "from": "Pending", "to": "Doing", "attempt": 1, "cause": "start"})
 	saved, e := s.SaveJob(ctx, a, admitted, 1)
 	if e != nil || saved.Version != 2 {
 		t.Fatal(saved, e)
@@ -233,7 +236,7 @@ func exerciseDurableJobs(t *testing.T, ctx context.Context, s *Store) {
 	if _, e = s.SaveJob(ctx, a, admitted, 1); !errors.Is(e, ErrConflict) {
 		t.Fatal("stale save", e)
 	}
-	j.Payload = json.RawMessage(`{"stage":2}`)
+	j.Payload = taskPayload("job", "Pending", map[string]any{"kind": "park", "stage": "Pending", "attempt": 1, "cause": "different"})
 	a.Inputs = json.RawMessage(`{"id":"different"}`)
 	if _, e = s.AdmitJob(ctx, a, "admission-key", j); !errors.Is(e, ErrIdempotencyConflict) {
 		t.Fatal("key conflict", e)
@@ -241,7 +244,7 @@ func exerciseDurableJobs(t *testing.T, ctx context.Context, s *Store) {
 	// Fail after the snapshot UPDATE and blob write but before event/audit commit.
 	broken := saved
 	broken.State = "Broken"
-	broken.Payload = json.RawMessage(`{"stage":99}`)
+	broken.Payload = taskPayload("job", "Broken", map[string]any{"kind": "transition", "stage": "Pending", "from": "Pending", "to": "Doing", "attempt": 1, "cause": "start"}, map[string]any{"kind": "transition", "stage": "Doing", "from": "Doing", "to": "Broken", "attempt": 1, "cause": "break"})
 	broken.Events = []Event{{Kind: "", Payload: json.RawMessage(`{}`)}}
 	if _, e = s.SaveJob(ctx, a, broken, 2); e == nil {
 		t.Fatal("invalid event committed")

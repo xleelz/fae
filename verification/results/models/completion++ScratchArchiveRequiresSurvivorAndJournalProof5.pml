@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,7 +30,7 @@ proctype ScratchArchiveRequiresSurvivorAndJournalProof5(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1162 = [1] of {int}->
+	chan child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1182 = [1] of {int}->
 	chan child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1061 = [1] of {int}->
 	chan child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof960 = [1] of {int}->
 	Chandef deleted_ch->
@@ -43,13 +43,13 @@ proctype ScratchArchiveRequiresSurvivorAndJournalProof5(chan child) {
 	run receiver(child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof960)->
 	run AnonymousScratchArchiveRequiresSurvivorAndJournalProof106(survivor_ch,unreferenced_ch,deleted_ch,child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1061)->
 	run receiver(child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1061)->
-	run AnonymousScratchArchiveRequiresSurvivorAndJournalProof116(survivor_ch,unreferenced_ch,deleted_ch,child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1162)->
-	run receiver(child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1162)->
+	run AnonymousScratchArchiveRequiresSurvivorAndJournalProof118(deleted_ch,survivor_ch,unreferenced_ch,child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1182)->
+	run receiver(child_AnonymousScratchArchiveRequiresSurvivorAndJournalProof1182)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:12:2 */
-	:: deleted_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:12:2 */->
-	:: deleted_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:12:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:12:2 */
+	:: deleted_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:12:2 */->
+	:: deleted_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:12:2 */ -> 
 		deleted_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -63,12 +63,12 @@ proctype AnonymousScratchArchiveRequiresSurvivorAndJournalProof96(Chandef surviv
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:9:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:9:14 */
 	:: survivor_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:9:14 */
 	:: survivor_ch.sync!false -> 
 		survivor_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:9:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -81,17 +81,17 @@ proctype AnonymousScratchArchiveRequiresSurvivorAndJournalProof106(Chandef survi
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:10:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:10:14 */
 	:: unreferenced_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:10:14 */
 	:: unreferenced_ch.sync!false -> 
 		unreferenced_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:10:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:10:14 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousScratchArchiveRequiresSurvivorAndJournalProof116(Chandef survivor_ch;Chandef unreferenced_ch;Chandef deleted_ch;chan child) {
+proctype AnonymousScratchArchiveRequiresSurvivorAndJournalProof118(Chandef deleted_ch;Chandef survivor_ch;Chandef unreferenced_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -99,26 +99,26 @@ proctype AnonymousScratchArchiveRequiresSurvivorAndJournalProof116(Chandef survi
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:14 */
-	:: survivor_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:14 */->
-	:: survivor_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:14 */
+	:: survivor_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:14 */->
+	:: survivor_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:14 */ -> 
 		survivor_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:26 */
-	:: unreferenced_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:26 */->
-	:: unreferenced_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:26 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:26 */
+	:: unreferenced_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:26 */->
+	:: unreferenced_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:26 */ -> 
 		unreferenced_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:42 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:42 */
 	:: deleted_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:42 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:42 */
 	:: deleted_ch.sync!false -> 
 		deleted_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/scratch_archive.go:11:42 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/scratch_archive.go:11:42 */
 	fi->
 	stop_process: skip->
 	child!0

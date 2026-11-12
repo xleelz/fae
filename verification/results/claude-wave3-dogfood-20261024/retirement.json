@@ -1,0 +1,127 @@
+{
+  "result": {
+    "transferred": {
+      "dependent_effect": "transferred",
+      "dependents": [
+        "retire-dependent"
+      ],
+      "held_dependents": [],
+      "id": "retire-old",
+      "reason_class": "superseded-by",
+      "reference": "retire-successor",
+      "state": "Retired",
+      "version": 3
+    },
+    "held": {
+      "dependent_effect": "held",
+      "held_dependents": [
+        "retire-dependent"
+      ]
+    },
+    "hidden_by_default": true,
+    "dependent_withheld": true
+  },
+  "after_transfer": {
+    "dead_edges": [],
+    "deferrals": {},
+    "edges": [
+      {
+        "from": "retire-successor",
+        "to": "retire-dependent",
+        "kind": "blocking"
+      }
+    ],
+    "items": [
+      {
+        "id": "retire-dependent",
+        "source_ref": "",
+        "priority": 10,
+        "acceptance_digest": "cfb3b04c8a04ff2016965127a2b07fb6425cb53634f5d11cd6bef7176e1f07f6",
+        "write_class": "",
+        "state": "Pending",
+        "admitted_at": "2026-10-24T02:46:26.38154Z"
+      },
+      {
+        "id": "retire-old",
+        "source_ref": "",
+        "priority": 10,
+        "acceptance_digest": "cfb3b04c8a04ff2016965127a2b07fb6425cb53634f5d11cd6bef7176e1f07f6",
+        "write_class": "",
+        "state": "Retired",
+        "admitted_at": "2026-10-24T02:46:26.38154Z"
+      },
+      {
+        "id": "retire-successor",
+        "source_ref": "",
+        "priority": 10,
+        "acceptance_digest": "cfb3b04c8a04ff2016965127a2b07fb6425cb53634f5d11cd6bef7176e1f07f6",
+        "write_class": "",
+        "state": "Pending",
+        "admitted_at": "2026-10-24T02:46:26.38154Z"
+      }
+    ],
+    "ready": [
+      "retire-successor"
+    ],
+    "withheld": {
+      "retire-dependent": [
+        "retire-successor: Pending"
+      ]
+    }
+  },
+  "final": {
+    "dead_edges": [
+      {
+        "edge": {
+          "from": "retire-successor",
+          "to": "retire-dependent",
+          "kind": "blocking"
+        },
+        "prerequisite_outcome": "Retired"
+      }
+    ],
+    "deferrals": {},
+    "edges": [
+      {
+        "from": "retire-successor",
+        "to": "retire-dependent",
+        "kind": "blocking"
+      }
+    ],
+    "items": [
+      {
+        "id": "retire-dependent",
+        "source_ref": "",
+        "priority": 10,
+        "acceptance_digest": "cfb3b04c8a04ff2016965127a2b07fb6425cb53634f5d11cd6bef7176e1f07f6",
+        "write_class": "",
+        "state": "Pending",
+        "admitted_at": "2026-10-24T02:46:26.38154Z"
+      },
+      {
+        "id": "retire-old",
+        "source_ref": "",
+        "priority": 10,
+        "acceptance_digest": "cfb3b04c8a04ff2016965127a2b07fb6425cb53634f5d11cd6bef7176e1f07f6",
+        "write_class": "",
+        "state": "Retired",
+        "admitted_at": "2026-10-24T02:46:26.38154Z"
+      },
+      {
+        "id": "retire-successor",
+        "source_ref": "",
+        "priority": 10,
+        "acceptance_digest": "cfb3b04c8a04ff2016965127a2b07fb6425cb53634f5d11cd6bef7176e1f07f6",
+        "write_class": "",
+        "state": "Retired",
+        "admitted_at": "2026-10-24T02:46:26.38154Z"
+      }
+    ],
+    "ready": [],
+    "withheld": {
+      "retire-dependent": [
+        "retire-successor: Retired"
+      ]
+    }
+  }
+}

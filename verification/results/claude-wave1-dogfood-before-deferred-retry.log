@@ -1,0 +1,33 @@
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+{"provider": "claude", "model": "claude-opus-5-5", "herdr_version": "herdr 0.9.5", "provider_version": "2.1.308 (Claude Code)", "adapter": "herdr", "scratch": "/var/tmp/fhd-ozk7mdco", "status": "failed", "task_ids": ["cron-7d533ed758e7c6b84e828429-0", "provider-beta"], "target_configs": {"revision_1": {"id": "dogfood-target", "revision": 1, "hash": "f391ea32d9b840604ba05c4f421a4ea05844696f1aa199a69f1e025697912083", "retired": false}, "revision_2": {"id": "dogfood-target", "revision": 2, "hash": "6ee134a3d5694e4d729da5d8bf21efe9f7b764ec2560ad557cc18e994157de00", "retired": false}, "pinned_tasks": []}, "error": "host admission: IOPressureHold\n"}
+Traceback (most recent call last):
+  File "/home/lbethay/workplace/fae/scripts/dogfood.py", line 351, in <module>
+    try:call('workspace','review-prepare','--task',beta_id,'--run-id','dogfood','--adapter','dogfood-adapter','--adapter-revision','1','--adapter-hash',adapter_v1['hash'],'--authorizing-message','authorization',timeout=120)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lbethay/workplace/fae/scripts/dogfood.py", line 130, in call
+    if r.returncode:raise RuntimeError(r.stderr)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: host admission: IOPressureHold
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/lbethay/workplace/fae/scripts/dogfood.py", line 353, in <module>
+    assert provision_calls and len(provision_calls)==1, str(err)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: host admission: IOPressureHold
+
+dogfood exit=1

@@ -6,15 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controlplane"
-	"github.com/xleelz/fae/engine"
-	"github.com/xleelz/fae/execution"
-	"github.com/xleelz/fae/workflow"
 )
 
 const retentionScheduleKey = "backup-retention-schedule"
@@ -62,6 +57,7 @@ func (d *Daemon) saveRetentionSchedule(ctx context.Context, s RetentionScheduleR
 	if e != nil {
 		return e
 	}
+	defer d.wakeRetentionSchedule()
 	return d.store.PutMarker(ctx, a, retentionScheduleKey, raw)
 }
 func (d *Daemon) retentionRecurrenceAuthority(ctx context.Context, message string) error {
@@ -118,7 +114,7 @@ func (d *Daemon) backupRetentionScheduleRPC(ctx context.Context, r api.Request) 
 	if e != nil {
 		return nil, e
 	}
-	if !d.retentionScheduleMu.TryLock() {
+	if !scheduleControlLock(ctx, &d.retentionScheduleMu, &d.retentionControls) {
 		return nil, errors.New("retention schedule running; retry control after current run")
 	}
 	defer d.retentionScheduleMu.Unlock()
@@ -172,17 +168,13 @@ func (d *Daemon) tickRetentionSchedule(ctx context.Context, now time.Time) error
 	}
 	d.mu.Lock()
 	draining := d.draining
+	held, heldErr := d.maintenanceHeld()
 	d.mu.Unlock()
-	if draining {
-		return nil
-	}
-	if _, e := os.Stat(filepath.Join(d.layout.Root, "maintenance")); e == nil {
-		return nil
-	} else if !os.IsNotExist(e) {
-		return e
+	if draining || held {
+		return heldErr
 	}
 
-	if !d.retentionScheduleMu.TryLock() {
+	if !scheduleRunLock(&d.retentionScheduleMu, &d.retentionControls) {
 		return nil
 	}
 	defer d.retentionScheduleMu.Unlock()
@@ -199,6 +191,7 @@ func (d *Daemon) tickRetentionSchedule(ctx context.Context, now time.Time) error
 		s.LastError = fmt.Sprint(authErr)
 		return d.saveRetentionSchedule(ctx, s, controlplane.Audit{Actor: "daemon", Action: "retention schedule authority", MessageID: s.AuthorizingMessage, Outcome: "blocked"})
 	}
+	unclaimed := s
 	s.Running = true
 	s.RunCount++
 	s.LastStarted = now.UTC()
@@ -212,11 +205,19 @@ func (d *Daemon) tickRetentionSchedule(ctx context.Context, now time.Time) error
 	var runErr error
 	if d.live != nil && d.live.guard != nil {
 		sid := fmt.Sprintf("retention-schedule-%d-%d", s.LastStarted.UnixNano(), s.RunCount)
-		release, e := d.live.guard.Acquire(ctx, engine.Dispatch{ID: sid, TaskID: sid, Config: workflow.Stage{Weight: 1}}, execution.Binding{}, engine.Session{ID: sid})
-		runErr = e
-		if e == nil {
-			defer release()
+		release, e := d.live.guard.AcquireHostIO(ctx, sid)
+		if e != nil {
+			// Host admission deferred the run before any write (FAE-HOST-002,
+			// -010). Like a park it consumes no run: the claim is withdrawn and
+			// a later tick retries, as the replication schedule does.
+			unclaimed.LastError = e.Error()
+			audit.Outcome = "deferred"
+			if saveErr := d.saveRetentionSchedule(ctx, unclaimed, audit); saveErr != nil {
+				return saveErr
+			}
+			return e
 		}
+		defer release()
 	}
 	var preview BackupRetentionResult
 	if runErr == nil {
@@ -235,6 +236,11 @@ func (d *Daemon) tickRetentionSchedule(ctx context.Context, now time.Time) error
 	}
 	s.Running = false
 	s.LastFinished = time.Now().UTC()
+	// The interval runs from completion as well: runs never follow each other
+	// back to back, so controls and status see the schedule idle between runs.
+	if next := s.LastFinished.Add(time.Duration(s.IntervalSeconds) * time.Second); next.After(s.NextAt) {
+		s.NextAt = next
+	}
 	audit.Outcome = "completed"
 	if runErr != nil {
 		s.LastError = runErr.Error()
@@ -245,19 +251,4 @@ func (d *Daemon) tickRetentionSchedule(ctx context.Context, now time.Time) error
 		return e
 	}
 	return runErr
-}
-func (d *Daemon) maintainRetentionSchedule() {
-	defer d.workers.Done()
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-d.ctx.Done():
-			return
-		case now := <-ticker.C:
-			ctx, cancel := context.WithTimeout(d.ctx, 2*time.Minute)
-			_ = d.tickRetentionSchedule(ctx, now)
-			cancel()
-		}
-	}
 }

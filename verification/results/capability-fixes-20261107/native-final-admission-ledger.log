@@ -1,0 +1,16 @@
+=== RUN   TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative
+=== RUN   TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/unused-writable-root
+=== RUN   TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-readonly-root
+=== RUN   TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-role-root
+=== RUN   TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-binding-root
+=== RUN   TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-template-root
+--- PASS: TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative (1.30s)
+    --- PASS: TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/unused-writable-root (0.00s)
+    --- PASS: TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-readonly-root (0.00s)
+    --- PASS: TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-role-root (0.00s)
+    --- PASS: TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-binding-root (0.00s)
+    --- PASS: TestIsolationAdmissionHostCommandUsesOnlySelectedReadRootsNative/selected-template-root (0.00s)
+=== RUN   TestWorkflowSlotsNativeHeldNextStageIgnoresLockedLedgerAndIdleRoundsDoNotWrite
+--- PASS: TestWorkflowSlotsNativeHeldNextStageIgnoresLockedLedgerAndIdleRoundsDoNotWrite (6.71s)
+PASS
+ok  	github.com/xleelz/fae/daemon	8.024s

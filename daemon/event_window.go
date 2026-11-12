@@ -59,25 +59,3 @@ func (d *Daemon) advanceEventWindow(ctx context.Context) error {
 	_, err := d.store.EventWindow(ctx, age, count, time.Now().UTC())
 	return err
 }
-func (d *Daemon) maintainEventWindow(store *controlplane.Store) {
-	defer d.workers.Done()
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-d.ctx.Done():
-			return
-		case <-ticker.C:
-			ctx, cancel := context.WithTimeout(d.ctx, 5*time.Second)
-			age, count := d.config.EventRetentionAge, d.config.EventRetentionCount
-			if age == 0 {
-				age = 24 * time.Hour
-			}
-			if count == 0 {
-				count = 100000
-			}
-			_, _ = store.EventWindow(ctx, age, count, time.Now().UTC())
-			cancel()
-		}
-	}
-}

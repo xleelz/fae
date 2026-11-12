@@ -1,0 +1,87 @@
+{
+  "before": {
+    "BinaryHash": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+    "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:1317161",
+    "Workspace": "/var/tmp/fhd-6n4f6uem/repo",
+    "Holds": null,
+    "PID": 618835,
+    "DoltPID": 618864,
+    "OldPID": 0,
+    "DriveAlive": true,
+    "DriveGeneration": 1,
+    "DriveCause": "",
+    "DriveRounds": 4,
+    "LastTransition": "2026-10-22T03:05:09.183611339Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "394d2f059655393e926e7b78be82f9ce0009c4e0761b95dc6404cb20b5a995f4",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "stopped": {
+    "BinaryHash": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+    "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:1317161",
+    "Workspace": "/var/tmp/fhd-6n4f6uem/repo",
+    "Holds": null,
+    "PID": 618835,
+    "DoltPID": 618864,
+    "OldPID": 0,
+    "DriveAlive": false,
+    "DriveGeneration": 1,
+    "DriveCause": "operator-stop",
+    "DriveRounds": 4,
+    "LastTransition": "2026-10-22T03:05:09.183611339Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "394d2f059655393e926e7b78be82f9ce0009c4e0761b95dc6404cb20b5a995f4",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "resumed": {
+    "BinaryHash": "53d864f33474cf16581dedcc78890316e8773a7c2eb996d0ca2e5faa2c2c64aa",
+    "ProcessBirth": "5244cb47-b59c-4dd5-883c-edcfbaf67257:1317161",
+    "Workspace": "/var/tmp/fhd-6n4f6uem/repo",
+    "Holds": null,
+    "PID": 618835,
+    "DoltPID": 618864,
+    "OldPID": 0,
+    "DriveAlive": true,
+    "DriveGeneration": 2,
+    "DriveCause": "operator-stop",
+    "DriveRounds": 4,
+    "LastTransition": "2026-10-22T03:05:09.183611339Z",
+    "InFlight": 2,
+    "Maintenance": null,
+    "EnvironmentHash": "394d2f059655393e926e7b78be82f9ce0009c4e0761b95dc6404cb20b5a995f4",
+    "Consistent": true,
+    "Unsafe": null,
+    "QA": null,
+    "Overlap": null
+  },
+  "retained_dispatches": {
+    "cron-7d533ed758e7c6b84e828429-0": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2",
+    "provider-beta": "provider-beta/82c4997667c4b7bc710647a36bec69260d93117daf185bac62be14bb0ab1c01d/1"
+  },
+  "daemon_and_plane_unchanged": true,
+  "retained_provider_sessions": [
+    "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2/session/0"
+  ],
+  "provider_start_evidence": [
+    {
+      "session_id": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2/session/0",
+      "dispatch_id": "cron-7d533ed758e7c6b84e828429-0/a5f19b121bc586f0471d35c626dcbf3f1207f182791a0875be7282a840d46be4/2",
+      "events": [
+        {
+          "type": "system",
+          "subtype": "init",
+          "session_id": "0930096b-62cd-4cab-8f19-088aeac38d12"
+        }
+      ]
+    }
+  ],
+  "deferred_before_execution": []
+}

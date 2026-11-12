@@ -39,7 +39,7 @@ func TestPermissionTableEveryActorAndAction(t *testing.T) {
 				req := httptest.NewRequest("POST", "/v1/rpc", strings.NewReader(string(raw)))
 				req.Header.Set("Authorization", hex.EncodeToString(token))
 				server.ServeHTTP(httptest.NewRecorder(), req)
-				want := actor == "operator" || (actor == "controller" && action != "Message" && action != "ProphetChat") || p.Read || (actor == "prophet" && p.Prophet)
+				want := actor == "operator" || (actor == "controller" && action != "ProphetChat") || p.Read || (actor == "prophet" && p.Prophet)
 				if (err == nil) != want {
 					t.Fatalf("allowed=%v want=%v error=%v", err == nil, want, err)
 				}

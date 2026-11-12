@@ -38,10 +38,20 @@ payloads; unavailable readback blocks task mutation, collection, admission,
 dispatch and deployment until resolved. A daemon restart loads the plane again.
 Messages and read-only inspection remain available during this barrier.
 
-Upsert can change priority, source reference and write class. Acceptance content
-and title can change only before the first dispatch; later updates must use the
-append-only context controls. Workflow binding, target, run identity, tree and
-disposition cannot change. Terminal identities must be re-admitted with a new ID.
+Upsert can change priority, source reference, write class, title and acceptance
+content at any time (FAE-ROB-040): an acceptance edit reaches the next composed
+brief, headed with its SHA-256 digest, without a restart, while a turn already in
+flight keeps the text it was dispatched with; the item's acceptance digest is
+updated in the same write. A structured field the item names replaces the pinned
+one from the task's next dispatch: a turn in flight keeps the declared files,
+test filter and test shape it was dispatched under (`superseded_fields` in the
+row), as it keeps its acceptance text ([TASKS.md](TASKS.md) says when each
+field takes effect). An upsert that changes a field records a `task-edited` event
+naming the fields (`"via": "BacklogAdmit"`) in the same transaction. Workflow
+binding, target, run identity, tree and disposition cannot change. To create,
+edit, delete or read one task while the daemon runs, see the
+[live task verbs](TASKS.md) (`fae task create|update|delete|show`), which use
+this validation and upsert. Terminal identities must be re-admitted with a new ID.
 All item writes are atomic; a validation failure returns one error and admits zero
 items. Success reports admitted, updated and refused counts.
 
@@ -50,7 +60,25 @@ items. Success reports admitted, updated and refused counts.
 dependent requires the operator's explicit `--accept-in-flight`. This accepts a
 future Pending release condition; it does not interrupt an active turn. Controllers
 cannot supply that operator override. Missing-edge removal and duplicate addition
-are refused. `fae backlog show [--state STATE]` reports items, edges, ready IDs,
+are refused. Each edit records a `backlog_edge_changed` event naming the edge
+(`from`, `to`, `kind`, `removed`) on both of its tasks, which their TaskGet edits
+list; an admission's new edge to a task already on the plane records one on that
+task. The result reports the dependent's readiness before and after
+(state, `ready`, `withheld_by`) and the effect; finished prerequisites that
+startup did not materialise are read from the plane by key, so a restart does
+not change it. An edge edit never reads the whole graph (FAE-CP-009). It
+checks its own two tasks, reads its dependent's edges by key, and for a
+blocking add looks for the cycle the edge would close: a walk from the edge's
+two ends, the dependent's dependents forward and the prerequisite's
+prerequisites back, one keyed statement per level and the cheaper side first,
+until the two meet (the refusal names the cycle) or either side runs out.
+Relates edges are not followed and never close a cycle. Other edges in the
+graph are not validated by an edit, so an unrelated edge naming a quarantined
+task does not refuse it. Before the writer lock the edit reads whether the
+plane stores its two tasks, the dependent's edges and the rows of the dependent
+and its prerequisites. Under the lock it reads the dependent's edges again,
+re-checks those rows (reading any it missed) and runs the cycle walk; the walk
+is not read before the lock. `fae backlog show [--state STATE]` reports items, edges, ready IDs,
 withheld prerequisites/outcomes, dead edges/outcomes and deferrals.
 
 Every job checkpoint mirrors its lifecycle state in its backlog row in the same
@@ -62,10 +90,25 @@ mutation/audit. Missing landing proof and genuinely non-Done tasks are reported
 and left alone. The same audited pass runs once during startup; it does not run
 as a periodic background repair.
 
-Bounds: payloads <= 64 KiB, 1..1000 items and <= 10000 supplied edges; graph reads
-fail closed above 100000 rows in either table. Versioned Local target configuration selectors are supported and pinned; see
-[target policies](TARGETS.md). Unsupported structured test-command admission fields
-are rejected rather than silently accepted. Ordinary `run` admissions can be dependency
+Bounds: payloads <= 64 KiB, 1..1000 items and <= 10000 supplied edges; the
+whole-graph reads of admission, `backlog show` and landing fail closed above
+100000 rows in either table, and an edge edit's walk above 100000 tasks or
+edge rows. Versioned Local target configuration selectors are supported and pinned; see
+[target policies](TARGETS.md). The optional structured fields (FAE-CLI-014) are
+validated and pinned with the item: `declared_files` (at most 1000 unique clean
+relative paths), `test_filter` (a regular expression of at most 1024 bytes that
+compiles both as a whole and at each `-run` `/` and `|` level) and `test_shape` (one of the supported workflow or landing test shapes (`go-unit`, `go-integration`, `script`, `runner`, `run`, `pkg`, `file`, `custom`); consumed during `HostCommand` execution and landing test receipt resolution); a malformed value is
+refused. Landing uses the declared files, test filter and test shape in place of the target's
+defaults (recording a `landing-test-receipt-<id>` marker and `landing-test-shape/<landing>/<task>` receipt in the control-plane store), and a live instance without pinned `files` takes the task's scope from
+the declared files ([LIVE.md](../LIVE.md)); during live `HostCommand` test runs, the task's effective `test_shape` (`Admission.TestShape`, or `SupersededFields.TestShape` while an edited turn is in flight) is resolved and recorded.
+The landing's filter gate hands `test_filter` to `go test -run` as written and
+counts the tests it names the way `-run` reads it: split on `|` and `/` outside
+brackets and parentheses, each level matched unanchored, so `TestA` matches by
+substring (`TestAB` too) and `^TestA$` names one test; a filter with no `/`
+names top-level tests only (their subtests run and fail with them), and
+`TestA/case` names TestA's subtests matching `case`. Every test named must run
+and pass, and a filter naming none holds the landing. A task without a filter
+lands on its derived-scope RED test, quoted and anchored. Ordinary `run` admissions can be dependency
 endpoints but receive a backlog item row only when explicitly upserted through
 backlog admission. Cleanup failures can leave an owned unadmitted worktree for
 inspection; ambiguous SQL outcomes intentionally preserve worktrees.

@@ -56,11 +56,11 @@ func TestReplicationScheduleNativeUncertainRestartFairness(t *testing.T) {
 	}()
 	authorize(t, d)
 	scheduleGrant(t, d, "replicate-schedule")
-	first, e := d.backupPlane(ctx)
+	first, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
-	second, e := d.backupPlane(ctx)
+	second, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -137,12 +137,12 @@ func TestReplicationScheduleNativeUncertainRestartFairness(t *testing.T) {
 	d.mu.Lock()
 	d.draining = false
 	d.mu.Unlock()
-	os.WriteFile(filepath.Join(d.layout.Root, "maintenance"), nil, 0600)
+	beginMaintenance(t, d)
 	if e = d.tickReplicationSchedule(ctx, s.NextAt); e != nil {
 		t.Fatal(e)
 	}
-	os.Remove(filepath.Join(d.layout.Root, "maintenance"))
-	if e = d.tickReplicationSchedule(ctx, s.NextAt); e == nil {
+	endMaintenance(t, d)
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, s.NextAt) }); e == nil {
 		t.Fatal("uncertain upload succeeded")
 	}
 	s, e = d.readReplicationSchedule(ctx)
@@ -186,7 +186,7 @@ func TestReplicationScheduleNativeUncertainRestartFairness(t *testing.T) {
 	}
 	absent = true
 	mu.Unlock()
-	if e = d.tickReplicationSchedule(ctx, recovered.NextAt); e == nil {
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, recovered.NextAt) }); e == nil {
 		t.Fatal("missing remote proof accepted")
 	}
 	s, e = d.readReplicationSchedule(ctx)
@@ -196,21 +196,21 @@ func TestReplicationScheduleNativeUncertainRestartFairness(t *testing.T) {
 	mu.Lock()
 	absent = false
 	mu.Unlock()
-	if e = d.tickReplicationSchedule(ctx, s.NextAt); e != nil {
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, s.NextAt) }); e != nil {
 		t.Fatal(e)
 	}
 	s, e = d.readReplicationSchedule(ctx)
 	if e != nil || s.Pending != nil || s.LastBackup != first.Path {
 		t.Fatal("pending not completed", s, e)
 	}
-	if e = d.tickReplicationSchedule(ctx, s.NextAt); e != nil {
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, s.NextAt) }); e != nil {
 		t.Fatal(e)
 	}
 	s, e = d.readReplicationSchedule(ctx)
 	if e != nil || s.LastBackup != second.Path {
 		t.Fatal("queue did not advance fairly", s, e)
 	}
-	if e = d.tickReplicationSchedule(ctx, s.NextAt); e != nil {
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, s.NextAt) }); e != nil {
 		t.Fatal(e)
 	}
 	mu.Lock()
@@ -231,7 +231,7 @@ func TestReplicationScheduleNativeSelectedBeforeOutboxAndFreshAuthority(t *testi
 		}
 	}()
 	scheduleGrant(t, d, "grant")
-	backup, e := d.backupPlane(ctx)
+	backup, e := backupAdmitted(t, ctx, d)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -342,12 +342,12 @@ func TestReplicationScheduleNativeSelectedBeforeOutboxAndFreshAuthority(t *testi
 	b.Created = b.Created.Add(time.Second)
 	changed, _ := json.Marshal(b)
 	os.WriteFile(manifest, changed, 0600)
-	if e = d.tickReplicationSchedule(ctx, s.NextAt); e == nil {
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, s.NextAt) }); e == nil {
 		t.Fatal("selected manifest substitution accepted")
 	}
 	os.WriteFile(manifest, original, 0600)
 	s = replicationScheduleCall(t, d, ReplicationScheduleParams{Action: "resume", AuthorizingMessage: "fresh"})
-	if e = d.tickReplicationSchedule(ctx, s.NextAt); e != nil {
+	if e = tickAdmitted(t, "replication", func() error { return d.tickReplicationSchedule(ctx, s.NextAt) }); e != nil {
 		t.Fatal(e)
 	}
 	mu.Lock()
@@ -355,4 +355,77 @@ func TestReplicationScheduleNativeSelectedBeforeOutboxAndFreshAuthority(t *testi
 		t.Error("selected-before-outbox failed exact once", puts)
 	}
 	mu.Unlock()
+}
+
+// A scheduled upload deferred by host admission keeps its durable selection
+// but consumes no run and no interval, like a park; a later tick uploads it
+// exactly once.
+func TestReplicationScheduleDeferredUploadConsumesNoRun(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	d, e := Start(ctx, cfg)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer stop(t, d)
+	scheduleGrant(t, d, "grant")
+	backup, e := admitted(t, "plane backup", func() (planeBackup, error) { return backupAdmitted(t, ctx, d) })
+	if e != nil {
+		t.Fatal(e)
+	}
+	var mu sync.Mutex
+	puts := 0
+	var data []byte
+	var receipt BackupReplicationReceipt
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		defer mu.Unlock()
+		if r.Method == http.MethodPut {
+			puts++
+			data, _ = io.ReadAll(r.Body)
+			sum := sha256.Sum256(data)
+			id := hex.EncodeToString(sum[:])
+			receipt = BackupReplicationReceipt{ID: id, SHA256: id, ManifestSHA256: r.Header.Get("X-Fae-Manifest-SHA256"), Size: int64(len(data)), State: "stored"}
+			json.NewEncoder(w).Encode(receipt)
+			return
+		}
+		if strings.HasSuffix(r.URL.Path, "/content") {
+			w.Write(data)
+			return
+		}
+		json.NewEncoder(w).Encode(receipt)
+	}))
+	defer server.Close()
+	s := replicationScheduleCall(t, d, ReplicationScheduleParams{Action: "configure", Endpoint: server.URL, IntervalSeconds: 3600, AuthorizingMessage: "grant"})
+	// Selection passes; the upload's own admission, once the run is claimed,
+	// meets I/O pressure.
+	var deferUpload sync.Map
+	deferUpload.Store("on", true)
+	d.live.guard.observe = func(ctx context.Context) (hostguard.Sample, error) {
+		if on, _ := deferUpload.Load("on"); on == true {
+			if current, e := d.readReplicationSchedule(ctx); e == nil && current.Running {
+				return hostSample(20, 0.5), nil
+			}
+		}
+		return hostSample(1, 0.5), nil
+	}
+	if reason, deferred := deferredRefusal(d.tickReplicationSchedule(ctx, s.NextAt)); !deferred || reason != "IOPressure" {
+		t.Fatal("pressure did not defer the upload", reason)
+	}
+	after, e := d.readReplicationSchedule(ctx)
+	if e != nil || after.State != "active" || after.Running || after.RunCount != 0 || !after.NextAt.Equal(s.NextAt) || after.Pending == nil || after.Pending.Backup != backup.Path || !strings.Contains(after.LastError, "host admission: IOPressure") {
+		t.Fatal("deferred upload consumed a run or lost its selection", after, e)
+	}
+	deferUpload.Store("on", false)
+	if e = d.tickReplicationSchedule(ctx, s.NextAt); e != nil {
+		t.Fatal(e)
+	}
+	after, e = d.readReplicationSchedule(ctx)
+	if e != nil || after.RunCount != 1 || after.Pending != nil || after.LastBackup != backup.Path || after.LastError != "" || !after.NextAt.After(s.NextAt) {
+		t.Fatal("deferred upload not retried", after, e)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if puts != 1 {
+		t.Fatal("upload not exactly once", puts)
+	}
 }

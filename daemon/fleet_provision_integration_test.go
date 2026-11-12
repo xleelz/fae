@@ -135,11 +135,14 @@ func TestFleetProvisionNativeLostAckRetireRestartAdopt(t *testing.T) {
 		stage.Subject = alias
 		stage.Pins = tools[alias].Arguments
 		workflow.Stages["external"] = stage
+		planner := workflow.Roles["planner"]
+		planner.Profile.Effects = []string{alias}
+		workflow.Roles["planner"] = planner
 		raw, _ := json.Marshal(workflow)
 		if _, err = d.store.WriteWorkflow(ctx, controlplane.Audit{Actor: "operator", Action: "test workflow", Outcome: "ok"}, workflow.ID, workflow.ID, raw, validWorkflow); err != nil {
 			t.Fatal(err)
 		}
-		admission := AdmitParams{ID: "forbidden-" + alias, Mode: "Normal", WorkflowID: workflow.ID, TargetConfig: "fleet-stage-target", Destination: "main", PushNamespace: "fae/fleet", Content: "must refuse fleet hot path", AuthorizingMessage: "message"}
+		admission := AdmitParams{ID: "forbidden-" + alias, Mode: "Normal", DryRun: true, WorkflowID: workflow.ID, TargetConfig: "fleet-stage-target", Destination: "main", PushNamespace: "fae/fleet", Content: "must refuse fleet hot path", AuthorizingMessage: "message"}
 		if _, err = call(t, d, "Admit", admission, admission.ID); err == nil || !strings.Contains(err.Error(), "provision") {
 			t.Fatal("fleet stage not explicitly rejected", alias, err)
 		}

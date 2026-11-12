@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/domain"
 	"github.com/xleelz/fae/effects"
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/execution"
 	"github.com/xleelz/fae/kernel"
 	"github.com/xleelz/fae/workflow"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -25,7 +25,7 @@ func effectJob(t *testing.T, tree, base, target string) engine.Job {
 	if e != nil {
 		t.Fatal(e)
 	}
-	j.Base = base
+	j.Base, j.Disposition = base, domain.Disposition{Mode: domain.Local}
 	runner := engine.NewScripted(defaults.HappyScript())
 	for n := 0; n < 100; n++ {
 		var dispatch *engine.Dispatch
@@ -53,7 +53,7 @@ func effectJob(t *testing.T, tree, base, target string) engine.Job {
 	return j
 }
 func TestEffectCrashHelper(t *testing.T) {
-	path := os.Getenv("FAE_EFFECT_CRASH")
+	path := os.Getenv("EFFECT_CRASH")
 	if path == "" {
 		return
 	}
@@ -84,7 +84,9 @@ func TestEffectCrashHelper(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	phase := os.Getenv("FAE_EFFECT_PHASE")
+	phase := os.Getenv("EFFECT_PHASE")
+	tampered := strings.HasSuffix(phase, "-tampered")
+	phase = strings.TrimSuffix(phase, "-tampered")
 	target := "commit"
 	if strings.HasPrefix(phase, "host-") {
 		target = "format"
@@ -122,12 +124,14 @@ func TestEffectCrashHelper(t *testing.T) {
 	d.mu.Unlock()
 	dispatch := *j.InFlight
 	if strings.HasSuffix(phase, "completed") {
-		if _, e = d.live.Execute(ctx, dispatch); e != nil {
+		if _, e = executeAdmitted(t, ctx, d.live, dispatch); e != nil {
 			t.Fatal(e)
 		}
 	} else {
 		binding := execution.Binding{Worktree: w.Path, Base: j.Base, Document: j.Document, Mode: "local"}
-		if _, e = d.live.guard.Acquire(ctx, dispatch, binding, dispatch.Sessions[0]); e != nil {
+		if _, e = admitted(t, "effect admission", func() (func() error, error) {
+			return d.live.guard.Acquire(ctx, dispatch, binding, dispatch.Sessions[0])
+		}); e != nil {
 			t.Fatal(e)
 		}
 		if e = d.live.guard.Launching(ctx, dispatch.Sessions[0].ID); e != nil {
@@ -177,50 +181,35 @@ func TestEffectCrashHelper(t *testing.T) {
 			}
 		}
 	}
-	if e = os.WriteFile(path+".ready", payload, 0600); e != nil {
+	if tampered {
+		// A changed tree must defeat automatic receipt adoption at recovery.
+		os.WriteFile(filepath.Join(w.Path, "foreign"), []byte("changed"), 0600)
+	}
+	if e = writeReady(path+".ready", payload); e != nil {
 		t.Fatal(e)
 	}
 	select {}
 }
 func TestEffectSIGKILLBoundariesAndAuditedAdoption(t *testing.T) {
-	for _, phase := range []string{"prepared", "post-cas", "completed", "host-completed", "host-unrecorded", "integrate-post-cas", "integrate-completed"} {
+	for _, phase := range []string{"prepared", "post-cas", "completed", "completed-tampered", "host-completed", "host-unrecorded", "integrate-post-cas", "integrate-completed"} {
 		t.Run(phase, func(t *testing.T) {
 			cfg, ctx, _ := liveDaemonFixture(t)
 			path := filepath.Join(filepath.Dir(cfg.Workspace), "effect-crash.json")
 			raw, _ := json.Marshal(cfg)
 			os.WriteFile(path, raw, 0600)
-			exe, _ := os.Executable()
-			cmd := exec.Command(exe, "-test.run=^TestEffectCrashHelper$")
-			cmd.Env = append(os.Environ(), "FAE_EFFECT_CRASH="+path, "FAE_EFFECT_PHASE="+phase)
-			log, e := os.Create(path + ".log")
-			if e != nil {
-				t.Fatal(e)
-			}
-			defer log.Close()
-			cmd.Stdout = log
-			cmd.Stderr = log
-			if e = cmd.Start(); e != nil {
-				t.Fatal(e)
-			}
-			defer func() { cmd.Process.Kill(); cmd.Wait() }()
-			var prior envelope
-			deadline := time.Now().Add(30 * time.Second)
-			for {
+			helper := startSubprocess(t, "TestEffectCrashHelper", path+".log", "EFFECT_CRASH="+path, "EFFECT_PHASE="+phase)
+			var e error
+			helper.await(t, 30*time.Second+pressureAllowance, func() bool {
 				raw, e = os.ReadFile(path + ".ready")
-				if e == nil {
-					json.Unmarshal(raw, &prior)
-					break
-				}
-				if time.Now().After(deadline) {
-					b, _ := os.ReadFile(path + ".log")
-					t.Fatalf("helper %s", b)
-				}
-				time.Sleep(20 * time.Millisecond)
-			}
-			cmd.Process.Kill()
-			cmd.Wait()
+				return e == nil
+			})
+			var prior envelope
+			json.Unmarshal(raw, &prior)
+			helper.kill()
 			var d *Daemon
-			deadline = time.Now().Add(8 * time.Second)
+			// The killed helper's process watchdog stops its Dolt asynchronously;
+			// a loaded host can take a while, so this restart guard is generous.
+			deadline := time.Now().Add(30 * time.Second)
 			for {
 				d, e = Start(ctx, cfg)
 				if e == nil {
@@ -234,6 +223,57 @@ func TestEffectSIGKILLBoundariesAndAuditedAdoption(t *testing.T) {
 			defer stop(t, d)
 			if _, e = call(t, d, "Drain", map[string]string{"authorizing_message": "message"}, ""); e != nil {
 				t.Fatal(e)
+			}
+			dispatchID := prior.Job.InFlight.ID
+			recovered, e := d.store.GetJob(ctx, prior.Job.TaskID)
+			if e != nil {
+				t.Fatal(e)
+			}
+			var after envelope
+			json.Unmarshal(recovered.Payload, &after)
+			if phase == "completed" || phase == "host-completed" || phase == "integrate-completed" {
+				// FAE-ROB-012/-016: a completed daemon receipt with exact
+				// postconditions is adopted at recovery: nothing re-runs, no
+				// budget is charged and no operator accept is needed.
+				adopted, provenance := false, false
+				for _, h := range after.Job.History {
+					adopted = adopted || h.Kind == "effect-receipt-adopted" && h.DispatchID == dispatchID
+				}
+				for _, p := range after.Job.Provenance {
+					provenance = provenance || p.DispatchID == dispatchID
+				}
+				if !adopted || !provenance || after.Job.Failures["crash-recovery"] != 0 || len(after.Job.ResolvedDispatches) != 1 || (after.Job.InFlight != nil && after.Job.InFlight.ID == dispatchID) {
+					t.Fatal("completed receipt not adopted at recovery", after.Job.State, after.Job.Parked, after.Job.Reason, after.Job.Failures)
+				}
+				if _, e = call(t, d, "ResolveUncertain", ResolveUncertainParams{ID: prior.Job.TaskID, DispatchID: dispatchID, Action: "accept", AuthorizingMessage: "message"}, ""); e == nil {
+					t.Fatal("adopted effect still resolvable")
+				}
+				return
+			}
+			if phase == "host-unrecorded" {
+				// FAE-ROB-013: an interrupted QA run is infrastructure. With its
+				// workload proven retired on an unchanged tree it re-runs at
+				// recovery, without a failure verdict or an operator verb; the
+				// crash consumes only dispatch-recovery budget.
+				rerun := false
+				for _, h := range after.Job.History {
+					rerun = rerun || h.Kind == "crash-rerun" && h.DispatchID == dispatchID
+					if h.Kind == "failure" || h.Kind == "park" && h.DispatchID == dispatchID {
+						t.Fatal("interrupted QA charged a failure or parked", h)
+					}
+				}
+				if !rerun || after.Job.State == "Escalated" || after.Job.Failures["dispatch-recovery"] != 1 || after.Job.Failures["crash-recovery"] != 0 || len(after.Job.ResolvedDispatches) != 1 || after.Job.ResolvedDispatches[0].ID != dispatchID || (after.Job.InFlight != nil && after.Job.InFlight.ID == dispatchID) {
+					t.Fatal("interrupted QA not re-run at recovery", after.Job.State, after.Job.Parked, after.Job.Reason, after.Job.Failures)
+				}
+				if proofs, e := d.live.guard.journal.Entries(); e != nil || len(proofs) != 0 {
+					t.Fatal("unreleased effect lease", proofs, e)
+				}
+				return
+			}
+			// Without a completed receipt, or with changed postconditions, the
+			// conservative rule holds: the effect parks for the operator.
+			if !after.Job.Parked || after.Job.Reason != "UncertainDispatch" || after.Job.InFlight == nil || after.Job.InFlight.ID != dispatchID {
+				t.Fatal("unproven effect not parked", after.Job.State, after.Job.Parked, after.Job.Reason)
 			}
 			action := "accept"
 			if phase == "prepared" {
@@ -276,8 +316,28 @@ func TestEffectSIGKILLBoundariesAndAuditedAdoption(t *testing.T) {
 			if phase != "prepared" {
 				replay := p
 				replay.Action = "redispatch"
-				if _, e = call(t, d, "ResolveUncertain", replay, ""); e == nil {
+				if _, e = call(t, d, "ResolveUncertain", replay, ""); phase != "host-unrecorded" && e == nil {
 					t.Fatal("blindly replayed effect")
+				}
+				if phase == "host-unrecorded" {
+					// FAE-ROB-013: an interrupted QA run is infrastructure and
+					// re-runs on the unchanged tree without a failure verdict.
+					if e != nil {
+						t.Fatal("interrupted host command not re-runnable", e)
+					}
+					stored, e := d.store.GetJob(ctx, p.ID)
+					if e != nil {
+						t.Fatal(e)
+					}
+					var rerun envelope
+					json.Unmarshal(stored.Payload, &rerun)
+					if rerun.Job.InFlight != nil || rerun.Job.State == "Escalated" || len(rerun.Job.ResolvedDispatches) != 1 || rerun.Job.Failures[rerun.Job.ResolvedDispatches[0].Stage] != 0 {
+						t.Fatal("interrupted QA charged a failure or lost its record", rerun.Job.State, rerun.Job.Failures)
+					}
+					if proofs, e := d.live.guard.journal.Entries(); e != nil || len(proofs) != 0 {
+						t.Fatal("unreleased effect lease", proofs, e)
+					}
+					return
 				}
 				w, e := d.live.manager.Ensure(ctx, "effect-run", p.ID, cfg.Live.Base)
 				if e != nil {
@@ -362,5 +422,13 @@ func TestEffectIntentPreservesLargeIntegerIdentity(t *testing.T) {
 	}
 	if effectKey(*env.Job.InFlight) != effectKey(original.Dispatch) {
 		t.Fatal("uncertain envelope lost integer precision")
+	}
+}
+
+func TestAutoAdoptEffectGuardTruthTable(t *testing.T) {
+	for bits := 0; bits < 16; bits++ {
+		if CanAutoAdoptEffect(bits&1 != 0, bits&2 != 0, bits&4 != 0, bits&8 != 0) != (bits == 15) {
+			t.Fatal(bits)
+		}
 	}
 }

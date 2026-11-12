@@ -1,0 +1,487 @@
+{
+ "description": "The implementer stalls past its retry bound; the run escalates StallExhausted.",
+ "disposition": {
+  "live": false,
+  "mode": "Local"
+ },
+ "document": "local",
+ "execution": "live",
+ "expected": {
+  "detail": "implement stalled 3 times in one turn: 2 of 2 retries used; the bound is per turn, so the next turn starts a fresh one",
+  "dispatches": [
+   "intake",
+   "spec",
+   "spec-review",
+   "plan",
+   "test-first",
+   "run-red",
+   "freeze-red",
+   "implement",
+   "implement",
+   "implement"
+  ],
+  "gates": [
+   {
+    "result": {
+     "evidence_ids": [
+      "11a49f853eb8befe94fef278d487125cd20930b9e41c4c0934394443e7f00878"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "accepted"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "intake-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "514320ab6b5f9f4f53c047a698a2dcf4f1ca43a201833f8eb5d9bd7630cb4899"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "count",
+       "value": 2
+      },
+      {
+       "op": "literal",
+       "value": 2
+      }
+     ],
+     "passed": true,
+     "steps": 17,
+     "value": "true"
+    },
+    "stage": "spec-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "fe8007d3fcddd8d24fe4eac1242f85ad90fe4a6e9f5d58e855178ca0768be8dd"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 127
+      },
+      {
+       "op": "field",
+       "path": [
+        "matched_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "executed_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "expected_failure"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "test_in_source"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 23,
+     "value": "true"
+    },
+    "stage": "red-gate"
+   }
+  ],
+  "kind": "StallExhausted",
+  "state": "Escalated",
+  "transitions": [
+   {
+    "from": "Pending",
+    "to": "intake"
+   },
+   {
+    "from": "intake",
+    "to": "intake-gate"
+   },
+   {
+    "from": "intake-gate",
+    "to": "spec-loop"
+   },
+   {
+    "from": "spec-loop",
+    "to": "spec"
+   },
+   {
+    "from": "spec",
+    "to": "spec-review"
+   },
+   {
+    "from": "spec-review",
+    "to": "spec-gate"
+   },
+   {
+    "from": "spec-gate",
+    "to": "plan"
+   },
+   {
+    "from": "plan",
+    "to": "red-route"
+   },
+   {
+    "from": "red-route",
+    "to": "red-loop"
+   },
+   {
+    "from": "red-loop",
+    "to": "test-first"
+   },
+   {
+    "from": "test-first",
+    "to": "run-red"
+   },
+   {
+    "from": "run-red",
+    "to": "red-gate"
+   },
+   {
+    "from": "red-gate",
+    "to": "freeze-red"
+   },
+   {
+    "from": "freeze-red",
+    "to": "implement-loop"
+   },
+   {
+    "from": "implement-loop",
+    "to": "implement"
+   },
+   {
+    "from": "implement",
+    "kind": "StallExhausted",
+    "to": "Escalated"
+   }
+  ]
+ },
+ "name": "implement-stalls",
+ "script": {
+  "commit": [
+   {
+    "output": {
+     "files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "compare-red": [
+   {
+    "output": {}
+   }
+  ],
+  "format": [
+   {
+    "output": {
+     "new_debt": 0
+    }
+   }
+  ],
+  "freeze-red": [
+   {
+    "output": {}
+   }
+  ],
+  "implement": [
+   {
+    "class": "stall-retry",
+    "output": null
+   }
+  ],
+  "intake": [
+   {
+    "output": {
+     "accepted": true
+    }
+   }
+  ],
+  "integrate": [
+   {
+    "output": {
+     "landed": true,
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "merge": [
+   {
+    "output": {
+     "patch_identical": true,
+     "result": "clean"
+    }
+   }
+  ],
+  "oracle": [
+   {
+    "output": {
+     "approved": true,
+     "findings": [],
+     "rationale": "all fixture findings resolved"
+    }
+   }
+  ],
+  "plan": [
+   {
+    "output": {
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "steps": [
+      "test",
+      "implement"
+     ],
+     "test_placement": "answer_test.go"
+    }
+   }
+  ],
+  "post-merge-qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "reviews": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "dimension": "correctness",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "quality",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "security",
+      "findings": [],
+      "guidance": [],
+      "sensitive_domains": []
+     },
+     {
+      "approved": true,
+      "dimension": "architecture",
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "run-red": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 1,
+     "expected_failure": true,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": false,
+     "test_in_source": true
+    }
+   }
+  ],
+  "run-tests": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "spec": [
+   {
+    "output": {
+     "acceptance": [
+      "answer is 42"
+     ],
+     "contracts": [
+      "answer() int"
+     ],
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "no_red": false,
+     "required_tests": [
+      "TestBehavior"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "scope": "scripted rehearsal"
+    }
+   }
+  ],
+  "spec-review": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "findings": []
+     },
+     {
+      "approved": true,
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "test-first": [
+   {
+    "output": {
+     "declared_files": [
+      "answer_test.go"
+     ],
+     "expected_failure": "got 0 want 42",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior",
+     "test_shape": "go-unit"
+    }
+   }
+  ]
+ }
+}

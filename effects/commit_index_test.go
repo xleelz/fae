@@ -131,7 +131,7 @@ func TestCommitIndexForeignStagingAndLockPreserved(t *testing.T) {
 }
 
 func TestCommitIndexCrashHelper(t *testing.T) {
-	raw := os.Getenv("FAE_COMMIT_INDEX_CRASH")
+	raw := os.Getenv("COMMIT_INDEX_CRASH")
 	if raw == "" {
 		return
 	}
@@ -179,7 +179,7 @@ func TestCommitIndexCrashLockRefusesRecovery(t *testing.T) {
 	}
 	raw, _ := json.Marshal(struct{ Index, Path, Branch, SHA, Base string }{index, w.Path, w.Branch, p.SHA, s.Base})
 	cmd := exec.Command(os.Args[0], "-test.run=^TestCommitIndexCrashHelper$")
-	cmd.Env = append(os.Environ(), "FAE_COMMIT_INDEX_CRASH="+string(raw))
+	cmd.Env = append(os.Environ(), "COMMIT_INDEX_CRASH="+string(raw))
 	if err = cmd.Run(); err == nil {
 		t.Fatal("crash fixture survived")
 	}

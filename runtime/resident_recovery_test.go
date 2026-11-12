@@ -14,6 +14,7 @@ import (
 func retiredResidentFixture(t *testing.T) (*ResidentMultiplexer, *residentEntry, []processowner.Record) {
 	t.Helper()
 	m, l := residentFixture(t, "")
+	l.SessionPolicy = "workflow-global"
 	if _, e := m.Run(context.Background(), l); e != nil {
 		t.Fatal(e)
 	}

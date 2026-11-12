@@ -193,3 +193,111 @@ func TestTargetNativeGovernancePinningRetirement(t *testing.T) {
 		t.Fatal("binding lost on restart")
 	}
 }
+
+func targetV4(workspace string) TargetConfig {
+	c := targetFixture(workspace)
+	c.SchemaVersion = 4
+	build := []string{"go", "build", "./..."}
+	c.AllowedCommands = append(c.AllowedCommands, build, []string{"runner", "--case", "{{test-id}}", "--", "{{text}}"})
+	c.RequiredTests = []RequiredTest{{Name: "suite", Argv: defaults.TestCommand(), TimeoutSeconds: 900}, {Name: "daemon", Argv: defaults.TestCommand(), Paths: []string{"daemon/"}, TimeoutSeconds: 900}}
+	c.CompileCheck = &TargetCommand{Argv: build, TimeoutSeconds: 600}
+	c.DiffClassifier = &DiffClassifier{Code: []string{"**/*.go"}, NotCode: []string{"**/*_test.go", "**/testdata/**"}}
+	return c
+}
+
+// Schema 4 adds typed shapes and QA/commit policy; earlier schemas refuse it,
+// so stored v1-v3 revisions keep their exact meaning (FAE-WF-035, -085).
+func TestTargetSchemaFourPolicy(t *testing.T) {
+	good := targetV4("/repo")
+	raw, _ := json.Marshal(good)
+	if _, e := parseTarget(raw); e != nil {
+		t.Fatal(e)
+	}
+	for name, mutate := range map[string]func(*TargetConfig){
+		"v1 required tests": func(c *TargetConfig) {
+			c.SchemaVersion = 1
+			c.AllowedCommands = c.AllowedCommands[:len(c.AllowedCommands)-1]
+			c.CompileCheck, c.DiffClassifier = nil, nil
+		},
+		"v1 slot": func(c *TargetConfig) {
+			c.SchemaVersion = 1
+			c.RequiredTests, c.CompileCheck, c.DiffClassifier = nil, nil, nil
+		},
+		"v5":                func(c *TargetConfig) { c.SchemaVersion = 5 },
+		"program slot":      func(c *TargetConfig) { c.AllowedCommands = append(c.AllowedCommands, []string{"{{text}}"}) },
+		"unknown slot type": func(c *TargetConfig) { c.AllowedCommands = append(c.AllowedCommands, []string{"runner", "{{shell}}"}) },
+		"partial slot": func(c *TargetConfig) {
+			c.AllowedCommands = append(c.AllowedCommands, []string{"runner", "-run={{text}}"})
+		},
+		"unlisted required test": func(c *TargetConfig) { c.RequiredTests[0].Argv = []string{"go", "test", "./..."} },
+		"duplicate test name":    func(c *TargetConfig) { c.RequiredTests[1].Name = "suite" },
+		"no timeout":             func(c *TargetConfig) { c.RequiredTests[0].TimeoutSeconds = 0 },
+		"escaping scope":         func(c *TargetConfig) { c.RequiredTests[1].Paths = []string{"../x"} },
+		"unlisted compile":       func(c *TargetConfig) { c.CompileCheck.Argv = []string{"go", "vet", "./..."} },
+		"empty classifier":       func(c *TargetConfig) { c.DiffClassifier.Code = nil },
+		"bad glob":               func(c *TargetConfig) { c.DiffClassifier.NotCode = []string{"/abs/*.go"} },
+	} {
+		c := targetV4("/repo")
+		c.RequiredTests = append([]RequiredTest(nil), c.RequiredTests...)
+		mutate(&c)
+		if name == "v1 slot" {
+			c.AllowedCommands = append(c.AllowedCommands, []string{"runner", "{{text}}"})
+		}
+		raw, _ := json.Marshal(c)
+		if _, e := parseTarget(raw); e == nil {
+			t.Error(name, "accepted")
+		}
+	}
+	stage := workflow.Stage{Primitive: workflow.HostCommand, Command: []string{"runner", "--case", "{{case}}", "--", "{{why}}"}, Bindings: map[string]workflow.ArgBinding{"case": {Type: "test-id"}, "why": {Type: "text"}}}
+	if !targetAllowsStage(good, stage) || targetAllowsStage(targetFixture("/repo"), stage) {
+		t.Fatal("template admission")
+	}
+	stage.Bindings["case"] = workflow.ArgBinding{Type: "text"}
+	if targetAllowsStage(good, stage) {
+		t.Fatal("slot type ignored")
+	}
+	if !targetAllowsVector(good, []string{"runner", "--case", "a::b", "--", "x; rm -rf / $(id)"}) || targetAllowsVector(good, []string{"runner", "--case", "a b", "--", "x"}) || targetAllowsVector(good, []string{"sh", "-c", "x"}) || !targetAllowsVector(good, defaults.TestCommand()) {
+		t.Fatal("vector validation")
+	}
+}
+
+func TestRequiredTestScopeAndDiffClassifier(t *testing.T) {
+	c := targetV4("/repo")
+	names := func(ts []RequiredTest) (out []string) {
+		for _, t := range ts {
+			out = append(out, t.Name)
+		}
+		return
+	}
+	if got := names(requiredFor(c, []string{"README.md"})); len(got) != 1 || got[0] != "suite" {
+		t.Fatal(got)
+	}
+	if got := names(requiredFor(c, []string{"README.md", "daemon/live.go"})); len(got) != 2 {
+		t.Fatal(got)
+	}
+	k := *c.DiffClassifier
+	got := classifyDiff(k, []string{"main.go", "pkg/a/b.go", "pkg/a/b_test.go", "pkg/testdata/x.go", "docs/x.md", "go.mod"})
+	if len(got) != 2 || got[0] != "main.go" || got[1] != "pkg/a/b.go" {
+		t.Fatal(got)
+	}
+	for _, c := range []struct {
+		p, n string
+		ok   bool
+	}{{"**", "a/b/c", true}, {"docs/**", "docs/a/b.md", true}, {"docs/**", "src/docs/a", false}, {"*.md", "a/b.md", false}, {"**/*.md", "b.md", true}, {"a/?.go", "a/x.go", true}} {
+		if matchGlob(c.p, c.n) != c.ok {
+			t.Error(c)
+		}
+	}
+}
+
+func TestCommitPolicyGuards(t *testing.T) {
+	for _, b := range [][4]bool{{true, true, true, true}, {false, false, false, false}, {false, true, false, false}, {false, true, true, false}, {false, false, true, true}} {
+		want := b[0] || b[2] && !b[3] || !b[2] && !b[1]
+		if CanCommitWithoutRed(b[0], b[1], b[2], b[3]) != want {
+			t.Error(b)
+		}
+	}
+	if CanCommitTree(true, false) || !CanCommitTree(true, true) || !CanCommitTree(false, false) {
+		t.Fatal("tree guard")
+	}
+}

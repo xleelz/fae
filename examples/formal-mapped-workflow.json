@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "id": "formal-mapped-example",
+  "start": "verify",
+  "limits": {
+    "attempts": 4,
+    "test_runs": 1,
+    "scope_widens": 1
+  },
+  "target_requirements": {
+    "commands": [
+      [
+        "future-verifier",
+        "--report-json",
+        "model.spec"
+      ]
+    ]
+  },
+  "roles": {},
+  "artifacts": {
+    "ProofReceipt": {
+      "version": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "passed",
+          "outcome",
+          "obligations",
+          "verified",
+          "failed",
+          "unknown",
+          "skipped"
+        ],
+        "properties": {
+          "passed": {
+            "type": "boolean"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "obligations": {
+            "type": "integer"
+          },
+          "verified": {
+            "type": "integer"
+          },
+          "failed": {
+            "type": "integer"
+          },
+          "unknown": {
+            "type": "integer"
+          },
+          "skipped": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "stages": {
+    "verify": {
+      "primitive": "HostCommand",
+      "command": [
+        "future-verifier",
+        "--report-json",
+        "model.spec"
+      ],
+      "weight": 1,
+      "timeout_seconds": 120,
+      "output": "ProofReceipt",
+      "formal": {
+        "tool": "future-checker",
+        "parser": "json",
+        "kind": "deductive",
+        "sources": [
+          "model.spec"
+        ],
+        "min_obligations": 1,
+        "json_fields": {
+          "outcome": "summary.status",
+          "obligations": "summary.counts.total",
+          "verified": "summary.counts.verified",
+          "failed": "summary.counts.failed",
+          "unknown": "summary.counts.unknown",
+          "skipped": "summary.counts.skipped",
+          "tool_version": "metadata.version",
+          "status_map": {
+            "PROVED": "proved",
+            "DISPROVED": "disproved",
+            "INCONCLUSIVE": "unknown",
+            "ERROR": "error",
+            "UNSUPPORTED": "unsupported",
+            "SKIPPED": "skipped"
+          }
+        }
+      }
+    },
+    "proof-gate": {
+      "primitive": "Gate",
+      "name": "formal obligations discharged",
+      "expression": {
+        "op": "eq",
+        "args": [
+          {
+            "op": "field",
+            "stage": "verify",
+            "path": [
+              "passed"
+            ]
+          },
+          {
+            "op": "literal",
+            "value": true
+          }
+        ]
+      },
+      "failure": "stop"
+    },
+    "stop": {
+      "primitive": "Escalate",
+      "kind": "HumanDecisionRequired",
+      "reason": "formal obligations were not discharged"
+    }
+  },
+  "edges": [
+    {
+      "from": "verify",
+      "to": "proof-gate"
+    },
+    {
+      "from": "proof-gate",
+      "to": "Done"
+    },
+    {
+      "from": "proof-gate",
+      "to": "stop"
+    }
+  ]
+}

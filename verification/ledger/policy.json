@@ -1,0 +1,370 @@
+[
+  {
+    "id": "gobra:ui-listen",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "ui/listen_guard.go"
+    },
+    "requirements": [
+      "FAE-API-030",
+      "FAE-SEC-001"
+    ],
+    "production": {
+      "path": "ui/listen_guard.go",
+      "function": "MayListen",
+      "call_sites": [
+        {
+          "path": "ui/config.go",
+          "function": "ValidateBind"
+        },
+        {
+          "path": "ui/server/server.go",
+          "function": "Run"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestUIChildLifecycle",
+        "TestListenerCensusWithAndWithoutUI"
+      ],
+      "note": "The configured bind is a literal loopback address and the child's bound listener re-checks loopback before serving."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return literal && loopback && !unspecified",
+        "weakened": "return literal && !unspecified"
+      },
+      "refusal_tests": [
+        "TestUIRefusesNonLoopbackBindAtStart",
+        "TestUIRefusesNonLoopbackBind"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestUIRefusesNonLoopbackBindAtStart",
+        "TestUIChildLifecycle"
+      ],
+      "path": "Start -> normalizeUI -> ui.ValidateBind -> MayListen refuses 0.0.0.0, ::, 192.168.1.10, fe80::1 and a hostname before the instance root exists; Start -> startUI -> uiChild.supervise -> launch (re-exec --fae-internal-ui) -> ui.Main -> ui.Run -> MayListen accepts the bound 127.0.0.1 listener"
+    },
+    "status": "native-evidenced",
+    "limits": "The post-bind re-check in ui.Run is reached natively only on the accept path; its refusal needs a non-loopback bound address, which ValidateBind already refuses. Requirement mapping is limited to the named predicate and cited tests; no complete requirement acceptance is claimed."
+  },
+  {
+    "id": "gobra:ui-request",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "ui/listen_guard.go"
+    },
+    "requirements": [
+      "FAE-API-031",
+      "FAE-SEC-001"
+    ],
+    "production": {
+      "path": "ui/listen_guard.go",
+      "function": "MayServeRequest",
+      "call_sites": [
+        {
+          "path": "ui/server/server.go",
+          "function": "ServeHTTP"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestUITokenRequiredOnEveryRequest",
+        "TestUIChildLifecycle"
+      ],
+      "note": "A loopback peer addressing the listener's own host with the token (header, cookie or one-time query exchange) is served."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return loopbackPeer && expectedHost && tokenMatches",
+        "weakened": "return loopbackPeer && expectedHost"
+      },
+      "refusal_tests": [
+        "TestUITokenRequiredOnEveryRequest",
+        "TestUITokenComparisonIsPrefixIndependent",
+        "TestUIChildLifecycle"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestUIChildLifecycle"
+      ],
+      "path": "Start -> startUI -> uiChild.supervise -> launch -> ui.Main -> ui.Run -> server.ServeHTTP -> MayServeRequest: an anonymous /healthz is refused 401, a token-bearing /api/status is served"
+    },
+    "status": "native-evidenced",
+    "limits": "The foreign-Host and non-loopback-peer refusals are unit-only (ui package)."
+  },
+  {
+    "id": "gobra:ui-write",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "ui/listen_guard.go"
+    },
+    "requirements": [
+      "FAE-API-032"
+    ],
+    "production": {
+      "path": "ui/listen_guard.go",
+      "function": "MayWrite",
+      "call_sites": [
+        {
+          "path": "ui/server/server.go",
+          "function": "acknowledge"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestUIWriteCapability",
+        "TestUIWriteCapabilityGoesThroughAuthorizedRPC"
+      ],
+      "note": "With the daemon-issued write capability the one UI write (alert acknowledgement) goes through the daemon RPC with an authorizing message."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return authorized && writeCapability",
+        "weakened": "return authorized"
+      },
+      "refusal_tests": [
+        "TestUIReadOnlyByDefault"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestUIWriteCapabilityGoesThroughAuthorizedRPC"
+      ],
+      "path": "Start (UI AllowWrites) -> uiChild.supervise -> launch -> ui.Run -> server.ServeHTTP -> acknowledge -> MayWrite -> AlertAcknowledge RPC, audited as ui-writer; an undirected message is refused by the daemon"
+    },
+    "status": "native-evidenced",
+    "limits": "Native evidence is accept-path; the read-only refusal (no write capability) is shown by the ui package test. The first argument is always true at the call site: request authentication is MayServeRequest's job."
+  },
+  {
+    "id": "gobra:ui-restart",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/ui_guard.go"
+    },
+    "requirements": [
+      "FAE-API-033"
+    ],
+    "production": {
+      "path": "daemon/ui_guard.go",
+      "function": "MayRestartUIChild",
+      "call_sites": [
+        {
+          "path": "daemon/ui.go",
+          "function": "supervise"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestUIChildLifecycle"
+      ],
+      "note": "A killed UI child is restarted within the per-window bound while the drive completes a task."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !stopping && recent < limit",
+        "weakened": "return !stopping"
+      },
+      "refusal_tests": [
+        "TestUIRestartExhaustionRaisesOneAlert"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestUIChildLifecycle",
+        "TestUIRestartExhaustionRaisesOneAlert"
+      ],
+      "path": "Start -> startUI -> uiChild.supervise -> MayRestartUIChild: one restart after SIGKILL is admitted; a child that always dies is left stopped after the lowered bound of 3 with exactly one ui-child alert"
+    },
+    "status": "native-evidenced",
+    "limits": "The tests lower the Appendix A bound (10 per hour) through fastUISupervision; the stopping branch is exercised by shutdown, not asserted separately."
+  },
+  {
+    "id": "gobra:molecule",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/molecule_guard.go"
+    },
+    "requirements": [
+      "FAE-SCH-007"
+    ],
+    "production": {
+      "path": "daemon/molecule_guard.go",
+      "function": "CanReleaseIntoMolecule",
+      "call_sites": [
+        {
+          "path": "daemon/molecules.go",
+          "function": "releasesMolecule"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCanReleaseIntoMolecule",
+        "TestRunningMoleculeLimits"
+      ],
+      "note": "Under the -1 defaults two revisions run concurrently; tasks of an already running molecule are never capped."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return (limit == -1 || running < limit) && (workflowLimit == -1 || workflowRunning < workflowLimit)",
+        "weakened": "return limit == -1 || running < limit"
+      },
+      "refusal_tests": [
+        "TestCanReleaseIntoMolecule",
+        "TestRunningMoleculeLimits"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestRunningMoleculeLimits"
+      ],
+      "path": "Start -> drive -> dispatchTask -> releasesMolecule -> CanReleaseIntoMolecule: with an instance limit of 1 (and with max_running 1 declared in content) the second revision's molecule is withheld as molecule_limit until the first ends"
+    },
+    "status": "native-evidenced",
+    "limits": "The per-workflow limit is reached natively through content (max_running); the instance-wide limit through Config.MaxMolecules."
+  },
+  {
+    "id": "gobra:commit-without-red",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/commit_policy_guard.go"
+    },
+    "requirements": [
+      "FAE-WF-073",
+      "FAE-ROB-013"
+    ],
+    "production": {
+      "path": "daemon/commit_policy_guard.go",
+      "function": "CanCommitWithoutRed",
+      "call_sites": [
+        {
+          "path": "daemon/live_policy.go",
+          "function": "commitPolicy"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCommitPolicyGuards",
+        "TestLiveNoRedDiffClassifierAtCommit"
+      ],
+      "note": "Frozen RED evidence always suffices; a no-red task whose diff the target classifier calls non-code lands."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return hasRed || (classified && !codeBearing) || (!classified && !declaredNoRed)",
+        "weakened": "return hasRed || (classified && !codeBearing) || !classified"
+      },
+      "refusal_tests": [
+        "TestCommitPolicyGuards",
+        "TestLiveNoRedDiffClassifierAtCommit"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestLiveNoRedDiffClassifierAtCommit"
+      ],
+      "path": "Start -> drive -> liveExecutor VcsCommit -> commitPolicy -> CanCommitWithoutRed: a no-red task with production code in its diff, and a no-red task without a declared classifier, escalate NoRedViolation before any commit object; a classified non-code diff lands"
+    },
+    "status": "native-evidenced",
+    "limits": "The RED-preferred branch (hasRed) is reached natively by every RED task; the ROB-013 resume case (declared no-red with valid frozen RED) is unit-only."
+  },
+  {
+    "id": "gobra:commit-tree",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/commit_policy_guard.go"
+    },
+    "requirements": [
+      "FAE-WF-085"
+    ],
+    "production": {
+      "path": "daemon/commit_policy_guard.go",
+      "function": "CanCommitTree",
+      "call_sites": [
+        {
+          "path": "daemon/live_policy.go",
+          "function": "commitPolicy"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestCommitPolicyGuards",
+        "TestLiveTargetRequiredChecksPinnedThroughRestart"
+      ],
+      "note": "QA proved the exact committed tree under the pinned target's always-required tests and compile check, so the commit proceeds."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return !checksDeclared || proven",
+        "weakened": "return true"
+      },
+      "refusal_tests": [
+        "TestCommitPolicyGuards",
+        "TestLiveCommitRefusedWithoutRequiredTests"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestLiveTargetRequiredChecksPinnedThroughRestart",
+        "TestLiveCommitRefusedWithoutRequiredTests"
+      ],
+      "path": "Start -> drive -> liveExecutor VcsCommit -> commitPolicy -> CanCommitTree: a tree proved by QA (requiredProofKey marker) commits across a restart; a workflow that never runs the required tests escalates RequiredCheckFailed with no commit"
+    },
+    "status": "native-evidenced"
+  },
+  {
+    "id": "gobra:effect-adoption",
+    "kind": "gobra-guard",
+    "check": {
+      "source": "daemon/effect_adoption_guard.go"
+    },
+    "requirements": [
+      "FAE-ROB-012",
+      "FAE-ROB-016"
+    ],
+    "production": {
+      "path": "daemon/effect_adoption_guard.go",
+      "function": "CanAutoAdoptEffect",
+      "call_sites": [
+        {
+          "path": "daemon/effect_receipts.go",
+          "function": "adoptCompletedEffect"
+        }
+      ]
+    },
+    "positive": {
+      "tests": [
+        "TestAutoAdoptEffectGuardTruthTable",
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ],
+      "note": "A local effect interrupted after its completed daemon receipt is adopted at recovery without re-running or charging the task."
+    },
+    "firing": {
+      "mutation": {
+        "original": "return completedReceipt && retired && exactPostcondition && localEffect",
+        "weakened": "return completedReceipt && retired && exactPostcondition"
+      },
+      "refusal_tests": [
+        "TestAutoAdoptEffectGuardTruthTable",
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ]
+    },
+    "native": {
+      "tests": [
+        "TestEffectSIGKILLBoundariesAndAuditedAdoption"
+      ],
+      "path": "SIGKILLed helper daemon, then Start -> loadJob -> recoverInFlight -> adoptCompletedEffect -> CanAutoAdoptEffect: completed, host-completed and integrate-completed receipts are adopted; completed-tampered (postcondition mismatch) and prepared stay parked UncertainDispatch"
+    },
+    "status": "native-evidenced",
+    "limits": "The first two arguments are always true at the call site (the receipt lookup and lease retirement return earlier on failure), and the external case returns before the guard; those refusals are shown by the truth table and the formal mutation, not by a daemon test."
+  }
+]

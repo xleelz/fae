@@ -11,41 +11,20 @@ import (
 )
 
 // Observe reads host telemetry without substituting invented values. Missing
-// platform counters remain Unknown and are surfaced as an observability gap.
+// platform counters remain Unknown and are surfaced as an observability gap;
+// unreadable memory available is such a gap, on which the hard breaker
+// proceeds and records the uncertainty (FAE-HOST-004).
 func Observe(ctx context.Context) (Sample, error) {
 	var s Sample
 	switch runtime.GOOS {
 	case "linux":
-		raw, err := os.ReadFile("/proc/meminfo")
-		if err != nil {
-			return s, err
-		}
-		s.Memory, s.Swap = memoryInfo(string(raw))
-		if b, e := os.ReadFile("/proc/loadavg"); e == nil {
-			fields := strings.Fields(string(b))
-			if len(fields) > 0 {
-				s.LoadPerCore = parseReading(fields[0], 1/float64(runtime.NumCPU()))
-			}
-		}
-		if b, e := os.ReadFile("/proc/pressure/io"); e == nil {
-			s.IO10, s.IO60 = pressure(string(b))
-		}
-		if b, e := os.ReadFile("/proc/pressure/memory"); e == nil {
-			s.Memory10, s.Memory60 = pressure(string(b))
-		}
+		return observeLinux(os.ReadFile, runtime.NumCPU()), nil
 	case "darwin":
-		b, err := exec.CommandContext(ctx, "/usr/bin/vm_stat").Output()
-		if err != nil {
-			return s, err
+		if b, e := exec.CommandContext(ctx, "/usr/bin/vm_stat").Output(); e == nil {
+			s.Memory = vmMemory(string(b))
 		}
-		s.Memory = vmMemory(string(b))
 		if b, e := exec.CommandContext(ctx, "/usr/sbin/sysctl", "-n", "vm.swapusage").Output(); e == nil {
-			f := strings.Fields(string(b))
-			for i, v := range f {
-				if v == "free" && i+2 < len(f) {
-					s.Swap = scaled(f[i+2])
-				}
-			}
+			s.Swap = swapUsage(string(b))
 		}
 		if b, e := exec.CommandContext(ctx, "/usr/sbin/sysctl", "-n", "vm.loadavg").Output(); e == nil {
 			f := strings.Fields(string(b))
@@ -53,13 +32,31 @@ func Observe(ctx context.Context) (Sample, error) {
 				s.LoadPerCore = parseReading(f[1], 1/float64(runtime.NumCPU()))
 			}
 		}
-	default:
-		return s, fmt.Errorf("host telemetry unsupported on %s", runtime.GOOS)
+		return s, nil
 	}
-	if !s.Memory.Known {
-		return s, fmt.Errorf("available memory telemetry unavailable")
+	return s, fmt.Errorf("host telemetry unsupported on %s", runtime.GOOS)
+}
+
+// observeLinux reads /proc through read. An unreadable file or field stays
+// Unknown.
+func observeLinux(read func(string) ([]byte, error), cpus int) Sample {
+	var s Sample
+	if raw, e := read("/proc/meminfo"); e == nil {
+		s.Memory, s.Swap = memoryInfo(string(raw))
 	}
-	return s, nil
+	if b, e := read("/proc/loadavg"); e == nil && cpus > 0 {
+		fields := strings.Fields(string(b))
+		if len(fields) > 0 {
+			s.LoadPerCore = parseReading(fields[0], 1/float64(cpus))
+		}
+	}
+	if b, e := read("/proc/pressure/io"); e == nil {
+		s.IO10, s.IO60 = pressure(string(b))
+	}
+	if b, e := read("/proc/pressure/memory"); e == nil {
+		s.Memory10, s.Memory60 = pressure(string(b))
+	}
+	return s
 }
 func parseReading(s string, scale float64) Reading {
 	v, e := strconv.ParseFloat(strings.Trim(s, ".{}"), 64)
@@ -68,8 +65,10 @@ func parseReading(s string, scale float64) Reading {
 	}
 	return Reading{v * scale, true}
 }
-func memoryInfo(raw string) (Reading, Reading) {
-	var memory, swap Reading
+
+// memoryInfo reads MemAvailable and SwapTotal from /proc/meminfo. Swap total,
+// not free, selects the no-swap hard floor (FAE-HOST-001, -003).
+func memoryInfo(raw string) (memory, swapTotal Reading) {
 	for _, line := range strings.Split(raw, "\n") {
 		f := strings.Fields(line)
 		if len(f) < 2 {
@@ -78,21 +77,49 @@ func memoryInfo(raw string) (Reading, Reading) {
 		switch f[0] {
 		case "MemAvailable:":
 			memory = parseReading(f[1], 1024)
-		case "SwapFree:":
-			swap = parseReading(f[1], 1024)
+		case "SwapTotal:":
+			swapTotal = parseReading(f[1], 1024)
 		}
 	}
-	return memory, swap
+	return memory, swapTotal
 }
-func pressure(raw string) (Reading, Reading) {
+
+// pressure reads the PSI "full" line (FAE-HOST-001): the share of time in which
+// all non-idle tasks stalled on the resource. A missing "full" line or field
+// stays Unknown, a recorded gap; it is never substituted from the "some" line.
+func pressure(raw string) (avg10, avg60 Reading) {
 	for _, line := range strings.Split(raw, "\n") {
 		f := strings.Fields(line)
-		if len(f) < 3 || f[0] != "some" {
+		if len(f) == 0 || f[0] != "full" {
 			continue
 		}
-		return parseReading(strings.TrimPrefix(f[1], "avg10="), 1), parseReading(strings.TrimPrefix(f[2], "avg60="), 1)
+		for _, field := range f[1:] {
+			key, value, ok := strings.Cut(field, "=")
+			if !ok {
+				continue
+			}
+			switch key {
+			case "avg10":
+				avg10 = parseReading(value, 1)
+			case "avg60":
+				avg60 = parseReading(value, 1)
+			}
+		}
+		return avg10, avg60
 	}
 	return Reading{}, Reading{}
+}
+
+// swapUsage reads swap total from macOS `sysctl -n vm.swapusage`, e.g.
+// "total = 2048.00M  used = 1024.00M  free = 1024.00M  (encrypted)".
+func swapUsage(raw string) Reading {
+	f := strings.Fields(raw)
+	for i, v := range f {
+		if v == "total" && i+2 < len(f) && f[i+1] == "=" {
+			return scaled(f[i+2])
+		}
+	}
+	return Reading{}
 }
 func scaled(s string) Reading {
 	if len(s) < 2 {

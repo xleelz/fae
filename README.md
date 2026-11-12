@@ -7,10 +7,30 @@ requirements. A trusted agent bridge can execute real turns; brokered host comma
 reviewed Git effects support Local execution and explicitly authorized Normal effects through configurable adapters. Scripted evidence describes rehearsals, not actual
 code changes, test executions, commits, or integrations.
 
+Scoped Go, Rust, Python, and TypeScript build/test adapters are available. See
+[language support](docs/language-support.md) for command configuration, real-tool
+coverage, and the supported limits of each ecosystem.
+
+[Configured command adapters](docs/command-adapters.md) support additional tools
+without a language adapter. [Formal stages](docs/formal-verification.md) add
+source-bound proof receipts, native verifier profiles, configurable JSON report
+mappings, and explicit proof gates.
+
+[Linear intake](docs/linear-integration.md) polls selected issues, respects explicit
+blocking dependencies, and admits durable tasks to the Fae engine through a
+Symphony-compatible workflow file. Tracker writes require explicit opt-in.
+
 ## Run locally
 
-Requires Go 1.27.2, Git, and Dolt. The daemon initializes and supervises its own
-private Dolt database; clients never connect to an existing database directly.
+Requires Go 1.27.2, Git 2.45 or newer (changed-base reconciliation passes trees
+to `git merge-tree`; Ubuntu 24.04's stock 2.43 refuses them), and Dolt. Live
+runs also need lsof, ripgrep for `scripts/dogfood.py`, Herdr (`herdr-core`) for the multiplexer
+adapter, and a logged-in Claude Code (default) or Codex CLI. The daemon
+initializes and supervises its own private Dolt database; clients never connect
+to an existing database directly.
+The instance home must be on a filesystem with hard links or a no-replace rename
+(Linux `renameat2`, macOS `renamex_np`); owned-process records are placed that
+way, and a launch fails if neither works ([processowner](processowner/README.md)).
 
 ```sh
 mkdir -p .cache/go-build bin
@@ -31,36 +51,201 @@ go build -o bin/fae ./cmd/fae
 ./bin/fae shutdown --authorizing-message demo-authorization
 ```
 
+To run Fae on a clone of itself with real Claude turns, see [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
+
+`serve` defaults to `--adapter multiplexer` (Herdr `herdr-core`; needs `--live-config`);
+`process` is an alias of `direct`. Without `--foreground` it detaches once ready,
+prints the start line and logs to `HOME/INSTANCE.serve.log`; `run --start`
+relaunches a stopped instance from its recorded serve arguments. Other serve
+flags: `--default-mode local|normal` (disposition for submissions that state
+none; `normal` needs a live adapter), `--max-panes N` (multiplexer; 0 keeps the
+live configuration or 60), `--max-heavy-weight N` (live adapters; 0 keeps the
+live configuration or 2), `--max-tasks-in-flight N` (default -1, unbounded), and
+`--max-molecules N` / `--max-workflow-molecules N` (running molecules overall and
+per workflow; default -1, unbounded; a Pending task that would start a molecule
+beyond either is withheld as `molecule_limit`). `--ui` supervises the optional UI child (`--ui-port`,
+`--ui-bind` (literal loopback only, default 127.0.0.1), `--ui-bin`, `--ui-dist`,
+`--ui-allow-writes`, `--ui-rpc-log`; see [ui/README.md](ui/README.md)).
+A flag carrying a configurable default that the spec states falls back to that
+default when its value is empty, out of range or not finite. These flags are the
+common `--home` and `--instance`; serve's adapter, default mode, UI bind, limits,
+waits, windows, retention, Dolt port and stop wait, inline limit, re-arm budget
+and Prophet failovers; the watchdog's stall, re-arm and filesystem bounds; the
+roll and maintenance waits; `land --then-roll`'s `--roll-max-wait` and
+`--overlap-wait`; `gate run`'s `--memory-floor-gib`, `--max-wait` and
+`--capacity`; `heavy-op run --max-wait`; `census --gap`; a loop's
+`schedule create --expires-in`; and `provider-health --window`. Each fallback
+writes one warning line to standard error naming the command, the flag, the
+value and the default, in the daemon's log-line form
+(`TIME instance=NAME component=cli warning: ...`). The daemon's ProviderHealth RPC
+applies the same fallback to an out-of-range `window_seconds` from any client
+and names it in the response's `window_warning`. `--home`,
+`--instance`, the adapter, the mode and the bind fall back only when empty: a
+relative home, an invalid instance name, an unknown adapter or mode and a
+non-loopback bind are still refused, so a mistyped instance never reaches the
+default one. `gate run --memory-floor-gib` accepts any finite floor from the
+host's hard memory floor up to 1 PiB, so a floor between the hard floor and
+12 GiB lowers that run's landing floor, as Appendix A allows. NaN, an infinity,
+a floor above 1 PiB and one below the hard memory floor fall back to 12 GiB. A
+value that does not parse (`--inline-limit x`) is a usage error (2). Some flags
+keep their own checks and refuse an invalid value instead of falling back.
+`--ui-port`, `watchdog --period`, `gate run --slice`, `land --poll` and
+`metrics --window` have no default in the spec; `land --poll` and
+`watchdog --period` must be at least 10 ms, since a shorter interval would run
+the landing's status reads (an IPC round trip and a plane read each) for the
+whole landing, or the watchdog's ticks (a daemon read and a state write each)
+for its whole life, nearly back to back. `controller.Watchdog.Run` refuses a
+shorter period from any caller. `runtime-config`'s limits and
+the `--weight` of `gate run` and `heavy-op run` do (Appendix A's pane limit,
+heavy capacity, tasks in flight and weights), but a fallback would be wrong for
+them: a `runtime-config` limit changes a running instance (0 leaves a value
+unchanged, and a refused change keeps the running value), and falling back to
+weight 1 would under-count a whole-suite run. The pane-limit floor is still a
+refusal.
+`fae help [--json]` lists every verb; `fae COMMAND --help` prints its flags, and
+each verb (and each `maintenance`, `drive` or `backlog` action) accepts only its
+own. Help, `version`, the offline `workflow` forms, `template workflow-validate`,
+`gates self-test --offline` and `doctor` need no home (doctor reports a missing
+one as a warning), and an explicit `--home` needs no `$HOME`.
+
 The default home is `~/.fae/instances`, with `--home PATH` and `--instance NAME`
-available on commands. The instance home must be outside repositories, and its
+(default `default`) available on commands, before the verb or after it, as
+`--flag VALUE` or `--flag=VALUE`. The instance home must be outside repositories, and its
 physical path must contain no symlinks. Instance directories and credentials are
 owner-only. A start must use exactly the bound workspace and current directory;
-reads and other RPC commands work from any directory. Only `serve` starts a daemon.
+reads and other RPC commands work from any directory. Only `serve` starts a daemon:
+`run --start` re-runs the recorded `serve` invocation, and `maintenance start` and
+`roll` relaunch it through the runtime launcher. Other commands never start one;
+they exit 3 when it is unreachable.
 
-First start installs the default workflow as immutable revision 1. It includes
+First start installs the shipped default workflow as immutable revision 1. It includes
 intake, spec/review, plan, RED author/run/gate/freeze, implementation/compare,
 reviews, Oracle routing, QA, reconcile, protected commit, integration and Done.
+After integration, Normal tasks run a Normal-only code-review sub-workflow
+(ticket open, ticket in review, draft review create, review read with a
+remediation loop capped at 5, publish, merge, ticket closed); Local tasks pin its
+Local projection, which is the Local pipeline byte for byte.
 Failures are routed through gates and bounded remediation. With the scripted adapter, HostCommand and VCS
 outputs are fixtures; the source identity freeze/compare uses Go syntax trees.
+The same content runs live unpatched: role routes are Claude `claude-opus-5-5`,
+then `claude-sonnet-5-5`, then Codex `gpt-6-astra` (medium, then low); RED and
+green runs use `go test -json -count=1 -a -x ./...`, which the broker narrows to
+`-run=^TestID$` at heavy weight 1, and QA runs the whole suite at weight 2. At
+each start the daemon reconciles the stored default with the shipped one
+(`defaults.Generation`, now 3): it installs the shipped content as a new audited
+revision when the latest stored revision fails current validation or is an older
+daemon-installed generation, and keeps a valid operator revision, a retired
+default or a builtin of the same or a newer generation. Tasks keep their pinned
+revisions. Status `default_workflow` reports the outcome (`installed`,
+`current`, `upgraded`, `operator-revision`, `kept` or `retired`).
 
 ```sh
-./bin/fae workflow default --json
+./bin/fae workflow default --json           # shipped content; --local prints the Local projection
 ./bin/fae workflow scenario --json
 ./bin/fae workflow validate examples/workflow.json
 ./bin/fae workflow simulate examples/workflow.json examples/script.json demo
 ```
 
 `serve --scenario FILE` uses custom stage fixtures; otherwise it uses the built-in
-happy-path rehearsal. `template workflow-put --content FILE --authorizing-message
-ID` installs validated new revisions through the daemon. In-flight tasks keep
-their original revision. Admission can use `--idempotence-key KEY`; retries return
-the original admission response without changing the current checkpoint.
+happy-path rehearsal, which `workflow scenario` prints. `workflow simulate` (and
+`workflow-simulate --scenario`) takes either the simulator's own records
+(`examples/script.json`) or such a scripted-adapter scenario: a `TASK/stage`
+key applies to that task only, each output (or review) becomes a record of the
+stage's output artifact, freeze and compare identities are computed from the
+declared test source, a `target-moved` step on an Integrate stage selects its
+reverify route, and a step typed with any other outcome is refused.
+`template workflow-put --content FILE --authorizing-message
+ID` installs validated new revisions through the daemon; a document with any
+issue is refused before the daemon with every issue listed, the write rules
+(a Claude `minimal` route) among them. `workflow-get --workflow
+ID --revision N`, `workflow-latest`, `workflow-list`, `workflow-diff --workflow ID
+--from N --to M` and `workflow-simulate --scenario FILE (--content FILE |
+--workflow ID [--revision N])` also go through the daemon; `workflow-validate
+--content FILE` is offline and lists every error with its document path.
+`workflow-retire --workflow ID --reason TEXT` refuses new bindings. In-flight
+tasks keep their original revision unless `migrate --task ID --revision N` moves
+them. Admission can use `--idempotence-key KEY`; retries return the original
+admission response without changing the current checkpoint. `run --task-class
+CLASS` selects one of the workflow's declared `task_classes` (default its
+`default_class`), whose overlays set route effort and briefs; `run --carry-from
+TASK` re-admits an earlier task with unchanged content on the same workflow
+revision, carrying its accepted pre-code evidence (FAE-WF-086); like any task it
+forks from the current integration tip, waits in Pending until released, and
+then enters its carried stage. `run --declared-file PATH` (repeatable, also on
+`start-work-item`) declares the task's files; a live instance without pinned
+`files` takes each task's scope from them (see [LIVE.md](LIVE.md)).
 
-The CLI exits 0 on success, 1 on refusal, 2 on operational-command usage errors,
-and 3 when a required daemon is unreachable. Recorded timestamps come from the
-daemon clock. The offline legacy workflow commands retain their validation-error
-behavior. No Normal-mode network external effects are supported yet. See [LIVE.md](LIVE.md)
-for live adapter configuration, the Codex bridge, and their trust boundaries.
+HostCommand templates may use typed whole-argument `{{name}}` placeholders, each
+bound to exactly one literal argument. Target configuration schema 4 declares the
+command shapes (typed `{{type}}` slots) they must fit, path-scoped
+`required_tests` and a `compile_check` that whole-suite QA must prove for the
+exact tree before commit, and a diff classifier under which a production-code
+commit without RED evidence escalates `NoRedViolation` ([target
+policies](daemon/TARGETS.md)). HostCommand test runs may declare a `test_shape`
+(`go-unit`, `go-integration`, `script` or `runner`, the last two reporting TAP;
+[grammar](workflow/GRAMMAR.md)). The workflow primitive
+library is complete: HumanDecision, FanOut/FanIn (branches run sequentially) and
+SubWorkflow, with content-addressed, replayable gate records.
+
+The CLI exits 0 on success, 1 on refusal or validation failure (including a
+mutating verb without `--authorizing-message`), 2 on usage errors and 3 when the
+daemon is unreachable; the reason goes to standard error. `gate run` exits 75
+when its admission wait times out and 76 when admission is refused; the hidden
+`heavy-op run` broker verb exits 75 on a lease or host refusal, 77 when a role
+shim policy refuses and 78 when Local mode refuses a git push or remote change.
+Both otherwise exit with the child command's code, except that `gate run` exits
+1, with nothing run, when it cannot read its working directory or make a run
+identity, and an account-mode `heavy-op run --shim-policy` exits 1 when
+cancelled before the tool runs and 126 when the tool cannot be executed. The
+`heavy-op hook` pre-tool hook exits 0 with its decision or 2, which blocks the
+tool call; never 1. Each
+command's `--help --json` lists its exit codes; for these three it lists their
+own codes rather than the general table.
+Recorded times come from the daemon clock; explicit time
+inputs (`--until`, `--anchor`, `--end`) are recorded as given. See [LIVE.md](LIVE.md)
+for live adapter configuration, Normal-mode adapters, the Claude Code (default)
+and Codex bridges, and their trust boundaries. `--live-config` must name an
+owner-only (0600) regular file outside every repository and worktree.
+
+Operator verbs: `message --task ID` and `reply --to MESSAGE_ID` record threaded
+messages (the daemon assigns IDs unless `--id` is given; controller relays never
+authorize); `inbox` lists threads plus escalated, blocked, uncertain, decision
+and question items; `attach-design-doc` binds a URL or contained path to a task
+or backlog item for later briefs; `reclaim [--dry-run]` releases role-slot and
+session entries (with `--host-wide`, also heavy-op and pane entries) whose owner
+is proven dead;
+`analyze-session --task ID` reports provenance-labelled timings; `doctor` checks
+prerequisites, instance layout, sandbox and filesystems offline; `migrate` moves a
+non-terminal task to another revision of its workflow. `task create|update|delete|show`
+creates one task joined to the live graph, edits a task (from its next stage while a
+turn runs), deletes one (it is withdrawn or stopped, then retired, keeping its
+history) and reads one with its edges and stage trace
+([live task verbs](daemon/TASKS.md)). `decide --task ID --option
+OPTION [--decision ID] [--rationale TEXT]` disposes a HumanDecision park;
+`quarantine [inspect] | release | retire` resolves a quarantined task
+([task controls](daemon/TASK_CONTROLS.md)). `history --task ID --records` pages
+the plane's transitions, artifacts and decisions; `topology [--workflow ID]`
+pages running molecules with their stage graphs; `provenance --commit SHA` walks
+a commit back to the spec ([read contracts](daemon/READS.md)). `ui token` gives
+the instance operator the UI token and one-time login URL. `land`, `gates self-test`
+and `gate run` are described under [deployment](LIVE.md#deployment-and-independent-drive-operations);
+landing now uses the task's approved scope, and the gate-pass, landing-floor,
+target-advance and gated-deploy predicates are Gobra-checked in `verify.sh`.
+
+The daemon writes `HOME/INSTANCE/supervision.log` (mode 0600). Each line is
+`RFC3339-UTC-time instance=NAME component=NAME text` (CLI warnings take the
+same form with `component=cli`; they go to standard error, and a detached
+serve's also to its rotated `HOME/INSTANCE.serve.log`); the file rotates at 64 MiB
+keeping four older files (`.1` newest) and is copied to standard error through a
+bounded queue that drops lines rather than block. Every committed park,
+escalation and route refusal (a binding the bridge refused) also gets one
+structured `component=task` line paired with its event row. Alerts (`host-admission` hard refusals, `stuck-commit-stage`, `process-leak`,
+`dead-edge`, `route-exhaustion`, `ui-child`, `scratch-quarantine` and controller alerts such as
+`task-quarantined` and `drive-step-fault`) are plane rows with an `alert-raised` event, mirrored as
+JSON lines to `HOME/INSTANCE/alerts.log`. Read them with `fae alerts [list]
+[--unacknowledged]`, acknowledge with `fae alerts ack --id N
+--authorizing-message ID`; `fae metrics [--window D]` and `fae host-metrics`
+return derived and host metrics. See [read contracts](daemon/READS.md).
 
 ## Architecture and durability
 
@@ -72,20 +257,55 @@ against the pinned workflow, task, tree, token, sessions and artifact schemas.
 `daemon` is the singleton writer: it checkpoints dispatch intent before launching
 asynchronous execution, then atomically saves completed evidence, transitions,
 audit and ordered events in `controlplane`. The control plane uses versioned Dolt
-commits and chunked content-addressed payloads. Completed stages are not replayed.
-Graceful scripted restart retains dispatch identity without charging retry budgets;
-uncertain non-replayable executions park. A bounded Dolt-child restart revalidates
-the schema and resumes from durable state.
+commits and chunked content-addressed payloads (schema version 10). Admission binds
+each task to a molecule (workflow, revision and content) in its transaction, and
+every checkpoint transaction also writes the relational task, transition,
+decision, artifact and provenance rows; Dolt triggers refuse updates and deletes
+of the last four. Completed stages are not replayed.
+Graceful stop lets in-flight commit/integrate steps finish within a 120 s drain
+bound and writes a clean-stop marker listing the turns left in flight. On restart
+the scripted adapter replays an interrupted token without charging retry budgets;
+a live turn named by the marker is replayed without charge only after its
+workspace and session retirement are proved. Other interrupted or uncertain
+executions park, and an invalid stored task is quarantined rather than refusing
+the instance. A bounded (three-attempt) Dolt-child restart revalidates the schema
+and resumes from durable state.
 
 `api` serves authenticated unary RPC and NDJSON events on the Unix socket.
 Status uses an immutable in-memory projection. Event clients resume by sequence;
 slow streams do not hold the drive lock. `scheduler`, `hostguard`, `runtime`,
 `workspace` and `worktree` provide the scheduling, admission, runtime and isolation
 foundations. Live launches use durable role slots and a host-shared weighted
-ledger. The Herdr adapter creates private owned servers and gated panes; exact
+ledger. The Herdr (`herdr-core`) adapter creates private owned servers and gated panes; exact
 process identity records and parent-death watchdogs support conservative orphan
 recovery before new work starts. Unproven identities do not authorize cleanup or
-lease reclamation. Provider failover and complete host process inventory remain open.
+lease reclamation. Agent turns take a role slot and host/pane admission but no
+heavy-op unit. A rate-limited, unavailable or auth-failed turn that left the tree
+unchanged rotates once to the next route; other launched failures park. A
+process census raises leak alerts: the full walk, which also reports foreign
+processes, every drive round while there is work; while idle, a census of the
+daemon's own tree every 60 s, and the full walk when its descendant set changes
+and at least every 10 minutes. A running brokered command's defunct children
+are left to it for two censuses, then count against the defunct bound, and a
+defunct leak names the processes that have not collected their children. On Linux
+the daemon is the child subreaper of its descendants, reaps adopted orphans and
+kills them at shutdown ([processowner](processowner/README.md)); complete
+cross-user host process inventory remains open. An idle daemon blocks on events
+and deadlines instead of polling the plane.
+
+`ui` is the optional UI child: embedded assets, a token required on every
+request, loopback-only binding with a Host check, read-only unless
+`--ui-allow-writes`. The daemon supervises it with bounded restart
+([ui/README.md](ui/README.md)).
+
+`fae-tui` (`go build -o bin/fae-tui ./cmd/fae-tui`) is a terminal view of a
+running daemon over its RPC socket: each running molecule's stages and their
+tasks, the backlog graph laid out by dependency depth with every task's
+implementation state, a task's description, edges and trace of stages, and the
+escalated tasks and alerts that need the operator. It is read-only unless
+started with `--write`; then it creates, edits and deletes tasks and edits
+edges through the same authorized RPCs as the CLI. Like `fae-ui` it is a
+separate binary ([tui/README.md](tui/README.md)).
 
 Changed integration bases use immutable three-way merge plans with own-hunk
 preservation checks. The merged tree repeats tests, frozen-test comparison,
@@ -110,11 +330,17 @@ tasks, authority refusal, idempotence, schema rejection, event replay, graceful
 restart, malformed sibling isolation and child-process recovery. It asserts
 nonzero executed tests and checks test scratch cleanup. Never supply a developer
 control-plane DSN; the integration harness accepts only a Dolt executable.
+`scripts/test.sh` runs every other package first and then the daemon package
+alone (about 50 minutes in total). Daemon live tests admit against real host
+pressure; `FAE_TEST_QUIET_HOST_PRESSURE=1` reports quiet readings for
+development runs only.
 
-Gobra verifies 33 production safety predicates and rejects 33 weakened mutations.
-Gomela/SPIN checks 34 bounded lifecycle models with 32 firing negative controls.
-These are scoped proofs/models, not whole-daemon verification.
-See [TESTING.md](TESTING.md), [formal results](verification/README.md), and
+Gobra production-guard proofs (each with a rejected weakened mutation) and
+Gomela/SPIN bounded models (each with a firing negative control) are censused in
+the [acceptance ledger](verification/LEDGER.md); `scripts/check-ledger.py` fails
+the suite on an unmapped or stale check. These are scoped proofs/models, not
+whole-daemon verification. Unix-socket tests need a short scratch path; see
+[TESTING.md](TESTING.md). Also see [formal results](verification/README.md) and
 [implementation status](IMPLEMENTATION.md).
 
 Two real Codex `gpt-6-astra` tasks completed through **Herdr 0.9.5**, private
@@ -213,6 +439,8 @@ rows one at a time through the audited control, stopping with partial progress
 on refusal. `fae backup plane` verifies a Dolt restore before producing backup
 evidence. `fae cleanup retired` previews by default; apply verifies backup coverage
 and archives all candidate tips before removing owned clean worktrees and branches.
+`fae cleanup done` does the same for Done tasks whose own landing is in the
+integration ref, and lists the others as skipped.
 See [census](daemon/CENSUS.md) and [cleanup](daemon/CLEANUP.md). Marked scratch instances can be removed through the
 [scratch cleanup controller](daemon/SCRATCH.md), which retains verified backups
 outside the instance root. Automatic backup pruning remains unimplemented.
@@ -262,3 +490,41 @@ Operator backup lifecycle commands now support reviewed retention and configurab
 `backup unpin --backup PATH` previews a digest-bound release after verifying all remote replicas; `--apply --plan-digest DIGEST` applies it. Pending claims refuse release. `backup quota configure --max-bytes N --max-backups N` persists limits; `backup quota status` reports usage, including partial backups and replication spools. Mutations require operator authority. Dolt export limits use admission/checkpoints and preserve overruns; no quota implicitly deletes data. See [backup policy](daemon/BACKUPS.md).
 
 1,352 race-enabled test cases across 26 packages passed, with 73.6% statement coverage, vet and scratch census. Gobra verified 56 production predicates and rejected 56 mutations; Gomela/SPIN passed 57 positive models and observed 55 firing negative controls. [Evidence](verification/results/backup-storage.json).
+
+## Claude provider, host admission and acceptance ledger
+
+Claude Code is now the default provider through the restricted `cmd/fae-claude-bridge`
+(see [provider/README.md](provider/README.md)); the Codex bridge remains. Host admission
+samples PSI *full*, holds pressure until two below-threshold readings 30 s apart, and runs
+host-heavy commands through a two-reading I/O gate before the heavy-op lease
+([hostguard/README.md](hostguard/README.md)). Every formal check is censused in
+[verification/ledger](verification/LEDGER.md), enforced by `scripts/check-ledger.py` in CI.
+
+On Ubuntu 24.04: 1,406 race-enabled test cases across 27 packages passed (74.0% coverage, vet,
+ledger and scratch census). Gobra proved 59 production guards and rejected 59 mutations;
+Gomela/SPIN passed 57 positive models and observed 55 firing negative controls. The full
+real-provider acceptance passed with 36 Claude (`claude-opus-5-5`) turns, crash/restart
+recovery and all controller, provisioning and backup checks
+([evidence](verification/results/claude-host-admission-dogfood-20261022/result.json)).
+
+## Wave 2: records, primitives, Normal content, UI and recovery
+
+Waves 1 (2026-10-22) and 2 (2026-10-23) were parallel stream rounds; see
+[HANDOFF.md](HANDOFF.md) for per-stream detail and open gaps. Wave 2 added
+molecules and same-transaction relational records with immutable provenance
+(schema 8, `history --records`, `topology`, `provenance`); the full primitive
+library with `fae decide`; target schema 4 policy, task classes, governed
+scope-widen/RED-rework requests and `--carry-from`; the Normal review
+sub-workflow in the shipped default with audited default upgrade and a 33-run
+parity corpus; the optional UI child; `fae quarantine`, deterministic planned
+replay, automatic adoption of completed local effect receipts and a scripted
+every-boundary crash matrix; role shims through `heavy-op run`, a per-run process
+cap (live config `process_limit`), a child subreaper and an idle daemon without
+plane polling; and a real-host-pressure test suite.
+
+`scripts/test.sh` with real host pressure: 2,049 race-enabled test cases across 28
+packages passed (78.4% coverage, vet, ledger and scratch census). `verify.sh`:
+Gobra 64 production guards with rejected mutations; Gomela/SPIN 57 positive / 55
+negative models. The ledger maps 101 of 284 requirement IDs to at least one check.
+Eight newer pure guards are not yet in `verify.sh`. Real-provider acceptance is
+recorded in [TESTING.md](TESTING.md).

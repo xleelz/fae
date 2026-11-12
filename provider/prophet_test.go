@@ -33,6 +33,7 @@ func TestProphetProviderIsolation(t *testing.T) {
 				l.Profile.Build = true
 			}
 			// Fake provider must produce no edits; providerFixture otherwise proposes an edit.
+			// The Prophet sees neither files nor the repository listing.
 			script := `#!/bin/sh
 out=''
 while [ "$#" -gt 0 ]; do
@@ -41,6 +42,7 @@ while [ "$#" -gt 0 ]; do
 done
 input=$(cat)
 case "$input" in *'"files":{}'*) ;; *) exit 44;; esac
+case "$input" in *'"kind":"repository"'*) exit 45;; esac
 printf '%s' '{"output":{"accepted":true},"edits":[]}' > "$out"
 `
 			if e := os.WriteFile(c.Binary, []byte(script), 0700); e != nil {

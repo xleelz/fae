@@ -28,7 +28,14 @@ func TestScratchArchiveGuard(t *testing.T) {
 }
 func scratchArchiveFixture(t *testing.T) (ScratchArchiveCleanupParams, ScratchCleanupResult) {
 	t.Helper()
-	home, _ := filepath.EvalSymlinks(t.TempDir())
+	// Instance roots must lie outside every repository (the suite's TMPDIR
+	// is inside the checkout), so the fixture home is disk-backed /var/tmp.
+	base, e := os.MkdirTemp("/var/tmp", "fae-scratch-archive-")
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { os.RemoveAll(base) })
+	home, _ := filepath.EvalSymlinks(base)
 	parent := filepath.Join(home, ".scratch-archive")
 	os.Mkdir(parent, 0700)
 	identity := ScratchIdentity{ID: strings.Repeat("a", 32), Instance: "fixture", Root: filepath.Join(home, "fixture"), Workspace: home, Created: time.Unix(100, 0)}

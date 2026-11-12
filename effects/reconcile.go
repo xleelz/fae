@@ -117,7 +117,7 @@ func (b *Broker) reconcilePlan(ctx context.Context, w worktree.Binding, s Review
 	// Explicit-base merge includes uncommitted reviewed hunks and committed work
 	// since the caller's immutable base, without consulting the mutable index.
 	cmd := exec.CommandContext(ctx, "git", "-C", w.Path, "-c", "core.hooksPath=/dev/null", "merge-tree", "--write-tree", "--name-only", "-z", "--merge-base="+ownBase, tip, s.Tree)
-	cmd.Env = cleanEnv(b.Environment)
+	cmd.Env = b.literalPathGitEnv(w, nil)
 	out, mergeErr := cmd.CombinedOutput()
 	fields := strings.Split(string(out), "\x00")
 	tree := strings.TrimSpace(fields[0])

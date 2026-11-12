@@ -3,6 +3,8 @@ package engine
 import (
 	"errors"
 	"strings"
+
+	"github.com/xleelz/fae/domain"
 )
 
 // PaneStarved distinguishes a pane refusal from memory/load/ledger deferrals.
@@ -42,6 +44,6 @@ func EscalatePaneStarvation(input Job) (Job, []Event, error) {
 	}
 	j := clone(input)
 	events := []Event{}
-	stop(&j, "PaneCapStarvation", &events)
+	stop(&j, domain.PaneCapStarvation, "", &events)
 	return j, events, Validate(j)
 }

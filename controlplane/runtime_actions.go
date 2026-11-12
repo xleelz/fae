@@ -12,7 +12,7 @@ import (
 // by SQL retries.
 func (s *Store) RecordIdleAction(ctx context.Context, kind string, payload json.RawMessage) error {
 	switch kind {
-	case "idle-session-shed", "idle-session-retired", "idle-maintenance-refused", "PaneCapStarvation":
+	case "idle-session-shed", "idle-session-retired", "idle-session-reconciled", "idle-maintenance-refused", "PaneCapStarvation":
 	default:
 		return errors.New("unsupported idle action")
 	}

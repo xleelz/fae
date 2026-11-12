@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/xleelz/fae/engine"
@@ -84,7 +85,7 @@ func TestReviewIsolation(t *testing.T) {
 	entries, _ := os.ReadDir(x.Runtime.(*runtime.Direct).Root)
 	var dirs []os.DirEntry
 	for _, entry := range entries {
-		if entry.Name() != ".processes" {
+		if strings.HasPrefix(entry.Name(), "session-") {
 			dirs = append(dirs, entry)
 		}
 	}
@@ -110,7 +111,7 @@ func TestTreeChanges(t *testing.T) {
 				if e != nil || r.NewTree != "changed" {
 					t.Fatal(r, e)
 				}
-			} else if e == nil || r.Class != "uncertain" {
+			} else if e == nil || r.Class != engine.ClassRejectedChange {
 				t.Fatal(r, e)
 			}
 			if a.released != 1 {
@@ -128,7 +129,7 @@ func TestNoLaunchWithoutLease(t *testing.T) {
 	entries, _ := os.ReadDir(x.Runtime.(*runtime.Direct).Root)
 	var dirs []os.DirEntry
 	for _, entry := range entries {
-		if entry.Name() != ".processes" {
+		if strings.HasPrefix(entry.Name(), "session-") {
 			dirs = append(dirs, entry)
 		}
 	}
@@ -229,5 +230,29 @@ func TestDurableAdmissionBoundaryOrder(t *testing.T) {
 		if e != want[i] {
 			t.Fatal(a.events)
 		}
+	}
+}
+
+type refusedBeforeProviderRuntime struct{}
+
+func (refusedBeforeProviderRuntime) Run(context.Context, runtime.Launch) (runtime.Collected, error) {
+	return runtime.Collected{ProcessesRetired: true}, &runtime.TurnError{
+		Class:      runtime.RefusedBeforeProvider,
+		Role:       "coder",
+		DispatchID: "dispatch",
+		Cause:      &runtime.BridgeRefusal{Class: runtime.RefusedBeforeProvider, Detail: "scope check refused before provider"},
+	}
+}
+
+// FAE-RT-004: when the bridge returns RefusedBeforeProvider and lifecycle.Retired
+// fails, Execute still preserves ClassRefusedBeforeLaunch rather than downgrading
+// the non-executed turn to uncertain.
+func TestRefusedBeforeProviderPreservesRefusedBeforeLaunchOnRetiredFailure(t *testing.T) {
+	x, d, _ := fixture(t)
+	x.Admission = &failingReleaseAfterNonLaunchAdmission{failRetired: true}
+	x.Runtime = refusedBeforeProviderRuntime{}
+	r, err := x.Execute(context.Background(), d)
+	if err == nil || r.Class != engine.ClassRefusedBeforeLaunch {
+		t.Fatalf("class=%q err=%v", r.Class, err)
 	}
 }

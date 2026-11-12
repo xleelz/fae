@@ -43,7 +43,7 @@ func validateNormalTargetShape(c TargetConfig) error {
 	if n == nil {
 		return nil
 	}
-	if (c.SchemaVersion == 3) != (n.Adapter != nil) {
+	if (c.SchemaVersion >= 3) != (n.Adapter != nil) {
 		return errors.New("target v3 requires adapter binding; earlier schemas forbid it")
 	}
 	if n.Destination == "" || n.PushNamespace == "" || len(n.Tools) == 0 {
@@ -97,7 +97,7 @@ func (d *Daemon) validateNormalTarget(ctx context.Context, c TargetConfig, p Adm
 		}
 		selected.ExternalTools[alias] = got
 	}
-	if n.Review != nil && c.SchemaVersion == 3 {
+	if n.Review != nil && c.SchemaVersion >= 3 {
 		record, err := d.reviewWorkspaceRecord(ctx, n.ReviewTask)
 		if err != nil {
 			return fmt.Errorf("dynamic review workspace not prepared: %w", err)
@@ -141,7 +141,7 @@ func (d *Daemon) validateNormalTarget(ctx context.Context, c TargetConfig, p Adm
 		return errors.New("Normal disposition differs from target destination/push namespace/ticket room pins")
 	}
 	for name, s := range doc.Stages {
-		if s.Primitive != workflow.ExternalEffect {
+		if s.Primitive != workflow.ExternalEffect || s.IsGitPush() {
 			continue
 		}
 		t, ok := n.Tools[s.Subject]
@@ -167,9 +167,10 @@ func (d *Daemon) validateNormalTarget(ctx context.Context, c TargetConfig, p Adm
 
 // checkTaskTarget also protects asynchronous outbox mutations outside dispatch.
 func (d *Daemon) checkTaskTarget(ctx context.Context, task string) error {
-	d.mu.Lock()
-	snapshot, ok := d.jobs[task]
-	d.mu.Unlock()
+	snapshot, ok, err := d.lockedStoredJob(ctx, task)
+	if err != nil {
+		return err
+	}
 	if !ok {
 		return errors.New("target policy task missing")
 	}

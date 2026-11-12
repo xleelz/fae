@@ -16,7 +16,8 @@ import (
 	"time"
 )
 
-// Port is stable across processes and Go versions.
+// Port derives the same endpoint from the canonical data directory every time.
+// A collision is refused by StartServer; it never silently selects another port.
 func Port(dataDir string, pinned int) (int, error) {
 	if !filepath.IsAbs(dataDir) || filepath.Clean(dataDir) != dataDir {
 		return 0, errors.New("data directory must be canonical absolute path")
@@ -29,6 +30,12 @@ func Port(dataDir string, pinned int) (int, error) {
 	}
 	hash := sha256.Sum256([]byte(dataDir))
 	return 3658 + int(binary.BigEndian.Uint64(hash[:8])%4096), nil
+}
+
+// DefaultConfig returns a ServerConfig for dataDir with its deterministic port.
+func DefaultConfig(dataDir string) ServerConfig {
+	port, _ := Port(dataDir, 0)
+	return ServerConfig{Binary: "dolt", DataDir: dataDir, Port: port, StopWait: 30 * time.Second}
 }
 
 type ServerConfig struct {
@@ -59,11 +66,16 @@ func StartServer(ctx context.Context, c ServerConfig) (*Server, error) {
 	if e != nil {
 		return nil, e
 	}
-	listener, e := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
-	if e != nil {
-		return nil, fmt.Errorf("Dolt endpoint occupied; refusing adoption: %w", e)
+	// FAE-ARC-006: probe by connecting, never by binding a TCP listener. Only
+	// an outright refusal proves no endpoint is listening there.
+	probe, e := (&net.Dialer{Timeout: 2 * time.Second}).DialContext(ctx, "tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	if e == nil {
+		probe.Close()
+		return nil, identifyListener(port, c.DataDir)
 	}
-	listener.Close()
+	if !errors.Is(e, syscall.ECONNREFUSED) {
+		return nil, fmt.Errorf("Dolt endpoint probe inconclusive; refusing adoption (remedy: retry once the endpoint settles, or pin a free port with serve --dolt-port N): %w", e)
+	}
 	if c.Binary == "" {
 		c.Binary = "dolt"
 	}
@@ -86,7 +98,7 @@ func StartServer(ctx context.Context, c ServerConfig) (*Server, error) {
 	}
 	var record *processowner.Record
 	if c.OwnerRegistry != "" {
-		record, e = processowner.Start(cmd, c.OwnerRegistry, c.DataDir)
+		record, e = processowner.StartRole(cmd, c.OwnerRegistry, c.DataDir, "", "dolt")
 	} else {
 		e = cmd.Start()
 	}
@@ -119,30 +131,51 @@ func (s *Server) PID() int              { return s.cmd.Process.Pid }
 func (s *Server) Port() int             { return s.port }
 func (s *Server) Done() <-chan struct{} { return s.done }
 func (s *Server) Err() error            { s.mu.Lock(); defer s.mu.Unlock(); return s.err }
-func (s *Server) Stop() error {
+func (s *Server) Stop() error           { _, e := s.Terminate(); return e }
+
+// StopResult is how a stop ended the child: its duration, and whether the
+// bounded wait expired and the child was killed.
+type StopResult struct {
+	PID           int
+	Duration      time.Duration
+	Wait          time.Duration
+	Forced        bool
+	AlreadyExited bool
+}
+
+// Terminate stops the child gracefully: SIGTERM (Dolt flushes), the bounded
+// wait (default 30 s), then a forced kill (FAE-CP-002).
+func (s *Server) Terminate() (StopResult, error) {
+	r := StopResult{PID: s.cmd.Process.Pid, Wait: s.wait}
+	started := time.Now()
 	select {
 	case <-s.done:
-		return nil
+		r.AlreadyExited = true
+		return r, nil
 	default:
 	}
 	if e := s.cmd.Process.Signal(syscall.SIGTERM); e != nil {
 		select {
 		case <-s.done:
-			return nil
+			r.AlreadyExited = true
+			return r, nil
 		default:
-			return e
+			return r, e
 		}
 	}
 	timer := time.NewTimer(s.wait)
 	defer timer.Stop()
 	select {
 	case <-s.done:
-		return nil
+		r.Duration = time.Since(started)
+		return r, nil
 	case <-timer.C:
+		r.Forced = true
 		if e := s.cmd.Process.Kill(); e != nil {
-			return e
+			return r, e
 		}
 		<-s.done
-		return nil
+		r.Duration = time.Since(started)
+		return r, nil
 	}
 }

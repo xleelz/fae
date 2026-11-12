@@ -15,6 +15,7 @@ import (
 // protected by the daemon's existing singleton lock, never by elapsed time.
 type OperationProof struct {
 	ID, Session, Instance, Birth, RolePool, State string
+	ProviderPool                                  string `json:",omitempty"`
 	Registry, ProcessOwner                        string
 	Owner                                         Owner
 	Expected                                      int

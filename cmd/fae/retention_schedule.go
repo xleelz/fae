@@ -11,6 +11,9 @@ func backupRetentionScheduleCommand(ctx context.Context, args []string, c common
 		return usage("backup retention-schedule configure|pause|resume|status")
 	}
 	action := args[0]
+	if isHelp(action) {
+		return subcommandHelp("backup retention-schedule", "configure|pause|resume|status", c.json || wantsJSON(args), out)
+	}
 	switch action {
 	case "configure", "pause", "resume", "status":
 	default:

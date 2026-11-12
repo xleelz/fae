@@ -112,7 +112,7 @@ func TestHostLedgerSymlinksAndContext(t *testing.T) {
 	}
 }
 func TestHostLedgerProcessHelper(t *testing.T) {
-	path := os.Getenv("FAE_LEASE_TEST_PATH")
+	path := os.Getenv("LEASE_TEST_PATH")
 	if path == "" {
 		return
 	}
@@ -120,7 +120,7 @@ func TestHostLedgerProcessHelper(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	id := os.Getenv("FAE_LEASE_TEST_ID")
+	id := os.Getenv("LEASE_TEST_ID")
 	now := time.Unix(100, 0)
 	if e = l.Enqueue(context.Background(), Request{ID: id, Owner: Owner{1, 1}, Weight: 1, Queued: now}); e != nil {
 		t.Fatal(e)
@@ -142,7 +142,7 @@ func TestHostLedgerConcurrentProcessesCannotOversubscribe(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 			cmd := exec.Command(os.Args[0], "-test.run=^TestHostLedgerProcessHelper$")
-			cmd.Env = append(os.Environ(), "FAE_LEASE_TEST_PATH="+path, fmt.Sprintf("FAE_LEASE_TEST_ID=%d", i))
+			cmd.Env = append(os.Environ(), "LEASE_TEST_PATH="+path, fmt.Sprintf("LEASE_TEST_ID=%d", i))
 			out, e := cmd.CombinedOutput()
 			if e != nil {
 				errs <- fmt.Errorf("%v %s", e, out)

@@ -1,0 +1,72 @@
+
+$ go test -overlay /tmp/fae-capability-audit-m16oydz2/overlay.json ./scheduler ./daemon ./engine -run ^TestAudit -v -count=1 -timeout=30s
+=== RUN   TestAuditPriorityIsReversed
+    audit_capability_overlay_test.go:3: CONFIRMED: priority10 granted ahead of queued priority100
+--- PASS: TestAuditPriorityIsReversed (0.06s)
+=== RUN   TestAuditMoleculeExemptionStaysAfterLimitClears
+    audit_capability_overlay_test.go:4: CONFIRMED: now-eligible ahead waiter still IgnoreFIFO; behind owner acquired
+--- PASS: TestAuditMoleculeExemptionStaysAfterLimitClears (0.13s)
+=== RUN   TestAuditSmallerRevisionLeavesObsoleteResizeAtQueueHead
+    audit_capability_overlay_test.go:5: CONFIRMED: live revision3 fits its granted reservation, obsolete revision2 resize remains FIFO head and blocks another fitting holder
+--- PASS: TestAuditSmallerRevisionLeavesObsoleteResizeAtQueueHead (0.20s)
+PASS
+ok  	github.com/xleelz/fae/scheduler	0.398s
+=== RUN   TestAuditDetachedCostIgnored
+    audit_capability_overlay_test.go:3: CONFIRMED: child footprint1000 priced as root footprint1
+--- PASS: TestAuditDetachedCostIgnored (0.00s)
+PASS
+ok  	github.com/xleelz/fae/daemon	0.009s
+=== RUN   TestAuditFeatureUnmatchedPattern
+    audit_capability_overlay_test.go:3: CONFIRMED valid workflow and literal completes Done, identical unmatched turn aborts rehearsal
+--- PASS: TestAuditFeatureUnmatchedPattern (0.00s)
+PASS
+ok  	github.com/xleelz/fae/engine	0.007s
+exit=0; audited expectation=0
+
+$ go test -overlay /tmp/fae-capability-audit-m16oydz2/overlay.json ./provider -run ^TestAuditReviewIndependentReadWriteScopes$ -v -count=1 -timeout=30s
+=== RUN   TestAuditReviewIndependentReadWriteScopes
+    audit_capability_overlay_test.go:8: SEC011-authorized output refused solely by independent read allowlist: session wrote denied path gen/new.yaml
+--- FAIL: TestAuditReviewIndependentReadWriteScopes (0.00s)
+FAIL
+FAIL	github.com/xleelz/fae/provider	0.008s
+FAIL
+exit=1; audited expectation=1
+
+$ go run /tmp/fae-capability-audit-m16oydz2/cycle.go
+validation a []
+validation b []
+validation c []
+validation d []
+err <nil> state Escalated
+node 1 a root HumanDecisionRequired: child failed
+node 2 b root.call.1 HumanDecisionRequired: child failed
+node 3 c root.call.1.call.1 HumanDecisionRequired: child failed
+node 4 d root.call.1.call.1.call.1 HumanDecisionRequired: child failed
+node 5 a root.call.1.call.1.call.1.call.1 HumanDecisionRequired: child failed
+node 6 b root.call.1.call.1.call.1.call.1.call.1 HumanDecisionRequired: child failed
+child-failed <nil> history 5
+actual_event kind="sub-workflow-failed" cause="recursion_budget: max_descendants exceeded" tree_filter_matches=false
+actual_event kind="failure-route" cause="recursion_budget: recursion_budget: max_descendants exceeded" tree_filter_matches=false
+actual_event kind="transition" cause="failure recursion_budget" tree_filter_matches=false
+exit=0; audited expectation=0
+
+$ go run /tmp/fae-capability-audit-m16oydz2/recursion.go
+configured12=<nil>
+backlog-equivalent-default=invalid workflow: [recursion.max_depth: must be 1..8]
+exit=0; audited expectation=0
+
+$ go run /tmp/fae-capability-audit-m16oydz2/footprint.go 1800
+stages=1800 json_bytes=140844 derived=1 err=<nil> time=109.427151ms allocated_MiB=127.0 heap_sys_MiB=87.1
+exit=0; audited expectation=0
+
+$ go run /tmp/fae-capability-audit-m16oydz2/nested-item.go
+missing requested id result=true; both item.id operands bind inner component, AST has no outer binding
+exit=0; audited expectation=0
+
+$ go run /tmp/fae-capability-audit-m16oydz2/nested.go
+new <nil>
+prepare <nil>
+stage=a fan_stage=inner branch=deep/a
+stage=b fan_stage=inner branch=deep/b
+stage=sibling fan_stage=outer branch=side
+exit=0; audited expectation=0

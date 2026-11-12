@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -31,7 +31,7 @@ proctype DynamicHostDrain5(chan child) {
 	bool state = true->
 	int num_msgs->
 	chan child_AnonymousDynamicHostDrain1161 = [1] of {int}->
-	chan child_AnonymousDynamicHostDrain1060 = [1] of {int}->
+	chan child_AnonymousDynamicHostDrain1080 = [1] of {int}->
 	Chandef done_ch->
 	Chandef retired_ch->
 	Chandef update_ch->
@@ -56,61 +56,61 @@ proctype DynamicHostDrain5(chan child) {
 	:: else -> 
 		run sync_monitor(done_ch)
 	fi->
-	run AnonymousDynamicHostDrain106(permit_ch,update_ch,retired_ch,done_ch,child_AnonymousDynamicHostDrain1060)->
-	run receiver(child_AnonymousDynamicHostDrain1060)->
+	run AnonymousDynamicHostDrain108(retired_ch,done_ch,permit_ch,update_ch,child_AnonymousDynamicHostDrain1080)->
+	run receiver(child_AnonymousDynamicHostDrain1080)->
 	run AnonymousDynamicHostDrain116(permit_ch,update_ch,retired_ch,done_ch,child_AnonymousDynamicHostDrain1161)->
 	run receiver(child_AnonymousDynamicHostDrain1161)->
-	retired_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:12:2 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:12:2 */->
+	retired_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:12:2 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:12:2 */->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:13:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:13:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:13:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:13:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:13:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:13:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:14:2 */
-	:: done_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:14:2 */->
-	:: done_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:14:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:14:2 */
+	:: done_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:14:2 */->
+	:: done_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:14:2 */ -> 
 		done_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousDynamicHostDrain106(Chandef permit_ch;Chandef update_ch;Chandef retired_ch;Chandef done_ch;chan child) {
+proctype AnonymousDynamicHostDrain108(Chandef retired_ch;Chandef done_ch;Chandef permit_ch;Chandef update_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
 	bool state = true->
 	int num_msgs->
-	update_ch.closing?closed /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:14 */->
-	assert(!closed) /* Close	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:14 */->
+	update_ch.closing?closed /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:14 */->
+	assert(!closed) /* Close	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:14 */->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:29 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:29 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:29 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:29 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:29 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:29 */ -> 
 		retired_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:40 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:40 */
 	:: permit_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:40 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:40 */
 	:: permit_ch.sync!false -> 
 		permit_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:40 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:40 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:53 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:53 */
 	:: done_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:53 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:53 */
 	:: done_ch.sync!false -> 
 		done_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:10:53 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:10:53 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -123,26 +123,26 @@ proctype AnonymousDynamicHostDrain116(Chandef permit_ch;Chandef update_ch;Chande
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:14 */
-	:: update_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:14 */->
-	:: update_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:14 */
+	:: update_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:14 */->
+	:: update_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:14 */ -> 
 		update_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:24 */
-	:: permit_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:24 */->
-	:: permit_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:24 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:24 */
+	:: permit_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:24 */->
+	:: permit_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:24 */ -> 
 		permit_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:34 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:34 */
 	:: done_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:34 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:34 */
 	:: done_ch.sync!false -> 
 		done_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/dynamic_host.go:11:34 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/dynamic_host.go:11:34 */
 	fi->
 	stop_process: skip->
 	child!0

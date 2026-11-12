@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go#L5
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go#L5
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,7 +30,7 @@ proctype CommitReceiptAfterIndexReconciliation5(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousCommitReceiptAfterIndexReconciliation1162 = [1] of {int}->
+	chan child_AnonymousCommitReceiptAfterIndexReconciliation1172 = [1] of {int}->
 	chan child_AnonymousCommitReceiptAfterIndexReconciliation1061 = [1] of {int}->
 	chan child_AnonymousCommitReceiptAfterIndexReconciliation960 = [1] of {int}->
 	Chandef receipt_ch->
@@ -43,13 +43,13 @@ proctype CommitReceiptAfterIndexReconciliation5(chan child) {
 	run receiver(child_AnonymousCommitReceiptAfterIndexReconciliation960)->
 	run AnonymousCommitReceiptAfterIndexReconciliation106(branchCommitted_ch,indexReconciled_ch,receipt_ch,child_AnonymousCommitReceiptAfterIndexReconciliation1061)->
 	run receiver(child_AnonymousCommitReceiptAfterIndexReconciliation1061)->
-	run AnonymousCommitReceiptAfterIndexReconciliation116(branchCommitted_ch,indexReconciled_ch,receipt_ch,child_AnonymousCommitReceiptAfterIndexReconciliation1162)->
-	run receiver(child_AnonymousCommitReceiptAfterIndexReconciliation1162)->
+	run AnonymousCommitReceiptAfterIndexReconciliation117(indexReconciled_ch,receipt_ch,branchCommitted_ch,child_AnonymousCommitReceiptAfterIndexReconciliation1172)->
+	run receiver(child_AnonymousCommitReceiptAfterIndexReconciliation1172)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:12:2 */
-	:: receipt_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:12:2 */->
-	:: receipt_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:12:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:12:2 */
+	:: receipt_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:12:2 */->
+	:: receipt_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:12:2 */ -> 
 		receipt_ch.rcving!false
 	fi->
 	stop_process: skip->
@@ -63,12 +63,12 @@ proctype AnonymousCommitReceiptAfterIndexReconciliation96(Chandef branchCommitte
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:9:14 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:9:14 */
 	:: branchCommitted_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:9:14 */
 	:: branchCommitted_ch.sync!false -> 
 		branchCommitted_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:9:14 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:9:14 */
 	fi->
 	stop_process: skip->
 	child!0
@@ -81,24 +81,24 @@ proctype AnonymousCommitReceiptAfterIndexReconciliation106(Chandef branchCommitt
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:10:14 */
-	:: branchCommitted_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:10:14 */->
-	:: branchCommitted_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:10:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:10:14 */
+	:: branchCommitted_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:10:14 */->
+	:: branchCommitted_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:10:14 */ -> 
 		branchCommitted_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:10:33 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:10:33 */
 	:: indexReconciled_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:10:33 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:10:33 */
 	:: indexReconciled_ch.sync!false -> 
 		indexReconciled_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:10:33 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:10:33 */
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousCommitReceiptAfterIndexReconciliation116(Chandef branchCommitted_ch;Chandef indexReconciled_ch;Chandef receipt_ch;chan child) {
+proctype AnonymousCommitReceiptAfterIndexReconciliation117(Chandef indexReconciled_ch;Chandef receipt_ch;Chandef branchCommitted_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -106,19 +106,19 @@ proctype AnonymousCommitReceiptAfterIndexReconciliation116(Chandef branchCommitt
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:11:14 */
-	:: indexReconciled_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:11:14 */->
-	:: indexReconciled_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:11:14 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:11:14 */
+	:: indexReconciled_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:11:14 */->
+	:: indexReconciled_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:11:14 */ -> 
 		indexReconciled_ch.rcving!false
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:11:33 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:11:33 */
 	:: receipt_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:11:33 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:11:33 */
 	:: receipt_ch.sync!false -> 
 		receipt_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/source/index.go:11:33 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/source/index.go:11:33 */
 	fi->
 	stop_process: skip->
 	child!0

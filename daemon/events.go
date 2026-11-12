@@ -42,7 +42,8 @@ func (d *Daemon) stream(w http.ResponseWriter, r *http.Request) {
 	queue := make(chan controlplane.Event, 100)
 	gaps := make(chan EventGap, 1)
 	failure := make(chan error, 1)
-	go d.produceEvents(ctx, after, queue, gaps, failure, r.URL.Query().Get("include_retired") == "true")
+	filter := EventFilter{Task: r.URL.Query().Get("task"), TreeRoot: r.URL.Query().Get("tree_root"), RunID: r.URL.Query().Get("run_id"), WorkflowID: r.URL.Query().Get("workflow_id"), Kind: r.URL.Query().Get("kind")}
+	go d.produceEventsFiltered(ctx, after, queue, gaps, failure, r.URL.Query().Get("include_retired") == "true", filter)
 	w.Header().Set("Content-Type", "application/x-ndjson")
 	control := http.NewResponseController(w)
 	send := func(v any) bool {
@@ -87,18 +88,24 @@ func (d *Daemon) stream(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func (d *Daemon) produceEvents(ctx context.Context, after int64, queue chan<- controlplane.Event, gaps chan<- EventGap, failure chan<- error, include ...bool) {
+	d.produceEventsFiltered(ctx, after, queue, gaps, failure, len(include) > 0 && include[0], EventFilter{})
+}
+func (d *Daemon) produceEventsFiltered(ctx context.Context, after int64, queue chan<- controlplane.Event, gaps chan<- EventGap, failure chan<- error, include bool, filter EventFilter) {
 	catchingUp := true
 	for {
 		d.eventMu.Lock()
 		wake := d.eventWake
 		d.eventMu.Unlock()
 		query, cancel := context.WithTimeout(ctx, 5*time.Second)
-		value, err := d.readPool.run(query, "stream:"+strconv.FormatInt(after, 10)+":"+strconv.FormatBool(len(include) > 0 && include[0]), func(work context.Context) (any, error) {
-			rows, gap, e := d.retainedEvents(work, after, 100, include...)
+		filterJSON, _ := json.Marshal(filter)
+		value, err := d.readPool.run(query, "stream:"+strconv.FormatInt(after, 10)+":"+strconv.FormatBool(include)+":"+string(filterJSON), func(work context.Context) (any, error) {
+			rows, cursor, more, gap, e := d.filteredEventBatch(work, after, 100, include, filter)
 			return struct {
-				Rows []controlplane.Event
-				Gap  *EventGap
-			}{rows, gap}, e
+				Rows   []controlplane.Event
+				Cursor int64
+				More   bool
+				Gap    *EventGap
+			}{rows, cursor, more, gap}, e
 		})
 		cancel()
 		if err != nil {
@@ -106,8 +113,10 @@ func (d *Daemon) produceEvents(ctx context.Context, after int64, queue chan<- co
 			return
 		}
 		batch := value.(struct {
-			Rows []controlplane.Event
-			Gap  *EventGap
+			Rows   []controlplane.Event
+			Cursor int64
+			More   bool
+			Gap    *EventGap
 		})
 		if batch.Gap != nil {
 			gaps <- *batch.Gap
@@ -133,7 +142,8 @@ func (d *Daemon) produceEvents(ctx context.Context, after int64, queue chan<- co
 				return
 			}
 		}
-		if len(batch.Rows) > 0 {
+		after = batch.Cursor
+		if batch.More {
 			continue
 		}
 		catchingUp = false

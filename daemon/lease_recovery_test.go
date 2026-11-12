@@ -18,7 +18,7 @@ import (
 )
 
 func TestLeaseRecoveryDaemonHelper(t *testing.T) {
-	path := os.Getenv("FAE_LEASE_DAEMON_FIXTURE")
+	path := os.Getenv("LEASE_DAEMON_FIXTURE")
 	if path == "" {
 		return
 	}
@@ -62,7 +62,7 @@ func TestLeaseRecoveryDaemonHelper(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	if os.Getenv("FAE_LEASE_RETIRE_BEFORE_CRASH") == "1" {
+	if os.Getenv("LEASE_RETIRE_BEFORE_CRASH") == "1" {
 		if e = processowner.Terminate(ctx, record, d.layout.Worktrees); e != nil {
 			t.Fatal(e)
 		}
@@ -78,7 +78,7 @@ func TestLeaseRecoveryDaemonHelper(t *testing.T) {
 		t.Fatal(e)
 	}
 	raw, _ := json.Marshal(proof)
-	if e = os.WriteFile(path+".ready", raw, 0600); e != nil {
+	if e = writeReady(path+".ready", raw); e != nil {
 		t.Fatal(e)
 	}
 	select {}
@@ -115,9 +115,9 @@ func testSIGKILLLinkedWorkload(t *testing.T, retiredBeforeCrash bool) {
 	os.WriteFile(path, b, 0600)
 	exe, _ := os.Executable()
 	cmd := exec.Command(exe, "-test.run=^TestLeaseRecoveryDaemonHelper$")
-	cmd.Env = append(os.Environ(), "FAE_LEASE_DAEMON_FIXTURE="+path)
+	cmd.Env = append(os.Environ(), "LEASE_DAEMON_FIXTURE="+path)
 	if retiredBeforeCrash {
-		cmd.Env = append(cmd.Env, "FAE_LEASE_RETIRE_BEFORE_CRASH=1")
+		cmd.Env = append(cmd.Env, "LEASE_RETIRE_BEFORE_CRASH=1")
 	}
 	log, e := os.Create(path + ".log")
 	if e != nil {
@@ -169,7 +169,7 @@ func testSIGKILLLinkedWorkload(t *testing.T, retiredBeforeCrash bool) {
 		time.Sleep(20 * time.Millisecond)
 	}
 	var d *Daemon
-	deadline = time.Now().Add(8 * time.Second)
+	deadline = time.Now().Add(30 * time.Second)
 	for {
 		d, e = Start(ctx, cfg)
 		if e == nil {

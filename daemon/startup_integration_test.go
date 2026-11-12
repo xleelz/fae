@@ -2,13 +2,16 @@ package daemon
 
 import (
 	"context"
-	"encoding/json"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/domain"
 	"github.com/xleelz/fae/engine"
+	"github.com/xleelz/fae/providerhealth"
 	"github.com/xleelz/fae/workflow"
 )
 
@@ -66,32 +69,33 @@ func TestDaemonStartupRetrySurvivesDrainRestart(t *testing.T) {
 	close(gate.release)
 	wait := func(check func(engine.Job) bool) engine.Job {
 		t.Helper()
-		var current envelope
-		deadline := time.Now().Add(20 * time.Second)
-		for time.Now().Before(deadline) {
-			current = envelope{}
-			s, err := d.store.GetJob(ctx, "startup-work")
-			if err == nil && json.Unmarshal(s.Payload, &current) == nil && check(current.Job) {
-				return current.Job
-			}
-			time.Sleep(20 * time.Millisecond)
-		}
-		t.Fatalf("startup wait: state=%s reason=%s failures=%v", current.Job.State, current.Job.Reason, current.Job.Failures)
+		_, current := awaitJob(t, d, "startup-work", 20*time.Second, func(_ controlplane.JobSnapshot, env envelope) bool { return check(env.Job) })
 		return current.Job
 	}
-	checkpoint := wait(func(j engine.Job) bool { return j.Failures["startup-recovery:intake"] == 1 && j.InFlight == nil })
+	starts := engine.AgentStartCountKey("intake", workflow.Binding{Provider: "fixture", Model: "only-route"})
+	checkpoint := wait(func(j engine.Job) bool { return j.Failures[starts] == 1 && j.InFlight == nil })
 	stop(t, d)
+	// FAE-RT-004: exhaustion parks ProviderUnavailable recorded against the
+	// binding; with no other route the bounded no-route park then escalates.
+	cfg.RouteExhaustion = 2 * time.Second
 	d, err = Start(ctx, cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
-	final := wait(func(j engine.Job) bool { return j.Reason == "StartupExhausted" })
-	if final.Failures["startup-recovery:intake"] != 3 || final.Sequence != 3 || final.Attempts != 0 || final.Tree != checkpoint.Tree || len(final.Provenance) != 0 || final.InFlight != nil {
+	final := wait(func(j engine.Job) bool { return j.EscalationKind == domain.ProviderUnavailable })
+	if final.Failures[starts] != 0 || final.Sequence != 3 || final.Attempts != 0 || final.Tree != checkpoint.Tree || len(final.Provenance) != 0 || final.InFlight != nil {
 		t.Fatalf("unsafe startup retry or charged budget: %+v", final)
 	}
+	parked := false
+	for _, event := range final.History {
+		parked = parked || (event.Kind == "park" && strings.HasPrefix(event.Cause, engine.ParkProviderUnavailable+": startup exhausted on fixture/only-route"))
+	}
+	if !parked {
+		t.Fatal("startup exhaustion did not park ProviderUnavailable")
+	}
 	health, err := d.store.ProviderHealth(ctx)
-	if err != nil || len(health) != 0 {
-		t.Fatal("nonexecution penalized provider health", health, err)
+	if err != nil || len(health) != 1 || health[0].Model != "only-route" || health[0].Outcome != providerhealth.Unavailable || health[0].Failures != 1 {
+		t.Fatal("exhausted binding not recorded unavailable exactly once", health, err)
 	}
 	diagnostics := 0
 	for _, event := range final.History {

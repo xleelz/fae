@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go#L2
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go#L2
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,31 +30,31 @@ proctype SlowSubscriberPinsPublisher2(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousSlowSubscriberPinsPublisher540 = [1] of {int}->
+	chan child_AnonymousSlowSubscriberPinsPublisher530 = [1] of {int}->
 	Chandef fast_ch->
 	Chandef slow_ch->
 	run sync_monitor(slow_ch)->
 	run sync_monitor(fast_ch)->
-	run AnonymousSlowSubscriberPinsPublisher54(fast_ch,slow_ch,child_AnonymousSlowSubscriberPinsPublisher540)->
-	run receiver(child_AnonymousSlowSubscriberPinsPublisher540)->
+	run AnonymousSlowSubscriberPinsPublisher53(slow_ch,fast_ch,child_AnonymousSlowSubscriberPinsPublisher530)->
+	run receiver(child_AnonymousSlowSubscriberPinsPublisher530)->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:6:2 */
-	:: fast_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:6:2 */->
-	:: fast_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:6:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:6:2 */
+	:: fast_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:6:2 */->
+	:: fast_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:6:2 */ -> 
 		fast_ch.rcving!false
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:7:2 */
-	:: slow_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:7:2 */->
-	:: slow_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:7:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:7:2 */
+	:: slow_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:7:2 */->
+	:: slow_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:7:2 */ -> 
 		slow_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousSlowSubscriberPinsPublisher54(Chandef fast_ch;Chandef slow_ch;chan child) {
+proctype AnonymousSlowSubscriberPinsPublisher53(Chandef slow_ch;Chandef fast_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -62,21 +62,21 @@ proctype AnonymousSlowSubscriberPinsPublisher54(Chandef fast_ch;Chandef slow_ch;
 	int num_msgs->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:5:12 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:5:12 */
 	:: slow_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:5:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:5:12 */
 	:: slow_ch.sync!false -> 
 		slow_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:5:12 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:5:12 */
 	fi->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:5:20 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:5:20 */
 	:: fast_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:5:20 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:5:20 */
 	:: fast_ch.sync!false -> 
 		fast_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/readstream.go:5:20 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/readstream.go:5:20 */
 	fi->
 	stop_process: skip->
 	child!0

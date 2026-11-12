@@ -17,18 +17,22 @@ import (
 	"github.com/xleelz/fae/engine"
 )
 
-func TestTaskOrderingUsesPriorityThenStableID(t *testing.T) {
+// FAE-SCH-003: the ready set is ordered by priority, then admission time;
+// task ID only breaks exact ties or an unknown admission time.
+func TestTaskOrderingUsesPriorityThenAdmissionTime(t *testing.T) {
 	d := &Daemon{jobs: map[string]controlplane.JobSnapshot{}}
-	for id, priority := range map[string]int{"a": 10, "b": 40, "c": 40} {
+	for id, priority := range map[string]int{"a": 10, "b": 40, "c": 40, "d": 40, "e": 40} {
 		raw, _ := json.Marshal(envelope{Admission: AdmitParams{Priority: priority}})
 		d.jobs[id] = controlplane.JobSnapshot{Payload: raw}
 	}
-	ids, err := d.orderedTaskIDs()
-	if err != nil || !reflect.DeepEqual(ids, []string{"b", "c", "a"}) {
+	now := time.Now().UTC()
+	graph := controlplane.BacklogGraph{Items: []controlplane.BacklogItem{{ID: "a", Admitted: now}, {ID: "b", Admitted: now.Add(time.Minute)}, {ID: "c", Admitted: now}, {ID: "d", Admitted: now}}}
+	ids, err := d.orderedTaskIDs(graph)
+	if err != nil || !reflect.DeepEqual(ids, []string{"c", "d", "b", "e", "a"}) {
 		t.Fatal(ids, err)
 	}
 	d.jobs["bad"] = controlplane.JobSnapshot{Payload: json.RawMessage(`invalid`)}
-	if _, err = d.orderedTaskIDs(); err == nil {
+	if _, err = d.orderedTaskIDs(graph); err == nil {
 		t.Fatal("malformed cache accepted")
 	}
 }
@@ -116,6 +120,7 @@ func TestTaskControlsNativeAuditsRestartAndRefusals(t *testing.T) {
 	s = d.jobs["control"]
 	_ = decodeEnvelope(s.Payload, &e)
 	e.Job.Reason = "AttemptCap"
+	e.Job.EscalationKind, e.Job.EscalationDetail = domain.AttemptCap, ""
 	e.Job.Attempts = 31
 	e.Job.AttemptCapStage = e.Job.Document.Start
 	s, err = d.persist(ctx, s, e, nil)
@@ -204,10 +209,17 @@ func TestTaskControlCheckpointRefusesBeforeMutation(t *testing.T) {
 	if _, err := d.taskControl(context.Background(), "Cancel", nil, controlplane.Audit{}); err == nil {
 		t.Fatal("pending checkpoint accepted")
 	}
-	d.pendingCheckpoint = nil
-	d.jobs = map[string]controlplane.JobSnapshot{}
-	if _, err := d.taskControl(context.Background(), "Cancel", json.RawMessage(`{"id":"missing"}`), controlplane.Audit{}); err == nil {
-		t.Fatal("unknown task accepted")
+	// An unknown task is refused only after the plane lookup of a terminal
+	// row startup did not materialise (FAE-CP-009), so this half needs a plane.
+	cfg, ctx := fixture(t)
+	n, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, n) }()
+	authorize(t, n)
+	if _, err = call(t, n, "Cancel", TaskControlParams{ID: "missing", Reason: "r", AuthorizingMessage: "message"}, ""); err == nil || !strings.Contains(err.Error(), "unknown task") {
+		t.Fatal("unknown task accepted", err)
 	}
 }
 
@@ -436,7 +448,189 @@ func TestTaskControlNativeScriptedHeldUncertaintyEscalates(t *testing.T) {
 	}
 	e = envelope{}
 	_ = decodeEnvelope(d.jobs[s.ID].Payload, &e)
-	if e.Job.InFlight != nil || e.Job.OperatorStage != "" || e.Job.Reason != "UncertainDispatchEscalated" {
+	if e.Job.InFlight != nil || e.Job.OperatorStage != "" || e.Job.EscalationKind != domain.OperatorEscalate {
 		t.Fatal("held uncertainty not resolved")
+	}
+}
+
+// FAE-WF-021, FAE-ROB-042: an operator checkpoint validates its row before
+// saving it, as the drive, rearm and start do; an invalid row (here the
+// wave-4 escalated task that kept its carry entry) is refused with nothing
+// saved and no checkpoint pending.
+func TestOperatorCheckpointRefusesAnInvalidTask(t *testing.T) {
+	j, err := engine.New("invalid", 1, defaults.Workflow(), "tree")
+	if err != nil {
+		t.Fatal(err)
+	}
+	j.State, j.EscalationKind, j.Reason, j.CarryEntry = domain.Escalated, domain.OperatorEscalate, "OperatorEscalate", "red-loop"
+	raw, err := json.Marshal(envelope{Job: j})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := controlplane.JobSnapshot{ID: "invalid", State: string(j.State), Payload: raw}
+	d := &Daemon{}
+	if _, err = d.saveOperatorCheckpoint(context.Background(), controlplane.Audit{}, s, s); err == nil || !strings.Contains(err.Error(), "carry entry") || d.pendingCheckpoint != nil {
+		t.Fatal("invalid operator checkpoint accepted", err)
+	}
+}
+
+// FAE-OPS-010, FAE-ROB-001: an uncertainty resolution, live or a scripted
+// operator hold, commits through saveOperatorCheckpoint, so an invalid result
+// is refused before any save (the zero daemon has no store to save to) and
+// leaves no checkpoint pending and the cache unchanged.
+func TestUncertainResolutionRefusesAnInvalidRowBeforeSaving(t *testing.T) {
+	j, err := engine.New("invalid", 1, defaults.Workflow(), "tree")
+	if err != nil {
+		t.Fatal(err)
+	}
+	original := controlplane.JobSnapshot{ID: "invalid", State: string(j.State)}
+	j.State, j.EscalationKind, j.Reason, j.CarryEntry = domain.Escalated, domain.OperatorEscalate, "OperatorEscalate", "red-loop"
+	d := &Daemon{jobs: map[string]controlplane.JobSnapshot{}}
+	p := ResolveUncertainParams{ID: "invalid", DispatchID: "dispatch", Action: "escalate"}
+	if _, err = d.saveUncertainResolution(context.Background(), controlplane.Audit{}, p, original, envelope{}, j, nil); err == nil || !strings.Contains(err.Error(), "operator checkpoint refused") || !strings.Contains(err.Error(), "carry entry") || d.pendingCheckpoint != nil || len(d.jobs) != 0 {
+		t.Fatal("invalid uncertainty resolution accepted", err)
+	}
+}
+
+// FAE-WF-021, FAE-WF-086, FAE-OPS-010 (Dolt): an operator Escalate of a carried
+// task still Pending stores a valid row without its carry entry. The drive
+// and a restart load it without quarantine, and Retire, an Escalated out-edge,
+// is accepted.
+func TestDaemonEscalatedCarriedTaskRetiresWithoutQuarantine(t *testing.T) {
+	cfg, ctx := fixture(t)
+	script := defaults.HappyScript()
+	script["first/test-first"] = []engine.ScriptStep{{Class: "execution-error"}, {Class: "execution-error"}, {Class: "execution-error"}, {Class: "execution-error"}}
+	cfg.Executor = engine.NewScripted(script)
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, d) }()
+	authorize(t, d)
+	if _, err = call(t, d, "Admit", AdmitParams{ID: "first", Tree: "tree", Content: "make answer 42", AuthorizingMessage: "message"}, "first"); err != nil {
+		t.Fatal(err)
+	}
+	awaitState(t, d, "first", "Escalated")
+	// Hold the drive so the carried task stays Pending, as one waiting for
+	// release does.
+	d.driveStop.Store(true)
+	d.signal()
+	awaitDrive(t, d, false, 1)
+	if _, err = call(t, d, "Admit", AdmitParams{ID: "second", Tree: "tree", Content: "make answer 42", CarryFrom: "first", AuthorizingMessage: "message"}, "second"); err != nil {
+		t.Fatal(err)
+	}
+	if e := liveEnvelope(t, d, "second"); e.Job.State != domain.Pending || e.Job.CarryEntry != "red-loop" {
+		t.Fatal("fixture: carried task not Pending at its entry", e.Job.State, e.Job.CarryEntry)
+	}
+	if _, err = call(t, d, "Escalate", TaskControlParams{ID: "second", Reason: "operator review", AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	e := liveEnvelope(t, d, "second")
+	if e.Job.State != domain.Escalated || e.Job.CarryEntry != "" || engine.Validate(e.Job) != nil {
+		t.Fatal("escalated carried row", e.Job.State, e.Job.CarryEntry, engine.Validate(e.Job))
+	}
+	// A restart validates every stored row, and the drive validates the
+	// escalated row in every round it runs while another task finishes.
+	stop(t, d)
+	if d, err = Start(ctx, cfg); err != nil {
+		t.Fatal(err)
+	}
+	quarantined := func() string {
+		d.mu.Lock()
+		defer d.mu.Unlock()
+		return d.quarantined["second"]
+	}
+	if reason := quarantined(); reason != "" {
+		t.Fatal("restart quarantined the escalated carried task:", reason)
+	}
+	if _, err = call(t, d, "Admit", AdmitParams{ID: "third", Tree: "tree", Content: "another item", AuthorizingMessage: "message"}, "third"); err != nil {
+		t.Fatal(err)
+	}
+	awaitState(t, d, "third", "Done")
+	if reason := quarantined(); reason != "" {
+		t.Fatal("the drive quarantined the escalated carried task:", reason)
+	}
+	if _, err = call(t, d, "Retire", TaskControlParams{ID: "second", Reason: "obsolete ruling/carried-task", AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal("escalated carried task not retired:", err)
+	}
+	if e = liveEnvelope(t, d, "second"); e.Job.State != domain.Retired {
+		t.Fatal("retired carried task", e.Job.State)
+	}
+}
+
+// FAE-OPS-010, FAE-WF-074, FAE-CLI-013 (Dolt; operator ruling: keep per-task
+// limits, no up-front refusal): resuming a raised AttemptCap task, and
+// restarting an escalated task with information, reply with the budgets the
+// new pass carries, each with its limit. Other controls reply as before.
+func TestResumeReplyStatesCarriedBudgets(t *testing.T) {
+	cfg, ctx := fixture(t)
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, d) }()
+	authorize(t, d)
+	awaitDrive(t, d, true, 1)
+	d.driveStop.Store(true)
+	d.signal()
+	awaitDrive(t, d, false, 1)
+	if _, err = call(t, d, "Admit", AdmitParams{ID: "spent", Tree: "tree", RunID: "budgets", AuthorizingMessage: "message"}, "spent"); err != nil {
+		t.Fatal(err)
+	}
+	// An AttemptCap row whose test runs and spec-loop are already spent.
+	if _, err = call(t, d, "Escalate", TaskControlParams{ID: "spent", Reason: "fixture", AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	d.mu.Lock()
+	s := d.jobs["spent"]
+	var e envelope
+	_ = decodeEnvelope(s.Payload, &e)
+	e.Job.Reason, e.Job.EscalationKind, e.Job.EscalationDetail = "AttemptCap", domain.AttemptCap, ""
+	e.Job.AttemptCapStage = e.Job.Document.Start
+	e.Job.Attempts, e.Job.TestRuns, e.Job.Counts["spec-loop"] = 20, 8, 3
+	s, err = d.persist(ctx, s, e, nil)
+	d.jobs[s.ID] = s
+	d.mu.Unlock()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = call(t, d, "SetAttemptLimit", TaskControlParams{ID: "spent", AttemptLimit: 25, AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	type budget struct{ Used, Limit int }
+	type budgets struct {
+		Attempts budget            `json:"attempts"`
+		TestRuns budget            `json:"test_runs"`
+		Loops    map[string]budget `json:"loops"`
+		Requests map[string]budget `json:"requests"`
+	}
+	want := func(b *budgets) bool {
+		return b != nil && b.Attempts == (budget{20, 25}) && b.TestRuns == (budget{8, 8}) && b.Loops["spec-loop"] == (budget{3, 3}) && b.Requests["scope-widen"] == (budget{0, 3})
+	}
+	r, err := call(t, d, "ResumeRun", ResumeRunParams{Task: "spent", AuthorizingMessage: "message"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var run struct {
+		Resumed []struct {
+			Stage   string   `json:"stage"`
+			Carried *budgets `json:"carried"`
+		} `json:"resumed"`
+	}
+	if err = json.Unmarshal(r.Result, &run); err != nil || len(run.Resumed) != 1 || !want(run.Resumed[0].Carried) {
+		t.Fatalf("resume reply %s %v", r.Result, err)
+	}
+	// Restart with information from an operator escalation states them too.
+	if r, err = call(t, d, "Escalate", TaskControlParams{ID: "spent", Reason: "operator review", AuthorizingMessage: "message"}, ""); err != nil || strings.Contains(string(r.Result), `"carried"`) {
+		t.Fatalf("escalate reply %s %v", r.Result, err)
+	}
+	if r, err = call(t, d, "RestartWithInformation", TaskControlParams{ID: "spent", Information: "smaller change", AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	var restart struct {
+		Carried *budgets `json:"carried"`
+	}
+	if err = json.Unmarshal(r.Result, &restart); err != nil || !want(restart.Carried) {
+		t.Fatalf("restart reply %s %v", r.Result, err)
 	}
 }

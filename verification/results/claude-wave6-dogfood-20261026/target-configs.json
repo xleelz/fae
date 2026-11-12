@@ -1,0 +1,18 @@
+{
+  "revision_1": {
+    "id": "dogfood-target",
+    "revision": 1,
+    "hash": "1cbb0139e881e0e3968bd8ff40ae76cebe3f6017c12ba732a7c105b01f85dba2",
+    "retired": false
+  },
+  "revision_2": {
+    "id": "dogfood-target",
+    "revision": 2,
+    "hash": "7916d4cabf26b11fe40061283b7c546717750f8ad970b31ef490c185980371bc",
+    "retired": false
+  },
+  "pinned_tasks": [
+    "cron-7d533ed758e7c6b84e828429-0",
+    "provider-beta"
+  ]
+}

@@ -1,0 +1,3553 @@
+{
+ "description": "The oracle keeps finding new production blockers; rework exhausts the task attempt limit of 20.",
+ "disposition": {
+  "live": false,
+  "mode": "Local"
+ },
+ "document": "local",
+ "execution": "scripted",
+ "expected": {
+  "dispatches": [
+   "intake",
+   "spec",
+   "spec-review",
+   "plan",
+   "test-first",
+   "run-red",
+   "freeze-red",
+   "implement",
+   "run-tests",
+   "compare-red",
+   "format",
+   "reviews",
+   "oracle",
+   "implement",
+   "run-tests",
+   "compare-red",
+   "format",
+   "reviews",
+   "oracle",
+   "implement",
+   "run-tests",
+   "compare-red",
+   "format",
+   "reviews",
+   "oracle",
+   "implement",
+   "run-tests",
+   "compare-red",
+   "format",
+   "reviews",
+   "oracle",
+   "implement"
+  ],
+  "gates": [
+   {
+    "result": {
+     "evidence_ids": [
+      "11a49f853eb8befe94fef278d487125cd20930b9e41c4c0934394443e7f00878"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "accepted"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "intake-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "514320ab6b5f9f4f53c047a698a2dcf4f1ca43a201833f8eb5d9bd7630cb4899"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "count",
+       "value": 2
+      },
+      {
+       "op": "literal",
+       "value": 2
+      }
+     ],
+     "passed": true,
+     "steps": 17,
+     "value": "true"
+    },
+    "stage": "spec-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "fe8007d3fcddd8d24fe4eac1242f85ad90fe4a6e9f5d58e855178ca0768be8dd"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 127
+      },
+      {
+       "op": "field",
+       "path": [
+        "matched_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "executed_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "expected_failure"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "test_in_source"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 23,
+     "value": "true"
+    },
+    "stage": "red-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "61cc6197ec9e2245c1831c0a2ff261bee1674649077489a82145df0181ebabca",
+      "be964e970eeb33b00bd0f11fbc14ea0ae10b921662a82db87ac787d24990ebe1"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "executed_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "red_passed"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "unchanged"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 15,
+     "value": "true"
+    },
+    "stage": "green-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "3535f319e29d07860ecfc7e4e6e843b3b5e2505d9ce771696e775cebd9fb147f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "new_debt"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "format-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "292b1c88e7d1a90c13922f3a3d8ac7b3db9acab496dfe6c29326e1e7a66b0f05",
+      "3b988e35b3bc373f755a06d13a4aa98edf4a24f56d10d01ce392d7cc4d68e73c",
+      "81a5b15940df360dfbc867bf888375b07f59308d1ddd0ecfcfba03e0a5651c91",
+      "a4c14084a4c42ec3296df2ab7cb2b0cf3768e2be08f957d95773b089d197b23f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "count",
+       "value": 4
+      },
+      {
+       "op": "literal",
+       "value": 4
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "value": 0
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      }
+     ],
+     "passed": true,
+     "steps": 191,
+     "value": "true"
+    },
+    "stage": "reviews-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "61cc6197ec9e2245c1831c0a2ff261bee1674649077489a82145df0181ebabca",
+      "be964e970eeb33b00bd0f11fbc14ea0ae10b921662a82db87ac787d24990ebe1"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "executed_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "red_passed"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "unchanged"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 15,
+     "value": "true"
+    },
+    "stage": "green-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "3535f319e29d07860ecfc7e4e6e843b3b5e2505d9ce771696e775cebd9fb147f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "new_debt"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "format-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "292b1c88e7d1a90c13922f3a3d8ac7b3db9acab496dfe6c29326e1e7a66b0f05",
+      "3b988e35b3bc373f755a06d13a4aa98edf4a24f56d10d01ce392d7cc4d68e73c",
+      "81a5b15940df360dfbc867bf888375b07f59308d1ddd0ecfcfba03e0a5651c91",
+      "a4c14084a4c42ec3296df2ab7cb2b0cf3768e2be08f957d95773b089d197b23f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "count",
+       "value": 4
+      },
+      {
+       "op": "literal",
+       "value": 4
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "value": 0
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      }
+     ],
+     "passed": true,
+     "steps": 191,
+     "value": "true"
+    },
+    "stage": "reviews-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "61cc6197ec9e2245c1831c0a2ff261bee1674649077489a82145df0181ebabca",
+      "be964e970eeb33b00bd0f11fbc14ea0ae10b921662a82db87ac787d24990ebe1"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "executed_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "red_passed"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "unchanged"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 15,
+     "value": "true"
+    },
+    "stage": "green-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "3535f319e29d07860ecfc7e4e6e843b3b5e2505d9ce771696e775cebd9fb147f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "new_debt"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "format-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "292b1c88e7d1a90c13922f3a3d8ac7b3db9acab496dfe6c29326e1e7a66b0f05",
+      "3b988e35b3bc373f755a06d13a4aa98edf4a24f56d10d01ce392d7cc4d68e73c",
+      "81a5b15940df360dfbc867bf888375b07f59308d1ddd0ecfcfba03e0a5651c91",
+      "a4c14084a4c42ec3296df2ab7cb2b0cf3768e2be08f957d95773b089d197b23f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "count",
+       "value": 4
+      },
+      {
+       "op": "literal",
+       "value": 4
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "value": 0
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      }
+     ],
+     "passed": true,
+     "steps": 191,
+     "value": "true"
+    },
+    "stage": "reviews-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "61cc6197ec9e2245c1831c0a2ff261bee1674649077489a82145df0181ebabca",
+      "be964e970eeb33b00bd0f11fbc14ea0ae10b921662a82db87ac787d24990ebe1"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "exit_code"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "executed_count"
+       ],
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "red_passed"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "unchanged"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      }
+     ],
+     "passed": true,
+     "steps": 15,
+     "value": "true"
+    },
+    "stage": "green-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "3535f319e29d07860ecfc7e4e6e843b3b5e2505d9ce771696e775cebd9fb147f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "new_debt"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      }
+     ],
+     "passed": true,
+     "steps": 3,
+     "value": "true"
+    },
+    "stage": "format-gate"
+   },
+   {
+    "result": {
+     "evidence_ids": [
+      "292b1c88e7d1a90c13922f3a3d8ac7b3db9acab496dfe6c29326e1e7a66b0f05",
+      "3b988e35b3bc373f755a06d13a4aa98edf4a24f56d10d01ce392d7cc4d68e73c",
+      "81a5b15940df360dfbc867bf888375b07f59308d1ddd0ecfcfba03e0a5651c91",
+      "a4c14084a4c42ec3296df2ab7cb2b0cf3768e2be08f957d95773b089d197b23f"
+     ],
+     "leaves": [
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "count",
+       "path": [
+        "findings"
+       ],
+       "value": 0
+      },
+      {
+       "op": "literal",
+       "value": 0
+      },
+      {
+       "op": "count",
+       "value": 4
+      },
+      {
+       "op": "literal",
+       "value": 4
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "correctness"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "quality"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "field",
+       "path": [
+        "approved"
+       ],
+       "value": true
+      },
+      {
+       "op": "literal",
+       "value": true
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "architecture"
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "correctness"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "quality"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "security"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "value": 0
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "value": 0
+      },
+      {
+       "op": "field",
+       "path": [
+        "dimension"
+       ],
+       "value": "architecture"
+      },
+      {
+       "op": "literal",
+       "value": "security"
+      },
+      {
+       "op": "count",
+       "path": [
+        "guidance"
+       ],
+       "unknown": "missing field guidance",
+       "value": null
+      },
+      {
+       "op": "count",
+       "path": [
+        "sensitive_domains"
+       ],
+       "unknown": "missing field sensitive_domains",
+       "value": null
+      },
+      {
+       "op": "ge",
+       "unknown": "unknown operand",
+       "value": null
+      },
+      {
+       "op": "count",
+       "value": 1
+      },
+      {
+       "op": "literal",
+       "value": 1
+      }
+     ],
+     "passed": true,
+     "steps": 191,
+     "value": "true"
+    },
+    "stage": "reviews-gate"
+   }
+  ],
+  "kind": "AttemptCap",
+  "state": "Escalated",
+  "transitions": [
+   {
+    "from": "Pending",
+    "to": "intake"
+   },
+   {
+    "from": "intake",
+    "to": "intake-gate"
+   },
+   {
+    "from": "intake-gate",
+    "to": "spec-loop"
+   },
+   {
+    "from": "spec-loop",
+    "to": "spec"
+   },
+   {
+    "from": "spec",
+    "to": "spec-review"
+   },
+   {
+    "from": "spec-review",
+    "to": "spec-gate"
+   },
+   {
+    "from": "spec-gate",
+    "to": "plan"
+   },
+   {
+    "from": "plan",
+    "to": "red-route"
+   },
+   {
+    "from": "red-route",
+    "to": "red-loop"
+   },
+   {
+    "from": "red-loop",
+    "to": "test-first"
+   },
+   {
+    "from": "test-first",
+    "to": "run-red"
+   },
+   {
+    "from": "run-red",
+    "to": "red-gate"
+   },
+   {
+    "from": "red-gate",
+    "to": "freeze-red"
+   },
+   {
+    "from": "freeze-red",
+    "to": "implement-loop"
+   },
+   {
+    "from": "implement-loop",
+    "to": "implement"
+   },
+   {
+    "from": "implement",
+    "to": "green-route"
+   },
+   {
+    "from": "green-route",
+    "to": "run-tests"
+   },
+   {
+    "from": "run-tests",
+    "to": "compare-red"
+   },
+   {
+    "from": "compare-red",
+    "to": "green-gate"
+   },
+   {
+    "from": "green-gate",
+    "to": "format"
+   },
+   {
+    "from": "format",
+    "to": "format-gate"
+   },
+   {
+    "from": "format-gate",
+    "to": "reviews"
+   },
+   {
+    "from": "reviews",
+    "to": "reviews-gate"
+   },
+   {
+    "from": "reviews-gate",
+    "to": "oracle"
+   },
+   {
+    "from": "oracle",
+    "to": "verdict"
+   },
+   {
+    "from": "verdict",
+    "to": "implement-loop"
+   },
+   {
+    "from": "implement-loop",
+    "to": "implement"
+   },
+   {
+    "from": "implement",
+    "to": "green-route"
+   },
+   {
+    "from": "green-route",
+    "to": "run-tests"
+   },
+   {
+    "from": "run-tests",
+    "to": "compare-red"
+   },
+   {
+    "from": "compare-red",
+    "to": "green-gate"
+   },
+   {
+    "from": "green-gate",
+    "to": "format"
+   },
+   {
+    "from": "format",
+    "to": "format-gate"
+   },
+   {
+    "from": "format-gate",
+    "to": "reviews"
+   },
+   {
+    "from": "reviews",
+    "to": "reviews-gate"
+   },
+   {
+    "from": "reviews-gate",
+    "to": "oracle"
+   },
+   {
+    "from": "oracle",
+    "to": "verdict"
+   },
+   {
+    "from": "verdict",
+    "to": "implement-loop"
+   },
+   {
+    "from": "implement-loop",
+    "to": "implement"
+   },
+   {
+    "from": "implement",
+    "to": "green-route"
+   },
+   {
+    "from": "green-route",
+    "to": "run-tests"
+   },
+   {
+    "from": "run-tests",
+    "to": "compare-red"
+   },
+   {
+    "from": "compare-red",
+    "to": "green-gate"
+   },
+   {
+    "from": "green-gate",
+    "to": "format"
+   },
+   {
+    "from": "format",
+    "to": "format-gate"
+   },
+   {
+    "from": "format-gate",
+    "to": "reviews"
+   },
+   {
+    "from": "reviews",
+    "to": "reviews-gate"
+   },
+   {
+    "from": "reviews-gate",
+    "to": "oracle"
+   },
+   {
+    "from": "oracle",
+    "to": "verdict"
+   },
+   {
+    "from": "verdict",
+    "to": "implement-loop"
+   },
+   {
+    "from": "implement-loop",
+    "to": "implement"
+   },
+   {
+    "from": "implement",
+    "to": "green-route"
+   },
+   {
+    "from": "green-route",
+    "to": "run-tests"
+   },
+   {
+    "from": "run-tests",
+    "to": "compare-red"
+   },
+   {
+    "from": "compare-red",
+    "to": "green-gate"
+   },
+   {
+    "from": "green-gate",
+    "to": "format"
+   },
+   {
+    "from": "format",
+    "to": "format-gate"
+   },
+   {
+    "from": "format-gate",
+    "to": "reviews"
+   },
+   {
+    "from": "reviews",
+    "to": "reviews-gate"
+   },
+   {
+    "from": "reviews-gate",
+    "to": "oracle"
+   },
+   {
+    "from": "oracle",
+    "to": "verdict"
+   },
+   {
+    "from": "verdict",
+    "to": "implement-loop"
+   },
+   {
+    "from": "implement-loop",
+    "to": "implement"
+   },
+   {
+    "from": "implement",
+    "to": "green-route"
+   },
+   {
+    "from": "green-route",
+    "to": "run-tests"
+   },
+   {
+    "from": "run-tests",
+    "kind": "AttemptCap",
+    "to": "Escalated"
+   }
+  ]
+ },
+ "name": "attempts-exhausted",
+ "script": {
+  "commit": [
+   {
+    "output": {
+     "files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "compare-red": [
+   {
+    "output": {}
+   }
+  ],
+  "format": [
+   {
+    "output": {
+     "new_debt": 0
+    }
+   }
+  ],
+  "freeze-red": [
+   {
+    "output": {}
+   }
+  ],
+  "implement": [
+   {
+    "output": {
+     "changed_files": [
+      "answer.go"
+     ],
+     "hunks": [
+      "return 42"
+     ],
+     "proof": "scripted fixture",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior"
+    }
+   }
+  ],
+  "intake": [
+   {
+    "output": {
+     "accepted": true
+    }
+   }
+  ],
+  "integrate": [
+   {
+    "output": {
+     "landed": true,
+     "sha": "scripted-commit"
+    }
+   }
+  ],
+  "merge": [
+   {
+    "output": {
+     "patch_identical": true,
+     "result": "clean"
+    }
+   }
+  ],
+  "oracle": [
+   {
+    "output": {
+     "approved": false,
+     "findings": [
+      {
+       "finding": "recorded Production",
+       "rationale": "recorded",
+       "severity": "blocking",
+       "target": "Production",
+       "valid": true
+      }
+     ],
+     "rationale": "recorded"
+    }
+   }
+  ],
+  "plan": [
+   {
+    "output": {
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "steps": [
+      "test",
+      "implement"
+     ],
+     "test_placement": "answer_test.go"
+    }
+   }
+  ],
+  "post-merge-qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "qa": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "reviews": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "dimension": "correctness",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "quality",
+      "findings": []
+     },
+     {
+      "approved": true,
+      "dimension": "security",
+      "findings": [],
+      "guidance": [],
+      "sensitive_domains": []
+     },
+     {
+      "approved": true,
+      "dimension": "architecture",
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "run-red": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 1,
+     "expected_failure": true,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": false,
+     "test_in_source": true
+    }
+   }
+  ],
+  "run-tests": [
+   {
+    "output": {
+     "executed_count": 1,
+     "exit_code": 0,
+     "expected_failure": false,
+     "fresh_build": true,
+     "matched_count": 1,
+     "output_digest": "scripted-rehearsal",
+     "red_passed": true,
+     "test_in_source": true
+    }
+   }
+  ],
+  "spec": [
+   {
+    "output": {
+     "acceptance": [
+      "answer is 42"
+     ],
+     "contracts": [
+      "answer() int"
+     ],
+     "declared_files": [
+      "answer.go",
+      "answer_test.go"
+     ],
+     "no_red": false,
+     "required_tests": [
+      "TestBehavior"
+     ],
+     "risks": [
+      "none in fixture"
+     ],
+     "scope": "scripted rehearsal"
+    }
+   }
+  ],
+  "spec-review": [
+   {
+    "output": null,
+    "reviews": [
+     {
+      "approved": true,
+      "findings": []
+     },
+     {
+      "approved": true,
+      "findings": []
+     }
+    ]
+   }
+  ],
+  "test-first": [
+   {
+    "output": {
+     "declared_files": [
+      "answer_test.go"
+     ],
+     "expected_failure": "got 0 want 42",
+     "source": "package example\nfunc TestBehavior(t *T) { assert(answer() == 42) }\n",
+     "test_id": "TestBehavior",
+     "test_shape": "go-unit"
+    }
+   }
+  ]
+ }
+}

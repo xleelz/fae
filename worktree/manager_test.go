@@ -2,10 +2,13 @@ package worktree
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 	"testing"
+	"time"
 )
 
 func manager(t *testing.T) *Manager {
@@ -143,3 +146,194 @@ func TestHostileGitEnvironment(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// FAE-VCS-001: a resumed task whose branch survives without its directory
+// adopts the branch and its commits; it never re-creates the branch.
+func TestBranchWithoutDirectoryIsAdopted(t *testing.T) {
+	m := manager(t)
+	ctx := context.Background()
+	a, err := m.Ensure(ctx, "r", "a", "HEAD")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(a.Path, "own"), []byte("a"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"add", "own"}, {"commit", "-m", "own work"}} {
+		if _, err = git(ctx, a.Path, args...); err != nil {
+			t.Fatal(err)
+		}
+	}
+	head, _ := git(ctx, a.Path, "rev-parse", "HEAD")
+	for _, prune := range []bool{false, true} {
+		if err = os.RemoveAll(a.Path); err != nil {
+			t.Fatal(err)
+		}
+		if prune {
+			if _, err = git(ctx, m.Repository, "worktree", "prune"); err != nil {
+				t.Fatal(err)
+			}
+		}
+		again, err := m.Ensure(ctx, "r", "a", "HEAD")
+		if err != nil || again != a {
+			t.Fatalf("prune=%v: branch without directory not adopted: %v", prune, err)
+		}
+		if got, _ := git(ctx, a.Path, "rev-parse", "HEAD"); got != head {
+			t.Fatal("adoption lost the task's commits", got, head)
+		}
+		if _, err = os.Stat(filepath.Join(a.Path, "own")); err != nil {
+			t.Fatal("adopted worktree lacks committed work", err)
+		}
+	}
+	// A branch checked out by any other worktree is never adopted twice.
+	if err = os.RemoveAll(a.Path); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = git(ctx, m.Repository, "worktree", "prune"); err != nil {
+		t.Fatal(err)
+	}
+	other := filepath.Join(filepath.Dir(m.Root), "other")
+	if _, err = git(ctx, m.Repository, "worktree", "add", other, a.Branch); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = m.Ensure(ctx, "r", "a", "HEAD"); err == nil {
+		t.Fatal("branch checked out elsewhere adopted")
+	}
+}
+
+// Refork replaces only a pristine task worktree's base and resumes an
+// interrupted move; work or a moved branch is refused.
+func TestReforkPristineOnly(t *testing.T) {
+	m := manager(t)
+	ctx := context.Background()
+	base, _ := git(ctx, m.Repository, "rev-parse", "HEAD")
+	if err := os.WriteFile(filepath.Join(m.Repository, "landed"), []byte("prerequisite\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"add", "landed"}, {"commit", "-m", "landed prerequisite"}} {
+		if _, err := git(ctx, m.Repository, args...); err != nil {
+			t.Fatal(err)
+		}
+	}
+	tip, _ := git(ctx, m.Repository, "rev-parse", "HEAD")
+	ensure := func(task string) Binding {
+		b, err := m.Ensure(ctx, "r", task, base)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return b
+	}
+	at := func(b Binding, want string) {
+		t.Helper()
+		if got, _ := git(ctx, b.Path, "rev-parse", "HEAD"); got != want {
+			t.Fatal("HEAD", got, "want", want)
+		}
+		if status, _ := git(ctx, b.Path, "status", "--porcelain"); status != "" {
+			t.Fatal("not pristine", status)
+		}
+	}
+	clean := ensure("clean")
+	for i := 0; i < 2; i++ {
+		if _, err := m.Refork(ctx, "r", "clean", base, tip); err != nil {
+			t.Fatal(err)
+		}
+		at(clean, tip)
+	}
+	if _, err := os.Stat(filepath.Join(clean.Path, "landed")); err != nil {
+		t.Fatal("reforked worktree lacks the tip's content")
+	}
+	interrupted := ensure("interrupted")
+	if _, err := git(ctx, interrupted.Path, "read-tree", "-m", "-u", base, tip); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.Refork(ctx, "r", "interrupted", base, tip); err != nil {
+		t.Fatal("interrupted refork not resumed", err)
+	}
+	at(interrupted, tip)
+	dirty := ensure("dirty")
+	if err := os.WriteFile(filepath.Join(dirty.Path, "residue"), []byte("x"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.Refork(ctx, "r", "dirty", base, tip); err == nil {
+		t.Fatal("dirty worktree reforked")
+	}
+	moved := ensure("moved")
+	if _, err := git(ctx, moved.Path, "commit", "--allow-empty", "-m", "residue"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.Refork(ctx, "r", "moved", base, tip); err == nil {
+		t.Fatal("moved branch reforked")
+	}
+}
+
+// A refork's tree move holds no manager lock: another task's worktree is
+// created while a slowed move is in progress, and the ref CAS refuses a
+// worktree that changed during the move (FAE-ROB-021).
+func TestReforkTreeMoveHoldsNoManagerLock(t *testing.T) {
+	m := manager(t)
+	ctx := context.Background()
+	base, _ := git(ctx, m.Repository, "rev-parse", "HEAD")
+	if _, err := git(ctx, m.Repository, "commit", "--allow-empty", "-m", "landed prerequisite"); err != nil {
+		t.Fatal(err)
+	}
+	tip, _ := git(ctx, m.Repository, "rev-parse", "HEAD")
+	for _, task := range []string{"slow", "touched"} {
+		if _, err := m.Ensure(ctx, "r", task, base); err != nil {
+			t.Fatal(err)
+		}
+	}
+	real, err := exec.LookPath("git")
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	started := filepath.Join(dir, "started")
+	script := fmt.Sprintf("#!/bin/sh\ncase \" $* \" in\n*' read-tree -m -u '*) : > '%s'; sleep 3;;\nesac\nexec '%s' \"$@\"\n", started, real)
+	if err = os.WriteFile(filepath.Join(dir, "git"), []byte(script), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	refork := func(task string) chan error {
+		done := make(chan error, 1)
+		go func() { _, e := m.Refork(ctx, "r", task, base, tip); done <- e }()
+		for !exists(started) {
+			time.Sleep(5 * time.Millisecond)
+		}
+		return done
+	}
+	done := refork("slow")
+	begun := time.Now()
+	if _, err = m.Ensure(ctx, "r", "other", base); err != nil {
+		t.Fatal(err)
+	}
+	if elapsed := time.Since(begun); elapsed >= time.Second {
+		t.Fatal("worktree creation waited for another task's refork", elapsed)
+	}
+	select {
+	case err = <-done:
+		t.Fatal("refork finished before the creation it should not block", err)
+	default:
+	}
+	if err = <-done; err != nil {
+		t.Fatal(err)
+	}
+	if head, _ := git(ctx, m.Binding("r", "slow").Path, "rev-parse", "HEAD"); head != tip {
+		t.Fatal("refork did not complete", head)
+	}
+	if err = os.Remove(started); err != nil {
+		t.Fatal(err)
+	}
+	done = refork("touched")
+	touched := m.Binding("r", "touched")
+	if err = os.WriteFile(filepath.Join(touched.Path, "residue"), []byte("x"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err = <-done; err == nil {
+		t.Fatal("worktree changed during the move was reforked")
+	}
+	if head, _ := git(ctx, touched.Path, "rev-parse", "HEAD"); head != base {
+		t.Fatal("changed worktree's branch moved", head)
+	}
+}
+
+func exists(path string) bool { _, err := os.Stat(path); return err == nil }

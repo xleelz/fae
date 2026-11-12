@@ -87,6 +87,15 @@ explicit resume computes a new plan instead of replaying a stale deletion list.
 Filesystem or stale-plan errors are recorded in status; a later interval may
 retry after revalidation. A partial deletion still needs operator investigation.
 
+All three schedule workers (retention, creation, replication) are
+deadline-driven (FAE-ARC-002): each sleeps until its record's next deadline or a
+write to the record, so an idle daemon makes no plane reads for them; a due run
+held by drain, maintenance, a concurrent operation or a plane error retries with
+backoff from 1 s up to 30 s. A run that host admission defers before any write
+withdraws its claim: no run is consumed, the deadline stays due, `LastError`
+records the refusal and the audit outcome is `deferred`; a later tick retries
+the same occurrence (replication keeps its durable selection).
+
 ## Automatic backup creation and replication
 
 `fae backup creation-schedule configure --interval 1h --authorizing-message

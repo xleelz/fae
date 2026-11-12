@@ -1,0 +1,29 @@
+{
+  "dispatches": 5,
+  "spec": {
+    "id": "dogfood-loop",
+    "kind": "loop",
+    "role": "oracle",
+    "prompt": "Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.",
+    "binding": {
+      "provider": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "medium"
+    },
+    "max_iterations": 5,
+    "expires_at": "2026-10-26T15:27:49.621124381Z"
+  },
+  "session_id": "loop-dogfood-loop",
+  "state": "completed",
+  "iterations": 5,
+  "in_flight": false,
+  "next": "2026-10-26T15:13:06.988371692Z",
+  "context": {
+    "iterations": 5,
+    "scope_revision": "b328c398c0497f8a0b204d9591bc0d1141342fbaa8fb6e16e09ebc45b60a4652",
+    "session": "loop-dogfood-loop"
+  },
+  "last_output": {
+    "message": "Iteration 5 (provider-loop): marker fae-loop-dogfood is still noted. No files edited and no tools run. The supplied files haven't changed since iteration 1: alpha.go defines alpha() in package sample, which returns 0, and alpha_test.go is empty."
+  }
+}

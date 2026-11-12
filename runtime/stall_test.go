@@ -67,6 +67,24 @@ func TestSilentBusyBridgeNotStalled(t *testing.T) {
 		t.Fatal(e)
 	}
 }
+func TestProcessCPUSubSecondResolution(t *testing.T) {
+	before, ok := processCPU(context.Background(), os.Getpid())
+	if !ok {
+		t.Skip("process CPU census unavailable")
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		for start := time.Now(); time.Since(start) < 50*time.Millisecond; {
+		}
+		if after, _ := processCPU(context.Background(), os.Getpid()); after > before {
+			if after-before >= time.Second {
+				t.Fatalf("CPU advanced only at whole-second resolution: %s", after-before)
+			}
+			return
+		}
+	}
+	t.Fatal("CPU progress not observed")
+}
 func TestStallBusyHelper(t *testing.T) {
 	if os.Getenv("STALL_BUSY") != "1" {
 		return

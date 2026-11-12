@@ -21,6 +21,15 @@ func installPrincipals(server *api.Server, path string) error {
 	if path == "" {
 		return nil
 	}
+	// FAE-SEC-003: the configuration and every credential it names live
+	// outside any repository or worktree.
+	path, e := filepath.Abs(path)
+	if e != nil {
+		return e
+	}
+	if e = api.OutsideRepository(path); e != nil {
+		return e
+	}
 	f, e := os.OpenFile(path, os.O_RDONLY|syscall.O_NOFOLLOW, 0)
 	if e != nil {
 		return e
@@ -44,10 +53,13 @@ func installPrincipals(server *api.Server, path string) error {
 		return errors.New("trailing principal configuration")
 	}
 	for _, entry := range entries {
+		if entry.Actor == "ui" || entry.Actor == "ui-writer" {
+			return errors.New("UI principals are issued only by the daemon's --ui flags")
+		}
 		if !filepath.IsAbs(entry.CredentialFile) {
 			return errors.New("delegated credential path must be absolute")
 		}
-		credential, e := api.Credential(entry.CredentialFile)
+		credential, e := api.RepositoryFreeCredential(entry.CredentialFile)
 		if e != nil {
 			return e
 		}

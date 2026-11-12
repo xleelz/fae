@@ -1,7 +1,10 @@
 package daemon
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/xleelz/fae/controller"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
@@ -205,4 +208,120 @@ func TestControllerFinishesDrainAtQueuedEffectCheckpoint(t *testing.T) {
 	d.mu.Lock()
 	delete(d.jobs, "queued")
 	d.mu.Unlock()
+}
+
+// FAE-SEC-003: the relaunch environment is a secret store, never plane data.
+func TestControllerMaintenanceKeepsEnvironmentOutOfPlane(t *testing.T) {
+	cfg, ctx := fixture(t)
+	secret := fmt.Sprintf("planted-secret-%d", time.Now().UnixNano())
+	t.Setenv("FAE_PLANTED_PROVIDER_TOKEN", secret)
+	d, e := Start(ctx, cfg)
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { stop(t, d) })
+	authorize(t, d)
+	response, e := call(t, d, "Controller", controller.Params{Action: "prepare", AuthorizingMessage: "message", Note: "planned roll", Marker: &controller.Marker{Launcher: "/private/tmp/launcher.sock"}}, "secret-prepare")
+	if e != nil {
+		t.Fatal(e)
+	}
+	raw, _ := json.Marshal(response.Result)
+	var h controller.Health
+	if e = json.Unmarshal(raw, &h); e != nil || h.Maintenance == nil {
+		t.Fatal(h, e)
+	}
+	scan := func(stage string) {
+		t.Helper()
+		mirror, _ := os.ReadFile(d.controllerMarkerPath())
+		log, _ := os.ReadFile(d.layout.Log)
+		var leaked []string
+		e := d.store.Mutate(ctx, controlplane.Audit{Actor: "test", Action: "secret scan", Outcome: "ok"}, func(ctx context.Context, tx *sql.Tx) error {
+			leaked = nil
+			for _, q := range []string{`SELECT data FROM blob_chunks`, `SELECT payload FROM events`, `SELECT inputs FROM audit`} {
+				rows, e := tx.QueryContext(ctx, q)
+				if e != nil {
+					return e
+				}
+				for rows.Next() {
+					var value []byte
+					if e = rows.Scan(&value); e != nil {
+						rows.Close()
+						return e
+					}
+					if strings.Contains(string(value), secret) {
+						leaked = append(leaked, q)
+					}
+				}
+				rows.Close()
+				if e = rows.Err(); e != nil {
+					return e
+				}
+			}
+			return nil
+		})
+		if e != nil || len(leaked) > 0 || strings.Contains(string(mirror), secret) || strings.Contains(string(log), secret) || strings.Contains(string(raw), secret) {
+			t.Fatalf("%s: secret leaked into %v (mirror %v, log %v, response %v): %v", stage, leaked, strings.Contains(string(mirror), secret), strings.Contains(string(log), secret), strings.Contains(string(raw), secret), e)
+		}
+	}
+	scan("prepared")
+	digest := h.Maintenance.Launch.EnvironmentDigest
+	if digest != controller.EnvironmentHash(os.Environ()) || len(h.Maintenance.Launch.Environment) != 0 {
+		t.Fatal("marker does not reference the daemon environment by digest", digest)
+	}
+	sealed := filepath.Join(d.layout.Root, "controller-environment-"+digest+".json")
+	if info, se := os.Stat(sealed); se != nil || info.Mode().Perm() != 0600 {
+		t.Fatal("sealed launch environment", info, se)
+	}
+	if spec, re := controller.ResolveEnvironment(d.layout.Root, h.Maintenance.Launch); re != nil || !strings.Contains(strings.Join(spec.Environment, "\n"), secret) {
+		t.Fatal("relaunch cannot recover the authorized environment", re)
+	}
+	if _, e = controllerCall(t, d, controller.Params{Action: "abort", AuthorizingMessage: "message", Note: "operator: retry"}); e != nil {
+		t.Fatal(e)
+	}
+	scan("aborted")
+	stop(t, d)
+	if d, e = Start(ctx, cfg); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = os.Stat(sealed); e != nil {
+		t.Fatal("restart discarded environment of retained maintenance", e)
+	}
+	marker, e := controller.ReadMarker(d.controllerMarkerPath())
+	if e != nil || marker == nil {
+		t.Fatal(marker, e)
+	}
+	// The relaunched daemon's acceptance consumes the sealed environment; the
+	// in-process fixture cannot pass the new-process identity check, so record
+	// the acceptance durably and prove the startup sweep removes the file.
+	accepted := *marker
+	accepted.State = "accepted"
+	body, _ := json.Marshal(&accepted)
+	if e = d.store.ControllerAction(ctx, controlplane.Audit{Actor: "operator", Action: "controller-maintenance-accepted", Outcome: "ok"}, body, false); e != nil {
+		t.Fatal(e)
+	}
+	scan("accepted")
+	stop(t, d)
+	if d, e = Start(ctx, cfg); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = os.Stat(sealed); !os.IsNotExist(e) {
+		t.Fatal("consumed launch environment retained", e)
+	}
+	scan("restarted")
+}
+
+// FAE-SCH-011 clause 7: a controller build leases from the daemon's host ledger.
+func TestControllerHealthReportsHostLedger(t *testing.T) {
+	cfg, ctx, _ := liveDaemonFixture(t)
+	d, e := Start(ctx, cfg)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer stop(t, d)
+	d.mu.Lock()
+	h := d.controllerHealth()
+	d.mu.Unlock()
+	if h.HostLedger == "" || h.HostLedger != cfg.Live.HostLedger {
+		t.Fatalf("controller health host ledger %q, configured %q", h.HostLedger, cfg.Live.HostLedger)
+	}
 }

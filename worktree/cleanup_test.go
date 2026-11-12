@@ -243,3 +243,35 @@ func TestCleanupSymbolicAliasesRefused(t *testing.T) {
 		})
 	}
 }
+
+// FAE-CTL-042 for Done tasks: Integrated reports whether a landing commit is
+// reachable from the integration ref, and refuses a missing ref or an
+// argument git could read as an option.
+func TestIntegratedReportsALandingInTheRef(t *testing.T) {
+	m, p := cleanupFixture(t)
+	ctx := context.Background()
+	base, e := git(ctx, m.Repository, "rev-parse", "HEAD")
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = git(ctx, m.Repository, "update-ref", "refs/heads/fae/integration", base); e != nil {
+		t.Fatal(e)
+	}
+	if in, e := m.Integrated(ctx, p.Head, "refs/heads/fae/integration"); e != nil || in {
+		t.Fatal("a task commit not in the ref reported integrated", in, e)
+	}
+	if _, e = git(ctx, m.Repository, "update-ref", "refs/heads/fae/integration", p.Head); e != nil {
+		t.Fatal(e)
+	}
+	if in, e := m.Integrated(ctx, p.Head, "refs/heads/fae/integration"); e != nil || !in {
+		t.Fatal("a landed commit not reported integrated", in, e)
+	}
+	if in, e := m.Integrated(ctx, base, "refs/heads/fae/integration"); e != nil || !in {
+		t.Fatal("an ancestor of the ref not reported integrated", in, e)
+	}
+	for _, c := range [][2]string{{p.Head, "refs/heads/fae/missing"}, {"--all", "refs/heads/fae/integration"}, {p.Head, "fae/integration"}} {
+		if _, e = m.Integrated(ctx, c[0], c[1]); e == nil {
+			t.Fatal("accepted", c)
+		}
+	}
+}

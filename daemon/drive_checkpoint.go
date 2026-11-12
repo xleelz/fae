@@ -42,7 +42,8 @@ func (d *Daemon) reconcileJobCheckpoint(ctx context.Context) error {
 	}
 	actual, e := d.store.GetJob(ctx, p.Before.ID)
 	if e != nil {
-		return e
+		// Unverifiable: retained and retried, never treated as divergence.
+		return &controlplane.RetryableError{Attempts: 1, Cause: e}
 	}
 	if sameJobCheckpoint(actual, p.Before) {
 		d.pendingCheckpoint = nil
@@ -62,6 +63,7 @@ func (d *Daemon) reconcileJobCheckpoint(ctx context.Context) error {
 		delete(d.active, actual.ID)
 	}
 	d.jobs[actual.ID] = actual
+	d.logParksAndEscalations(p.Proposed.Events)
 	d.pendingCheckpoint = nil
 	d.publishStatus()
 	d.notifyEvents()

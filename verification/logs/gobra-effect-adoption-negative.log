@@ -1,0 +1,6 @@
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
+(c) Copyright ETH Zurich 2012 - 2026
+18:45:07.177 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - daemon [18:45:07]
+18:45:10.202 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/effect-adoption-negative.go:7:9> Postcondition might not hold. 
+Assertion ok ==> localEffect && completedReceipt might not hold.
+18:45:10.238 [thread-14] ERROR viper.gobra.Gobra - Gobra found 1 error.

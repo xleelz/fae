@@ -11,6 +11,7 @@ import (
 	"github.com/xleelz/fae/controller"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/processowner"
+	"github.com/xleelz/fae/scratchfs"
 	"github.com/xleelz/fae/worktree"
 	"io"
 	"io/fs"
@@ -414,7 +415,11 @@ func CleanupScratch(ctx context.Context, p ScratchCleanupParams) (ScratchCleanup
 	if err != nil {
 		return r, err
 	}
-	unlock, err := lifecycleLock(ctx, p.Home, p.Instance)
+	serialize := lifecycleLock
+	if !p.Apply {
+		serialize = lifecyclePreviewLock // a preview creates no lifecycle state
+	}
+	unlock, err := serialize(ctx, p.Home, p.Instance)
 	if err != nil {
 		return r, err
 	}
@@ -724,7 +729,9 @@ func scratchFinish(ctx context.Context, p ScratchCleanupParams, r ScratchCleanup
 				return fmt.Errorf("staged scratch content changed after backup: %s", path)
 			}
 		}
-		if err = os.RemoveAll(stage); err != nil {
+		// A test's read-only tree (Go's module cache) in the staged
+		// instance is removed too, never through a link out of it.
+		if err = scratchfs.RemoveAll(stage); err != nil {
 			return err
 		}
 	} else if !os.IsNotExist(err) {

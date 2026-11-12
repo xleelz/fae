@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Opt-in two-task real Codex + herdr + Dolt acceptance with drained restart and opt-in crash/loop/resident checks.
+"""Opt-in two-task real Claude Code (or Codex) + herdr-core + Dolt acceptance with drained restart and opt-in crash/loop/resident checks.
 All code/effects remain in a disposable repository; credentials are not copied.
 """
 import argparse,signal,threading,datetime,hashlib,json,os,pathlib,shutil,subprocess,tempfile,time,http.server,urllib.parse,tarfile
-p=argparse.ArgumentParser();p.add_argument('--model',required=True);p.add_argument('--dolt',required=True);p.add_argument('--codex',default=shutil.which('codex'));p.add_argument('--herdr',default=shutil.which('herdr'));p.add_argument('--timeout',type=int,default=2400);p.add_argument('--evidence-dir',type=pathlib.Path);p.add_argument('--persistent-sessions',action='store_true');p.add_argument('--resident-sessions',action='store_true');p.add_argument('--provider-loop',action='store_true');p.add_argument('--crash-during-turn',action='store_true');p.add_argument('--cron-schedules',action='store_true');p.add_argument('--controller-lifecycle',action='store_true');p.add_argument('--drive-restart',action='store_true');p.add_argument('--deployment-roll',action='store_true');p.add_argument('--prophet-sessions',action='store_true');p.add_argument('--target-configs',action='store_true');p.add_argument('--retirement',action='store_true');p.add_argument('--normal-targets',action='store_true');p.add_argument('--census-cleanup',action='store_true');p.add_argument('--dynamic-provisioning',action='store_true');p.add_argument('--scratch-cleanup',action='store_true');p.add_argument('--fleet-provisioning',action='store_true');p.add_argument('--adapter-retirement',action='store_true');p.add_argument('--backup-policy',action='store_true');p.add_argument('--retention-automation',action='store_true');p.add_argument('--backup-schedules',action='store_true');p.add_argument('--backup-storage',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--provider',choices=['claude','codex'],default='claude');p.add_argument('--model');p.add_argument('--claude',default=shutil.which('claude'));p.add_argument('--claude-config-dir',default=os.environ.get('CLAUDE_CONFIG_DIR',str(pathlib.Path.home()/'.claude')));p.add_argument('--dolt',required=True);p.add_argument('--codex',default=shutil.which('codex'));p.add_argument('--herdr',default=shutil.which('herdr-core') or shutil.which('herdr'));p.add_argument('--timeout',type=int,default=2400);p.add_argument('--evidence-dir',type=pathlib.Path);p.add_argument('--persistent-sessions',action='store_true');p.add_argument('--resident-sessions',action='store_true');p.add_argument('--provider-loop',action='store_true');p.add_argument('--crash-during-turn',action='store_true');p.add_argument('--cron-schedules',action='store_true');p.add_argument('--controller-lifecycle',action='store_true');p.add_argument('--drive-restart',action='store_true');p.add_argument('--deployment-roll',action='store_true');p.add_argument('--prophet-sessions',action='store_true');p.add_argument('--target-configs',action='store_true');p.add_argument('--retirement',action='store_true');p.add_argument('--normal-targets',action='store_true');p.add_argument('--census-cleanup',action='store_true');p.add_argument('--dynamic-provisioning',action='store_true');p.add_argument('--scratch-cleanup',action='store_true');p.add_argument('--fleet-provisioning',action='store_true');p.add_argument('--adapter-retirement',action='store_true');p.add_argument('--backup-policy',action='store_true');p.add_argument('--retention-automation',action='store_true');p.add_argument('--backup-schedules',action='store_true');p.add_argument('--backup-storage',action='store_true');a=p.parse_args()
+if a.model is None:
+ if a.provider!='claude':p.error('--model is required with --provider codex')
+ a.model='claude-opus-5-5'
+cli=a.claude if a.provider=='claude' else a.codex
 if a.backup_storage:a.backup_schedules=True
 if a.backup_schedules:a.retention_automation=True
 if a.retention_automation:a.backup_policy=True;a.scratch_cleanup=True
@@ -13,20 +17,26 @@ if a.dynamic_provisioning:a.normal_targets=True
 if a.normal_targets:a.target_configs=True
 if a.census_cleanup:a.retirement=True
 if a.deployment_roll:a.controller_lifecycle=True
+# Codex announces thread/turn events; Claude Code stream-json announces one
+# system/init record per turn and a terminal result record.
+def is_start(e):return e.get('type') in ('thread.started','turn.started') or (e.get('type')=='system' and e.get('subtype')=='init')
+def is_turn_start(e):return e.get('type')=='turn.started' or (e.get('type')=='system' and e.get('subtype')=='init')
+def is_done(e):return e.get('type')=='turn.completed' or (e.get('type')=='result' and e.get('subtype')=='success' and not e.get('is_error'))
+def start_summary(e):return {k:e[k] for k in ('type','subtype','thread_id','session_id') if k in e}
 def task_id(name):
  return 'cron-'+hashlib.sha256(('dogfood-'+name).encode()).hexdigest()[:24]+'-0' if a.cron_schedules and not (a.normal_targets and name=='beta') else 'provider-'+name
 alpha_id,beta_id=task_id('alpha'),task_id('beta')
 root=pathlib.Path(__file__).resolve().parent.parent
-binary=root/'bin/fae';bridge=root/'bin/fae-codex-bridge'
-if not all([a.codex,a.herdr,binary.is_file(),bridge.is_file()]):p.error('build both binaries and install Codex/herdr')
-files=subprocess.check_output(['rg','--files','-g','*.go'],cwd=root,text=True).splitlines()+['go.mod','go.sum','scripts/dogfood.py','bin/fae','bin/fae-codex-bridge']
+binary=root/'bin/fae';bridge=root/('bin/fae-%s-bridge'%a.provider)
+if not all([cli,a.herdr,binary.is_file(),bridge.is_file()]):p.error('build both binaries and install %s/herdr-core'%a.provider)
+files=subprocess.check_output(['rg','--files','-g','*.go'],cwd=root,text=True).splitlines()+['go.mod','go.sum','scripts/dogfood.py','bin/fae',str(bridge.relative_to(root))]
 source_hashes={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in sorted(set(files))}
 report=root/'.cache/dogfood-result.json';report.parent.mkdir(exist_ok=True)
 if a.evidence_dir:
  a.evidence_dir=a.evidence_dir.resolve();a.evidence_dir.mkdir(parents=True,exist_ok=False)
 scratch=pathlib.Path(tempfile.mkdtemp(prefix='fhd-',dir='/private/tmp' if os.uname().sysname=='Darwin' else '/var/tmp'))
 repo=scratch/'repo';repo.mkdir();logs=scratch/'daemon.log';process=None;log=None;launcher_process=None;launcher_log=None
-result={'model':a.model,'herdr_version':subprocess.check_output([a.herdr,'--version'],text=True).strip(),'provider_version':subprocess.check_output([a.codex,'--version'],text=True).strip(),'adapter':'herdr','scratch':str(scratch),'status':'started','task_ids':[alpha_id,beta_id]}
+result={'provider':a.provider,'model':a.model,'herdr_version':subprocess.check_output([a.herdr,'--version'],text=True).strip(),'provider_version':subprocess.check_output([cli,'--version'],text=True).strip(),'adapter':'herdr','scratch':str(scratch),'status':'started','task_ids':[alpha_id,beta_id]}
 replica_server=None;replica_thread=None;replica_uploads=[];replica_reads=[];replica_receipts={}
 effect_server=None;effect_thread=None;effect_calls=[];effect_reads=[];provision_calls=[];fixture_tools={};effect_receipts={};effect_lock=threading.Lock();task_admissions={};task_targets={}
 def start_effect_fixture():
@@ -115,18 +125,26 @@ def start_replica_fixture():
  replica_thread=threading.Thread(target=replica_server.serve_forever,daemon=True);replica_thread.start()
  return 'http://127.0.0.1:'+str(replica_server.server_address[1])
 def git(*args):return subprocess.check_output(['git','-C',str(repo),*args],text=True).strip()
-def call(*args,timeout=30):
- r=subprocess.run([str(binary),'--home',str(scratch/'i'),'--instance','dogfood','--json',*args],cwd=repo,text=True,capture_output=True,timeout=timeout)
- if r.returncode:raise RuntimeError(r.stderr)
- return json.loads(r.stdout)
+# Backup, replication and retention runs pass the two-reading I/O gate (FAE-HOST-010): at least 30 s after a restart.
+io_gate_wait=150
+deferred=('IOPressure','IOPressureHold','HostPressure','HostPressureHold','PaneLimit','MemoryReservation')
+def call(*args,timeout=30,instance='dogfood'):
+ # A deferred host-admission refusal precedes any write; retry it as an operator would (bounded, recorded).
+ for attempt in range(21):
+  r=subprocess.run([str(binary),'--home',str(scratch/'i'),'--instance',instance,'--json',*args],cwd=repo,text=True,capture_output=True,timeout=timeout)
+  # A schedule control refused during a run says to retry after it; treat it like a deferral.
+  if r.returncode and attempt<20 and (any('host admission: '+k+'\n' in r.stderr+'\n' for k in deferred) or 'retry control after current run' in r.stderr):
+   result.setdefault('deferred_host_refusals',[]).append({'command':' '.join(args[:2]),'refusal':r.stderr.strip(),'at':datetime.datetime.now(datetime.timezone.utc).isoformat()});time.sleep(15);continue
+  if r.returncode:raise RuntimeError(r.stderr)
+  return json.loads(r.stdout)
 def start(recover=False):
  global process,log
- log=logs.open('a');process=subprocess.Popen([str(binary),'--home',str(scratch/'i'),'--instance','dogfood','serve','--workspace',str(repo),'--adapter','multiplexer','--live-config',str(config),'--prophet-model',a.model,'--dolt',a.dolt,'--foreground','--max-tasks-in-flight','2']+(['--scratch'] if a.scratch_cleanup and not (scratch/'i'/'dogfood').exists() else []),cwd=repo,stdout=log,stderr=log)
+ log=logs.open('a');process=subprocess.Popen([str(binary),'--home',str(scratch/'i'),'--instance','dogfood','serve','--workspace',str(repo),'--adapter','multiplexer','--live-config',str(config),'--prophet-provider',a.provider,'--prophet-model',a.model,'--dolt',a.dolt,'--foreground','--max-tasks-in-flight','2']+(['--scratch'] if a.scratch_cleanup and not (scratch/'i'/'dogfood').exists() else []),cwd=repo,stdout=log,stderr=log)
  for _ in range(200):
   if process.poll() is not None:
    if recover and _<100:
     log.close();time.sleep(.2)
-    log=logs.open('a');process=subprocess.Popen([str(binary),'--home',str(scratch/'i'),'--instance','dogfood','serve','--workspace',str(repo),'--adapter','multiplexer','--live-config',str(config),'--prophet-model',a.model,'--dolt',a.dolt,'--foreground','--max-tasks-in-flight','2']+(['--scratch'] if a.scratch_cleanup and not (scratch/'i'/'dogfood').exists() else []),cwd=repo,stdout=log,stderr=log)
+    log=logs.open('a');process=subprocess.Popen([str(binary),'--home',str(scratch/'i'),'--instance','dogfood','serve','--workspace',str(repo),'--adapter','multiplexer','--live-config',str(config),'--prophet-provider',a.provider,'--prophet-model',a.model,'--dolt',a.dolt,'--foreground','--max-tasks-in-flight','2']+(['--scratch'] if a.scratch_cleanup and not (scratch/'i'/'dogfood').exists() else []),cwd=repo,stdout=log,stderr=log)
     continue
    raise RuntimeError('daemon exited; inspect '+str(logs))
   try:call('status');return
@@ -157,7 +175,7 @@ def controller_restart():
  launcher_dir=scratch/'launcher';launcher_dir.mkdir(mode=0o700)
  socket=launcher_dir/'runtime.sock'
  launcher_log=(scratch/'launcher.log').open('a')
- launcher_process=subprocess.Popen([str(binary),'runtime-launcher','--socket',str(socket)],cwd=repo,stdout=launcher_log,stderr=launcher_log)
+ launcher_process=subprocess.Popen([str(binary),'--home',str(scratch/'i'),'--instance','dogfood','runtime-launcher','--socket',str(socket)],cwd=repo,stdout=launcher_log,stderr=launcher_log)
  until=time.monotonic()+10
  while not socket.exists():
   if launcher_process.poll() is not None or time.monotonic()>until:raise RuntimeError('runtime launcher failed')
@@ -209,8 +227,8 @@ def exercise_drive_restart():
   started=set();start_events=[]
   for path in (scratch/'i'/'dogfood'/'sessions').glob('session-*/provider-*/events.jsonl'):
    launch=json.loads((path.parent.parent/'config.json').read_text());ev=entries(path)
-   if launch['session_id'] in active_sessions and any(e.get('type')=='turn.started' for e in ev) and not any(e.get('type')=='turn.completed' for e in ev):
-    started.add(launch['session_id']);start_events.append({'session_id':launch['session_id'],'dispatch_id':launch['dispatch_id'],'events':[e for e in ev if e.get('type') in ('thread.started','turn.started')]})
+   if launch['session_id'] in active_sessions and any(is_turn_start(e) for e in ev) and not any(is_done(e) for e in ev):
+    started.add(launch['session_id']);start_events.append({'session_id':launch['session_id'],'dispatch_id':launch['dispatch_id'],'events':[start_summary(e) for e in ev if is_start(e)]})
   if started:break
   time.sleep(.1)
  else:raise RuntimeError('no active provider work for independent drive restart')
@@ -294,19 +312,24 @@ try:
   scopes[task]=scope;tasks[task]=dict(scope,test_id=test,expected_failure=failure)
   goals[task]=(name,want,test,failure)
  git('add','.');git('commit','-m','isolated two-task dogfood base');base=git('rev-parse','HEAD');git('branch','fae/integration',base)
- cfg={'adapter':'multiplexer','herdr_binary':a.herdr,'tasks':tasks,'command':[str(bridge),'--codex',a.codex,'--config','{config}','--files','alpha.go,alpha_test.go','--test-file','alpha_test.go','--task-scopes',json.dumps(scopes,separators=(',',':'))],'environment':{'CODEX_HOME':os.environ.get('CODEX_HOME',str(pathlib.Path.home()/'.codex'))},'allowed_commands':[['go','test','-json','-count=1','-a','-x','./...'],['gofmt','-l','.']],'files':['alpha.go','alpha_test.go'],'base':base,'integration_ref':'refs/heads/fae/integration','commit_message':'Real-provider dogfood verified change','test_file':'alpha_test.go','test_id':'TestAlpha','expected_failure':'got 0 want 42','host_ledger':str(scratch/'host-leases'),'heavy_capacity':2,'timeout_seconds':900,'stall_seconds':300,'stall_safe_replay':True}
+ cfg={'adapter':'multiplexer','herdr_binary':a.herdr,'tasks':tasks,'command':[str(bridge),'--'+a.provider,cli,'--config','{config}','--files','alpha.go,alpha_test.go','--test-file','alpha_test.go','--task-scopes',json.dumps(scopes,separators=(',',':'))],'environment':{'CLAUDE_CONFIG_DIR':a.claude_config_dir} if a.provider=='claude' else {'CODEX_HOME':os.environ.get('CODEX_HOME',str(pathlib.Path.home()/'.codex'))},'allowed_commands':[['go','test','-json','-count=1','-a','-x','./...'],['gofmt','-l','.']],'files':['alpha.go','alpha_test.go'],'base':base,'integration_ref':'refs/heads/fae/integration','commit_message':'Real-provider dogfood verified change','test_file':'alpha_test.go','test_id':'TestAlpha','expected_failure':'got 0 want 42','host_ledger':str(scratch/'host-leases'),'heavy_capacity':2,'timeout_seconds':900,'stall_seconds':300,'stall_safe_replay':True}
  cfg['resident_sessions']=a.resident_sessions;cfg['persistent_loops']=a.provider_loop
  if a.persistent_sessions:cfg['command'] += ['--session-root',str(scratch/'i'/'dogfood'/'provider-sessions')]
  if a.normal_targets:
   normal_tool=start_effect_fixture()
   if not a.dynamic_provisioning:cfg['external_tools']={'dogfood-effect':normal_tool}
- config=scratch/'live.json';config.write_text(json.dumps(cfg));start()
+ config=scratch/'live.json';config.touch(mode=0o600);config.chmod(0o600);config.write_text(json.dumps(cfg));start()
  call('message','--id','authorization','--text',json.dumps({'text':('I approve live external effects only for the disposable localhost fixture. ' if a.normal_targets else '')+'Execute both isolated real-provider tasks including cron admission, workflow installation, dynamic runtime limits, explicit crash recovery, bounded provider loops, independent drive rearm, guarded roll, versioned target configuration, synthetic retirement/dependency checks and shutdown.','authorize':{'classes':['governance','task','runtime','controller','schedule']}}))
- wf=json.loads(subprocess.check_output([str(binary),'workflow','default','--json'],text=True))
- for role in wf['roles'].values():role['routes']=[{'provider':'codex','model':a.model,'effort':'medium'}]
- wf['roles']['coder']['profile']['allowed'].append('edit')
- for stage in wf['stages'].values():
-  if stage.get('test_run'):stage['command']=cfg['allowed_commands'][0]
+ wf=json.loads(subprocess.check_output([str(binary),'workflow','default','--local','--json'],text=True))
+ # The shipped default's Local projection (what Local tasks pin; the Normal
+ # code-review sub-workflow needs review/ticket adapters this fixture lacks)
+ # runs live unmodified except for its per-instance route
+ # chain (FAE-WF-082): this instance's bridge serves one provider, so keep only
+ # that provider's bindings, or the requested binding when it is not the default.
+ for role in wf['roles'].values():
+  if (role['routes'][0]['provider'],role['routes'][0]['model'])==(a.provider,a.model):role['routes']=[r for r in role['routes'] if r['provider']==a.provider]
+  else:role['routes']=[{'provider':a.provider,'model':a.model,'effort':'medium'}]
+ assert all(stage['command'] in cfg['allowed_commands'] for stage in wf['stages'].values() if stage['primitive']=='HostCommand'), 'default HostCommand outside the dogfood allowlist'
  workflow=scratch/'workflow.json';workflow.write_text(json.dumps(wf));base_workflow=call('template','workflow-put','--content',str(workflow),'--authorizing-message','authorization')
  if a.target_configs:
   target={'schema_version':1,'workspace':str(repo),'integration_ref':cfg['integration_ref'],'protected_branches':[cfg['integration_ref']],'allowed_commands':cfg['allowed_commands']}
@@ -368,6 +391,8 @@ try:
   receipt_fields=['tool','argument_digest','external_id','reconciliation_state','idempotency_key']
   wf['artifacts']['ExternalReceipt']={'version':1,'schema':{'type':'object','additionalProperties':False,'required':receipt_fields,'properties':{key:{'type':'string'} for key in receipt_fields}}}
   wf['roles']['planner']['outputs'].append('ExternalReceipt')
+  # Schema 2: an ExternalEffect stage acts only under its role's effect grant (FAE-WF-042).
+  wf['roles']['planner']['profile'].setdefault('effects',[]).append('dogfood-effect')
   wf['stages']['external']={'primitive':'ExternalEffect','role':'planner','normal_only':True,'subject':'dogfood-effect','pins':normal_tool['arguments'],'idempotence_key':'dogfood-create','output':'ExternalReceipt'}
   for edge in wf['edges']:
    if edge['to']=='Done':edge['to']='external'
@@ -391,8 +416,8 @@ try:
    for path in (scratch/'i'/'dogfood'/'sessions').glob('session-*/provider-*/events.jsonl'):
     launch=json.loads((path.parent.parent/'config.json').read_text())
     ev=entries(path)
-    if launch['session_id'] in active and any(e.get('type')=='thread.started' for e in ev) and not any(e.get('type')=='turn.completed' for e in ev):
-     started.append(launch['session_id']);start_events.append({'session_id':launch['session_id'],'dispatch_id':launch['dispatch_id'],'events':[e for e in ev if e.get('type') in ('thread.started','turn.started')]})
+    if launch['session_id'] in active and any(is_start(e) for e in ev) and not any(is_done(e) for e in ev):
+     started.append(launch['session_id']);start_events.append({'session_id':launch['session_id'],'dispatch_id':launch['dispatch_id'],'events':[start_summary(e) for e in ev if is_start(e)]})
    if started:
     (scratch/'crash-before.json').write_text(json.dumps(before,indent=2))
     (scratch/'crash-provider-starts.json').write_text(json.dumps(start_events,indent=2))
@@ -501,7 +526,7 @@ try:
        else:assert count==1, 'original dispatch collected more than once'
      assert snapshots[task]['payload']['job']['failures'].get('crash-recovery',0)==prior['payload']['job']['failures'].get('crash-recovery',0), 'drive restart charged crash budget'
    if a.provider_loop:
-    call('schedule','create','--id','dogfood-loop','--role','oracle','--provider','codex','--model',a.model,'--effort','medium','--max-iterations','5','--expires-in','15m','--prompt','Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.','--authorizing-message','authorization')
+    call('schedule','create','--id','dogfood-loop','--role','oracle','--provider',a.provider,'--model',a.model,'--effort','medium','--max-iterations','5','--expires-in','15m','--prompt','Return the required message JSON. Remember the marker fae-loop-dogfood in this conversation, and mention it on every iteration. Do not edit files or invoke tools.','--authorizing-message','authorization')
     while time.monotonic()<deadline:
      loop_snapshot=call('schedule','inspect','--id','dogfood-loop')
      if loop_snapshot['state']=='completed':break
@@ -674,7 +699,7 @@ try:
   assert persisted['state']=='paused' and persisted['keep']==1 and persisted['interval_seconds']==1
   assert pathlib.Path(extra_first['path']).is_dir() and pathlib.Path(extra_last['path']).is_dir()
   resumed=call('backup','retention-schedule','resume','--authorizing-message','authorization')
-  until=time.monotonic()+30
+  until=time.monotonic()+io_gate_wait
   while time.monotonic()<until:
    schedule=call('backup','retention-schedule','status')
    if schedule['state']=='blocked':raise RuntimeError('retention schedule blocked: '+schedule.get('last_error',''))
@@ -698,7 +723,7 @@ try:
   assert creation_paused['state']=='paused' and replication_paused['state']=='paused'
   assert set((scratch/'i'/'dogfood'/'backup').iterdir())==before_creation
   call('backup','creation-schedule','resume','--authorizing-message','authorization')
-  until=time.monotonic()+45
+  until=time.monotonic()+io_gate_wait
   while time.monotonic()<until:
    created=call('backup','creation-schedule','status')
    if created['state']=='blocked':raise RuntimeError('automatic backup blocked: '+created.get('last_error',''))
@@ -710,7 +735,7 @@ try:
   for name,digest in created_manifest['files'].items():assert hashlib.sha256((created_path/name).read_bytes()).hexdigest()==digest
   before_uploads=len(replica_uploads)
   call('backup','replication-schedule','resume','--authorizing-message','authorization')
-  until=time.monotonic()+45
+  until=time.monotonic()+io_gate_wait
   while time.monotonic()<until:
    uncertain=call('backup','replication-schedule','status')
    if uncertain.get('pending') and not uncertain['running'] and len(replica_uploads)>before_uploads:break
@@ -730,7 +755,7 @@ try:
   recovered_schedule=call('backup','replication-schedule','status')
   assert recovered_schedule['state']=='paused' and recovered_schedule['pending']==uncertain['pending']
   call('backup','replication-schedule','resume','--authorizing-message','authorization')
-  until=time.monotonic()+90
+  until=time.monotonic()+io_gate_wait
   while time.monotonic()<until:
    replicated_schedule=call('backup','replication-schedule','status')
    if replicated_schedule['state']=='blocked':raise RuntimeError('automatic replication blocked: '+replicated_schedule.get('last_error',''))
@@ -792,7 +817,7 @@ try:
   result['retention_automation']['final_host_holders']=0
  owned=scratch/'i'/'dogfood'/'sessions'
  assert not list(owned.glob('.processes/*.json*')), 'owned process records or retirement receipts remain'
- assert not list(owned.rglob('mux.sock')), 'owned Herdr sockets remain'
+ assert not list(owned.rglob('mux.sock')), 'owned herdr-core sockets remain'
  panes=json.loads((scratch/'host-leases'/'panes'/'state.json').read_text())
  assert not panes.get('Panes'), 'pane reservations remain after shutdown'
  result['pane_audit']['final_reservations']=0
@@ -804,9 +829,9 @@ try:
    try:entries.append(json.loads(line))
    except json.JSONDecodeError:continue
   launch=json.loads((path.parent.parent/'config.json').read_text())
-  provider_starts[launch['session_id']]=provider_starts.get(launch['session_id'],0)+sum(e.get('type')=='turn.started' for e in entries)
-  if any(e.get('type')=='turn.completed' for e in entries):
-   assert sum(e.get('type')=='turn.completed' for e in entries)==1, 'provider turn completed multiple times'
+  provider_starts[launch['session_id']]=provider_starts.get(launch['session_id'],0)+sum(is_turn_start(e) for e in entries)
+  if any(is_done(e) for e in entries):
+   assert sum(is_done(e) for e in entries)==1, 'provider turn completed multiple times'
    turns.append({'session_id':launch['session_id'],'task_id':launch['task_id'],'workflow_id':launch.get('workflow_id',''),'provider':launch['binding']['provider'],'model':launch['binding']['model']})
    contextpath=path.parent/'provider-session.json'
    if contextpath.exists():
@@ -889,17 +914,30 @@ try:
   duplicate=archive.parent/(cleaned['identity']['id']+'-redundant')
   shutil.copytree(archive,duplicate)
   (duplicate/'uncovered-file').write_text('not in canonical backup')
+  # FAE-CLI-001: archive cleanup of the removed scratch instance runs through a
+  # serving instance in the same home, with its own runtime authorization.
+  host_ws=scratch/'archive-host';host_ws.mkdir();subprocess.run(['git','init','-q',str(host_ws)],check=True)
+  host_log=(scratch/'archive-host.log').open('a')
+  host=subprocess.Popen([str(binary),'--home',str(scratch/'i'),'--instance','archive-host','serve','--workspace',str(host_ws),'--adapter','scripted','--dolt',a.dolt,'--foreground'],cwd=host_ws,stdout=host_log,stderr=host_log)
+  for _ in range(600):
+   if host.poll() is not None:raise RuntimeError('archive host exited; inspect '+str(scratch/'archive-host.log'))
+   try:call('status',instance='archive-host');break
+   except RuntimeError:time.sleep(.1)
+  else:raise RuntimeError('archive host startup timeout')
+  call('message','--id','archive-auth','--text',json.dumps({'text':'Remove the verified redundant scratch archive of the removed dogfood instance, then stop this helper.','authorize':{'classes':['runtime']}}),instance='archive-host')
+  archive_args=['cleanup','scratch-archive','--scratch-instance','dogfood','--source',str(duplicate),'--survivor',str(archive)]
   try:
-   call('cleanup','scratch-archive','--source',str(duplicate),'--survivor',str(archive),timeout=150)
+   call(*archive_args,timeout=150,instance='archive-host')
    raise AssertionError('uncovered archive data accepted')
   except RuntimeError:pass
   assert duplicate.is_dir() and archive.is_dir()
   (duplicate/'uncovered-file').unlink()
-  archive_plan=call('cleanup','scratch-archive','--source',str(duplicate),'--survivor',str(archive),timeout=150)
-  removed_archive=call('cleanup','scratch-archive','--source',str(duplicate),'--survivor',str(archive),'--apply','--plan-digest',archive_plan['plan_digest'],timeout=150)
+  archive_plan=call(*archive_args,timeout=150,instance='archive-host')
+  removed_archive=call(*archive_args,'--apply','--plan-digest',archive_plan['plan_digest'],'--authorizing-message','archive-auth',timeout=150,instance='archive-host')
   assert removed_archive['completed'] and not duplicate.exists() and archive.is_dir()
-  repeated_archive=call('cleanup','scratch-archive','--source',str(duplicate),'--survivor',str(archive),'--apply','--plan-digest',archive_plan['plan_digest'],timeout=150)
+  repeated_archive=call(*archive_args,'--apply','--plan-digest',archive_plan['plan_digest'],'--authorizing-message','archive-auth',timeout=150,instance='archive-host')
   assert repeated_archive['completed']
+  call('shutdown','--authorizing-message','archive-auth',instance='archive-host');assert host.wait(timeout=60)==0;host_log.close()
   final_cleanup=call('cleanup','scratch','--apply','--dolt',a.dolt,'--authorizing-message','authorization',timeout=120)
   assert final_cleanup['completed'] and final_cleanup['archive_path']==str(archive)
   for name,digest in cleaned['files'].items():assert hashlib.sha256((archive/name).read_bytes()).hexdigest()==digest

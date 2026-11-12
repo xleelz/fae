@@ -2,7 +2,7 @@
 // num_mand_comm_params=0
 // num_opt_comm_params=0
 
-// git_link=https://github.com//blob///Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go#L2
+// git_link=https://github.com//blob///home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go#L2
 typedef Chandef {
 	chan sync = [0] of {bool};
 	chan enq = [0] of {bool};
@@ -30,33 +30,33 @@ proctype StallMissingRetirement2(chan child) {
 	int i->
 	bool state = true->
 	int num_msgs->
-	chan child_AnonymousStallMissingRetirement530 = [1] of {int}->
+	chan child_AnonymousStallMissingRetirement540 = [1] of {int}->
 	Chandef retired_ch->
 	Chandef stop_ch->
 	run sync_monitor(stop_ch)->
 	run sync_monitor(retired_ch)->
-	run AnonymousStallMissingRetirement53(stop_ch,retired_ch,child_AnonymousStallMissingRetirement530)->
-	run receiver(child_AnonymousStallMissingRetirement530)->
+	run AnonymousStallMissingRetirement54(retired_ch,stop_ch,child_AnonymousStallMissingRetirement540)->
+	run receiver(child_AnonymousStallMissingRetirement540)->
 	
 
-	if /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:6:2 */
+	if /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:6:2 */
 	:: stop_ch.enq?ok -> 
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:6:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:6:2 */
 	:: stop_ch.sync!false -> 
 		stop_ch.sending?ok->
-		assert(ok) /* Send	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:6:2 */
+		assert(ok) /* Send	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:6:2 */
 	fi->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:7:2 */
-	:: retired_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:7:2 */->
-	:: retired_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:7:2 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:7:2 */
+	:: retired_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:7:2 */->
+	:: retired_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:7:2 */ -> 
 		retired_ch.rcving!false
 	fi->
 	stop_process: skip->
 	child!0
 }
-proctype AnonymousStallMissingRetirement53(Chandef stop_ch;Chandef retired_ch;chan child) {
+proctype AnonymousStallMissingRetirement54(Chandef retired_ch;Chandef stop_ch;chan child) {
 	bool closed-> 
 	bool ok-> 
 	int i->
@@ -64,9 +64,9 @@ proctype AnonymousStallMissingRetirement53(Chandef stop_ch;Chandef retired_ch;ch
 	int num_msgs->
 	
 
-	if /* Rcv	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:5:13 */
-	:: stop_ch.deq?state,num_msgs /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:5:13 */->
-	:: stop_ch.sync?state /* 	/Users/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.IirR6M/negative/stall.go:5:13 */ -> 
+	if /* Rcv	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:5:13 */
+	:: stop_ch.deq?state,num_msgs /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:5:13 */->
+	:: stop_ch.sync?state /* 	/home/lbethay/workplace/fae/.tools/gomela-pinned/fae-run.OHULKK/negative/stall.go:5:13 */ -> 
 		stop_ch.rcving!false
 	fi->
 	stop_process: skip->

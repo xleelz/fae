@@ -1,6 +1,6 @@
-Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
 (c) Copyright ETH Zurich 2012 - 2026
-17:17:39.795 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - controlplane [17:17:39]
-17:17:41.902 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/adapter-retirement-negative.go:3:9> Postcondition might not hold. 
+18:42:08.302 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - controlplane [18:42:08]
+18:42:11.221 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/adapter-retirement-negative.go:3:9> Postcondition might not hold. 
 Assertion result == (!retired) might not hold.
-17:17:41.920 [thread-14] ERROR viper.gobra.Gobra - Gobra found 1 error.
+18:42:11.260 [thread-5] ERROR viper.gobra.Gobra - Gobra found 1 error.

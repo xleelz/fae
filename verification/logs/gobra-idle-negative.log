@@ -1,6 +1,6 @@
-Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f)
+Gobra 0.1.0-SNAPSHOT (d2c5af5450540c502855e53f4a5af1ba7630c41f@HEAD)
 (c) Copyright ETH Zurich 2012 - 2026
-17:14:50.006 [main] INFO viper.gobra.Gobra - Verifying package /Users/lbethay/workplace/fae/.cache - kernel [17:14:50]
-17:14:52.059 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/idle-negative.go:5:9> Postcondition might not hold. 
+18:38:14.508 [main] INFO viper.gobra.Gobra - Verifying package /home/lbethay/workplace/w4/i/.cache - kernel [18:38:14]
+18:38:17.344 [ForkJoinPool-3-worker-1] ERROR viper.gobra.reporting.FileWriterReporter - Error at: <.cache/idle-negative.go:5:9> Postcondition might not hold. 
 Assertion ok == (global && preCode && !protected && !active && inflight == 0) might not hold.
-17:14:52.072 [thread-5] ERROR viper.gobra.Gobra - Gobra found 1 error.
+18:38:17.380 [thread-4] ERROR viper.gobra.Gobra - Gobra found 1 error.

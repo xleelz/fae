@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/xleelz/fae/api"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/engine"
+	"github.com/xleelz/fae/workflow"
 )
 
 func TestBoardBoundedSortedCachedPagination(t *testing.T) {
@@ -66,13 +68,13 @@ func TestBoardBoundedSortedCachedPagination(t *testing.T) {
 	}
 	for _, limit := range []int{-1, 501} {
 		raw, _ := json.Marshal(BoardParams{Limit: limit})
-		if _, err := d.board(raw); err == nil {
+		if _, err := d.board(context.Background(), raw); err == nil {
 			t.Fatal("bad limit accepted")
 		}
 	}
 	// Published snapshots are immutable until the next writer publication.
 	delete(d.jobs, "task-0000")
-	page, err := d.board(nil)
+	page, err := d.board(context.Background(), nil)
 	if err != nil || page.Items[0].ID != "task-0000" || len(page.Items) != 100 {
 		t.Fatal("cache mutated or default bound incorrect")
 	}
@@ -84,7 +86,7 @@ func TestBoardShrinksToEncodedBudget(t *testing.T) {
 		s.Tasks = append(s.Tasks, BoardItem{JobIdentity: JobIdentity{ID: fmt.Sprintf("%02d", i)}, Reason: strings.Repeat("x", 100000)})
 	}
 	d.status.Store(s)
-	page, err := d.board(json.RawMessage(`{"limit":20}`))
+	page, err := d.board(context.Background(), json.RawMessage(`{"limit":20}`))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,12 +96,12 @@ func TestBoardShrinksToEncodedBudget(t *testing.T) {
 }
 func TestHistoryPageReferencesFollowCompletionCursor(t *testing.T) {
 	events := []controlplane.Event{}
-	refs := []engine.Provenance{}
+	refs := []controlplane.ProvenanceRecord{}
 	for i := 1; i <= 11; i++ {
 		token := fmt.Sprintf("dispatch-%d", i)
 		payload, _ := json.Marshal(engine.Event{Kind: "transition", Cause: "completed " + token})
 		events = append(events, controlplane.Event{Sequence: int64(i), Payload: payload})
-		refs = append(refs, engine.Provenance{ArtifactID: fmt.Sprintf("artifact-%d", i), DispatchID: token, Stage: "Build", Tree: "tree"})
+		refs = append(refs, controlplane.ProvenanceRecord{ArtifactID: fmt.Sprintf("artifact-%d", i), DispatchID: token, Stage: "Build", Tree: "tree"})
 	}
 	snapshot := controlplane.JobSnapshot{ID: "task", Payload: json.RawMessage(`{"document":"must not return"}`)}
 	first, err := historyPage(snapshot, refs, events[:6], 5)
@@ -165,5 +167,128 @@ func TestLegacyHistoryRefusesOversizedPayload(t *testing.T) {
 	var typed *api.RPCError
 	if !errors.As(err, &typed) || typed.Code != "response-too-large" || !strings.Contains(typed.Message, "summary=true") {
 		t.Fatalf("missing actionable typed refusal: %v", err)
+	}
+}
+
+func TestSubWorkflowReadsExposeHierarchyAndStageWorkflow(t *testing.T) {
+	// Verify graphOf and placeTopologyTasks populate TopologyStage.Workflow on SubWorkflow stages.
+	g := graphOf(parentWorkflow(2))
+	placed := placeTopologyTasks(controlplane.Molecule{ID: "mol-parent", WorkflowID: "parent", Revision: 1}, g, []controlplane.TopologyTask{{ID: "alpha", State: "consult"}})
+	var consult *TopologyStage
+	for i := range placed.Stages {
+		if placed.Stages[i].Stage == "consult" {
+			consult = &placed.Stages[i]
+		} else if placed.Stages[i].Workflow != nil {
+			t.Fatalf("non-SubWorkflow stage %s has Workflow %+v", placed.Stages[i].Stage, placed.Stages[i].Workflow)
+		}
+	}
+	if consult == nil || consult.Primitive != workflow.SubWorkflow || consult.Workflow == nil || *consult.Workflow != (workflow.WorkflowRef{ID: "child", Revision: 2}) {
+		t.Fatalf("consult stage = %+v, want SubWorkflow -> child@r2", consult)
+	}
+
+	// Verify TaskGet, Board, and Topology end-to-end on a live SubWorkflow parent/child pair.
+	cfg, ctx := fixture(t)
+	script := decisionScript()
+	script["draft"] = []engine.ScriptStep{{Output: json.RawMessage(`{"text":"consulted"}`)}}
+	cfg.Executor = engine.NewScripted(script)
+	d, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { stop(t, d) }()
+	authorize(t, d)
+	for _, doc := range []workflow.Document{childWorkflow(), parentWorkflow(1)} {
+		if _, err = call(t, d, "WorkflowInstall", InstallParams{ID: doc.ID, Document: doc, AuthorizingMessage: "message"}, ""); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err = call(t, d, "Admit", AdmitParams{ID: "alpha", WorkflowID: "parent", Tree: "tree", AuthorizingMessage: "message", DeclaredFiles: []string{"pkg/a.go", "pkg/a_test.go"}}, "alpha"); err != nil {
+		t.Fatal(err)
+	}
+	awaitDecision(t, d, "alpha.consult.1", 1)
+
+	wantChild := engine.ChildRef{Stage: "consult", Visit: 1, Task: "alpha.consult.1", WorkflowID: "child", Revision: 1}
+	wantParent := engine.ParentRef{Task: "alpha", Stage: "consult", Visit: 1}
+
+	var parentView, childView TaskView
+	if err := taskCall(t, d, "TaskGet", TaskGetParams{ID: "alpha"}, &parentView); err != nil {
+		t.Fatal(err)
+	}
+	if parentView.Child == nil || !reflect.DeepEqual(*parentView.Child, wantChild) || parentView.Parent != nil {
+		t.Fatalf("parent TaskGet hierarchy: parent=%+v child=%+v, want nil and %+v", parentView.Parent, parentView.Child, wantChild)
+	}
+	if err := taskCall(t, d, "TaskGet", TaskGetParams{ID: "alpha.consult.1"}, &childView); err != nil {
+		t.Fatal(err)
+	}
+	if childView.Parent == nil || !reflect.DeepEqual(*childView.Parent, wantParent) || childView.Child != nil {
+		t.Fatalf("child TaskGet hierarchy: parent=%+v child=%+v, want %+v and nil", childView.Parent, childView.Child, wantParent)
+	}
+
+	rows := boardRows(t, d, false)
+	if pRow, ok := rows["alpha"]; !ok || pRow.Child == nil || !reflect.DeepEqual(*pRow.Child, wantChild) || pRow.Parent != nil {
+		t.Fatalf("parent BoardItem = %+v, want Child=%+v Parent=nil", pRow, wantChild)
+	}
+	if cRow, ok := rows["alpha.consult.1"]; !ok || cRow.Parent == nil || !reflect.DeepEqual(*cRow.Parent, wantParent) || cRow.Child != nil {
+		t.Fatalf("child BoardItem = %+v, want Parent=%+v Child=nil", cRow, wantParent)
+	}
+
+	var topo TopologyPage
+	if err := taskCall(t, d, "Topology", TopologyParams{WorkflowID: "parent"}, &topo); err != nil {
+		t.Fatal(err)
+	}
+	if len(topo.Molecules) != 1 {
+		t.Fatalf("Topology molecules for parent workflow = %d, want 1", len(topo.Molecules))
+	}
+	foundStage := false
+	for _, st := range topo.Molecules[0].Stages {
+		if st.Stage == "consult" {
+			foundStage = true
+			if st.Workflow == nil || *st.Workflow != (workflow.WorkflowRef{ID: "child", Revision: 1}) {
+				t.Fatalf("Topology consult stage Workflow = %+v, want child@r1", st.Workflow)
+			}
+		}
+	}
+	if !foundStage {
+		t.Fatalf("Topology molecule stages %+v missing consult stage", topo.Molecules[0].Stages)
+	}
+
+	// Verify boardPage deep-copies Child.Children so mutating a BoardPage item cannot mutate the snapshot.
+	s, _ := d.status.Load().(statusSnapshot)
+	for i := range s.Tasks {
+		if s.Tasks[i].ID == "alpha" && s.Tasks[i].Child != nil {
+			s.Tasks[i].Child.Children = []engine.ChildRef{{Stage: "consult", Visit: 1, Task: "alpha.consult.1.0", WorkflowID: "child", Revision: 1}}
+		}
+	}
+	d.status.Store(s)
+	page, err := d.board(ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range page.Items {
+		if page.Items[i].ID == "alpha" && page.Items[i].Child != nil && len(page.Items[i].Child.Children) == 1 {
+			page.Items[i].Child.Children[0].Task = "mutated"
+		}
+	}
+	sAfter, _ := d.status.Load().(statusSnapshot)
+	for i := range sAfter.Tasks {
+		if sAfter.Tasks[i].ID == "alpha" && sAfter.Tasks[i].Child != nil && len(sAfter.Tasks[i].Child.Children) == 1 {
+			if sAfter.Tasks[i].Child.Children[0].Task != "alpha.consult.1.0" {
+				t.Fatalf("BoardPage mutated shared Child.Children slice: %+v", sAfter.Tasks[i].Child.Children)
+			}
+		}
+	}
+
+	// Finish child and parent, restart daemon, and verify Board preserves Parent on the finished child task.
+	if _, err = call(t, d, "Decide", DecideParams{ID: "alpha.consult.1", Option: "use", AuthorizingMessage: "message"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	awaitState(t, d, "alpha", "Done")
+	stop(t, d)
+	if d, err = Start(ctx, cfg); err != nil {
+		t.Fatal(err)
+	}
+	rowsAfterRestart := boardRows(t, d, false)
+	if cRow, ok := rowsAfterRestart["alpha.consult.1"]; !ok || cRow.Parent == nil || !reflect.DeepEqual(*cRow.Parent, wantParent) {
+		t.Fatalf("after restart, finished child BoardItem = %+v, want Parent=%+v", cRow, wantParent)
 	}
 }
