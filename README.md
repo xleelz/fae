@@ -20,7 +20,242 @@ mappings, and explicit proof gates.
 blocking dependencies, and admits durable tasks to the Fae engine through a
 Symphony-compatible workflow file. Tracker writes require explicit opt-in.
 
-## Run locally
+## Requirements
+
+Core (enough for the scripted example in [Getting Started](#getting-started)):
+
+- **Go 1.27.2.**
+- **Git 2.45 or newer.** Changed-base reconciliation passes trees to
+  `git merge-tree`; Ubuntu 24.04's stock Git 2.43 refuses them.
+- **Dolt**, found on `PATH` or passed with `serve --dolt`. The daemon initializes
+  and supervises its own private Dolt database; clients never connect to an
+  existing database directly.
+
+Additionally, for live runs:
+
+- `lsof`;
+- ripgrep, needed by `scripts/dogfood.py`;
+- Herdr (`herdr-core`) for the multiplexer adapter;
+- a logged-in Claude Code (the default) or Codex CLI.
+
+Instance home rules:
+
+- The instance home must be on a filesystem with hard links or a no-replace
+  rename (Linux `renameat2`, macOS `renamex_np`); owned-process records are
+  placed that way, and a launch fails if neither works
+  ([processowner](processowner/README.md)).
+- The home must be outside any repository, and its physical path must contain no
+  symlinks. Instance directories and credentials are owner-only.
+
+Only trusted single-operator workspaces are supported. No hostile filesystem or
+escaped-process sandbox is claimed.
+
+## Installation
+
+Build from the repository root:
+
+```sh
+mkdir -p .cache/go-build bin
+export GOCACHE="$PWD/.cache/go-build"
+go build -o bin/fae ./cmd/fae
+
+# Optional: the terminal view of a running daemon
+go build -o bin/fae-tui ./cmd/fae-tui
+```
+
+Then check your setup and see what the CLI offers:
+
+```sh
+./bin/fae doctor   # offline check of prerequisites, instance layout, sandbox and filesystems
+./bin/fae help     # lists every verb; `fae COMMAND --help` prints a verb's flags
+```
+
+Help, `version`, the offline `workflow` forms, `template workflow-validate`,
+`gates self-test --offline` and `doctor` need no home (doctor reports a missing
+one as a warning).
+
+## Getting Started
+
+This example task needs no live provider: it uses the scripted adapter, which
+rehearses the shipped default workflow with fixture outputs and does not change
+any code. It needs only Go, Git and Dolt.
+
+**1. Start the daemon** (terminal 1, from the canonical workspace root). Only
+`serve` starts a daemon; `--foreground` keeps it attached to the terminal.
+Supply `--dolt` if Dolt is not on `PATH`.
+
+```sh
+./bin/fae serve --workspace "$PWD" --adapter scripted --foreground
+```
+
+**2. Authorize the work** (terminal 2; use the absolute path to `bin/fae` when
+outside this workspace). Every mutating verb needs `--authorizing-message`;
+without it the CLI refuses with exit 1. This message grants the `task` and
+`runtime` classes, so it can authorize both the run and the later shutdown.
+
+```sh
+./bin/fae message --id demo-authorization --text '{"text":"Run local scripted work and shut down this instance.","authorize":{"classes":["task","runtime"]}}' 
+```
+
+**3. Submit the task.** `run` admits task `demo` on the default workflow,
+authorized by the message above.
+
+```sh
+./bin/fae run --id demo --prompt 'Exercise the scripted default workflow' --authorizing-message demo-authorization
+```
+
+**4. Watch it progress.** `status` reports the daemon and its tasks; `history`
+shows the task's checkpoints; `board` and `history --summary` give paged
+overviews; `events --follow` streams ordered events from the start (stop it with
+Ctrl-C).
+
+```sh
+./bin/fae status --json
+./bin/fae history --task demo --json
+./bin/fae board --limit 100 --json
+./bin/fae history --task demo --summary --limit 100 --json
+./bin/fae events --after 0 --follow
+```
+
+**5. Shut down.** Graceful stop lets in-flight commit/integrate steps finish
+within the drain bound.
+
+```sh
+./bin/fae shutdown --authorizing-message demo-authorization
+```
+
+Next steps: to run Fae on a clone of itself with real Claude turns, see
+[docs/SELF_HOSTING.md](docs/SELF_HOSTING.md). For live adapter configuration,
+Normal-mode adapters and the Claude Code and Codex bridges, see [LIVE.md](LIVE.md).
+
+## Features
+
+- **Durable singleton daemon** backed by a private Dolt control plane: dispatch
+  intent is checkpointed before execution, completed stages are not replayed,
+  graceful stop drains within a 120 s bound, and restart recovers from durable
+  state (see [Architecture and durability](#architecture-and-durability)).
+- **Shipped default workflow**: intake, spec/review, plan, RED author/run/gate/freeze,
+  implementation/compare, reviews, Oracle routing, QA, reconcile, protected commit,
+  integration and Done, plus a Normal-only code-review sub-workflow.
+- **Execution adapters**: `scripted` (rehearsals), `direct` (alias `process`) and
+  `multiplexer` (Herdr `herdr-core`, private owned servers and gated panes).
+- **Agent bridges**: Claude Code is the default provider
+  ([provider/README.md](provider/README.md)); the Codex bridge remains
+  ([LIVE.md](LIVE.md)).
+- **Local and Normal modes**: `serve --default-mode local|normal`; Normal needs a
+  live adapter and explicitly authorized effects ([target policies](daemon/TARGETS.md)).
+- **Language adapters** for Go, Rust, Python and TypeScript
+  ([language support](docs/language-support.md)).
+- **Configured command adapters** for other tools
+  ([command adapters](docs/command-adapters.md)).
+- **Formal stages** with source-bound proof receipts and proof gates
+  ([formal verification](docs/formal-verification.md)).
+- **Linear intake**, with tracker writes opt-in only
+  ([Linear integration](docs/linear-integration.md)).
+- **Workflow primitives**: HumanDecision, FanOut/FanIn (branches run
+  sequentially) and SubWorkflow, with replayable gate records.
+- **Operator verbs, alerts and metrics**: messages and inbox, task
+  create/update/delete/show, decide, quarantine, reclaim, `fae alerts`,
+  `fae metrics` and `fae host-metrics` ([read contracts](daemon/READS.md),
+  [live task verbs](daemon/TASKS.md), [task controls](daemon/TASK_CONTROLS.md)).
+- **Host admission** using PSI pressure and an I/O gate
+  ([hostguard/README.md](hostguard/README.md)).
+- **UI child** (`serve --ui`, read-only unless `--ui-allow-writes`;
+  [ui/README.md](ui/README.md)) and the **`fae-tui`** terminal view
+  ([tui/README.md](tui/README.md)).
+- **Backup and storage**: verified plane backups, reviewed retention, remote
+  replication, opt-in retention, creation and replication schedules, unpinning
+  and quotas ([backups](daemon/BACKUPS.md)); **census**
+  ([census](daemon/CENSUS.md)); and **cleanup** of retired and Done tasks and
+  scratch instances ([cleanup](daemon/CLEANUP.md), [scratch](daemon/SCRATCH.md)).
+
+## Roadmap
+
+### Done
+
+Each item is described in its increment section under [Reference](#reference).
+
+- Runtime recovery: audited dynamic pane limits, idle-session shedding and
+  bounded safe stall retry.
+- Persistent provider context, dynamic heavy-op/host-pressure/task limits and
+  bounded startup recovery.
+- Operator controls and reads: delegated principals, message-class grants,
+  durable task controls and bounded reads.
+- Prophet sessions, backlog dependencies and safe post-commit restart.
+- Task retirement, Local target policies and Prophet routes.
+- Normal targets (schemas v2/v3), census and retired cleanup.
+- Scratch cleanup and dynamic adapter/workspace provisioning.
+- Adapter retirement and configurable fleet provisioning.
+- Backup lifecycle: reviewed retention and remote replication.
+- Opt-in retention schedules and redundant scratch-archive cleanup.
+- Opt-in backup creation and replication schedules.
+- Replication unpinning and backup quotas.
+- Claude provider (default), host admission and the acceptance ledger.
+- Wave 2: records, primitives, Normal content, UI and recovery.
+
+### Open
+
+These are limits the repository states today:
+
+- Complete process inventory and lease reconciliation, including complete
+  cross-user host process inventory.
+- Interactive brokered agent tools.
+- Unsupported conflict classes (they refuse).
+- Remaining operator/controller and Normal-mode phases.
+- Explicit targets supporting Local mode only, as stated by the
+  retirement/target-policies increment; target schemas v2/v3 later added Normal
+  bindings.
+- FanOut/FanIn branches currently run sequentially.
+- Containment without retained task evidence cannot yet be recovered from
+  integration commit subjects alone, as stated by the
+  retirement/target-policies increment.
+- The ledger maps only 101 of 284 requirement IDs to at least one check (Wave 2).
+- Eight newer pure guards are not yet in `verify.sh` (Wave 2).
+
+## Troubleshooting
+
+Start with `fae doctor` (offline prerequisite, layout, sandbox and filesystem
+check) and `fae COMMAND --help`; each command's `--help --json` lists its exit
+codes.
+
+- **What do the exit codes mean?** 0 is success; 1, 2 and 3 are below. The
+  full table is the exit-code paragraph under [Run locally](#run-locally).
+- **A command exits 3.** The daemon is unreachable. Only `serve` starts a
+  daemon; `run --start` re-runs the recorded `serve` invocation, and
+  `maintenance start` and `roll` relaunch it. Other commands never start one.
+- **A command exits 1.** Refusal or validation failure; the reason goes to
+  standard error. A common cause is a mutating verb without
+  `--authorizing-message`.
+- **A command exits 2.** Usage error, for example a value that does not parse
+  (`--inline-limit x`).
+- **`gate run` exits 75 or 76.** 75: its admission wait timed out; 76: admission
+  was refused. The hidden `heavy-op run` broker verb exits 75 on a lease or host
+  refusal, 77 when a role shim policy refuses and 78 when Local mode refuses a
+  git push or remote change; see the exit-code paragraph under
+  [Run locally](#run-locally) in the Reference.
+- **`git merge-tree` fails during reconciliation.** Git is older than 2.45
+  (Ubuntu 24.04's stock 2.43 refuses trees); install Git 2.45 or newer.
+- **Dolt is not found.** Put it on `PATH` or pass `serve --dolt`.
+- **The home is refused.** A relative home is refused; the home must be outside
+  repositories and its physical path must contain no symlinks.
+- **A launch fails on the instance filesystem.** The home needs hard links or a
+  no-replace rename (`renameat2` / `renamex_np`); see
+  [processowner](processowner/README.md).
+- **`--live-config` is refused.** It must name an owner-only (0600) regular file
+  outside every repository and worktree.
+- **`serve` asks for `--live-config`.** `serve` defaults to `--adapter multiplexer`
+  (Herdr), which needs `--live-config`. For a first run use
+  `--adapter scripted`.
+- **Unix-socket tests fail.** They need a short scratch path; see
+  [TESTING.md](TESTING.md).
+- **Where are the logs?** `HOME/INSTANCE/supervision.log` (daemon),
+  `HOME/INSTANCE.serve.log` (a detached serve), `HOME/INSTANCE/alerts.log`
+  (alerts as JSON lines); read alerts with `fae alerts [list] [--unacknowledged]`.
+  See the logging paragraph under [Run locally](#run-locally) in the Reference.
+
+## Reference
+
+### Run locally
 
 Requires Go 1.27.2, Git 2.45 or newer (changed-base reconciliation passes trees
 to `git merge-tree`; Ubuntu 24.04's stock 2.43 refuses them), and Dolt. Live
@@ -247,7 +482,7 @@ JSON lines to `HOME/INSTANCE/alerts.log`. Read them with `fae alerts [list]
 --authorizing-message ID`; `fae metrics [--window D]` and `fae host-metrics`
 return derived and host metrics. See [read contracts](daemon/READS.md).
 
-## Architecture and durability
+### Architecture and durability
 
 `domain`, `kernel` and `workflow` hold value types, safety predicates, graph rules,
 three-valued gates, schema checks and normalized test identities. `defaults` holds
@@ -315,7 +550,7 @@ own hunks, frozen-test conflicts and unsupported classes refuse. A second target
 advance during an active conflict contract requires operator review. Integration also recognizes ancestry,
 patch-equivalent and touched-blob containment without moving the containing tip.
 
-## Tests and formal verification
+### Tests and formal verification
 
 ```sh
 ./scripts/test.sh
@@ -393,8 +628,7 @@ Authenticated dogfood passed both tasks, 36 provider turns and task/global
 Prophet replies, with no final lease holders or pane reservations. See the
 [current verification record](verification/results/prophet-backlog-restart.json).
 
-
-## Retirement, target policies and Prophet routes
+### Retirement, target policies and Prophet routes
 
 This increment adds audited task retirement with atomic dependency transfer,
 contained-release and obsolete-hold behavior, plus retired read filtering. It also
@@ -424,8 +658,7 @@ limits. Explicit targets currently support Local mode only; unsupported target
 policies fail closed. Containment without retained task evidence cannot yet be
 recovered from integration commit subjects alone.
 
-
-## Normal targets, census and retired cleanup
+### Normal targets, census and retired cleanup
 
 Target schema v2 binds Normal-mode destination, push namespace, installed tool
 definitions, review baseline/workspace policy and ticket orchestration. Tasks keep
@@ -450,14 +683,12 @@ mutations**, Gomela **43 positive / 41 negative controls**, and a passing
 **36-turn** real-provider run with crash/restart, mixed-mode isolation and
 verified retired cleanup. See the [verification record](verification/results/normal-target-census-cleanup.json).
 
-
 Scratch cleanup and dynamic adapter/workspace provisioning are implemented and
 verified. The latest increment passed 1,242 race-enabled cases,
 46 Gobra guards and 47 positive/45 negative Gomela models, followed by a
 36-turn real-provider run with restart and verified scratch deletion.
 See the [verification record](verification/results/scratch-provisioning.json)
 and [implementation limits](IMPLEMENTATION.md).
-
 
 Adapter retirement and configurable fleet provisioning are now implemented.
 Explicit preparation recovers uncertain provisioning through receipt lookup;
@@ -466,32 +697,31 @@ passed 1,264 race-enabled cases, 48 Gobra guards, 49 positive/47 negative
 Gomela controls and a 36-turn real-provider run. See the
 [verification record](verification/results/adapter-fleet.json).
 
-## Backup retention and replication
+### Backup retention and replication
 
 Operator backup lifecycle commands now support reviewed retention and configurable remote replication. Retention preserves historical job coverage and replication sources; uncertain uploads query durable remote proof and verify the downloaded archive before confirmation. See [backup commands and protocol](daemon/BACKUPS.md).
 
 1,293 race-enabled test cases across 26 packages passed, with 73.5% statement coverage, vet and scratch census. Gobra verified 50 production predicates and rejected 50 mutations; Gomela/SPIN passed 51 positive models and observed 49 firing negative controls. The two-task real-provider run completed 36 turns, recovered one lost-acknowledgement upload after restart without a duplicate, restored the downloaded Dolt backup and passed fsck, then pruned a redundant local backup and cleaned the scratch instance. [Verification record](verification/results/backup-lifecycle.json).
 
-## Automatic retention and redundant scratch archives
+### Automatic retention and redundant scratch archives
 
 `backup retention-schedule configure|pause|resume|status` adds opt-in durable retention of existing plane backups. Each run rechecks explicit authorization and preserves historical coverage and replication pins. `cleanup scratch-archive` removes only a reviewed exact duplicate while retaining the canonical recovery archive and Git refs. See [retention policy](daemon/BACKUPS.md) and [archive cleanup](daemon/SCRATCH.md).
 
 1,319 race-enabled test cases across 26 packages passed, with 73.6% statement coverage, vet and scratch census. Gobra verified 52 production predicates and rejected 52 mutations; Gomela/SPIN passed 53 positive models and observed 51 firing negative controls. Real-provider acceptance completed 36 turns and verified automatic pruning after pause/restart/resume, canonical archive survival, duplicate removal and retry. [Verification record](verification/results/retention-automation.json).
 
-## Automatic backup creation and replication
+### Automatic backup creation and replication
 
 `backup creation-schedule configure|pause|resume|status` creates verified local backups on an opt-in interval. `backup replication-schedule` independently sends the oldest unreplicated verified source, retaining its exact claim across uncertain results and restarts. Both default to a one-hour interval, revalidate explicit authority and honor host limits. See [commands and recovery limits](daemon/BACKUPS.md).
 
 1,337 race-enabled test cases across 26 packages passed, with 73.7% statement coverage, vet and scratch census. Gobra verified 54 production predicates and rejected 54 mutations; Gomela/SPIN passed 55 positive models and observed 53 firing negative controls. Real-provider acceptance completed 36 turns, automatically created and replicated a verified backup, preserved pending replication across restart, refused destination changes while pending and observed no duplicate uploads. [Verification record](verification/results/backup-schedules.json).
 
-
-## Replication unpinning and backup quotas
+### Replication unpinning and backup quotas
 
 `backup unpin --backup PATH` previews a digest-bound release after verifying all remote replicas; `--apply --plan-digest DIGEST` applies it. Pending claims refuse release. `backup quota configure --max-bytes N --max-backups N` persists limits; `backup quota status` reports usage, including partial backups and replication spools. Mutations require operator authority. Dolt export limits use admission/checkpoints and preserve overruns; no quota implicitly deletes data. See [backup policy](daemon/BACKUPS.md).
 
 1,352 race-enabled test cases across 26 packages passed, with 73.6% statement coverage, vet and scratch census. Gobra verified 56 production predicates and rejected 56 mutations; Gomela/SPIN passed 57 positive models and observed 55 firing negative controls. [Evidence](verification/results/backup-storage.json).
 
-## Claude provider, host admission and acceptance ledger
+### Claude provider, host admission and acceptance ledger
 
 Claude Code is now the default provider through the restricted `cmd/fae-claude-bridge`
 (see [provider/README.md](provider/README.md)); the Codex bridge remains. Host admission
@@ -507,7 +737,7 @@ real-provider acceptance passed with 36 Claude (`claude-opus-5-5`) turns, crash/
 recovery and all controller, provisioning and backup checks
 ([evidence](verification/results/claude-host-admission-dogfood-20261022/result.json)).
 
-## Wave 2: records, primitives, Normal content, UI and recovery
+### Wave 2: records, primitives, Normal content, UI and recovery
 
 Waves 1 (2026-10-22) and 2 (2026-10-23) were parallel stream rounds; see
 [HANDOFF.md](HANDOFF.md) for per-stream detail and open gaps. Wave 2 added
