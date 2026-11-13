@@ -1,0 +1,21 @@
+{"Time":"2026-11-12T23:27:00.265615647Z","Action":"start","Package":"github.com/xleelz/fae/effects"}
+{"Time":"2026-11-12T23:27:00.271584688Z","Action":"run","Package":"github.com/xleelz/fae/effects","Test":"TestRustSelectedNative"}
+{"Time":"2026-11-12T23:27:00.27162544Z","Action":"output","Package":"github.com/xleelz/fae/effects","Test":"TestRustSelectedNative","Output":"=== RUN   TestRustSelectedNative\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:00.620297571Z","Action":"output","Package":"github.com/xleelz/fae/effects","Test":"TestRustSelectedNative","Output":"--- PASS: TestRustSelectedNative (0.35s)\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:00.620752078Z","Action":"pass","Package":"github.com/xleelz/fae/effects","Test":"TestRustSelectedNative","Elapsed":0.35}
+{"Time":"2026-11-12T23:27:00.620783976Z","Action":"run","Package":"github.com/xleelz/fae/effects","Test":"TestRustBrokerNativeSelected"}
+{"Time":"2026-11-12T23:27:00.620789144Z","Action":"output","Package":"github.com/xleelz/fae/effects","Test":"TestRustBrokerNativeSelected","Output":"=== RUN   TestRustBrokerNativeSelected\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:01.651381247Z","Action":"output","Package":"github.com/xleelz/fae/effects","Test":"TestRustBrokerNativeSelected","Output":"--- PASS: TestRustBrokerNativeSelected (1.03s)\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:01.651430211Z","Action":"pass","Package":"github.com/xleelz/fae/effects","Test":"TestRustBrokerNativeSelected","Elapsed":1.03}
+{"Time":"2026-11-12T23:27:01.651440967Z","Action":"output","Package":"github.com/xleelz/fae/effects","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:01.652625932Z","Action":"output","Package":"github.com/xleelz/fae/effects","Output":"ok  \tgithub.com/xleelz/fae/effects\t1.387s\n"}
+{"Time":"2026-11-12T23:27:01.652648416Z","Action":"pass","Package":"github.com/xleelz/fae/effects","Elapsed":1.387}
+{"Time":"2026-11-12T23:27:05.440493668Z","Action":"start","Package":"github.com/xleelz/fae/daemon"}
+{"Time":"2026-11-12T23:27:05.44916872Z","Action":"run","Package":"github.com/xleelz/fae/daemon","Test":"TestLocalGitPushFastForwardContentScanAndIdempotence"}
+{"Time":"2026-11-12T23:27:05.449197663Z","Action":"output","Package":"github.com/xleelz/fae/daemon","Test":"TestLocalGitPushFastForwardContentScanAndIdempotence","Output":"=== RUN   TestLocalGitPushFastForwardContentScanAndIdempotence\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:05.539464636Z","Action":"output","Package":"github.com/xleelz/fae/daemon","Test":"TestLocalGitPushFastForwardContentScanAndIdempotence","Output":"--- PASS: TestLocalGitPushFastForwardContentScanAndIdempotence (0.09s)\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:05.539502554Z","Action":"pass","Package":"github.com/xleelz/fae/daemon","Test":"TestLocalGitPushFastForwardContentScanAndIdempotence","Elapsed":0.09}
+{"Time":"2026-11-12T23:27:05.539515333Z","Action":"output","Package":"github.com/xleelz/fae/daemon","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-12T23:27:05.540966777Z","Action":"output","Package":"github.com/xleelz/fae/daemon","Output":"ok  \tgithub.com/xleelz/fae/daemon\t0.100s\n"}
+{"Time":"2026-11-12T23:27:05.540985916Z","Action":"pass","Package":"github.com/xleelz/fae/daemon","Elapsed":0.1}
+

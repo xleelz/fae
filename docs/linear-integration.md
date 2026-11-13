@@ -179,3 +179,46 @@ Before startup, set `FAE_LINEAR_WORKFLOW_ID`, `FAE_LINEAR_TARGET_CONFIG` and
 FAE workflow, registered target and recorded recurring-intake authority. Start
 with `--workflow-md /absolute/path/to/fae/LINEAR_WORKFLOW.md` along with the normal
 runtime options. This configuration file does not itself activate the service.
+
+The OpenRelay host is configured with private files
+`~/.config/fae/live-linear.json`, `~/.config/fae/target-linear.json` and
+`~/.config/fae/linear.env`. The default instance at `/var/tmp/fae-herdr-live`
+uses the direct process adapter and logged-in Claude credential directory.
+Its recorded startup arguments retain Linear intake across normal restarts.
+Work lands only on `refs/heads/fae/linear-testing-20261112`; the operator's
+checked-out branch and uncommitted files are preserved. No remote push or
+deployment is configured. The private live configuration is pinned to this
+instance; edit it only using a supported configuration migration.
+
+## Repository suites that launch nested tools
+
+The host's pinned live configuration defaults to refusing nested build tools.
+Fae's own repository tests invoke `git`, `go list`, subprocess bridges and other
+nested tools, so their suite needs accounted nesting. An operator can select it
+without editing the private live file or changing its pinned identity:
+
+```sh
+./bin/fae --home /var/tmp/fae-herdr-live runtime-config \
+  --nested-commands account --authorizing-message MESSAGE_ID
+```
+
+This uses the existing audited runtime-configuration API and requires a recorded
+operator message. The setting is durable across restarts and appears as
+`nested_commands` in runtime configuration status. It applies to later effect
+dispatches; a command already running keeps its initial policy. Use
+`--nested-commands refuse` to restore the default behavior. Invalid policy values
+are rejected without changing the durable setting.
+
+Accounting keeps nested commands inside the broker's scoped command policy and
+resource accounting. It does not grant shell execution, arbitrary paths, remote
+Git mutations, deployment, or permission to skip a failed workflow gate. Resolve
+remaining concrete policy refusals before retrying the task with an explicit
+bounded attempt allowance.
+
+The host now uses accounted nesting. Default workflow revision4 reconciles the
+reviewed integration baseline after spec approval and before implementation;
+if the baseline changed, a bounded loop reruns intake/spec/review before
+proceeding. This preserves the task's declared scope and all original checks.
+OR-811 uses recovery revision3, which performs this reconciliation first because
+its scope was already approved. Both are revisions of the same `default`
+workflow; no task counters or evidence were silently reset.

@@ -1,0 +1,216 @@
+{
+  "ViewConstructionMS": 0,
+  "ViewCopiedBytes": 0,
+  "IsolationPolicy": "cli-and-collector",
+  "fresh_build": false,
+  "stderr": "",
+  "exit_code": 1,
+  "executed_count": 3554,
+  "matched_count": 0,
+  "expected_failure": false,
+  "red_passed": false,
+  "output_digest": "6175709e05dab48bc74795c48c1bf0bd6a70465c10f5faab1209417879f15f38",
+  "tree": "210792039bf651be4df551513ff6ddf5e767a231",
+  "output": "",
+  "truncated": false,
+  "environment": [
+    "HOME=/home/lbethay",
+    "TMPDIR=/var/tmp/fae-linear-account-followup-20261112/command-tmp-3327156996",
+    "LANG=C",
+    "GIT_TERMINAL_PROMPT=0",
+    "GIT_CONFIG_NOSYSTEM=1",
+    "GIT_CONFIG_GLOBAL=/dev/null",
+    "PATH=/var/tmp/fae-linear-account-followup-20261112/command-policy-2606836054/command-shims:/usr/local/go/bin:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.2-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.local/bin:/usr/local/go/bin:/home/lbethay/go/bin:/home/lbethay/.npm-global/bin:/home/lbethay/.local/bin:/home/lbethay/.local/bin:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0EyN4Hp:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.2-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg04Q66cX:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.1-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0LDbEAG:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.0-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0dbZGrt:/home/lbethay/.codex/packages/app-server-daemon/releases/0.166.0-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0zyLSfP:/home/lbethay/.codex/packages/standalone/releases/0.166.0-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.local/bin:/home/lbethay/.local/bin:/home/lbethay/.local/bin:/home/linuxbrew/.linuxbrew/opt/node@24/bin:/home/lbethay/.cargo/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "GOROOT=/var/tmp/fae-linear-account-followup-20261112/command-policy-2606836054/goroot",
+    "GOTOOLCHAIN=local",
+    "GOENV=off"
+  ],
+  "nested_count": 13969,
+  "nested": [
+    {
+      "argv": [
+        "git",
+        "--version"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5/cmd/fae",
+      "at": "2026-11-12T23:13:48.267494912Z"
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q",
+        "/var/tmp/fae-cli-2831822200"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5/cmd/fae",
+      "at": "2026-11-12T23:13:48.312495365Z"
+    },
+    {
+      "argv": [
+        "go",
+        "list",
+        "-deps",
+        "github.com/xleelz/fae/cmd/fae"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5/cmd/fae",
+      "at": "2026-11-12T23:13:48.346495707Z"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.39749622Z"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "log.showsignature=false",
+        "log",
+        "-1",
+        "--format=%H:%ct"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.59049816Z"
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "extensions.objectformat"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.604498301Z"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "log.showsignature=false",
+        "log",
+        "--no-decorate",
+        "-n1",
+        "--format=format:%H %ct %D",
+        "--end-of-options",
+        "129cd6ed765dc046ae7d341552fe992daaa92c74",
+        "--"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.616498422Z"
+    },
+    {
+      "argv": [
+        "git",
+        "for-each-ref",
+        "--format=%(refname)",
+        "--merged=129cd6ed765dc046ae7d341552fe992daaa92c74"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.630498562Z"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "log.showsignature=false",
+        "log",
+        "--no-decorate",
+        "-n1",
+        "--format=format:%H %ct %D",
+        "--end-of-options",
+        "129cd6ed765d",
+        "--"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.645498713Z"
+    },
+    {
+      "argv": [
+        "git",
+        "cat-file",
+        "--end-of-options",
+        "blob",
+        "129cd6ed765dc046ae7d341552fe992daaa92c74:go.mod"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.659498854Z"
+    },
+    {
+      "argv": [
+        "go",
+        "list",
+        "-deps",
+        "github.com/xleelz/fae/cmd/fae-tui"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5/cmd/fae",
+      "at": "2026-11-12T23:13:48.696499226Z"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.731499578Z"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "log.showsignature=false",
+        "log",
+        "-1",
+        "--format=%H:%ct"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.924501518Z"
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "extensions.objectformat"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.937501649Z"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "log.showsignature=false",
+        "log",
+        "--no-decorate",
+        "-n1",
+        "--format=format:%H %ct %D",
+        "--end-of-options",
+        "129cd6ed765dc046ae7d341552fe992daaa92c74",
+        "--"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.94950177Z"
+    },
+    {
+      "argv": [
+        "git",
+        "for-each-ref",
+        "--format=%(refname)",
+        "--merged=129cd6ed765dc046ae7d341552fe992daaa92c74"
+      ],
+      "dir": "/var/tmp/fae-linear-account-followup-20261112/158267e6be291ea33528b6918209c7d86e5325d1a28fa8c530df8f0e7b64fee5",
+      "at": "2026-11-12T23:13:48.96350191Z"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "./..."
+  ],
+  "started": "2026-11-12T23:13:30.638661038Z"
+}

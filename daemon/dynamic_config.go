@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/xleelz/fae/controlplane"
 	"github.com/xleelz/fae/defaults"
+	"github.com/xleelz/fae/effects"
 	"github.com/xleelz/fae/hostguard"
 	"github.com/xleelz/fae/scheduler"
 	"math"
@@ -16,6 +17,7 @@ import (
 // RuntimeConfig is a partial update. Zero integer limits and nil thresholds
 // preserve the existing setting; explicit invalid threshold values are rejected.
 type RuntimeConfig struct {
+	NestedCommands     string                         `json:"nested_commands,omitempty"`
 	PaneLimit          int                            `json:"pane_limit,omitempty"`
 	HeavyCapacity      int                            `json:"heavy_capacity,omitempty"`
 	TasksInFlight      int                            `json:"tasks_in_flight,omitempty"`
@@ -40,6 +42,9 @@ func (d *Daemon) readRuntimeConfig(ctx context.Context) (RuntimeConfig, error) {
 	return c, validateRuntimeConfig(c)
 }
 func validateRuntimeConfig(c RuntimeConfig) error {
+	if c.NestedCommands != "" && c.NestedCommands != string(effects.NestedRefuse) && c.NestedCommands != string(effects.NestedAccount) {
+		return errors.New("nested commands must be refuse or account")
+	}
 	if c.PaneLimit != 0 && (c.PaneLimit < 2 || c.PaneLimit > 1000000) {
 		return errors.New("pane limit must be between 2 and 1000000")
 	}
@@ -103,6 +108,14 @@ func (d *Daemon) applyRuntimeConfig(ctx context.Context, c RuntimeConfig) error 
 		tasks = c.TasksInFlight
 	}
 	a.dynamicTasks.Store(int64(tasks))
+	nested := effects.NestedMode(d.live.config.NestedCommands)
+	if c.NestedCommands != "" {
+		nested = effects.NestedMode(c.NestedCommands)
+	}
+	if nested == "" {
+		nested = effects.NestedRefuse
+	}
+	a.dynamicNested.Store(&nested)
 	if len(c.ProviderPools) > 0 && a.host != nil {
 		if err = a.host.ConfigureProviderPools(ctx, c.ProviderPools); err != nil {
 			return err
@@ -141,7 +154,7 @@ func (d *Daemon) updateRuntimeConfig(ctx context.Context, raw json.RawMessage, a
 	if d.live == nil {
 		return nil, errors.New("runtime host configuration requires live execution")
 	}
-	if patch.PaneLimit == 0 && patch.HeavyCapacity == 0 && patch.TasksInFlight == 0 && patch.HostThresholds == nil && len(patch.ProviderPools) == 0 {
+	if patch.PaneLimit == 0 && patch.HeavyCapacity == 0 && patch.TasksInFlight == 0 && patch.HostThresholds == nil && len(patch.ProviderPools) == 0 && patch.NestedCommands == "" {
 		return nil, errors.New("at least one runtime limit required")
 	}
 	if patch.PaneLimit != 0 {
@@ -158,6 +171,9 @@ func (d *Daemon) updateRuntimeConfig(ctx context.Context, raw json.RawMessage, a
 	c, err := d.readRuntimeConfig(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if patch.NestedCommands != "" {
+		c.NestedCommands = patch.NestedCommands
 	}
 	if patch.PaneLimit != 0 {
 		c.PaneLimit = patch.PaneLimit
@@ -232,6 +248,7 @@ func (d *Daemon) dynamicConfiguration() map[string]any {
 	a := d.live.guard
 	c := a.hostConfig()
 	m := map[string]any{"heavy_capacity": int(a.dynamicHeavy.Load()), "tasks_in_flight": d.configuredTasksInFlight(), "host_thresholds": c}
+	m["nested_commands"] = string(d.live.effectiveNestedCommands())
 	if a.panes != nil {
 		m["effective_pane_limit"] = a.effectivePaneLimit()
 		m["pane_limit"] = int(a.requestedPaneLimit.Load())

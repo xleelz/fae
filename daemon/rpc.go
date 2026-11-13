@@ -275,6 +275,7 @@ func (d *Daemon) handleDirect(ctx context.Context, r api.Request) (any, error) {
 		out := d.statusExtraFields()
 		out["default_workflow"] = d.defaultWorkflow.Load()
 		out["startup_checks"] = d.startupReport.Load()
+		out["symphony"] = map[string]any{"configured": d.linearOrch != nil}
 		plane := map[string]any{"kind": "Dolt", "pid": pid, "port": port, "endpoint": fmt.Sprintf("127.0.0.1:%d", port), "data_dir": d.layout.Data, "schema_version": controlplane.SchemaVersion, "last_commit": nil}
 		if x := d.statusExtras.value.Load(); x != nil {
 			plane["last_commit"] = x.LastCommit

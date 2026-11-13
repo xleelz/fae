@@ -1,0 +1,2 @@
+PASS clean: preserved original task tree at migration; broker reconciliation advances Base/Tree; bounded loop restarts full original workflow; attempts not refunded
+PASS conflict: conflicted reconciliation escalates before original workflow

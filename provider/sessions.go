@@ -22,6 +22,7 @@ import (
 // SessionAudit links a disposable Fae turn to its provider context. The context
 // is a cache, never a source of authoritative workflow or artifact state.
 type SessionAudit struct {
+	Resumable  *bool  `json:"resumable,omitempty"`
 	Scope      string `json:"scope"`
 	ThreadID   string `json:"thread_id"`
 	Resumed    bool   `json:"resumed"`
@@ -280,22 +281,23 @@ type AcquireRequest struct {
 
 // SessionRecord is the durable/in-memory provider session binding for a task or workflow scope.
 type SessionRecord struct {
-	Key              string          `json:"key"`
-	Scope            string          `json:"scope"`
-	TaskID           string          `json:"task_id"`
-	WorkflowID       string          `json:"workflow_id"`
-	WorkflowRevision string          `json:"workflow_revision"`
-	Role             string          `json:"role"`
-	Provider         string          `json:"provider,omitempty"`
-	Model            string          `json:"model,omitempty"`
-	Mode             string          `json:"mode,omitempty"`
-	ThreadID         string          `json:"thread_id"`
-	Fresh            bool            `json:"fresh,omitempty"`
-	Reused           bool            `json:"reused"`
-	TurnCount        int             `json:"turn_count"`
-	Budget           *TurnBudgetSpec `json:"budget,omitempty"`
-	CreatedAt        time.Time       `json:"created_at"`
-	UpdatedAt        time.Time       `json:"updated_at"`
+	ProviderConfirmed bool            `json:"provider_confirmed,omitempty"`
+	Key               string          `json:"key"`
+	Scope             string          `json:"scope"`
+	TaskID            string          `json:"task_id"`
+	WorkflowID        string          `json:"workflow_id"`
+	WorkflowRevision  string          `json:"workflow_revision"`
+	Role              string          `json:"role"`
+	Provider          string          `json:"provider,omitempty"`
+	Model             string          `json:"model,omitempty"`
+	Mode              string          `json:"mode,omitempty"`
+	ThreadID          string          `json:"thread_id"`
+	Fresh             bool            `json:"fresh,omitempty"`
+	Reused            bool            `json:"reused"`
+	TurnCount         int             `json:"turn_count"`
+	Budget            *TurnBudgetSpec `json:"budget,omitempty"`
+	CreatedAt         time.Time       `json:"created_at"`
+	UpdatedAt         time.Time       `json:"updated_at"`
 }
 
 // SessionRegistry manages provider session keys across tasks and supports
@@ -455,6 +457,7 @@ func (r *SessionRegistry) BindThreadID(taskID, workflowID, workflowRevision, rol
 		rec := r.byKey[key]
 		if threadID != "" {
 			rec.ThreadID = threadID
+			rec.ProviderConfirmed = true
 		}
 		rec.UpdatedAt = now
 		r.byKey[key] = rec
@@ -462,25 +465,27 @@ func (r *SessionRegistry) BindThreadID(taskID, workflowID, workflowRevision, rol
 	}
 	r.counter++
 	key := fmt.Sprintf("task-bound:%s:%s:%s:%s", workflowID, workflowRevision, role, taskID)
+	confirmed := threadID != ""
 	if threadID == "" {
 		threadID = makeThreadUUID(fmt.Sprintf("%s:%d", key, r.counter))
 	}
 	rec := SessionRecord{
-		Key:              key,
-		Scope:            ScopeTask,
-		TaskID:           taskID,
-		WorkflowID:       workflowID,
-		WorkflowRevision: workflowRevision,
-		Role:             role,
-		Provider:         providerName,
-		Model:            modelName,
-		Mode:             mode,
-		ThreadID:         threadID,
-		Fresh:            fresh,
-		Reused:           false,
-		TurnCount:        1,
-		CreatedAt:        now,
-		UpdatedAt:        now,
+		ProviderConfirmed: confirmed,
+		Key:               key,
+		Scope:             ScopeTask,
+		TaskID:            taskID,
+		WorkflowID:        workflowID,
+		WorkflowRevision:  workflowRevision,
+		Role:              role,
+		Provider:          providerName,
+		Model:             modelName,
+		Mode:              mode,
+		ThreadID:          threadID,
+		Fresh:             fresh,
+		Reused:            false,
+		TurnCount:         1,
+		CreatedAt:         now,
+		UpdatedAt:         now,
 	}
 	r.byKey[key] = rec
 	r.byTask[taskID] = key
@@ -497,6 +502,16 @@ func (r *SessionRegistry) GetTaskSession(taskID string) (SessionRecord, bool) {
 	}
 	rec, ok := r.byKey[key]
 	return rec, ok
+}
+
+// ResumeTaskSession returns only a provider-observed conversation belonging to
+// this role and route. Allocated registry IDs are not provider conversations.
+func (r *SessionRegistry) ResumeTaskSession(taskID, role, providerName, model string) string {
+	rec, ok := r.GetTaskSession(taskID)
+	if !ok || !rec.ProviderConfirmed || rec.Fresh || rec.Role != role || rec.Provider != providerName || rec.Model != model {
+		return ""
+	}
+	return rec.ThreadID
 }
 
 // TransferTaskSession moves the task-bound provider session key from fromTaskID

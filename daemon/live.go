@@ -500,8 +500,9 @@ func (x *liveExecutor) resolve(ctx context.Context, dispatch engine.Dispatch) (e
 	}
 	resumeSession := ""
 	if role, ok := workflow.EffectiveRole(e.Job.Document, e.Job.TaskClass, dispatch.Config.Role); ok && !role.Fresh && x.daemon != nil {
-		if sess, found := x.daemon.sessionRegistry().GetTaskSession(dispatch.TaskID); found && sess.ThreadID != "" {
-			resumeSession = sess.ThreadID
+		if len(dispatch.Sessions) > 0 {
+			route := dispatch.Sessions[0].Route
+			resumeSession = x.daemon.sessionRegistry().ResumeTaskSession(dispatch.TaskID, dispatch.Config.Role, route.Provider, route.Model)
 		}
 	}
 	verifyRoot := func(vCtx context.Context, name string) (string, error) {
@@ -781,6 +782,7 @@ func (x *liveExecutor) Execute(ctx context.Context, d engine.Dispatch) (r engine
 	copyX := *x
 	copyBroker := *x.broker
 	copyBroker.ProcessSession = d.Sessions[0].ID
+	copyBroker.NestedCommands = x.effectiveNestedCommands()
 	if task, err := x.taskEnvelope(d.TaskID); err == nil {
 		copyBroker.Scratch = taskScratch(task.Job.Document)
 	}

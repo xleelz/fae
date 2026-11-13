@@ -1207,9 +1207,10 @@ func Transcript(logs string, started, finished time.Time) *engine.Transcript {
 	for _, path := range paths {
 		raw, err := os.ReadFile(path)
 		var audit struct {
-			ThreadID string `json:"thread_id"`
+			ThreadID  string `json:"thread_id"`
+			Resumable *bool  `json:"resumable"`
 		}
-		if err == nil && json.Unmarshal(raw, &audit) == nil && audit.ThreadID != "" {
+		if err == nil && json.Unmarshal(raw, &audit) == nil && audit.ThreadID != "" && (audit.Resumable == nil || *audit.Resumable) {
 			t.ProviderSession = audit.ThreadID
 		}
 	}

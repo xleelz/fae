@@ -1,0 +1,61 @@
+{
+  "packages": [
+    "github.com/xleelz/fae/commandshim",
+    "github.com/xleelz/fae/daemon",
+    "github.com/xleelz/fae/effects"
+  ],
+  "tests": [
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestAccountedGitProtectsTheRunsRepository"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyRunsOneAccountedCommand"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyConcurrentCommandsRespectCapacity"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyForbiddenRoleNeverQueues"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyCancellationRetiresCommandBeforeRelease"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyRequiresPrivateNamespace"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyRefusesNestedWithoutWaitingForParentLease"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestNamespaceLeaseProxyQueuedDisconnectCancelsWaiter"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestRustfmtLeafNative"
+    },
+    {
+      "package": "github.com/xleelz/fae/commandshim",
+      "test": "TestTypeScriptRealCompilerTypecheckAndScopedEmit"
+    },
+    {
+      "package": "github.com/xleelz/fae/daemon",
+      "test": "TestLocalGitPushFastForwardContentScanAndIdempotence"
+    },
+    {
+      "package": "github.com/xleelz/fae/effects",
+      "test": "TestRustSelectedNative"
+    },
+    {
+      "package": "github.com/xleelz/fae/effects",
+      "test": "TestRustBrokerNativeSelected"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "ref": "refs/heads/fae/linear-testing-20261112",
+  "old": "129cd6ed765dc046ae7d341552fe992daaa92c74",
+  "new": "e8a352f8e1cc843546ecc7d95359e239ea83db53",
+  "paths": [
+    "commandshim/accounted_git_test.go",
+    "commandshim/lease_proxy_linux_test.go",
+    "commandshim/native_tools_test.go",
+    "commandshim/rust_test.go",
+    "commandshim/typescript_test.go",
+    "effects/rust_test.go",
+    "effects/native_fixture_test.go",
+    "daemon/wave19_sc_test.go",
+    "daemon/native_git_fixture_test.go"
+  ],
+  "intermediate": "acc3d9ca5afb202d4097f2b5e8cdb64512e547a2"
+}

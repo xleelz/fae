@@ -88,7 +88,7 @@ var commandList = [][2]string{
 	{"template", "workflow-put|workflow-get|workflow-latest|workflow-list|workflow-retire|workflow-diff|workflow-validate|workflow-simulate | target-config-put|-get|-list|-retire|-validate|-diff|-simulate | adapter-put|-get|-list|-retire"},
 	{"workflow", "default [--local]|scenario | validate FILE | simulate FILE SCRIPT TASK (offline; SCRIPT is the simulator's records or a scripted-adapter scenario such as scenario prints)"},
 	{"schedule", "create|list|inspect|pause|resume|retire --id ID [...]"},
-	{"runtime-config", "[--pane-limit N] [--heavy-capacity N] [--tasks-in-flight N] [--host-thresholds JSON] --authorizing-message ID"},
+	{"runtime-config", "[--pane-limit N] [--heavy-capacity N] [--tasks-in-flight N] [--host-thresholds JSON] [--nested-commands refuse|account] --authorizing-message ID"},
 	{"pool", "resize --pool ID [--provider NAME] [--credential ID] --cap N [--actor ACTOR] --reason TEXT --authorizing-message ID"},
 	{"quota", "set [--pool ID | --provider NAME --model MODEL] (--until RFC3339 | --duration D) [--grace D] [--actor ACTOR] [--reason TEXT] --authorizing-message ID | clear [--pool ID | --provider NAME --model MODEL] [--actor ACTOR] [--reason TEXT] --authorizing-message ID"},
 	{"pause", "[--scope instance|workflow|task_set|pool] [--target ID] [--workflow ID] [--run-id ID] [--tasks ID,...] [--pool ID] [--actor ACTOR] --reason TEXT --authorizing-message ID | list"},

@@ -1,0 +1,6 @@
+=== RUN   TestRustfmtLeafNative
+--- PASS: TestRustfmtLeafNative (0.05s)
+=== RUN   TestTypeScriptRealCompilerTypecheckAndScopedEmit
+--- PASS: TestTypeScriptRealCompilerTypecheckAndScopedEmit (2.07s)
+PASS
+ok  	github.com/xleelz/fae/commandshim	2.125s

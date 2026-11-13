@@ -1104,7 +1104,8 @@ func run(ctx context.Context, c Config, configPath string, config *agentruntime.
 				scopeName = "ephemeral"
 			}
 			resumed := !l.FreshRole && l.ResumeSession != ""
-			audit, _ := json.Marshal(SessionAudit{Scope: scopeName, ThreadID: providerThread, Resumed: resumed, TaskID: l.TaskID, DispatchID: l.DispatchID})
+			resumable := l.Session == "agentic" || resumed
+			audit, _ := json.Marshal(SessionAudit{Resumable: &resumable, Scope: scopeName, ThreadID: providerThread, Resumed: resumed, TaskID: l.TaskID, DispatchID: l.DispatchID})
 			_ = os.WriteFile(filepath.Join(dir, "provider-session.json"), audit, 0600)
 		}
 	}

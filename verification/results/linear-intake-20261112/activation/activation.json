@@ -1,0 +1,15 @@
+{
+  "instance_home": "/var/tmp/fae-herdr-live",
+  "instance": "default",
+  "adapter": "direct",
+  "workflow": "default",
+  "workflow_revision": 2,
+  "target": "linear-fae-testing",
+  "target_revision": 1,
+  "linear_issue": "OR-811",
+  "task_id": "linear-d2409b67de72b52a6a263aeed5c36b6329b42b32142a28773db180322f11f77a",
+  "integration_ref": "refs/heads/fae/linear-testing-20261112",
+  "pre_restart_backup": "/var/tmp/fae-herdr-live/default/backup/plane-694775484",
+  "base": "129cd6ed765dc046ae7d341552fe992daaa92c74",
+  "binary_sha256": "4c05c4bbe6bf3a857a7346b4c77d96575bd961303e8d80cebd5ef31acfb007fb"
+}

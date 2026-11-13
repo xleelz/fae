@@ -1,0 +1,38 @@
+{
+  "ViewConstructionMS": 0,
+  "ViewCopiedBytes": 0,
+  "IsolationPolicy": "cli-and-collector",
+  "fresh_build": false,
+  "stderr": "",
+  "exit_code": 0,
+  "executed_count": 3,
+  "matched_count": 0,
+  "expected_failure": false,
+  "red_passed": false,
+  "output_digest": "9c4b137f163315e9781406ac65f3d226a952126660379a743b9b2bf3e33fc834",
+  "tree": "31dad443344ac753b6ecbfdb9a84321df7841711",
+  "output": "",
+  "truncated": false,
+  "environment": [
+    "HOME=/home/lbethay",
+    "TMPDIR=/var/tmp/fae-linear-account-followup-20261112/command-tmp-2691447837",
+    "LANG=C",
+    "GIT_TERMINAL_PROMPT=0",
+    "GIT_CONFIG_NOSYSTEM=1",
+    "GIT_CONFIG_GLOBAL=/dev/null",
+    "PATH=/var/tmp/fae-linear-account-followup-20261112/command-policy-4169272599/command-shims:/usr/local/go/bin:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.2-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.local/bin:/usr/local/go/bin:/home/lbethay/go/bin:/home/lbethay/.npm-global/bin:/home/lbethay/.local/bin:/home/lbethay/.local/bin:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0EyN4Hp:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.2-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg04Q66cX:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.1-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0LDbEAG:/home/lbethay/.codex/packages/app-server-daemon/releases/0.167.0-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0dbZGrt:/home/lbethay/.codex/packages/app-server-daemon/releases/0.166.0-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.codex/tmp/arg0-linux/codex-arg0zyLSfP:/home/lbethay/.codex/packages/standalone/releases/0.166.0-x86_64-unknown-linux-musl/codex-path:/home/lbethay/.local/bin:/home/lbethay/.local/bin:/home/lbethay/.local/bin:/home/linuxbrew/.linuxbrew/opt/node@24/bin:/home/lbethay/.cargo/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "GOROOT=/var/tmp/fae-linear-account-followup-20261112/command-policy-4169272599/goroot",
+    "GOTOOLCHAIN=local",
+    "GOENV=off"
+  ],
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "-run=^(TestRustSelectedNative|TestRustBrokerNativeSelected|TestLocalGitPushFastForwardContentScanAndIdempotence)$",
+    "./effects",
+    "./daemon"
+  ],
+  "started": "2026-11-12T23:26:57.472174131Z"
+}

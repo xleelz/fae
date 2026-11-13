@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/xleelz/fae/controlplane"
+	"github.com/xleelz/fae/effects"
 	"github.com/xleelz/fae/engine"
 	"github.com/xleelz/fae/execution"
 	"github.com/xleelz/fae/hostguard"
@@ -36,6 +37,7 @@ type liveAdmission struct {
 	requestedPaneLimit atomic.Int64
 	dynamicHeavy       atomic.Int64
 	dynamicTasks       atomic.Int64
+	dynamicNested      atomic.Pointer[effects.NestedMode]
 	dynamicHost        atomic.Pointer[hostguard.Config]
 	inventory          func(context.Context) (map[string]int, error)
 	owner              scheduler.Owner

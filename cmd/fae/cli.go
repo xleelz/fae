@@ -778,6 +778,7 @@ func dispatch(ctx context.Context, args []string, out io.Writer) error {
 		}
 		return rpc(ctx, *opts, "ResolveUncertain", "", p, out)
 	case "runtime-config":
+		nested := f.String("nested-commands", "", "nested host commands: refuse or account; applies to future dispatches")
 		limit := f.Int("pane-limit", 0, "dynamic pane limit")
 		heavy := f.Int("heavy-capacity", 0, "dynamic heavy-operation capacity")
 		tasks := f.Int("tasks-in-flight", 0, "dynamic task concurrency; -1 is unbounded")
@@ -785,13 +786,13 @@ func dispatch(ctx context.Context, args []string, out io.Writer) error {
 		if err := parse(f, args); err != nil {
 			return err
 		}
-		if (*limit == 0 && *heavy == 0 && *tasks == 0 && *host == "") || (*limit != 0 && (*limit < 2 || *limit > 1000000)) || *heavy < 0 || *heavy > 1000000 || *tasks < -1 || *tasks > 1000000 {
+		if (*limit == 0 && *heavy == 0 && *tasks == 0 && *host == "" && *nested == "") || (*limit != 0 && (*limit < 2 || *limit > 1000000)) || *heavy < 0 || *heavy > 1000000 || *tasks < -1 || *tasks > 1000000 || (*nested != "" && *nested != "refuse" && *nested != "account") {
 			return usage("runtime-config requires valid limits")
 		}
 		if err := requireMessage(verb, opts); err != nil {
 			return err
 		}
-		c := daemon.RuntimeConfig{PaneLimit: *limit, HeavyCapacity: *heavy, TasksInFlight: *tasks, AuthorizingMessage: opts.message}
+		c := daemon.RuntimeConfig{NestedCommands: *nested, PaneLimit: *limit, HeavyCapacity: *heavy, TasksInFlight: *tasks, AuthorizingMessage: opts.message}
 		if *host != "" {
 			if err := json.Unmarshal([]byte(*host), &c.HostThresholds); err != nil || c.HostThresholds == nil {
 				return usage("invalid host-thresholds JSON")
