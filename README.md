@@ -94,7 +94,7 @@ without it the CLI refuses with exit 1. This message grants the `task` and
 `runtime` classes, so it can authorize both the run and the later shutdown.
 
 ```sh
-./bin/fae message --id demo-authorization --text '{"text":"Run local scripted work and shut down this instance.","authorize":{"classes":["task","runtime"]}}' 
+./bin/fae message --id demo-authorization --text '{"text":"Run local scripted work and shut down this instance.","authorize":{"classes":["task","runtime"]}}'
 ```
 
 **3. Submit the task.** `run` admits task `demo` on the default workflow,
@@ -276,7 +276,7 @@ go build -o bin/fae ./cmd/fae
 ./bin/fae serve --workspace "$PWD" --adapter scripted --foreground
 
 # Terminal 2; use the absolute path to bin/fae when outside this workspace.
-./bin/fae message --id demo-authorization --text '{"text":"Run local scripted work and shut down this instance.","authorize":{"classes":["task","runtime"]}}' 
+./bin/fae message --id demo-authorization --text '{"text":"Run local scripted work and shut down this instance.","authorize":{"classes":["task","runtime"]}}'
 ./bin/fae run --id demo --prompt 'Exercise the scripted default workflow' --authorizing-message demo-authorization
 ./bin/fae status --json
 ./bin/fae history --task demo --json
